@@ -168,6 +168,9 @@ The `docs/` directory follows the numbered knowledge-base style used by the
 reference project. Add a new numbered document whenever the team makes an
 important decision or learns something needed to reproduce the work.
 
+[`AGENTS.md`](AGENTS.md) contains the operational instructions that automated
+coding agents and contributors must follow when working in this repository.
+
 | Document | Purpose |
 | --- | --- |
 | [0001](docs/0001-project-requirements.md) | Assignment requirements and submission checklist |

@@ -14,6 +14,7 @@ UPSTREAM_TRAINING_EXAMPLES = {"tpl_agent"}
 class RepositoryContractTests(unittest.TestCase):
     def test_required_project_files_exist(self) -> None:
         required = (
+            "AGENTS.md",
             "README.md",
             "CONTRIBUTING.md",
             "requirements.txt",

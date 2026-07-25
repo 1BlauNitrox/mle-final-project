@@ -25,7 +25,7 @@ AI output is a draft or suggestion, never experimental evidence.
 
 | Date | Scope | Tool | Human verification and refinement |
 | --- | --- | --- | --- |
-| 2026-07-25 | Initial repository structure, workflow, and documentation drafts | OpenAI Codex | Team must review course-summary accuracy, adapt wording and ownership, run CI, and approve through PR review before merge. |
+| 2026-07-25 | Initial repository structure, workflow, requirements summary, AGENTS.md, and documentation drafts | OpenAI Codex | Team must review course-summary accuracy, adapt wording and ownership, run CI, and approve through PR review before merge. |
 
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
