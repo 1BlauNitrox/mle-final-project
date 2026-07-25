@@ -54,7 +54,7 @@ squash merging.
 
 ```bash
 ruff check tests training scripts agent_code/_team_agent_template
-pytest
+python -m pytest
 python main.py play --no-gui --n-rounds 1
 ```
 

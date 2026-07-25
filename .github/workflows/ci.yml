@@ -39,7 +39,7 @@ jobs:
         run: python -m compileall -q .
 
       - name: Run tests
-        run: pytest
+        run: python -m pytest
 
   smoke:
     name: Bomberman smoke test

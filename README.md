@@ -92,7 +92,7 @@ Run all repository checks:
 
 ```bash
 ruff check tests training scripts agent_code/_team_agent_template
-pytest
+python -m pytest
 ```
 
 ## Repository structure
