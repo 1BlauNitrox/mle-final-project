@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project workflow and documentation
+    url: https://github.com/1BlauNitrox/mle-final-project/blob/main/CONTRIBUTING.md
+    about: Review the workflow, Definition of Ready, and experiment protocol first.
+  - name: Course framework questions
+    url: https://github.com/ukoethe/bomberman_rl
+    about: Check the upstream framework and use the course Discord for course-specific questions.

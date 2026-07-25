@@ -1,0 +1,48 @@
+name: Feature
+description: Propose a repository, training, evaluation, or agent capability.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem or need should this feature address?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the intended behavior without over-prescribing implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Tournament or framework constraints
+      description: Note action-time, memory, CPU, submission, or compatibility effects.
+      placeholder: Not applicable, or list the relevant constraints.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies or blockers
+      description: Write "None" if there are no blockers.
+    validations:
+      required: true

@@ -1,0 +1,38 @@
+name: Package agent
+
+on:
+  workflow_dispatch:
+    inputs:
+      agent_name:
+        description: Directory name below agent_code/
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Validate and package submission agent
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Validate repository contracts
+        run: python -m unittest discover -s tests -v
+
+      - name: Package selected agent
+        run: python scripts/package_agent.py "${{ inputs.agent_name }}"
+
+      - name: Upload submission artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-project-agent-code
+          path: dist/final-project-agent-code.zip
+          if-no-files-found: error
