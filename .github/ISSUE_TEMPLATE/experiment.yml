@@ -1,0 +1,87 @@
+name: RL experiment
+description: Propose a controlled training or evaluation experiment.
+title: "experiment: "
+labels:
+  - experiment
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Define the hypothesis and evaluation before training begins. The issue
+        must satisfy the experiment-specific Definition of Ready.
+
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Hypothesis
+      description: State a falsifiable prediction and why it should hold.
+      placeholder: Adding a bomb-danger feature will reduce self-kills without reducing mean score.
+    validations:
+      required: true
+
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: Identify the independent variable and agent/model affected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: controls
+    attributes:
+      label: Baseline and controlled variables
+      description: What baseline is used, and what remains fixed?
+      placeholder: |
+        Baseline:
+        Fixed training budget:
+        Fixed hyperparameters:
+        Fixed opponents/scenarios:
+    validations:
+      required: true
+
+  - type: textarea
+    id: protocol
+    attributes:
+      label: Evaluation protocol
+      description: Define training/evaluation seeds, rounds, scenarios, opponents, and hardware.
+      placeholder: |
+        Training seeds:
+        Evaluation seeds:
+        Rounds:
+        Scenarios:
+        Opponents:
+        Hardware:
+    validations:
+      required: true
+
+  - type: textarea
+    id: metrics
+    attributes:
+      label: Metrics and success criterion
+      description: Define metrics and the decision threshold before seeing results.
+      placeholder: |
+        Metrics:
+        Success criterion:
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Experiment configuration is committed
+        - [ ] All planned seeds complete
+        - [ ] Results are compared with the baseline
+        - [ ] Conclusion and follow-up decision are documented
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies, compute, or blockers
+      description: Write "None" if there are no blockers.
+    validations:
+      required: true
