@@ -1,7 +1,7 @@
 # Tournament/runtime baseline from the course handout.
 numpy>=2.2.6
 scipy>=1.10
-scikit-learn>=1.2
+scikit-learn>=1.7.2
 tqdm>=4.70.0
 
 # Optional GUI. Python 3.13 is recommended because pygame currently has
