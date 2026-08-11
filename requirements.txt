@@ -2,7 +2,7 @@
 numpy>=2.2.6
 scipy>=1.10
 scikit-learn>=1.2
-tqdm>=4.65
+tqdm>=4.70.0
 
 # Optional GUI. Python 3.13 is recommended because pygame currently has
 # reliable prebuilt wheels for it.
