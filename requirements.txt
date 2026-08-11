@@ -6,4 +6,4 @@ tqdm>=4.65
 
 # Optional GUI. Python 3.13 is recommended because pygame currently has
 # reliable prebuilt wheels for it.
-pygame>=2.5; python_version < "3.14"
+pygame>=2.6.1; python_version < "3.14"
