@@ -31,7 +31,7 @@ jobs:
         run: python scripts/package_agent.py "${{ inputs.agent_name }}"
 
       - name: Upload submission artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: final-project-agent-code
           path: dist/final-project-agent-code.zip
