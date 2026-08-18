@@ -24,11 +24,17 @@ class RepositoryContractTests(unittest.TestCase):
             "docs/0003-development-workflow.md",
             "docs/0004-experimentation-protocol.md",
             "docs/0005-definition-of-ready-and-done.md",
+            "docs/0006-ai-usage.md",
+            "docs/0007-task-1-baseline-contract.md",
             ".github/pull_request_template.md",
             ".github/workflows/ci.yml",
         )
         missing = [path for path in required if not (ROOT / path).is_file()]
         self.assertEqual([], missing, f"Missing repository files: {missing}")
+
+    def test_readme_links_task_1_baseline_contract(self) -> None:
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("docs/0007-task-1-baseline-contract.md", readme)
 
     def test_template_exposes_framework_callbacks(self) -> None:
         expected = {
