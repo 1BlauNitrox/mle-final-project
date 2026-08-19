@@ -272,12 +272,58 @@ class GenericWorld:
         # Wait in case there is still a game step running
         self.running = False
 
+        agent_statistics ={}
+
         for a in self.agents:
             a.note_stat("score", a.score)
             a.note_stat("rounds")
+
+            if a.dead:
+                termination_reason = "killed"
+            elif self.step >= s.MAX_STEPS:
+                termination_reason = "step_limit"
+            else:
+                termination_reason = "survived"
+
+            if a.decision_times:
+                decision_times_ms = np.asarray(a.decision_times, dtype=float) * 1000.0
+                decision_time_median_ms = float(np.median(decision_times_ms))
+                decision_time_p95_ms = float(np.percentile(decision_times_ms, 95))
+                decision_time_max_ms = float(np.max(decision_times_ms))
+
+            else:
+                decision_time_median_ms = None
+                decision_time_p95_ms = None
+                decision_time_max_ms = None
+
+            agent_statistics[a.name] = {
+                "score": a.score,
+                "coins": a.statistics.get("coins", 0),
+                "kills": a.statistics.get("kills", 0),
+                "suicides": a.statistics.get("suicides", 0),
+                "steps": a.statistics.get("steps", 0),
+                "invalid": a.statistics.get("invalid", 0),
+                "attempted_actions": a.statistics.get("attempted_actions", 0),
+                "action_up": a.statistics.get("action_up", 0),
+                "action_down": a.statistics.get("action_down", 0),
+                "action_left": a.statistics.get("action_left", 0),
+                "action_right": a.statistics.get("action_right", 0),
+                "action_bomb": a.statistics.get("action_bomb", 0),
+                "action_wait": a.statistics.get("action_wait", 0),
+                "action_unknown": a.statistics.get("action_unknown", 0),
+                "survived": not a.dead,
+                "termination_reason": termination_reason,
+                "decision_time_median_ms": decision_time_median_ms,
+                "decision_time_p95_ms": decision_time_p95_ms,
+                "decision_time_max_ms": decision_time_max_ms,
+            }
+
         self.round_statistics[self.round_id] = {
             "steps": self.step,
-            **{key: sum(a.statistics[key] for a in self.agents) for key in ["coins", "kills", "suicides"]}
+            "coins": sum(a.statistics.get("coins", 0) for a in self.agents),
+            "kills": sum(a.statistics.get("kills", 0) for a in self.agents),
+            "suicides": sum(a.statistics.get("suicides", 0) for a in self.agents),
+            "agents": agent_statistics,
         }
 
     def time_to_stop(self):

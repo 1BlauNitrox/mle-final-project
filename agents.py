@@ -130,6 +130,9 @@ class Agent:
         self.last_game_state = None
         self.last_action = None
 
+        # Individual act() durations for this episode, measured in seconds.
+        self.decision_times = []
+
     @property
     def base_timeout(self):
         return s.TRAIN_TIMEOUT if self.train else s.TIMEOUT
@@ -175,8 +178,18 @@ class Agent:
 
     def wait_for_act(self):
         action, think_time = self.backend.get_with_time("act")
+
         self.note_stat("time", think_time)
         self.note_stat("steps")
+        self.note_stat("attempted_actions")
+
+        if action in {"UP", "DOWN", "LEFT", "RIGHT", "WAIT", "BOMB"}:
+            self.note_stat(f"action_{action.lower()}")
+        else:
+            self.note_stat("action_unknown")
+
+        self.decision_times.append(think_time)
+
         self.last_action = action
         return action, think_time
 
