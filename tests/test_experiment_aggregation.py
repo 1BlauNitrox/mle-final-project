@@ -463,6 +463,19 @@ class ExperimentAggregationTests(unittest.TestCase):
             ):
                 read_episodes_csv(path)
 
+    def test_survival_steps_cannot_exceed_episode_steps_in_csv(self) -> None:
+        rows = [make_episode_row(episode_steps=5, survival_steps=6)]
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "episodes.csv"
+            write_episodes_csv(rows, path)
+
+            with self.assertRaisesRegex(
+                ValueError,
+                "more survival steps than episode steps",
+            ):
+                read_episodes_csv(path)
+
 
 if __name__ == "__main__":
     unittest.main()

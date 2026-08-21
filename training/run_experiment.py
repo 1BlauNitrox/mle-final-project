@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import platform
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -58,6 +59,8 @@ def run_experiment(
     episodes_path = run_directory / "episodes.csv"
     summary_path = run_directory / "summary.json"
     observed_agent = _framework_agent_name(agent, opponents)
+    git_commit = _git_commit()
+    git_dirty = _git_is_dirty()
 
     command = _build_game_command(
         agent=agent,
@@ -80,10 +83,17 @@ def run_experiment(
         "rounds": rounds,
         "world_seed": world_seed,
         "agent_seed": agent_seed,
-        "agent_configuration": _agent_configuration_reference(agent),
+        "agent_configuration": _agent_configuration_reference(
+            agent,
+            snapshot_directory=(
+                run_directory / "agent_snapshot"
+                if git_dirty
+                else None
+            ),
+        ),
         "command": command,
-        "git_commit": _git_commit(),
-        "git_dirty": _git_is_dirty(),
+        "git_commit": git_commit,
+        "git_dirty": git_dirty,
         "started_at": _format_timestamp(started_at),
         "duration_seconds": None,
         "python_version": platform.python_version(),
@@ -250,8 +260,12 @@ def _framework_agent_name(agent: str, opponents: list[str]) -> str:
     return f"{agent}_0" if agent in opponents else agent
 
 
-def _agent_configuration_reference(agent: str) -> dict[str, str | None]:
-    """Fingerprint the agent directory before the run starts."""
+def _agent_configuration_reference(
+    agent: str,
+    *,
+    snapshot_directory: Path | None = None,
+) -> dict[str, str | None]:
+    """Fingerprint an agent and optionally preserve its dirty state."""
     agent_directory = REPOSITORY_ROOT / "agent_code" / agent
     relative_directory = Path("agent_code") / agent
 
@@ -259,10 +273,18 @@ def _agent_configuration_reference(agent: str) -> dict[str, str | None]:
         return {
             "path": relative_directory.as_posix(),
             "sha256": None,
+            "snapshot_path": None,
         }
 
     digest = hashlib.sha256()
     ignored_parts = {"__pycache__", "logs"}
+
+    if snapshot_directory is not None:
+        shutil.copytree(
+            agent_directory,
+            snapshot_directory,
+            ignore=shutil.ignore_patterns("__pycache__", "logs", "*.pyc"),
+        )
 
     for path in sorted(agent_directory.rglob("*")):
         relative_path = path.relative_to(agent_directory)
@@ -281,6 +303,11 @@ def _agent_configuration_reference(agent: str) -> dict[str, str | None]:
     return {
         "path": relative_directory.as_posix(),
         "sha256": digest.hexdigest(),
+        "snapshot_path": (
+            snapshot_directory.name
+            if snapshot_directory is not None
+            else None
+        ),
     }
 
 

@@ -262,9 +262,9 @@ creates the `figures/` directory.
 
 ### `metadata.json`
 
-Contains the command, observed agent, agent-directory fingerprint, seeds, Git
-revision, dirty-worktree indicator, Python version, timing, process status, and
-return code.
+Contains the command, observed agent, agent-directory fingerprint and optional
+dirty-state snapshot, seeds, Git revision, Python version, timing, process
+status, and return code.
 
 ### `framework_stats.json`
 
@@ -291,11 +291,13 @@ every participant under `by_agent`, including:
 
 ### `figures/learning_curve.png`
 
-Shows coins and environment score over episodes, including rolling means.
+Shows coins and environment score over episodes, including rolling means. Each
+participant is displayed as a separate series for comparison.
 
 ### `figures/task_metrics.png`
 
-Shows episode length and invalid-action rate.
+Shows episode length and invalid-action rate. Each participant is displayed as
+a separate series for comparison.
 
 ### `figures/behavior_diagnostics.png`
 
@@ -458,6 +460,9 @@ Each experiment run writes its artifacts to a dedicated directory below
 `training_outputs/`. Raw run directories are local artifacts and must not be
 committed.
 
+When the worktree is dirty, the runner also creates `agent_snapshot/` before
+starting the game so that the exact agent state remains recoverable.
+
 ```text
 training_outputs/<run-id>/
 |-- metadata.json
@@ -473,7 +478,8 @@ training_outputs/<run-id>/
 The schema is versioned independently of the application version. The initial
 schema version is `1`. Readers must reject unsupported schema versions with a
 clear error message. Additional unknown fields should be tolerated to permit
-backwards-compatible extensions.
+backwards-compatible extensions. Artifacts created while this initial schema
+was still under development are not a supported earlier schema version.
 
 ### Run metadata
 
@@ -492,7 +498,7 @@ following fields:
 | `rounds` | integer | Number of requested episodes. |
 | `world_seed` | integer or null | Seed passed to the Bomberman environment. |
 | `agent_seed` | integer or null | Seed controlling agent-side randomness, when available. |
-| `agent_configuration` | object | Agent-directory path and SHA-256 content hash captured before the run. |
+| `agent_configuration` | object | Agent-directory path and SHA-256 content hash captured before the run. When the worktree is dirty, `snapshot_path` points to a preserved copy inside the run directory. |
 | `command` | array of strings | Exact command and arguments used to start the game. |
 | `git_commit` | string | Full Git commit SHA from which the run was launched. |
 | `git_dirty` | boolean | Whether the worktree contained uncommitted changes when the run started. |
@@ -523,7 +529,8 @@ Example:
   "agent_seed": null,
   "agent_configuration": {
     "path": "agent_code/random_agent",
-    "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "snapshot_path": null
   },
   "command": [
     "python",

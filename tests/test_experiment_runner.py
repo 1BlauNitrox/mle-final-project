@@ -96,17 +96,29 @@ class AgentConfigurationReferenceTests(unittest.TestCase):
             agent_directory.mkdir(parents=True)
             configuration = agent_directory / "config.py"
             configuration.write_text("EPSILON = 0.5\n", encoding="utf-8")
+            snapshot_directory = root / "run" / "agent_snapshot"
 
             with patch.object(runner, "REPOSITORY_ROOT", root):
-                first = runner._agent_configuration_reference("test_agent")
+                first = runner._agent_configuration_reference(
+                    "test_agent",
+                    snapshot_directory=snapshot_directory,
+                )
                 configuration.write_text(
                     "EPSILON = 0.2\n",
                     encoding="utf-8",
                 )
                 second = runner._agent_configuration_reference("test_agent")
+                snapshot_content = (
+                    snapshot_directory / "config.py"
+                ).read_text(encoding="utf-8")
 
         self.assertEqual("agent_code/test_agent", first["path"])
         self.assertEqual(64, len(first["sha256"] or ""))
+        self.assertEqual("agent_snapshot", first["snapshot_path"])
+        self.assertEqual(
+            "EPSILON = 0.5\n",
+            snapshot_content,
+        )
         self.assertNotEqual(first["sha256"], second["sha256"])
 
 
@@ -199,6 +211,14 @@ class ExperimentRunnerTests(unittest.TestCase):
                     encoding="utf-8"
                 )
             )
+            metadata = json.loads(
+                (run_directory / "metadata.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            snapshot_created = (
+                run_directory / "agent_snapshot" / "callbacks.py"
+            ).is_file()
             figure_paths = plot_run(run_directory)
             figures_created = all(path.is_file() for path in figure_paths)
 
@@ -231,6 +251,11 @@ class ExperimentRunnerTests(unittest.TestCase):
         )
         self.assertEqual(3, len(figure_paths))
         self.assertTrue(figures_created)
+        self.assertEqual(
+            "agent_snapshot",
+            metadata["agent_configuration"]["snapshot_path"],
+        )
+        self.assertTrue(snapshot_created)
 
     def test_successful_run_writes_completed_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -305,6 +330,9 @@ class ExperimentRunnerTests(unittest.TestCase):
         self.assertEqual(
             64,
             len(metadata["agent_configuration"]["sha256"]),
+        )
+        self.assertIsNone(
+            metadata["agent_configuration"]["snapshot_path"]
         )
         self.assertIsInstance(
             metadata["duration_seconds"],

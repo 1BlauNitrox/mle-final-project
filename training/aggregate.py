@@ -366,6 +366,12 @@ def _parse_csv_row(
             f"{parsed['schema_version']!r}"
         )
 
+    if parsed["survival_steps"] > parsed["episode_steps"]:
+        raise ValueError(
+            f"CSV row {row_number} has more survival steps than "
+            "episode steps"
+        )
+
     return parsed
 
 
