@@ -248,6 +248,13 @@ def _normalize_agent_episode(
         else None
     )
 
+    learning_metrics = statistics.get("learning_metrics", {})
+    if not isinstance(learning_metrics, Mapping):
+        raise ValueError(
+            f"Learning metrics for agent {agent_name!r} in round "
+            f"{round_number} must be an object"
+        )
+
     return {
         "schema_version": SCHEMA_VERSION,
         "round": round_number,
@@ -301,25 +308,25 @@ def _normalize_agent_episode(
             agent_name=agent_name,
         ),
         "shaped_reward": _optional_number(
-            statistics.get("shaped_reward"),
+            learning_metrics.get("shaped_reward"),
             field="shaped_reward",
             round_number=round_number,
             agent_name=agent_name,
         ),
         "epsilon": _optional_number(
-            statistics.get("epsilon"),
+            learning_metrics.get("epsilon"),
             field="epsilon",
             round_number=round_number,
             agent_name=agent_name,
         ),
         "q_table_size": _optional_non_negative_int(
-            statistics.get("q_table_size"),
+            learning_metrics.get("q_table_size"),
             field="q_table_size",
             round_number=round_number,
             agent_name=agent_name,
         ),
         "mean_abs_td_error": _optional_number(
-            statistics.get("mean_abs_td_error"),
+            learning_metrics.get("mean_abs_td_error"),
             field="mean_abs_td_error",
             round_number=round_number,
             agent_name=agent_name,

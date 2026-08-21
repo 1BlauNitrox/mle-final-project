@@ -163,6 +163,10 @@ def _aggregate_group(
     episode_count = len(rows)
 
     total_coins = sum(row["coins_collected"] for row in rows)
+    total_steps = sum(row["episode_steps"] for row in rows)
+    zero_coin_episodes = sum(
+        1 for row in rows if row["coins_collected"] == 0
+    )
     total_invalid_actions = sum(
         row["invalid_actions"] for row in rows
     )
@@ -197,10 +201,16 @@ def _aggregate_group(
     for row in rows:
         termination_counts[row["termination_reason"]] += 1
 
-    steps_per_coin = [
-        row["episode_steps"] / max(row["coins_collected"], 1)
-        for row in rows
-    ]
+    steps_per_coin = (
+        total_steps / total_coins
+        if total_coins > 0
+        else None
+    )
+    coins_per_100_steps = (
+        100 * total_coins / total_steps
+        if total_steps > 0
+        else None
+    )
 
     return {
         "episode_count": episode_count,
@@ -209,23 +219,24 @@ def _aggregate_group(
             "mean": fmean(
                 row["coins_collected"] for row in rows
             ),
-            "zero_coin_episodes": sum(
-                1 for row in rows
-                if row["coins_collected"] == 0
-            ),
+            "zero_coin_episodes": zero_coin_episodes,
+            "zero_coin_rate": zero_coin_episodes / episode_count,
         },
         "score": {
             "total": sum(row["score"] for row in rows),
             "mean": fmean(row["score"] for row in rows),
         },
         "episode_steps": {
-            "total": sum(row["episode_steps"] for row in rows),
+            "total": total_steps,
             "mean": fmean(
                 row["episode_steps"] for row in rows
             ),
         },
         "steps_per_coin": {
-            "mean": fmean(steps_per_coin),
+            "ratio_of_totals": steps_per_coin,
+        },
+        "coins_per_100_steps": {
+            "ratio_of_totals": coins_per_100_steps,
         },
         "invalid_actions": {
             "total": total_invalid_actions,

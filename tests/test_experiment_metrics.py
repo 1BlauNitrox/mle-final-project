@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from agents import _normalize_learning_metrics
 from training.metrics import (
     normalize_episode_rows,
     normalize_framework_statistics,
@@ -172,10 +173,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
 
     def test_optional_metrics_are_preserved(self) -> None:
         agent_statistics = make_agent_statistics(
-            shaped_reward=-2.5,
-            epsilon=0.25,
-            q_table_size=42,
-            mean_abs_td_error=0.125,
+            learning_metrics={
+                "shaped_reward": -2.5,
+                "epsilon": 0.25,
+                "q_table_size": 42,
+                "mean_abs_td_error": 0.125,
+            },
         )
 
         rows = normalize_episode_rows(
@@ -191,6 +194,22 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(0.25, row["epsilon"])
         self.assertEqual(42, row["q_table_size"])
         self.assertEqual(0.125, row["mean_abs_td_error"])
+
+    def test_learning_metrics_must_be_namespaced_object(self) -> None:
+        agent_statistics = make_agent_statistics(
+            learning_metrics=0.25,
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "Learning metrics.*must be an object",
+        ):
+            normalize_episode_rows(
+                make_framework_statistics(
+                    agent_statistics=agent_statistics
+                ),
+                mode="training",
+            )
 
     def test_unknown_additional_fields_are_tolerated(self) -> None:
         agent_statistics = make_agent_statistics(
@@ -316,6 +335,33 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
             "random_agent",
             written_rows[0]["agent"],
         )
+
+
+class AgentLearningMetricInterfaceTests(unittest.TestCase):
+    def test_accepts_numeric_metrics_and_missing_values(self) -> None:
+        self.assertEqual(
+            {
+                "epsilon": 0.25,
+                "q_table_size": 42,
+                "td_error": None,
+            },
+            _normalize_learning_metrics(
+                {
+                    "epsilon": 0.25,
+                    "q_table_size": 42,
+                    "td_error": None,
+                }
+            ),
+        )
+        self.assertEqual({}, _normalize_learning_metrics(None))
+
+    def test_rejects_non_numeric_metric_values(self) -> None:
+        with self.assertRaisesRegex(TypeError, "must be numeric"):
+            _normalize_learning_metrics({"epsilon": "0.25"})
+
+    def test_rejects_non_finite_metric_values(self) -> None:
+        with self.assertRaisesRegex(ValueError, "must be finite"):
+            _normalize_learning_metrics({"td_error": float("inf")})
 
 
 if __name__ == "__main__":

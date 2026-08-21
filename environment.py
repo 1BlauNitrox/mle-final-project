@@ -316,6 +316,7 @@ class GenericWorld:
                 "decision_time_median_ms": decision_time_median_ms,
                 "decision_time_p95_ms": decision_time_p95_ms,
                 "decision_time_max_ms": decision_time_max_ms,
+                "learning_metrics": dict(a.learning_metrics),
             }
 
         self.round_statistics[self.round_id] = {
@@ -538,7 +539,10 @@ class BombeRLeWorld(GenericWorld):
         # Send final event to agents that expect them
         for a in self.agents:
             if a.train:
-                a.round_ended()
+                learning_metrics = a.round_ended()
+                self.round_statistics[self.round_id]["agents"][a.name][
+                    "learning_metrics"
+                ] = learning_metrics
 
         # Save course of the game for future replay
         if self.args.save_replay:

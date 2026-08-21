@@ -1,14 +1,17 @@
 import importlib
 import logging
+import math
 import multiprocessing as mp
 import os
 import queue
 from collections import defaultdict
+from collections.abc import Mapping
 from inspect import signature
 from io import BytesIO
+from numbers import Integral, Real
 from time import time
 from types import SimpleNamespace
-from typing import Tuple, Any
+from typing import Any, Tuple
 
 import events as e
 import settings as s
@@ -132,6 +135,7 @@ class Agent:
 
         # Individual act() durations for this episode, measured in seconds.
         self.decision_times = []
+        self.learning_metrics = {}
 
     @property
     def base_timeout(self):
@@ -195,13 +199,47 @@ class Agent:
 
     def round_ended(self):
         self.backend.send_event("end_of_round", self.last_game_state, self.last_action, self.events)
-        self.backend.get("end_of_round")
+        result = self.backend.get("end_of_round")
+        self.learning_metrics = _normalize_learning_metrics(result)
+        return self.learning_metrics
 
     def render(self, screen, x, y):
         """Draw the agent's avatar to the screen at the given coordinates."""
         screen.blit(self.avatar, (x, y))
         if self.dead:
             screen.blit(self.shade, (x, y))
+
+
+def _normalize_learning_metrics(result):
+    """Validate optional numeric metrics returned by ``end_of_round``."""
+    if result is None:
+        return {}
+    if not isinstance(result, Mapping):
+        raise TypeError(
+            "end_of_round must return a mapping of learning metrics or None"
+        )
+
+    normalized = {}
+    for name, value in result.items():
+        if not isinstance(name, str) or not name:
+            raise TypeError("Learning metric names must be non-empty strings")
+        if value is None:
+            normalized[name] = None
+        elif isinstance(value, bool) or not isinstance(value, Real):
+            raise TypeError(
+                f"Learning metric {name!r} must be numeric or None"
+            )
+        elif isinstance(value, Integral):
+            normalized[name] = int(value)
+        else:
+            numeric_value = float(value)
+            if not math.isfinite(numeric_value):
+                raise ValueError(
+                    f"Learning metric {name!r} must be finite"
+                )
+            normalized[name] = numeric_value
+
+    return normalized
 
 
 class AgentRunner:

@@ -2,14 +2,17 @@
 
 from __future__ import annotations
 
+import csv
 import json
 import tempfile
 import unittest
 from pathlib import Path
+from textwrap import dedent
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import training.run_experiment as runner
+from training.plot_run import plot_run
 
 
 class ExperimentCommandTests(unittest.TestCase):
@@ -30,7 +33,7 @@ class ExperimentCommandTests(unittest.TestCase):
         self.assertIn("--seed", command)
         self.assertIn("1", command)
         self.assertIn(
-            "/tmp/example output/framework_stats.json",
+            str(Path("/tmp/example output/framework_stats.json")),
             command,
         )
 
@@ -77,6 +80,127 @@ class ExperimentCommandTests(unittest.TestCase):
 
 
 class ExperimentRunnerTests(unittest.TestCase):
+    def test_training_agent_metrics_reach_framework_csv_and_summary(
+        self,
+    ) -> None:
+        agent_root = runner.REPOSITORY_ROOT / "agent_code"
+
+        with (
+            tempfile.TemporaryDirectory(
+                dir=agent_root,
+                prefix="test_learning_metrics_",
+            ) as agent_directory_name,
+            tempfile.TemporaryDirectory() as output_directory_name,
+        ):
+            agent_directory = Path(agent_directory_name)
+            agent_name = agent_directory.name
+
+            (agent_directory / "callbacks.py").write_text(
+                dedent(
+                    """
+                    def setup(self):
+                        pass
+
+
+                    def act(self, game_state):
+                        return "BOMB" if game_state["step"] == 1 else "WAIT"
+                    """
+                ).lstrip(),
+                encoding="utf-8",
+            )
+            (agent_directory / "train.py").write_text(
+                dedent(
+                    """
+                    def setup_training(self):
+                        pass
+
+
+                    def game_events_occurred(
+                        self,
+                        old_game_state,
+                        self_action,
+                        new_game_state,
+                        events,
+                    ):
+                        pass
+
+
+                    def end_of_round(
+                        self,
+                        last_game_state,
+                        last_action,
+                        events,
+                    ):
+                        return {
+                            "shaped_reward": 7.5,
+                            "epsilon": 0.25,
+                            "q_table_size": 12,
+                            "mean_abs_td_error": 0.125,
+                        }
+                    """
+                ).lstrip(),
+                encoding="utf-8",
+            )
+
+            run_directory = runner.run_experiment(
+                agent=agent_name,
+                mode="training",
+                scenario="coin-heaven",
+                rounds=1,
+                world_seed=1,
+                agent_seed=2,
+                opponents=[],
+                output_root=Path(output_directory_name),
+            )
+
+            framework_statistics = json.loads(
+                (run_directory / "framework_stats.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            with (run_directory / "episodes.csv").open(
+                encoding="utf-8",
+                newline="",
+            ) as episodes_file:
+                episode_rows = list(csv.DictReader(episodes_file))
+            summary = json.loads(
+                (run_directory / "summary.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            figure_paths = plot_run(run_directory)
+            figures_created = all(path.is_file() for path in figure_paths)
+
+        round_statistics = next(
+            iter(framework_statistics["by_round"].values())
+        )
+        self.assertEqual(
+            {
+                "epsilon": 0.25,
+                "mean_abs_td_error": 0.125,
+                "q_table_size": 12,
+                "shaped_reward": 7.5,
+            },
+            round_statistics["agents"][agent_name]["learning_metrics"],
+        )
+        self.assertEqual("7.5", episode_rows[0]["shaped_reward"])
+        self.assertEqual("0.25", episode_rows[0]["epsilon"])
+        self.assertEqual("12", episode_rows[0]["q_table_size"])
+        self.assertEqual(
+            7.5,
+            summary["overall"]["learning_metrics"][
+                "mean_shaped_reward"
+            ],
+        )
+        self.assertEqual(
+            12,
+            summary["overall"]["learning_metrics"][
+                "maximum_q_table_size"
+            ],
+        )
+        self.assertEqual(3, len(figure_paths))
+        self.assertTrue(figures_created)
+
     def test_successful_run_writes_completed_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             output_root = Path(temporary_directory)

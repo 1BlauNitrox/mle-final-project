@@ -301,7 +301,7 @@ class ExperimentAggregationTests(unittest.TestCase):
             learning["mean_abs_td_error"],
         )
 
-    def test_steps_per_coin_uses_one_for_zero_coin_episode(self) -> None:
+    def test_coin_efficiency_uses_ratios_of_totals(self) -> None:
         rows = [
             make_episode_row(
                 episode_steps=20,
@@ -315,18 +315,38 @@ class ExperimentAggregationTests(unittest.TestCase):
         ]
 
         summary = aggregate_episode_rows(rows)
+        overall = summary["overall"]
 
-        # First episode: 20 / max(0, 1) = 20.
-        # Second episode: 20 / 4 = 5.
-        # Mean: (20 + 5) / 2 = 12.5.
+        # The zero-coin episode contributes its 20 steps to the cost,
+        # but it does not introduce a fictitious collected coin.
         self.assertEqual(
-            12.5,
-            summary["overall"]["steps_per_coin"]["mean"],
+            10.0,
+            overall["steps_per_coin"]["ratio_of_totals"],
+        )
+        self.assertEqual(
+            10.0,
+            overall["coins_per_100_steps"]["ratio_of_totals"],
         )
         self.assertEqual(
             1,
-            summary["overall"]["coins"]["zero_coin_episodes"],
+            overall["coins"]["zero_coin_episodes"],
         )
+        self.assertEqual(0.5, overall["coins"]["zero_coin_rate"])
+
+    def test_all_zero_coin_episodes_have_no_steps_per_coin(self) -> None:
+        summary = aggregate_episode_rows(
+            [make_episode_row(coins_collected=0)]
+        )
+        overall = summary["overall"]
+
+        self.assertIsNone(
+            overall["steps_per_coin"]["ratio_of_totals"]
+        )
+        self.assertEqual(
+            0.0,
+            overall["coins_per_100_steps"]["ratio_of_totals"],
+        )
+        self.assertEqual(1.0, overall["coins"]["zero_coin_rate"])
 
     def test_empty_episode_collection_is_rejected(self) -> None:
         with self.assertRaisesRegex(

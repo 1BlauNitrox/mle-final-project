@@ -280,7 +280,7 @@ input for aggregation and plotting.
 Contains overall and per-agent aggregates, including:
 
 - coins and score;
-- episode length and steps per coin;
+- episode length, steps per coin, and coins per 100 steps;
 - invalid-action rate;
 - survival and termination counts;
 - action totals and distributions;
@@ -322,14 +322,25 @@ It is not the unweighted mean of episode-level rates.
 
 ### Steps per collected coin
 
-The diagnostic uses:
+The aggregate diagnostic uses the ratio of totals:
 
 ```text
-episode_steps / max(coins_collected, 1)
+sum(episode_steps) / sum(coins_collected)
 ```
 
-A zero-coin episode therefore retains the full episode length as a worst-case
-value instead of causing division by zero.
+Zero-coin episodes contribute all of their steps to the numerator without
+introducing a fictitious collected coin. When the complete group collected no
+coins, the value is unavailable and stored as JSON `null`.
+
+For plotting and direct comparisons, the summary also reports:
+
+```text
+coins_per_100_steps = 100 * sum(coins_collected) / sum(episode_steps)
+```
+
+This rate is zero for a non-empty run with no collected coins. The summary also
+records the zero-coin episode count and rate so that unstable agents cannot hide
+failure episodes behind an aggregate efficiency value.
 
 ### Decision time
 
@@ -347,7 +358,26 @@ The mean of episode percentiles is not a global percentile over every individual
 
 ### Optional learning metrics
 
-Agents may provide:
+In training mode, an agent's `end_of_round` callback may return a mapping of
+numeric episode diagnostics:
+
+```python
+def end_of_round(self, last_game_state, last_action, events):
+    # Update the model and save it as usual.
+    return {
+        "shaped_reward": self.episode_reward,
+        "epsilon": self.epsilon,
+        "q_table_size": len(self.q_table),
+        "mean_abs_td_error": self.mean_abs_td_error,
+    }
+```
+
+The framework stores this mapping below the per-agent `learning_metrics` key in
+`framework_stats.json`. The normalizer copies the supported schema fields into
+`episodes.csv`, after which aggregation and plotting use them without importing
+`training/` from the agent.
+
+The version-one episode schema supports:
 
 - cumulative shaped reward;
 - epsilon;
@@ -356,6 +386,9 @@ Agents may provide:
 
 Missing optional values remain empty. They are never replaced with zero because
 zero is a valid measurement and has a different meaning from unavailable data.
+Metric names must be non-empty strings and values must be finite numbers or
+`None`. Returning `None` from `end_of_round`, as existing agents do, records an
+empty `learning_metrics` object.
 
 ## Reproducibility requirements
 
