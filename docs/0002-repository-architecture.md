@@ -7,9 +7,9 @@ training callbacks and all evaluation-time code inside that folder. Use shared
 root directories only for experiment orchestration, compact results, tests, and
 documentation.
 
-The framework lifecicle documented below is based on th current implementation in "main.py",
-"environment.py" and "agents.py". It must not be inferred from the incomplete "tpl_agent" or
-the intentionally weak team-agent template.
+The framework lifecycle documented below is based on the current implementation
+in `main.py`, `environment.py`, and `agents.py`. It must not be inferred from
+the incomplete `tpl_agent` or the intentionally weak team-agent template.
 
 ## Context
 
@@ -21,12 +21,12 @@ work locally but fail in the tournament.
 
 The architecture must support:
 
- - aelf-contained evaluation
- - reproducible training and evaluation
- - clear separation of training and evaluation behavior
- - correct handling of ordiary and terminal transitions
- - model persistance relative to the agent directory
- - controlled experiments without creating hidden runtime dependencies
+- self-contained evaluation;
+- reproducible training and evaluation;
+- clear separation of training and evaluation behavior;
+- correct handling of ordinary and terminal transitions;
+- model persistence relative to the agent directory; and
+- controlled experiments without creating hidden runtime dependencies.
 
 ## Chosen structure
 
@@ -50,12 +50,13 @@ The exact optional modules can differ by agent. The invariants are:
 - it never requires absolute paths;
 - it does not import evaluation-time code from `training/`, `experiments/`, or
   another agent;
-- its final policy contains no multiprocessing;
+- its final policy contains no multiprocessing; and
 - it loads its trained parameters relative to its own module location.
 
-## Framework agent loadng
+## Framework agent loading
 
-The framework crates an "AgentRunner" for each configured agent. The runner imports:
+The framework creates an `AgentRunner` for each configured agent. The runner
+imports:
 
 ```text
 agent_code.<agent_name>.callbacks
@@ -69,34 +70,36 @@ For a training agent, it additionally imports:
 agent_code.<agent_name>.train
 ```
 
-The runner validates that the importes modules expose the required callbacks with 
-the required number of arguments.
+The runner validates that the imported modules expose the required callbacks
+with the required number of arguments.
 
 The required callbacks are:
 
 ```python
-# callbakcs.py
-def setup(self):...
-def act(self, game_state: dict):...
+# callbacks.py
+def setup(self): ...
+def act(self, game_state: dict): ...
 
 # train.py
-def setup_training(self):...
+def setup_training(self): ...
 
-def game_events_occured(
-  self,
-  old_game_state: dict,
-  self_action: str,
-  new_game_state: dict,
-  events: list[str]):...
+def game_events_occurred(
+    self,
+    old_game_state: dict,
+    self_action: str,
+    new_game_state: dict,
+    events: list[str],
+): ...
 
 def end_of_round(
-  self,
-  last_game_state: dict,
-  last_action: str,
-  event: list[str]):...
+    self,
+    last_game_state: dict,
+    last_action: str,
+    events: list[str],
+): ...
 ```
 
-The runner creates one persistend callback objects and provides it as "self" to 
+The runner creates one persistent callback object and provides it as `self` to
 all callbacks. The framework predefines at least:
 
 ```text
@@ -104,7 +107,7 @@ self.train
 self.logger
 ```
 
-Attributes created in "setup()" or "setup_training()" remain available to later 
+Attributes created in `setup()` or `setup_training()` remain available to later
 callbacks.
 
 The initialization order is:
@@ -117,12 +120,12 @@ import callbacks.py
 -> train.setup_training(self) when training
 ```
 
-"tarin.py" is not imported in evaluation mode. Evaluation code must therefore 
-not depend on side effects, constants, objects, or imports from "train.py".
+`train.py` is not imported in evaluation mode. Evaluation code must therefore
+not depend on side effects, constants, objects, or imports from `train.py`.
 
 ## Evaluation lifecycle
 
-An evaluation agent executes only the callbacks from "callbacks.py".
+An evaluation agent executes only the callbacks from `callbacks.py`.
 
 The lifecycle is:
 
@@ -130,7 +133,7 @@ The lifecycle is:
 callbacks.setup(self)
 
 for each episode:
-  reset framework-owned eisode state
+  reset framework-owned episode state
 
   for each step while the agent is active:
     construct game_state
@@ -141,29 +144,29 @@ for each episode:
 
 Evaluation mode has no access to training events and must not:
 
-- perform exploration intended only for learning
-- update Q-values or other model parameters
-- import "train.py"
-- write or replace the model artifact
-- depend on repository-level training tools
-- use multiprocessing inside the submittes policy
+- perform exploration intended only for learning;
+- update Q-values or other model parameters;
+- import `train.py`;
+- write or replace the model artifact;
+- depend on repository-level training tools; or
+- use multiprocessing inside the submitted policy.
 
-For Task 1, evaluation action selection must use the ordered acton set:
+For Task 1, evaluation action selection must use the ordered action set:
 
 ```text
 UP, RIGHT, DOWN, LEFT, WAIT
 ```
 
-"BOMB" is excluded from th Task 1 baseline and must never be selected.
+`BOMB` is excluded from the Task 1 baseline and must never be selected.
 
-Evaluation tie-bracking must be deterministic or controlled by a documented
-agnet seed. Given the same model artifact, framework revisions, configuration, 
-world seed and agent seed, the action sequence and episode result must be
+Evaluation tie-breaking must be deterministic or controlled by a documented
+agent seed. Given the same model artifact, framework revision, configuration,
+world seed, and agent seed, the action sequence and episode result must be
 reproducible.
 
 ## Training lifecycle
 
-A tarining agent executes callbacks from both "callbacks.py" and "train.py".
+A training agent executes callbacks from both `callbacks.py` and `train.py`.
 
 The high-level lifecycle is:
 
@@ -176,7 +179,7 @@ for each episode:
 
   for each step while the agent is active:
     construct pre-action game_state
-    store it as th wrapper's last_game_state
+    store it as the wrapper's last_game_state
     reset the current event list
     callbacks.act(self, game_state)
     store the returned action as last_action
@@ -185,19 +188,21 @@ for each episode:
     collect resulting events
 
     if the training agent survives the transition:
-      train.game_events_occured(
+      train.game_events_occurred(
         self,
         old_game_state,
         self_action,
         new_game_state,
-        events)
-      
+        events
+      )
+
   add the final survival event for surviving agents
   train.end_of_round(
     self,
     last_game_state,
     last_action,
-    events)
+    events
+  )
 ```
 
 The exact lifecycle is shown below.
@@ -224,8 +229,8 @@ sequenceDiagram
         C-->>A: "return action"
         W->>W: "Execute action and update world"
 
-        alt "Training agent suvivors transition"
-            W->>T: "game_events_occured(old_state, action, new_state, events)"
+        alt "Training agent survives the transition"
+            W->>T: "game_events_occurred(old_state, action, new_state, events)"
         else "Agent dies during transition"
             W->>W: "Keep terminal events for end_of_round"
         end
@@ -244,22 +249,22 @@ used to construct training transitions.
 
 Before requesting an action, the environment:
 
-1. constructs the current `game_state`
-2. stores it in `Agent.last_game_state`
-3. clears the agent's event list
-4. calls `callbacks.act()`
+1. constructs the current `game_state`;
+2. stores it in `Agent.last_game_state`;
+3. clears the agent's event list; and
+4. calls `callbacks.act()`.
 
 After receiving the result, the wrapper stores the returned action in
 `Agent.last_action`.
 
 The environment then:
 
-1. attempts to execute the action
-2. collects coins
-3. advances explosions
-4. advances and detonates bombs
-5. removes killed agents
-6. records the resulting events
+1. attempts to execute the action;
+2. collects coins;
+3. advances explosions;
+4. advances and detonates bombs;
+5. removes killed agents; and
+6. records the resulting events.
 
 For a surviving training agent, the wrapper calls:
 
@@ -275,7 +280,7 @@ game_events_occurred(
 
 Although the wrapper field is named `last_game_state`, it represents the state
 immediately before the action for the transition currently being reported. In
-the training callback it is therefore correctly interpreted as
+the training callback, it is therefore correctly interpreted as
 `old_game_state`.
 
 The ordinary Task 1 data flow is:
@@ -339,12 +344,12 @@ future state key as `None` or use an explicit terminal flag.
 
 If a training agent dies while the environment processes its action:
 
-- the agent is marked dead
-- terminal death events are added
-- `game_events_occurred()` is not called for that transition
-- the final state after death is not passed to the agent
+- the agent is marked dead;
+- terminal death events are added;
+- `game_events_occurred()` is not called for that transition;
+- the final state after death is not passed to the agent; and
 - `end_of_round()` is called with the state before the last action, the last
-  returned action, and the terminal events
+  returned action, and the terminal events.
 
 The death transition must therefore be learned from `end_of_round()`.
 
@@ -391,15 +396,15 @@ how duplicate learning of the last surviving transition is prevented.
 
 Tests for the baseline agent must cover both:
 
-- death on the last action
-- survival when the environment ends the round
+- death on the last action; and
+- survival when the environment ends the round.
 
 ## Timeout and executed-action distinction
 
 `Agent.wait_for_act()` stores the action returned by `callbacks.act()` as
 `last_action`.
 
-If evaluation-time decision making exceeds the available time, the environment
+If evaluation-time decision-making exceeds the available time, the environment
 replaces the action that is actually executed with `WAIT`. The stored
 `last_action` may therefore differ from the executed action in a timeout case:
 
@@ -424,8 +429,8 @@ Agent code must handle initial and terminal values defensively.
 | `new_game_state` | The state after the environment transition | Not supplied to `end_of_round()` |
 | `last_game_state` | Stored before the most recent action | May be `None` if an episode ends before a state/action cycle completes |
 | `last_action` | The most recently returned action | May be `None` if no action was successfully returned |
-| successor feature key | Derived from `new_game_state` | Must be `None` for a terminal update |
-| bootstrap value | `max_a Q(new_state, a)` | Must be zero for a terminal update |
+| Successor feature key | Derived from `new_game_state` | Must be `None` for a terminal update |
+| Bootstrap value | `max_a Q(new_state, a)` | Must be zero for a terminal update |
 
 The normal framework lifecycle stores a game state before calling `act()`.
 Therefore, the first ordinary call to `game_events_occurred()` normally receives
@@ -489,11 +494,11 @@ MODEL_PATH = AGENT_DIRECTORY / "model.npz"
 
 Agent code must not use:
 
-- an absolute machine-specific path
-- the repository root as an assumed working directory
-- the current process working directory
-- a path inside `training/`
-- a path to another agent
+- an absolute machine-specific path;
+- the repository root as an assumed working directory;
+- the current process working directory;
+- a path inside `training/`; or
+- a path to another agent.
 
 Training may write a resumable model artifact. Evaluation must load the selected
 artifact without modifying it.
@@ -501,19 +506,19 @@ artifact without modifying it.
 The saved artifact must contain or be accompanied by all configuration that
 affects evaluation, including:
 
-- action order
-- feature representation version
-- Q-values
-- deterministic tie-breaking configuration
-- any agent seed required for reproducibility
+- action order;
+- feature representation version;
+- Q-values;
+- deterministic tie-breaking configuration; and
+- any agent seed required for reproducibility.
 
 Persistence tests must verify:
 
-- save/load round trips
-- evaluation-relevant configuration preservation
-- relative-path behavior
-- deterministic loading
-- byte-for-byte non-mutation during evaluation
+- save/load round trips;
+- evaluation-relevant configuration preservation;
+- relative-path behavior;
+- deterministic loading; and
+- byte-for-byte non-mutation during evaluation.
 
 ## Logging and training metrics
 
@@ -522,11 +527,11 @@ diagnostics and avoid excessive step-level output during long runs.
 
 Training-only metrics may include:
 
-- cumulative shaped reward
-- epsilon
-- Q-table size
-- visited-state count
-- mean absolute temporal-difference error
+- cumulative shaped reward;
+- epsilon;
+- Q-table size;
+- visited-state count; and
+- mean absolute temporal-difference error.
 
 These values may be exported to the repository-level experiment pipeline, but
 evaluation-time code must not import from `training/`.
@@ -543,7 +548,7 @@ than one agent or is not shipped:
 - hyperparameter sweep definitions;
 - multi-seed experiment runners;
 - optional parallel training orchestration;
-- plotting and aggregation tools;
+- plotting and aggregation tools; and
 - compute-environment notes.
 
 This code may call the framework and agent training callbacks, but evaluation
@@ -557,7 +562,8 @@ Commit compact and useful scientific evidence:
 - configuration files;
 - small CSV or JSON summaries;
 - final plots used for decisions;
-- conclusions and links to the implementing commit.
+- conclusions; and
+- links to the implementing commit.
 
 Do not commit raw logs, replay collections, temporary checkpoints, or very large
 training artifacts. Store those externally and record their location and
@@ -611,8 +617,8 @@ Framework changes may support faster training or custom scenarios, but:
 - isolate and document them;
 - never assume they exist in official evaluation;
 - retest trained agents against an unchanged upstream framework;
-- record the upstream framework commit used by the experiment.
-- avoid placing evaluation-critical behavior only in modified framework code
+- record the upstream framework commit used by the experiment; and
+- avoid placing evaluation-critical behavior only in modified framework code.
 
 ## Alternatives considered
 
