@@ -136,11 +136,32 @@ for each episode:
   reset framework-owned episode state
 
   for each step while the agent is active:
-    construct game_state
-    callbacks.act(self, game_state)
-    execute the selected action
+    construct and store the current game_state
+    reset the current events
+
+    if available_think_time > 0:
+      callbacks.act(self, game_state)
+      store the returned action as last_action
+
+      if the decision exceeds the available time:
+        execute WAIT instead
+        reduce the available time for the next step
+      else:
+        execute the returned action
+        reset the available time
+    else:
+      skip callbacks.act()
+      execute WAIT
+      recover part of the available time
+      keep last_action unchanged
+
     update the environment
 ```
+
+When `callbacks.act()` is skipped because no thinking time is available, the
+framework still stores the newly constructed game state and resets the current
+events. It then executes `WAIT` while keeping the action most recently returned
+successfully by `callbacks.act()` in `last_action`.
 
 Evaluation mode has no access to training events and must not:
 
@@ -383,26 +404,44 @@ terminal status is known:
 
 ```text
 game_events_occurred:
-    finalize the previous pending ordinary transition
-    store the current transition as pending
+    if a previous transition is pending:
+        finalize it as an ordinary transition with bootstrapping
+    store the current surviving transition as pending
 
 end_of_round:
-    identify whether the callback refers to the pending transition
-    finalize that transition exactly once as terminal
+    if last_game_state and last_action refer to the pending transition:
+        finalize the pending transition exactly once as terminal
+        do not bootstrap from a successor state
+    else:
+        if a pending transition exists:
+            finalize it as an ordinary transition with bootstrapping
+        if last_game_state and last_action are available:
+            finalize the callback's death transition as terminal
+            do not bootstrap from a successor state
 ```
+
+This distinction is important when an agent dies. The last
+`game_events_occurred()` callback may describe the previous surviving
+transition, while `end_of_round()` describes a separate transition containing
+the action that caused the agent's death. In that case, the previous pending
+transition must be finalized ordinarily before the death transition is finalized
+as terminal.
 
 Equivalent implementations are allowed, but the agent must document and test
 how duplicate learning of the last surviving transition is prevented.
 
-Tests for the baseline agent must cover both:
+Tests for the baseline agent must verify both cases:
 
-- death on the last action; and
-- survival when the environment ends the round.
+- When the agent survives the round, the final transition produces exactly one
+  terminal update without bootstrapping.
+- When the agent dies after a previous surviving transition, the previous
+  transition produces one ordinary update with bootstrapping and the death
+  transition produces one terminal update without bootstrapping.
 
 ## Timeout and executed-action distinction
 
-`Agent.wait_for_act()` stores the action returned by `callbacks.act()` as
-`last_action`.
+When sufficient thinking time remains, `Agent.wait_for_act()` stores the action
+returned by `callbacks.act()` as `last_action`.
 
 If evaluation-time decision-making exceeds the available time, the environment
 replaces the action that is actually executed with `WAIT`. The stored
@@ -412,6 +451,22 @@ replaces the action that is actually executed with `WAIT`. The stored
 last_action = action returned by the agent
 executed action = WAIT
 ```
+
+The time overrun also reduces the thinking time available during the following
+step. If `available_think_time` is then zero or negative, the framework:
+
+```text
+constructs and stores the new game_state
+-> resets the current events
+-> skips callbacks.act()
+-> executes WAIT
+-> keeps the previous last_action unchanged
+-> recovers part of the available thinking time
+```
+
+Therefore, on a step where `callbacks.act()` is skipped, `last_game_state` may
+refer to the new step while `last_action` still refers to the most recent action
+successfully returned by the agent.
 
 Training callbacks normally have an unlimited framework timeout, so this edge
 case is primarily relevant to evaluation diagnostics. Evaluation must remain
