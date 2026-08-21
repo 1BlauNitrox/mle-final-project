@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -56,6 +57,7 @@ def run_experiment(
     )
     episodes_path = run_directory / "episodes.csv"
     summary_path = run_directory / "summary.json"
+    observed_agent = _framework_agent_name(agent, opponents)
 
     command = _build_game_command(
         agent=agent,
@@ -71,12 +73,14 @@ def run_experiment(
         "schema_version": SCHEMA_VERSION,
         "run_id": run_id,
         "agent": agent,
+        "observed_agent": observed_agent,
         "mode": mode,
         "scenario": scenario,
         "opponents": opponents,
         "rounds": rounds,
         "world_seed": world_seed,
         "agent_seed": agent_seed,
+        "agent_configuration": _agent_configuration_reference(agent),
         "command": command,
         "git_commit": _git_commit(),
         "git_dirty": _git_is_dirty(),
@@ -131,6 +135,7 @@ def run_experiment(
         aggregate_episodes_csv(
             input_path=episodes_path,
             output_path=summary_path,
+            observed_agent=observed_agent,
         )
 
         metadata["status"] = "completed"
@@ -238,6 +243,45 @@ def _safe_identifier(value: str) -> str:
     )
     parts = [part for part in cleaned.split("-") if part]
     return "-".join(parts) or "unnamed"
+
+
+def _framework_agent_name(agent: str, opponents: list[str]) -> str:
+    """Return the observed agent name used in framework statistics."""
+    return f"{agent}_0" if agent in opponents else agent
+
+
+def _agent_configuration_reference(agent: str) -> dict[str, str | None]:
+    """Fingerprint the agent directory before the run starts."""
+    agent_directory = REPOSITORY_ROOT / "agent_code" / agent
+    relative_directory = Path("agent_code") / agent
+
+    if not agent_directory.is_dir():
+        return {
+            "path": relative_directory.as_posix(),
+            "sha256": None,
+        }
+
+    digest = hashlib.sha256()
+    ignored_parts = {"__pycache__", "logs"}
+
+    for path in sorted(agent_directory.rglob("*")):
+        relative_path = path.relative_to(agent_directory)
+        if (
+            not path.is_file()
+            or ignored_parts.intersection(relative_path.parts)
+            or path.suffix == ".pyc"
+        ):
+            continue
+
+        digest.update(relative_path.as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+
+    return {
+        "path": relative_directory.as_posix(),
+        "sha256": digest.hexdigest(),
+    }
 
 
 def _git_commit() -> str:

@@ -17,6 +17,7 @@ CSV_COLUMNS = (
     "agent",
     "mode",
     "episode_steps",
+    "survival_steps",
     "score",
     "coins_collected",
     "invalid_actions",
@@ -42,7 +43,8 @@ CSV_COLUMNS = (
 REQUIRED_AGENT_FIELDS = (
     "score",
     "coins",
-    "steps",
+    "episode_steps",
+    "survival_steps",
     "invalid",
     "attempted_actions",
     "action_up",
@@ -199,11 +201,22 @@ def _normalize_agent_episode(
         )
 
     episode_steps = _non_negative_int(
-        statistics["steps"],
-        field="steps",
+        statistics["episode_steps"],
+        field="episode_steps",
         round_number=round_number,
         agent_name=agent_name,
     )
+    survival_steps = _non_negative_int(
+        statistics["survival_steps"],
+        field="survival_steps",
+        round_number=round_number,
+        agent_name=agent_name,
+    )
+    if survival_steps > episode_steps:
+        raise ValueError(
+            f"Survival steps exceed episode steps for agent "
+            f"{agent_name!r} in round {round_number}"
+        )
     attempted_actions = _non_negative_int(
         statistics["attempted_actions"],
         field="attempted_actions",
@@ -261,6 +274,7 @@ def _normalize_agent_episode(
         "agent": agent_name,
         "mode": mode,
         "episode_steps": episode_steps,
+        "survival_steps": survival_steps,
         "score": _integer(
             statistics["score"],
             field="score",

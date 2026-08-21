@@ -16,6 +16,7 @@ REQUIRED_COLUMNS = {
     "agent",
     "mode",
     "episode_steps",
+    "survival_steps",
     "score",
     "coins_collected",
     "invalid_actions",
@@ -47,6 +48,7 @@ INTEGER_COLUMNS = (
     "schema_version",
     "round",
     "episode_steps",
+    "survival_steps",
     "score",
     "coins_collected",
     "invalid_actions",
@@ -100,6 +102,8 @@ def read_episodes_csv(path: Path) -> list[dict[str, Any]]:
 
 def aggregate_episode_rows(
     rows: Iterable[Mapping[str, Any]],
+    *,
+    observed_agent: str | None = None,
 ) -> dict[str, Any]:
     """Aggregate episode rows overall and separately for each agent."""
     materialized_rows = [dict(row) for row in rows]
@@ -116,11 +120,23 @@ def aggregate_episode_rows(
             )
         rows_by_agent[agent].append(row)
 
+    if observed_agent is None:
+        if len(rows_by_agent) != 1:
+            raise ValueError(
+                "Observed agent is required when aggregating multiple agents"
+            )
+        observed_agent = next(iter(rows_by_agent))
+    elif observed_agent not in rows_by_agent:
+        raise ValueError(
+            f"Observed agent {observed_agent!r} has no episode rows"
+        )
+
     return {
         "schema_version": SCHEMA_VERSION,
         "episode_rows": len(materialized_rows),
         "agents": sorted(rows_by_agent),
-        "overall": _aggregate_group(materialized_rows),
+        "observed_agent": observed_agent,
+        "overall": _aggregate_group(rows_by_agent[observed_agent]),
         "by_agent": {
             agent: _aggregate_group(agent_rows)
             for agent, agent_rows in sorted(rows_by_agent.items())
@@ -148,10 +164,15 @@ def write_summary_json(
 def aggregate_episodes_csv(
     input_path: Path,
     output_path: Path,
+    *,
+    observed_agent: str | None = None,
 ) -> dict[str, Any]:
     """Read episodes.csv, aggregate it, and write summary.json."""
     rows = read_episodes_csv(input_path)
-    summary = aggregate_episode_rows(rows)
+    summary = aggregate_episode_rows(
+        rows,
+        observed_agent=observed_agent,
+    )
     write_summary_json(summary, output_path)
     return summary
 
@@ -164,6 +185,7 @@ def _aggregate_group(
 
     total_coins = sum(row["coins_collected"] for row in rows)
     total_steps = sum(row["episode_steps"] for row in rows)
+    total_survival_steps = sum(row["survival_steps"] for row in rows)
     zero_coin_episodes = sum(
         1 for row in rows if row["coins_collected"] == 0
     )
@@ -202,13 +224,13 @@ def _aggregate_group(
         termination_counts[row["termination_reason"]] += 1
 
     steps_per_coin = (
-        total_steps / total_coins
+        total_survival_steps / total_coins
         if total_coins > 0
         else None
     )
     coins_per_100_steps = (
-        100 * total_coins / total_steps
-        if total_steps > 0
+        100 * total_coins / total_survival_steps
+        if total_survival_steps > 0
         else None
     )
 
@@ -230,6 +252,12 @@ def _aggregate_group(
             "total": total_steps,
             "mean": fmean(
                 row["episode_steps"] for row in rows
+            ),
+        },
+        "survival_steps": {
+            "total": total_survival_steps,
+            "mean": fmean(
+                row["survival_steps"] for row in rows
             ),
         },
         "steps_per_coin": {

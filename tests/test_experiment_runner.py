@@ -78,6 +78,37 @@ class ExperimentCommandTests(unittest.TestCase):
 
         self.assertNotIn("--seed", command)
 
+    def test_duplicate_agent_uses_framework_instance_name(self) -> None:
+        self.assertEqual(
+            "random_agent_0",
+            runner._framework_agent_name(
+                "random_agent",
+                ["random_agent"],
+            ),
+        )
+
+
+class AgentConfigurationReferenceTests(unittest.TestCase):
+    def test_fingerprint_changes_with_agent_configuration(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            agent_directory = root / "agent_code" / "test_agent"
+            agent_directory.mkdir(parents=True)
+            configuration = agent_directory / "config.py"
+            configuration.write_text("EPSILON = 0.5\n", encoding="utf-8")
+
+            with patch.object(runner, "REPOSITORY_ROOT", root):
+                first = runner._agent_configuration_reference("test_agent")
+                configuration.write_text(
+                    "EPSILON = 0.2\n",
+                    encoding="utf-8",
+                )
+                second = runner._agent_configuration_reference("test_agent")
+
+        self.assertEqual("agent_code/test_agent", first["path"])
+        self.assertEqual(64, len(first["sha256"] or ""))
+        self.assertNotEqual(first["sha256"], second["sha256"])
+
 
 class ExperimentRunnerTests(unittest.TestCase):
     def test_training_agent_metrics_reach_framework_csv_and_summary(
@@ -266,12 +297,25 @@ class ExperimentRunnerTests(unittest.TestCase):
         self.assertIsNone(metadata["error"])
         self.assertEqual("a" * 40, metadata["git_commit"])
         self.assertFalse(metadata["git_dirty"])
+        self.assertEqual("random_agent", metadata["observed_agent"])
+        self.assertEqual(
+            "agent_code/random_agent",
+            metadata["agent_configuration"]["path"],
+        )
+        self.assertEqual(
+            64,
+            len(metadata["agent_configuration"]["sha256"]),
+        )
         self.assertIsInstance(
             metadata["duration_seconds"],
             float,
         )
         normalize.assert_called_once()
-        aggregate.assert_called_once()
+        aggregate.assert_called_once_with(
+            input_path=run_directory / "episodes.csv",
+            output_path=run_directory / "summary.json",
+            observed_agent="random_agent",
+        )
 
     def test_process_failure_writes_failed_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from training.metrics import write_episodes_csv
 from training.plot_run import _rolling_mean, plot_run
@@ -22,6 +24,7 @@ def make_episode_row(
         "agent": "random_agent",
         "mode": "evaluation",
         "episode_steps": 10,
+        "survival_steps": 10,
         "score": 2,
         "coins_collected": 2,
         "invalid_actions": 1,
@@ -50,14 +53,22 @@ def make_episode_row(
 def create_run_directory(
     parent: Path,
     rows: list[dict[str, object]],
+    *,
+    observed_agent: str | None = None,
 ) -> Path:
-    """Create a temporary run directory containing episodes.csv."""
+    """Create a temporary run directory containing run artifacts."""
     run_directory = parent / "test-run"
     run_directory.mkdir()
 
     write_episodes_csv(
         rows,
         run_directory / "episodes.csv",
+    )
+    (run_directory / "metadata.json").write_text(
+        json.dumps(
+            {"observed_agent": observed_agent or rows[0]["agent"]}
+        ),
+        encoding="utf-8",
     )
 
     return run_directory
@@ -221,6 +232,7 @@ class ExperimentPlottingTests(unittest.TestCase):
             run_directory = create_run_directory(
                 root,
                 rows,
+                observed_agent="first_agent",
             )
 
             output_paths = plot_run(run_directory)
@@ -230,9 +242,36 @@ class ExperimentPlottingTests(unittest.TestCase):
                 all(path.is_file() for path in output_paths)
             )
 
+    def test_behavior_plot_contains_only_the_observed_agent(self) -> None:
+        rows = [
+            make_episode_row(agent="first_agent"),
+            make_episode_row(agent="second_agent"),
+        ]
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            run_directory = create_run_directory(
+                Path(temporary_directory),
+                rows,
+                observed_agent="first_agent",
+            )
+
+            with patch(
+                "training.plot_run._plot_behavior_diagnostics",
+                return_value=run_directory / "behavior.png",
+            ) as behavior_plot:
+                plot_run(run_directory)
+
+        plotted_rows, plotted_groups, _ = behavior_plot.call_args.args
+        self.assertEqual(
+            {"first_agent"},
+            {row["agent"] for row in plotted_rows},
+        )
+        self.assertEqual(["first_agent"], list(plotted_groups))
+
     def test_missing_invalid_action_rate_is_supported(self) -> None:
         row = make_episode_row(
             episode_steps=0,
+            survival_steps=0,
             invalid_actions=0,
             attempted_actions=0,
             invalid_action_rate=None,

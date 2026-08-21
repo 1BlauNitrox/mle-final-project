@@ -136,6 +136,7 @@ class Agent:
         # Individual act() durations for this episode, measured in seconds.
         self.decision_times = []
         self.learning_metrics = {}
+        self.survival_steps = 0
 
     @property
     def base_timeout(self):
@@ -184,7 +185,6 @@ class Agent:
         action, think_time = self.backend.get_with_time("act")
 
         self.note_stat("time", think_time)
-        self.note_stat("steps")
         self.note_stat("attempted_actions")
 
         if action in {"UP", "DOWN", "LEFT", "RIGHT", "WAIT", "BOMB"}:

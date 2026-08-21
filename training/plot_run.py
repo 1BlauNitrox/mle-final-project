@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from collections import defaultdict
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -46,6 +47,12 @@ def plot_run(
 
     rows = read_episodes_csv(episodes_path)
     rows_by_agent = _group_rows_by_agent(rows)
+    observed_agent = _load_observed_agent(run_directory)
+    if observed_agent not in rows_by_agent:
+        raise ValueError(
+            f"Observed agent {observed_agent!r} has no episode rows"
+        )
+    observed_rows = rows_by_agent[observed_agent]
 
     figures_directory = run_directory / "figures"
     figures_directory.mkdir(parents=True, exist_ok=True)
@@ -61,13 +68,28 @@ def plot_run(
             figures_directory / "task_metrics.png",
         ),
         _plot_behavior_diagnostics(
-            rows,
-            rows_by_agent,
+            observed_rows,
+            {observed_agent: observed_rows},
             figures_directory / "behavior_diagnostics.png",
         ),
     ]
 
     return output_paths
+
+
+def _load_observed_agent(run_directory: Path) -> str:
+    """Read the observed agent name from run metadata."""
+    metadata_path = run_directory / "metadata.json"
+    if not metadata_path.is_file():
+        raise FileNotFoundError(f"Run metadata do not exist: {metadata_path}")
+
+    with metadata_path.open(encoding="utf-8") as file:
+        metadata = json.load(file)
+
+    observed_agent = metadata.get("observed_agent", metadata.get("agent"))
+    if not isinstance(observed_agent, str) or not observed_agent:
+        raise ValueError("Run metadata contain no valid observed agent")
+    return observed_agent
 
 
 def _plot_learning_curve(

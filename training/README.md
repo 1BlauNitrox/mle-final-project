@@ -166,8 +166,8 @@ python -m training.plot_run \
   --rolling-window 20
 ```
 
-The plotting command reads only `episodes.csv`. It does not rerun the game or
-modify the recorded metrics.
+The plotting command reads `episodes.csv` and the observed-agent name from
+`metadata.json`. It does not rerun the game or modify the recorded metrics.
 
 Running the plotting command again replaces only the generated files below
 `figures/`.
@@ -262,8 +262,9 @@ creates the `figures/` directory.
 
 ### `metadata.json`
 
-Contains the command, configuration, seeds, Git revision, dirty-worktree
-indicator, Python version, timing, process status, and return code.
+Contains the command, observed agent, agent-directory fingerprint, seeds, Git
+revision, dirty-worktree indicator, Python version, timing, process status, and
+return code.
 
 ### `framework_stats.json`
 
@@ -272,12 +273,13 @@ is retained as the source record used by normalization.
 
 ### `episodes.csv`
 
-Contains one normalized row per observed agent and episode. It is the stable
-input for aggregation and plotting.
+Contains one normalized row per participating agent and episode. It is the
+stable input for aggregation and plotting.
 
 ### `summary.json`
 
-Contains overall and per-agent aggregates, including:
+Contains observed-agent aggregates under `overall` and separate aggregates for
+every participant under `by_agent`, including:
 
 - coins and score;
 - episode length, steps per coin, and coins per 100 steps;
@@ -297,8 +299,9 @@ Shows episode length and invalid-action rate.
 
 ### `figures/behavior_diagnostics.png`
 
-Shows the action distribution and, when available, learning diagnostics such as
-epsilon, Q-table size, and mean absolute temporal-difference error.
+Shows the observed agent's action distribution and, when available, learning
+diagnostics such as epsilon, Q-table size, and mean absolute temporal-difference
+error.
 
 ## Metric interpretation
 
@@ -325,7 +328,7 @@ It is not the unweighted mean of episode-level rates.
 The aggregate diagnostic uses the ratio of totals:
 
 ```text
-sum(episode_steps) / sum(coins_collected)
+sum(survival_steps) / sum(coins_collected)
 ```
 
 Zero-coin episodes contribute all of their steps to the numerator without
@@ -335,7 +338,7 @@ coins, the value is unavailable and stored as JSON `null`.
 For plotting and direct comparisons, the summary also reports:
 
 ```text
-coins_per_100_steps = 100 * sum(coins_collected) / sum(episode_steps)
+coins_per_100_steps = 100 * sum(coins_collected) / sum(survival_steps)
 ```
 
 This rate is zero for a non-empty run with no collected coins. The summary also
@@ -396,6 +399,7 @@ A run is not reproducible unless its record identifies:
 
 - the Git commit;
 - whether the worktree was dirty;
+- the agent-directory path and content hash;
 - the exact command;
 - the agent and mode;
 - the scenario and opponents;
@@ -481,12 +485,14 @@ following fields:
 | `schema_version` | integer | Version of the experiment-output schema. The initial version is `1`. |
 | `run_id` | string | Unique identifier of the run. |
 | `agent` | string | Name of the observed agent below `agent_code/`. |
+| `observed_agent` | string | Runtime name used for the first agent in framework statistics. This includes the `_0` suffix when the same agent type also appears as an opponent. |
 | `mode` | string | Either `training` or `evaluation`. |
 | `scenario` | string | Bomberman scenario used for the run, for example `coin-heaven`. |
 | `opponents` | array of strings | Ordered list of opposing agents. Empty when the observed agent plays alone. |
 | `rounds` | integer | Number of requested episodes. |
 | `world_seed` | integer or null | Seed passed to the Bomberman environment. |
 | `agent_seed` | integer or null | Seed controlling agent-side randomness, when available. |
+| `agent_configuration` | object | Agent-directory path and SHA-256 content hash captured before the run. |
 | `command` | array of strings | Exact command and arguments used to start the game. |
 | `git_commit` | string | Full Git commit SHA from which the run was launched. |
 | `git_dirty` | boolean | Whether the worktree contained uncommitted changes when the run started. |
@@ -508,12 +514,17 @@ Example:
   "schema_version": 1,
   "run_id": "2026-08-19T143000Z-random-agent-coin-heaven",
   "agent": "random_agent",
+  "observed_agent": "random_agent",
   "mode": "evaluation",
   "scenario": "coin-heaven",
   "opponents": [],
   "rounds": 5,
   "world_seed": 1,
   "agent_seed": null,
+  "agent_configuration": {
+    "path": "agent_code/random_agent",
+    "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
   "command": [
     "python",
     "main.py",
@@ -540,7 +551,7 @@ Example:
 
 ### Episode metrics
 
-The file `episodes.csv` contains one row per observed agent and episode. Its
+The file `episodes.csv` contains one row per participating agent and episode. Its
 required columns are:
 
 | Column | Type | Description |
@@ -549,7 +560,8 @@ required columns are:
 | `round` | integer | One-based episode number. |
 | `agent` | string | Name of the observed agent. |
 | `mode` | string | Either `training` or `evaluation`. |
-| `episode_steps` | integer | Number of actions attempted during the episode. |
+| `episode_steps` | integer | Total environment steps in the episode. |
+| `survival_steps` | integer | Environment step on which the agent died, or the total episode steps when it survived. |
 | `score` | integer | Environment score obtained during the episode. |
 | `coins_collected` | integer | Number of coins collected during the episode. |
 | `invalid_actions` | integer | Number of actions rejected by the environment. |

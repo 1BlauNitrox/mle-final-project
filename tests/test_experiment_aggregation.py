@@ -25,6 +25,7 @@ def make_episode_row(
         "agent": "random_agent",
         "mode": "evaluation",
         "episode_steps": 10,
+        "survival_steps": 10,
         "score": 2,
         "coins_collected": 2,
         "invalid_actions": 1,
@@ -194,7 +195,10 @@ class ExperimentAggregationTests(unittest.TestCase):
             ),
         ]
 
-        summary = aggregate_episode_rows(rows)
+        summary = aggregate_episode_rows(
+            rows,
+            observed_agent="first_agent",
+        )
 
         self.assertEqual(
             ["first_agent", "second_agent"],
@@ -208,6 +212,17 @@ class ExperimentAggregationTests(unittest.TestCase):
             5.0,
             summary["by_agent"]["second_agent"]["score"]["mean"],
         )
+        self.assertEqual("first_agent", summary["observed_agent"])
+        self.assertEqual(2.0, summary["overall"]["score"]["mean"])
+
+    def test_multiple_agents_require_an_observed_agent(self) -> None:
+        rows = [
+            make_episode_row(agent="first_agent"),
+            make_episode_row(agent="second_agent"),
+        ]
+
+        with self.assertRaisesRegex(ValueError, "Observed agent is required"):
+            aggregate_episode_rows(rows)
 
     def test_aggregates_decision_times(self) -> None:
         rows = [
@@ -305,11 +320,13 @@ class ExperimentAggregationTests(unittest.TestCase):
         rows = [
             make_episode_row(
                 episode_steps=20,
+                survival_steps=20,
                 coins_collected=0,
             ),
             make_episode_row(
                 round=2,
                 episode_steps=20,
+                survival_steps=20,
                 coins_collected=4,
             ),
         ]

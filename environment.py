@@ -159,6 +159,8 @@ class GenericWorld:
         assert self.running
 
         self.step += 1
+        for agent in self.active_agents:
+            agent.survival_steps = self.step
         self.logger.info(f'STARTING STEP {self.step}')
 
         self.user_input = user_input
@@ -301,7 +303,8 @@ class GenericWorld:
                 "coins": a.statistics.get("coins", 0),
                 "kills": a.statistics.get("kills", 0),
                 "suicides": a.statistics.get("suicides", 0),
-                "steps": a.statistics.get("steps", 0),
+                "episode_steps": self.step,
+                "survival_steps": a.survival_steps,
                 "invalid": a.statistics.get("invalid", 0),
                 "attempted_actions": a.statistics.get("attempted_actions", 0),
                 "action_up": a.statistics.get("action_up", 0),
