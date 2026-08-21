@@ -89,9 +89,23 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(2, row["coins_collected"])
         self.assertEqual(1, row["invalid_actions"])
         self.assertEqual(6, row["attempted_actions"])
+        self.assertEqual(0, row["action_unknown"])
         self.assertAlmostEqual(1 / 6, row["invalid_action_rate"])
         self.assertTrue(row["survived"])
         self.assertEqual("step_limit", row["termination_reason"])
+
+    def test_preserves_unknown_action_count(self) -> None:
+        rows = normalize_episode_rows(
+            make_framework_statistics(
+                agent_statistics=make_agent_statistics(
+                    attempted_actions=7,
+                    action_unknown=1,
+                )
+            ),
+            mode="evaluation",
+        )
+
+        self.assertEqual(1, rows[0]["action_unknown"])
 
     def test_accepts_framework_round_identifier(self) -> None:
         statistics = make_framework_statistics(
@@ -318,6 +332,7 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(1, len(written_rows))
         self.assertEqual("", written_rows[0]["epsilon"])
         self.assertEqual("", written_rows[0]["q_table_size"])
+        self.assertEqual("0", written_rows[0]["action_unknown"])
         self.assertEqual(
             "evaluation",
             written_rows[0]["mode"],

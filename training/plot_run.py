@@ -21,6 +21,7 @@ ACTION_COLUMNS = (
     "action_left",
     "action_wait",
     "action_bomb",
+    "action_unknown",
 )
 
 ACTION_LABELS = (
@@ -30,6 +31,7 @@ ACTION_LABELS = (
     "LEFT",
     "WAIT",
     "BOMB",
+    "UNKNOWN",
 )
 
 

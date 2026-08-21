@@ -31,6 +31,7 @@ CSV_COLUMNS = (
     "action_left",
     "action_wait",
     "action_bomb",
+    "action_unknown",
     "decision_time_median_ms",
     "decision_time_p95_ms",
     "decision_time_max_ms",
@@ -303,6 +304,7 @@ def _normalize_agent_episode(
             agent_name=agent_name,
         ),
         **action_counts,
+        "action_unknown": unknown_actions,
         "decision_time_median_ms": _optional_number(
             statistics["decision_time_median_ms"],
             field="decision_time_median_ms",

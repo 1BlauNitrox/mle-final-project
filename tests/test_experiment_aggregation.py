@@ -39,6 +39,7 @@ def make_episode_row(
         "action_left": 2,
         "action_wait": 1,
         "action_bomb": 1,
+        "action_unknown": 0,
         "decision_time_median_ms": 0.2,
         "decision_time_p95_ms": 0.5,
         "decision_time_max_ms": 0.8,
@@ -52,6 +53,18 @@ def make_episode_row(
 
 
 class ExperimentAggregationTests(unittest.TestCase):
+    def assert_csv_row_rejected(
+        self,
+        message: str,
+        **overrides: object,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "episodes.csv"
+            write_episodes_csv([make_episode_row(**overrides)], path)
+
+            with self.assertRaisesRegex(ValueError, message):
+                read_episodes_csv(path)
+
     def test_aggregates_multiple_episodes(self) -> None:
         rows = [
             make_episode_row(
@@ -139,14 +152,17 @@ class ExperimentAggregationTests(unittest.TestCase):
             self.assertIsNone(value)
 
     def test_aggregates_action_counts_and_distribution(self) -> None:
-        row = make_episode_row()
+        row = make_episode_row(
+            action_bomb=0,
+            action_unknown=1,
+        )
 
         summary = aggregate_episode_rows([row])
         actions = summary["overall"]["actions"]
 
         self.assertEqual(2, actions["totals"]["action_up"])
         self.assertEqual(1, actions["totals"]["action_wait"])
-        self.assertEqual(1, actions["totals"]["action_bomb"])
+        self.assertEqual(1, actions["totals"]["action_unknown"])
         self.assertAlmostEqual(
             0.2,
             actions["distribution"]["action_up"],
@@ -154,6 +170,10 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertAlmostEqual(
             0.1,
             actions["distribution"]["action_wait"],
+        )
+        self.assertAlmostEqual(
+            1.0,
+            sum(actions["distribution"].values()),
         )
 
     def test_aggregates_survival_and_termination_reasons(self) -> None:
@@ -374,7 +394,10 @@ class ExperimentAggregationTests(unittest.TestCase):
 
     def test_reads_and_aggregates_csv_file(self) -> None:
         rows = [
-            make_episode_row(),
+            make_episode_row(
+                action_bomb=0,
+                action_unknown=1,
+            ),
             make_episode_row(
                 round=2,
                 score=4,
@@ -396,6 +419,7 @@ class ExperimentAggregationTests(unittest.TestCase):
             )
 
             self.assertEqual(2, len(parsed_rows))
+            self.assertEqual(1, parsed_rows[0]["action_unknown"])
             self.assertTrue(output_path.is_file())
 
         self.assertEqual(2, summary["episode_rows"])
@@ -475,6 +499,51 @@ class ExperimentAggregationTests(unittest.TestCase):
                 "more survival steps than episode steps",
             ):
                 read_episodes_csv(path)
+
+    def test_negative_csv_counters_are_rejected(self) -> None:
+        columns = (
+            "episode_steps",
+            "survival_steps",
+            "coins_collected",
+            "invalid_actions",
+            "attempted_actions",
+            "action_up",
+            "action_unknown",
+            "q_table_size",
+        )
+
+        for column in columns:
+            with self.subTest(column=column):
+                self.assert_csv_row_rejected(
+                    "negative",
+                    **{column: -1},
+                )
+
+    def test_invalid_actions_cannot_exceed_attempts_in_csv(self) -> None:
+        self.assert_csv_row_rejected(
+            "more invalid actions than attempted actions",
+            invalid_actions=11,
+        )
+
+    def test_action_counts_must_match_attempts_in_csv(self) -> None:
+        self.assert_csv_row_rejected(
+            "action counts totaling",
+            action_unknown=1,
+        )
+
+    def test_non_finite_csv_numbers_are_rejected(self) -> None:
+        cases = (
+            ("decision_time_max_ms", float("inf")),
+            ("epsilon", float("-inf")),
+            ("mean_abs_td_error", float("nan")),
+        )
+
+        for column, value in cases:
+            with self.subTest(column=column, value=value):
+                self.assert_csv_row_rejected(
+                    "non-finite number",
+                    **{column: value},
+                )
 
 
 if __name__ == "__main__":

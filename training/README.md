@@ -582,6 +582,7 @@ required columns are:
 | `action_left` | integer | Number of attempted `LEFT` actions. |
 | `action_wait` | integer | Number of attempted `WAIT` actions. |
 | `action_bomb` | integer | Number of attempted `BOMB` actions. |
+| `action_unknown` | integer | Number of attempted actions outside the six supported action names. |
 | `decision_time_median_ms` | number or empty | Median wall-clock duration of `act()` calls in milliseconds. |
 | `decision_time_p95_ms` | number or empty | 95th percentile of `act()` durations in milliseconds. |
 | `decision_time_max_ms` | number or empty | Maximum `act()` duration in milliseconds. |
@@ -632,10 +633,13 @@ attempted_actions =
     + action_left
     + action_wait
     + action_bomb
+    + action_unknown
 ```
 
 A mismatch indicates incomplete instrumentation or malformed input and must be
 reported during schema validation.
+Stored counters must be non-negative, invalid actions cannot exceed attempted
+actions, and stored numeric measurements must be finite.
 
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1

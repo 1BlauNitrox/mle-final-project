@@ -38,6 +38,7 @@ def make_episode_row(
         "action_left": 2,
         "action_wait": 1,
         "action_bomb": 1,
+        "action_unknown": 0,
         "decision_time_median_ms": 0.2,
         "decision_time_p95_ms": 0.5,
         "decision_time_max_ms": 0.8,

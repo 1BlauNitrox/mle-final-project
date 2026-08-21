@@ -4,6 +4,7 @@ import csv
 import json
 from collections import defaultdict
 from collections.abc import Iterable, Mapping
+from math import isfinite
 from pathlib import Path
 from statistics import fmean
 from typing import Any
@@ -30,6 +31,7 @@ REQUIRED_COLUMNS = {
     "action_left",
     "action_wait",
     "action_bomb",
+    "action_unknown",
     "decision_time_median_ms",
     "decision_time_p95_ms",
     "decision_time_max_ms",
@@ -42,6 +44,7 @@ ACTION_COLUMNS = (
     "action_left",
     "action_wait",
     "action_bomb",
+    "action_unknown",
 )
 
 INTEGER_COLUMNS = (
@@ -68,6 +71,16 @@ OPTIONAL_FLOAT_COLUMNS = (
 
 OPTIONAL_INTEGER_COLUMNS = (
     "q_table_size",
+)
+
+NON_NEGATIVE_INTEGER_COLUMNS = (
+    "episode_steps",
+    "survival_steps",
+    "coins_collected",
+    "invalid_actions",
+    "attempted_actions",
+    *ACTION_COLUMNS,
+    *OPTIONAL_INTEGER_COLUMNS,
 )
 
 
@@ -366,10 +379,31 @@ def _parse_csv_row(
             f"{parsed['schema_version']!r}"
         )
 
+    for column in NON_NEGATIVE_INTEGER_COLUMNS:
+        value = parsed[column]
+        if value is not None and value < 0:
+            raise ValueError(
+                f"CSV row {row_number} contains negative "
+                f"{column!r}: {value!r}"
+            )
+
     if parsed["survival_steps"] > parsed["episode_steps"]:
         raise ValueError(
             f"CSV row {row_number} has more survival steps than "
             "episode steps"
+        )
+
+    if parsed["invalid_actions"] > parsed["attempted_actions"]:
+        raise ValueError(
+            f"CSV row {row_number} has more invalid actions than "
+            "attempted actions"
+        )
+
+    counted_actions = sum(parsed[column] for column in ACTION_COLUMNS)
+    if counted_actions != parsed["attempted_actions"]:
+        raise ValueError(
+            f"CSV row {row_number} has action counts totaling "
+            f"{counted_actions}, expected {parsed['attempted_actions']}"
         )
 
     return parsed
@@ -425,12 +459,20 @@ def _parse_optional_float(
         return None
 
     try:
-        return float(value)
+        parsed = float(value)
     except ValueError as error:
         raise ValueError(
             f"CSV row {row_number} contains invalid number "
             f"{column!r}: {value!r}"
         ) from error
+
+    if not isfinite(parsed):
+        raise ValueError(
+            f"CSV row {row_number} contains non-finite number "
+            f"{column!r}: {value!r}"
+        )
+
+    return parsed
 
 
 def _parse_boolean(
