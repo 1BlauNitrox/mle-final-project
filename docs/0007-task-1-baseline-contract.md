@@ -92,18 +92,21 @@ must not be changed after results are observed.
 
 ## Metrics
 
-Metrics are calculated per episode first and then aggregated. Let
+Raw metrics are recorded per episode before aggregation. Let
 `available_coins` be the number of coins present at the start of the episode,
 `coins_collected` the number collected by the evaluated agent, `episode_steps`
-the number of executed steps, and `attempted_actions` the number of actions
-returned by the agent.
+the total number of environment steps, `survival_steps` the steps for which the
+agent remained alive, and `attempted_actions` the number of actions returned by
+the agent. These counts remain distinct when an action response is skipped or
+the episode continues after the agent dies.
 
 | Metric | Definition and role |
 | --- | --- |
 | Coin collection fraction | `coins_collected / available_coins`; primary metric |
 | Coins collected | Raw episode count; required secondary metric |
 | Full-clear success | Whether all initially available coins were collected before the 400-step limit |
-| Steps per collected coin | `episode_steps / max(coins_collected, 1)`; zero-coin episodes therefore receive the explicit worst-case denominator of one |
+| Steps per collected coin | `sum(survival_steps) / sum(coins_collected)` across the reported group; zero-coin episodes add their survival steps but no fictitious coin, and the result is unavailable when the group collects no coins |
+| Coins per 100 steps | `100 * sum(coins_collected) / sum(survival_steps)`; aggregate efficiency metric that is zero for a non-empty all-zero-coin result |
 | Episode length | Executed steps until termination or the 400-step limit |
 | Invalid-action rate | Invalid actions divided by `attempted_actions` |
 | Environment score | Framework score; required context metric, not the completion target |
@@ -112,8 +115,8 @@ returned by the agent.
 
 The evaluation report must include per-model results, the aggregate across all
 five trained models, and variation across both training runs and world seeds.
-It must also report the number of zero-coin and full-clear episodes rather than
-hiding them inside averages.
+It must also report the number and rate of zero-coin episodes and the number of
+full-clear episodes rather than hiding them inside aggregate efficiency values.
 
 ## Random-policy baseline
 
