@@ -1,0 +1,1 @@
+"""anatomical persistence module for DerKleineVermoegensumverteiler"""

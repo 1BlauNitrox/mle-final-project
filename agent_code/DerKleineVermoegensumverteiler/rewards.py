@@ -1,0 +1,1 @@
+"""events -> reward mapping for DerKleineVermögensumverteiler."""
