@@ -33,9 +33,34 @@ game state, so it is useful only as an integration baseline.
 
 ## State representation and features
 
-<!-- Explain every feature and its shape/range. -->
+The agent maps the game states to an eight_element int tuple:
 
-Not implemented in the scaffold.
+```Text
+(
+  up,
+  right,
+  down,
+  left,
+  coinVisible,
+  coinHorizontal,
+  coinVertical,
+  coinDistanceBin,
+)
+```
+The four movement features are binary and indicate wether the tile next to 
+the agent ist free from walls, crates, bombs or other agents.
+
+coinHorizontal and coinVertical encode the signs of th coordinate difference to the 
+nearest visible coin. Each value is -1, 0 or 1.
+
+coinDistanceBin ist the Manhatten-distance:
+- 0 when no coin visible
+- 1 for distance 1
+- 2 for distance 2-3
+- 3 for distance >= 4
+
+Ties can be resolved by coordinate. This representation does not perform pathfinding
+or encodes a preffered or optimal state. 
 
 ## Rewards and custom events
 
