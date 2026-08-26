@@ -147,3 +147,17 @@ calls without a previous state or action are ignored.
 bootstrapping. It returns episode reward, epsilon, Q-table size, and mean
 absolute TD error to the experiment pipeline. Epsilon decays once after each
 completed episode.
+
+## Model persistence
+
+The Q-table is stored as `model.npz` beside the agent source files. Paths are
+resolved relative to `persistence.py` and do not depend on the current working
+directory.
+
+The archive contains the encoded states, Q-values, action order, feature-schema
+version, learning parameters, epsilon, completed episode count, and reward
+configuration. Loading uses `allow_pickle=False`.
+
+Training saves the model atomically after every completed episode. The stored
+epsilon is the value used when the next episode begins. Evaluation requires an
+existing compatible model, disables exploration, and never writes the model.

@@ -8,6 +8,9 @@ import numpy as np
 
 StateFeatures: TypeAlias = tuple[int, int, int, int, int, int, int, int]
 
+FEATURE_SCHEMA_VERSION = 1
+FEATURE_COUNT = 8
+
 DIRECTIONS: tuple[tuple[int, int], ...] = (
     (0, -1), (1, 0), (0, 1), (-1, 0))  # UP, RIGHT, DOWN, LEFT
 

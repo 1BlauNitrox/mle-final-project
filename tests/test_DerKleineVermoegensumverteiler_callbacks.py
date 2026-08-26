@@ -1,20 +1,57 @@
 """Integration tests for the Task 1 framework callbacks."""
 
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
 import numpy as np
 import pytest
 
-from agent_code.DerKleineVermoegensumverteiler import callbacks, train
+from agent_code.DerKleineVermoegensumverteiler import (
+    callbacks,
+    train,
+)
 from agent_code.DerKleineVermoegensumverteiler.config import (
     ACTIONS,
     EPSILON_DECAY,
     INITIAL_EPSILON,
     MINIMUM_EPSILON,
 )
-from agent_code.DerKleineVermoegensumverteiler.features import state_to_features
-from agent_code.DerKleineVermoegensumverteiler.rewards import reward_from_events
+from agent_code.DerKleineVermoegensumverteiler.features import (
+    state_to_features,
+)
+from agent_code.DerKleineVermoegensumverteiler.model import (
+    QTable,
+)
+from agent_code.DerKleineVermoegensumverteiler.persistence import (
+    load_model,
+    save_model,
+)
+from agent_code.DerKleineVermoegensumverteiler.rewards import (
+    reward_from_events,
+)
+
+
+@pytest.fixture
+def model_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Path:
+    """Use an isolated model path for every callback test."""
+    path = tmp_path / "model.npz"
+
+    monkeypatch.setattr(
+        callbacks,
+        "MODEL_PATH",
+        path,
+    )
+    monkeypatch.setattr(
+        train,
+        "MODEL_PATH",
+        path,
+    )
+
+    return path
 
 
 def make_game_state(
@@ -22,7 +59,9 @@ def make_game_state(
     position: tuple[int, int] = (3, 3),
     coins: list[tuple[int, int]] | None = None,
 ) -> dict:
+    """Create a small framework-compatible game state."""
     field = np.zeros((7, 7), dtype=int)
+
     field[0, :] = -1
     field[-1, :] = -1
     field[:, 0] = -1
@@ -46,6 +85,7 @@ def make_game_state(
 
 
 def make_agent(*, training: bool) -> SimpleNamespace:
+    """Create and initialize a minimal callback agent object."""
     agent = SimpleNamespace(
         train=training,
         logger=Mock(),
@@ -59,19 +99,121 @@ def make_agent(*, training: bool) -> SimpleNamespace:
     return agent
 
 
-def test_evaluation_initializes_with_zero_epsilon() -> None:
+def test_training_without_model_creates_new_q_table(
+    model_path: Path,
+) -> None:
+    agent = make_agent(training=True)
+
+    assert not model_path.exists()
+    assert len(agent.q_table) == 0
+    assert agent.epsilon == INITIAL_EPSILON
+    assert agent.completed_episodes == 0
+
+
+def test_evaluation_without_model_is_rejected(
+    model_path: Path,
+) -> None:
+    assert not model_path.exists()
+
+    agent = SimpleNamespace(
+        train=False,
+        logger=Mock(),
+    )
+
+    with pytest.raises(
+        FileNotFoundError,
+        match="Evaluation model does not exist",
+    ):
+        callbacks.setup(agent)
+
+
+def test_evaluation_loads_model_with_zero_epsilon(
+    model_path: Path,
+) -> None:
+    save_model(
+        QTable(),
+        epsilon=0.8,
+        completed_episodes=5,
+        path=model_path,
+    )
+
     agent = make_agent(training=False)
 
     assert agent.epsilon == 0.0
+    assert agent.completed_episodes == 5
+    assert len(agent.q_table) == 0
 
 
-def test_training_initializes_with_configured_epsilon() -> None:
+def test_training_resumes_saved_state(
+    model_path: Path,
+) -> None:
+    saved_model = QTable()
+
+    state = (
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        2,
+    )
+
+    saved_model.update(
+        state=state,
+        action="RIGHT",
+        reward=5.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    save_model(
+        saved_model,
+        epsilon=0.4,
+        completed_episodes=12,
+        path=model_path,
+    )
+
     agent = make_agent(training=True)
 
-    assert agent.epsilon == INITIAL_EPSILON
+    assert agent.epsilon == pytest.approx(0.4)
+    assert agent.completed_episodes == 12
+
+    np.testing.assert_array_equal(
+        agent.q_table.q_values(state),
+        saved_model.q_values(state),
+    )
 
 
-def test_act_returns_only_task1_actions() -> None:
+def test_invalid_agent_seed_is_rejected(
+    model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    assert not model_path.exists()
+
+    monkeypatch.setenv(
+        "BOMBERMAN_AGENT_SEED",
+        "not-an-integer",
+    )
+
+    agent = SimpleNamespace(
+        train=True,
+        logger=Mock(),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="must be an integer",
+    ):
+        callbacks.setup(agent)
+
+
+def test_act_returns_only_task1_actions(
+    model_path: Path,
+) -> None:
+    assert not model_path.exists()
+
     agent = make_agent(training=True)
     game_state = make_game_state(coins=[(5, 3)])
 
@@ -85,12 +227,24 @@ def test_act_returns_only_task1_actions() -> None:
 
 
 def test_evaluation_action_sequence_is_seeded(
+    model_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "42")
+    save_model(
+        QTable(),
+        epsilon=0.8,
+        completed_episodes=5,
+        path=model_path,
+    )
+
+    monkeypatch.setenv(
+        "BOMBERMAN_AGENT_SEED",
+        "42",
+    )
 
     first_agent = make_agent(training=False)
     second_agent = make_agent(training=False)
+
     game_state = make_game_state(coins=[(5, 3)])
 
     first_actions = [
@@ -105,27 +259,80 @@ def test_evaluation_action_sequence_is_seeded(
     assert first_actions == second_actions
 
 
-def test_invalid_agent_seed_is_rejected(
-    monkeypatch: pytest.MonkeyPatch,
+def test_evaluation_does_not_modify_model(
+    model_path: Path,
 ) -> None:
-    monkeypatch.setenv(
-        "BOMBERMAN_AGENT_SEED",
-        "not-an-integer",
+    saved_model = QTable()
+
+    state = (
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        2,
     )
 
-    agent = SimpleNamespace(
-        train=False,
-        logger=Mock(),
+    saved_model.update(
+        state=state,
+        action="RIGHT",
+        reward=5.0,
+        next_state=None,
+        terminal=True,
     )
 
-    with pytest.raises(
-        ValueError,
-        match="must be an integer",
-    ):
-        callbacks.setup(agent)
+    save_model(
+        saved_model,
+        epsilon=0.7,
+        completed_episodes=3,
+        path=model_path,
+    )
+
+    bytes_before_evaluation = model_path.read_bytes()
+
+    agent = make_agent(training=False)
+    game_state = make_game_state(coins=[(5, 3)])
+
+    for _ in range(20):
+        action = callbacks.act(agent, game_state)
+        assert action in ACTIONS
+
+    bytes_after_evaluation = model_path.read_bytes()
+
+    assert (
+        bytes_after_evaluation
+        == bytes_before_evaluation
+    )
 
 
-def test_ordinary_transition_updates_q_table() -> None:
+def test_initial_lifecycle_transition_is_ignored(
+    model_path: Path,
+) -> None:
+    assert not model_path.exists()
+
+    agent = make_agent(training=True)
+    new_game_state = make_game_state(coins=[(5, 3)])
+
+    train.game_events_occurred(
+        agent,
+        None,
+        None,
+        new_game_state,
+        [],
+    )
+
+    assert len(agent.q_table) == 0
+    assert agent.episode_reward == 0.0
+    assert agent.absolute_td_errors == []
+
+
+def test_ordinary_transition_updates_q_table(
+    model_path: Path,
+) -> None:
+    assert not model_path.exists()
+
     agent = make_agent(training=True)
 
     old_game_state = make_game_state(
@@ -148,30 +355,53 @@ def test_ordinary_transition_updates_q_table() -> None:
         ["COIN_COLLECTED"],
     )
 
-    assert agent.q_table.q_values(old_state)[1] > 0.0
+    right_index = ACTIONS.index("RIGHT")
+
+    assert (
+        agent.q_table.q_values(old_state)[right_index]
+        > 0.0
+    )
     assert len(agent.absolute_td_errors) == 1
     assert agent.episode_reward > 0.0
 
 
-def test_initial_lifecycle_transition_is_ignored() -> None:
+def test_unsupported_training_action_is_ignored(
+    model_path: Path,
+) -> None:
+    assert not model_path.exists()
+
     agent = make_agent(training=True)
-    new_game_state = make_game_state(coins=[(5, 3)])
+
+    old_game_state = make_game_state(
+        position=(3, 3),
+        coins=[(5, 3)],
+    )
+    new_game_state = make_game_state(
+        position=(3, 3),
+        coins=[(5, 3)],
+    )
 
     train.game_events_occurred(
         agent,
-        None,
-        None,
+        old_game_state,
+        "BOMB",
         new_game_state,
         [],
     )
 
     assert len(agent.q_table) == 0
     assert agent.episode_reward == 0.0
+    agent.logger.warning.assert_called_once()
 
 
-def test_terminal_transition_does_not_bootstrap() -> None:
+def test_terminal_transition_does_not_bootstrap(
+    model_path: Path,
+) -> None:
     agent = make_agent(training=True)
-    last_game_state = make_game_state(coins=[(5, 3)])
+
+    last_game_state = make_game_state(
+        coins=[(5, 3)]
+    )
     last_state = state_to_features(last_game_state)
 
     assert last_state is not None
@@ -185,7 +415,8 @@ def test_terminal_transition_does_not_bootstrap() -> None:
 
     expected_reward = reward_from_events(["WAITED"])
     expected_value = (
-        agent.q_table.learning_rate * expected_reward
+        agent.q_table.learning_rate
+        * expected_reward
     )
 
     wait_index = ACTIONS.index("WAIT")
@@ -195,11 +426,17 @@ def test_terminal_transition_does_not_bootstrap() -> None:
         == pytest.approx(expected_value)
     )
     assert metrics["q_table_size"] == 1.0
+    assert model_path.is_file()
 
 
-def test_end_of_round_reports_metrics_and_decays_epsilon() -> None:
+def test_end_of_round_reports_metrics_and_decays_epsilon(
+    model_path: Path,
+) -> None:
     agent = make_agent(training=True)
-    last_game_state = make_game_state(coins=[(5, 3)])
+
+    last_game_state = make_game_state(
+        coins=[(5, 3)]
+    )
 
     metrics = train.end_of_round(
         agent,
@@ -208,22 +445,40 @@ def test_end_of_round_reports_metrics_and_decays_epsilon() -> None:
         ["WAITED"],
     )
 
-    assert metrics["epsilon"] == INITIAL_EPSILON
+    assert metrics["epsilon"] == pytest.approx(
+        INITIAL_EPSILON
+    )
     assert "shaped_reward" in metrics
     assert "q_table_size" in metrics
     assert "mean_abs_td_error" in metrics
 
-    assert agent.epsilon == pytest.approx(
-        max(
-            MINIMUM_EPSILON,
-            INITIAL_EPSILON * EPSILON_DECAY,
-        )
+    expected_next_epsilon = max(
+        MINIMUM_EPSILON,
+        INITIAL_EPSILON * EPSILON_DECAY,
     )
 
+    assert agent.epsilon == pytest.approx(
+        expected_next_epsilon
+    )
+    assert agent.completed_episodes == 1
+    assert model_path.is_file()
 
-def test_episode_metrics_are_reset_after_round() -> None:
+    loaded = load_model(model_path)
+
+    assert loaded.epsilon == pytest.approx(
+        expected_next_epsilon
+    )
+    assert loaded.completed_episodes == 1
+
+
+def test_episode_metrics_are_reset_after_round(
+    model_path: Path,
+) -> None:
     agent = make_agent(training=True)
-    last_game_state = make_game_state(coins=[(5, 3)])
+
+    last_game_state = make_game_state(
+        coins=[(5, 3)]
+    )
 
     train.end_of_round(
         agent,
@@ -234,3 +489,4 @@ def test_episode_metrics_are_reset_after_round() -> None:
 
     assert agent.episode_reward == 0.0
     assert agent.absolute_td_errors == []
+    assert model_path.is_file()

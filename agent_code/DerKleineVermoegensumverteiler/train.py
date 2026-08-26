@@ -6,6 +6,7 @@ from statistics import fmean
 
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
 from .features import state_to_features
+from .persistence import MODEL_PATH, save_model
 from .rewards import reward_from_events
 
 
@@ -101,6 +102,14 @@ def end_of_round(
     }
 
     self.epsilon = max(MINIMUM_EPSILON, self.epsilon * EPSILON_DECAY)
+    self.completed_episodes += 1
+
+    save_model(
+        self.q_table, 
+        epsilon=self.epsilon, 
+        completed_episodes=self.completed_episodes, 
+        path=MODEL_PATH
+        )
 
     self.episode_reward = 0.0
     self.absolute_td_errors = []

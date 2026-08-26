@@ -14,6 +14,7 @@ import numpy as np
 from .config import DEFAULT_SEED, INITIAL_EPSILON
 from .features import state_to_features
 from .model import QTable
+from .persistence import MODEL_PATH, load_model
 
 
 def setup(self) -> None:
@@ -22,11 +23,35 @@ def setup(self) -> None:
     agent_seed = _read_agent_seed()
 
     self.rng = np.random.default_rng(agent_seed)
+    
+    if MODEL_PATH.is_file():
+        loaded = load_model(MODEL_PATH)
+
+        self.q_table = loaded.q_table
+        self.completed_episodes = loaded.completed_episodes
+
+        if self.train:
+            self.epsilon = loaded.epsilon
+        else:
+            self.epsilon = 0.0
+
+        self.logger.info(
+            "Loaded model with %d states after %d episodes",
+            len(self.q_table),
+            self.completed_episodes
+        )
+        return
+    
+    if not self.train:
+        raise FileNotFoundError(
+            f"Evaluation model does not exist: {MODEL_PATH}")
+    
     self.q_table = QTable()
-    self.epsilon = INITIAL_EPSILON if self.train else 0.0
+    self.completed_episodes = 0
+    self.epsilon = INITIAL_EPSILON
 
     self.logger.info(
-        "Initialized task 1 baseline agent with seed %d",
+        "Initialized new model with seed %d",
         agent_seed
     )
 
