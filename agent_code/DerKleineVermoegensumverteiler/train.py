@@ -1,46 +1,111 @@
 """Minimal training callbacks for the runnable team-agent template."""
 
-from collections.abc import Iterable
+from __future__ import annotations
 
-from .callbacks import MODEL_PATH
-from .config import ACTIONS, REWARDS
+from collections.abc import Iterable
+from statistics import fmean
+
+from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON, REWARDS
+from .features import state_to_features
 
 
 def setup_training(self) -> None:
     """Initialize training-only state."""
-    self.logger.info("Training the template action-value baseline")
+
+    self.episode_reward = 0.0
+    self.absolute_td_errors: list[float] = []
+
+    self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
 
 
 def game_events_occurred(
     self,
     old_game_state: dict | None,
-    self_action: str,
+    self_action: str | None,
     new_game_state: dict,
     events: list[str],
 ) -> None:
     """Update the selected action's incremental mean reward."""
-    del old_game_state, new_game_state
-    _update_action_value(self, self_action, events)
+    
+    if old_game_state is None or self_action is None:
+        return
+    
+    if self_action not in ACTIONS:
+        self.logger.warning(
+            "Selected action %r is not in the action space %r",
+            self_action,
+            ACTIONS,
+        )
+        return
+    
+    old_state = state_to_features(old_game_state)
+    new_state = state_to_features(new_game_state)
+
+    if old_state is None or new_state is None:
+        return  
+    
+    reward = reward_from_events(events)
+
+    td_error = self.q_table.update(
+        state=old_state,
+        action=self_action,
+        reward=reward,
+        next_state=new_state,
+        terminal=False
+    )
+
+    self.episode_reward += reward
+    self.absolute_td_errors.append(abs(td_error))
 
 
 def end_of_round(
     self,
-    last_game_state: dict,
-    last_action: str,
+    last_game_state: dict | None,
+    last_action: str | None,
     events: list[str],
-) -> None:
-    """Apply the final reward and persist the learned action values."""
-    del last_game_state
-    _update_action_value(self, last_action, events)
-    MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+) -> dict[str, float]:
+    """Apply the terminal update and return episode diagnostics."""
+    if (
+        last_game_state is not None
+        and last_action in ACTIONS
+    ):
+        last_state = state_to_features(last_game_state)
 
-    import numpy as np
+        if last_state is not None:
+            reward = reward_from_events(events)
 
-    np.savez(
-        MODEL_PATH,
-        action_values=self.action_values,
-        action_counts=self.action_counts,
+            td_error = self.q_table.update(
+                state=last_state,
+                action=last_action,
+                reward=reward,
+                next_state=None,
+                terminal=True
+            )
+
+            self.episode_reward += reward
+            self.absolute_td_errors.append(abs(td_error))
+
+    completed_episode_epsilon = float(self.epsilon)
+
+    mean_abs_td_error = (
+        fmean(self.absolute_td_errors)
+        if self.absolute_td_errors
+        else 0.0
     )
+
+    metrics = {
+        "shaped_reward": float(self.episode_reward),
+        "epsilon": completed_episode_epsilon,
+        "q_table_size": float(len(self.q_table)),
+        "mean_abs_td_error": float(mean_abs_td_error)
+    }
+
+    self.epsilon = max(MINIMUM_EPSILON, self.epsilon * EPSILON_DECAY)
+
+    self.episode_reward = 0.0
+    self.absolute_td_errors = []
+
+    return metrics
 
 
 def reward_from_events(events: Iterable[str]) -> float:
@@ -48,12 +113,3 @@ def reward_from_events(events: Iterable[str]) -> float:
     return sum(REWARDS.get(event, 0.0) for event in events)
 
 
-def _update_action_value(self, action: str, events: Iterable[str]) -> None:
-    if action not in ACTIONS:
-        return
-
-    index = ACTIONS.index(action)
-    reward = reward_from_events(events)
-    self.action_counts[index] += 1
-    count = self.action_counts[index]
-    self.action_values[index] += (reward - self.action_values[index]) / count

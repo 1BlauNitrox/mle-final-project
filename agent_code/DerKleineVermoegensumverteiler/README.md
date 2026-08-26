@@ -124,4 +124,17 @@ actions allowed for task 1 in ordered set:
 UP, RIGHT, DOWN, LEFT, WAIT
 
 BOMB is excluded in tarining and in evalutation
-````
+```
+
+## Callback lifecycle
+
+`setup` creates the seeded random generator and Q-table. Evaluation always uses
+zero exploration.
+
+`game_events_occurred` performs ordinary Q-learning updates. Initial lifecycle
+calls without a previous state or action are ignored.
+
+`end_of_round` performs the terminal update without future-state
+bootstrapping. It returns episode reward, epsilon, Q-table size, and mean
+absolute TD error to the experiment pipeline. Epsilon decays once after each
+completed episode.

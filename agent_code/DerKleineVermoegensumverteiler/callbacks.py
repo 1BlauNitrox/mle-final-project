@@ -5,33 +5,59 @@ included policy is an intentionally weak action-value baseline, not a tournament
 candidate.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
+import os
 
 import numpy as np
 
-from agent_code.DerKleineVermoegensumverteiler.config import ACTIONS
-
-MODEL_PATH = Path(__file__).with_name("model.npz")
+from .config import DEFAULT_SEED, INITIAL_EPSILON
+from .features import state_to_features
+from .model import QTable
 
 
 def setup(self) -> None:
-    """Load learned action values or initialize an untrained baseline."""
-    if MODEL_PATH.is_file():
-        with np.load(MODEL_PATH) as data:
-            self.action_values = data["action_values"]
-            self.action_counts = data["action_counts"]
-        self.logger.info("Loaded model from %s", MODEL_PATH.name)
-    else:
-        self.action_values = np.zeros(len(ACTIONS), dtype=float)
-        self.action_counts = np.zeros(len(ACTIONS), dtype=np.int64)
-        self.logger.info("No model found; initialized the template baseline")
+    """Initialize the Qtable, random generator and exploration state."""
+
+    agent_seed = _read_agent_seed()
+
+    self.rng = np.random.default_rng(agent_seed)
+    self.q_table = QTable()
+    self.epsilon = INITIAL_EPSILON if self.train else 0.0
+
+    self.logger.info(
+        "Initialized task 1 baseline agent with seed %d",
+        agent_seed
+    )
 
 
 def act(self, game_state: dict) -> str:
     """Choose an action using epsilon-greedy exploration during training."""
-    del game_state
-    if self.train and np.random.random() < 0.20:
-        return str(np.random.choice(ACTIONS))
+    
+    state = state_to_features(game_state)
 
-    best_indices = np.flatnonzero(self.action_values == self.action_values.max())
-    return ACTIONS[int(np.random.choice(best_indices))]
+    if state is None:
+        return "WAIT"
+    
+    epsilon = self.epsilon if self.train else 0.0
+
+    return self.q_table.select_action(
+        state,
+        epsilon=epsilon,
+        rng=self.rng,
+    )
+
+def _read_agent_seed() -> int:
+    """Read the agent seed from the environment."""
+    
+    raw_seed = os.environ.get("BOMBERMAN_AGENT_SEED")
+
+    if raw_seed is None:
+        return DEFAULT_SEED
+    
+    try:
+        return int(raw_seed)
+    except ValueError as error:
+        raise ValueError(
+            "BOMBERMAN_AGENT_SEED must be an integer"
+        ) from error
