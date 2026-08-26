@@ -58,6 +58,7 @@ def make_game_state(
     *,
     position: tuple[int, int] = (3, 3),
     coins: list[tuple[int, int]] | None = None,
+    step: int = 1,
 ) -> dict:
     """Create a small framework-compatible game state."""
     field = np.zeros((7, 7), dtype=int)
@@ -69,7 +70,7 @@ def make_game_state(
 
     return {
         "round": 1,
-        "step": 1,
+        "step": step,
         "field": field,
         "self": (
             "DerKleineVermoegensumverteiler",
@@ -319,35 +320,68 @@ def test_initial_lifecycle_transition_is_ignored(
 def test_ordinary_transition_updates_q_table(
     model_path: Path,
 ) -> None:
-    assert not model_path.exists()
-
     agent = make_agent(training=True)
 
-    old_game_state = make_game_state(
+    first_old_game_state = make_game_state(
         position=(3, 3),
         coins=[(5, 3)],
+        step=1,
     )
-    new_game_state = make_game_state(
+    first_new_game_state = make_game_state(
         position=(4, 3),
         coins=[(5, 3)],
+        step=2,
     )
 
-    old_state = state_to_features(old_game_state)
-    assert old_state is not None
+    first_old_state = state_to_features(first_old_game_state)
+    assert first_old_state is not None
 
     train.game_events_occurred(
         agent,
-        old_game_state,
+        first_old_game_state,
         "RIGHT",
-        new_game_state,
+        first_new_game_state,
         ["COIN_COLLECTED"],
     )
 
     right_index = ACTIONS.index("RIGHT")
 
-    assert agent.q_table.q_values(old_state)[right_index] > 0.0
+    # The first transition is initially kept pending because the framework
+    # might end the round and report the same transition as terminal.
+    assert agent.q_table.q_values(first_old_state)[
+        right_index
+    ] == pytest.approx(0.0)
+    assert agent.pending_transition is not None
+    assert agent.absolute_td_errors == []
+    assert agent.episode_reward == pytest.approx(0.0)
+
+    second_new_game_state = make_game_state(
+        position=(4, 3),
+        coins=[(5, 3)],
+        step=3,
+    )
+
+    train.game_events_occurred(
+        agent,
+        first_new_game_state,
+        "WAIT",
+        second_new_game_state,
+        ["WAITED"],
+    )
+
+    # Receiving the next callback proves that the first transition was not
+    # terminal. It must now be finalized as an ordinary update.
+    assert agent.q_table.q_values(first_old_state)[
+        right_index
+    ] > 0.0
     assert len(agent.absolute_td_errors) == 1
-    assert agent.episode_reward > 0.0
+    assert agent.episode_reward == pytest.approx(
+        reward_from_events(["COIN_COLLECTED"])
+    )
+
+    # The second transition is now pending.
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.action == "WAIT"
 
 
 def test_unsupported_training_action_is_ignored(
@@ -458,3 +492,121 @@ def test_episode_metrics_are_reset_after_round(
     assert agent.episode_reward == 0.0
     assert agent.absolute_td_errors == []
     assert model_path.is_file()
+
+def test_surviving_final_transition_is_updated_once_as_terminal(
+    model_path: Path,
+) -> None:
+    agent = make_agent(training=True)
+
+    old_game_state = make_game_state(
+        position=(3, 3),
+        coins=[(4, 3)],
+        step=1,
+    )
+    new_game_state = make_game_state(
+        position=(4, 3),
+        coins=[],
+        step=2,
+    )
+
+    old_state = state_to_features(old_game_state)
+    assert old_state is not None
+
+    train.game_events_occurred(
+        agent,
+        old_game_state,
+        "RIGHT",
+        new_game_state,
+        ["COIN_COLLECTED"],
+    )
+
+    # No ordinary update yet because the transition may be the final one.
+    assert agent.q_table.q_values(old_state)[
+        ACTIONS.index("RIGHT")
+    ] == pytest.approx(0.0)
+    assert agent.pending_transition is not None
+
+    metrics = train.end_of_round(
+        agent,
+        old_game_state,
+        "RIGHT",
+        ["COIN_COLLECTED", "SURVIVED_ROUND"],
+    )
+
+    expected_reward = reward_from_events(
+        ["COIN_COLLECTED", "SURVIVED_ROUND"]
+    )
+    expected_value = agent.q_table.learning_rate * expected_reward
+
+    assert agent.q_table.q_values(old_state)[
+        ACTIONS.index("RIGHT")
+    ] == pytest.approx(expected_value)
+    assert len(agent.absolute_td_errors) == 0
+    assert agent.pending_transition is None
+    assert metrics["shaped_reward"] == pytest.approx(expected_reward)
+
+def test_death_finalizes_pending_and_death_transitions(
+    model_path: Path,
+) -> None:
+    agent = make_agent(training=True)
+
+    first_old_state = make_game_state(
+        position=(3, 3),
+        coins=[(5, 3)],
+        step=1,
+    )
+    first_new_state = make_game_state(
+        position=(4, 3),
+        coins=[(5, 3)],
+        step=2,
+    )
+
+    death_state = make_game_state(
+        position=(4, 3),
+        coins=[(5, 3)],
+        step=2,
+    )
+
+    train.game_events_occurred(
+        agent,
+        first_old_state,
+        "RIGHT",
+        first_new_state,
+        [],
+    )
+
+    assert agent.pending_transition is not None
+    assert len(agent.q_table) == 0
+
+    metrics = train.end_of_round(
+        agent,
+        death_state,
+        "WAIT",
+        ["WAITED", "GOT_KILLED"],
+    )
+
+    first_features = state_to_features(first_old_state)
+    death_features = state_to_features(death_state)
+
+    assert first_features is not None
+    assert death_features is not None
+
+    # The previous transition was finalized ordinarily.
+    assert first_features in agent.q_table.values
+
+    # The separate death transition was finalized terminally.
+    expected_death_reward = reward_from_events(
+        ["WAITED", "GOT_KILLED"]
+    )
+    expected_death_value = (
+        agent.q_table.learning_rate * expected_death_reward
+    )
+
+    assert agent.q_table.q_values(death_features)[
+        ACTIONS.index("WAIT")
+    ] == pytest.approx(expected_death_value)
+
+    assert agent.pending_transition is None
+    assert metrics["shaped_reward"] == pytest.approx(
+        expected_death_reward
+    )
