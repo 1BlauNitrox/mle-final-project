@@ -243,6 +243,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["actions"] != list(ACTIONS):
         raise ValueError("Actions mismatch")
+    
+    if metadata["rewards"] != REWARDS:
+        raise ValueError("Reward configuration mismatch")
 
     epsilon = metadata["epsilon"]
     completed_episodes = metadata["completed_episodes"]

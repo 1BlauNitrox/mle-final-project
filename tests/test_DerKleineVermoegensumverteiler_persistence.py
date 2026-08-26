@@ -265,3 +265,36 @@ def test_different_state_and_q_value_counts_are_rejected(
         match="row counts differ",
     ):
         load_model(model_path)
+
+def test_load_rejects_reward_configuration_mismatch(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "model.npz"
+
+    q_table = QTable()
+    save_model(
+        q_table,
+        epsilon=0.5,
+        completed_episodes=3,
+        path=model_path,
+    )
+
+    with np.load(model_path, allow_pickle=False) as archive:
+        states = archive["states"].copy()
+        q_values = archive["q_values"].copy()
+        metadata = json.loads(str(archive["metadata"].item()))
+
+    metadata["rewards"]["COIN_COLLECTED"] = 999.0
+
+    np.savez_compressed(
+        model_path,
+        states=states,
+        q_values=q_values,
+        metadata=np.array(json.dumps(metadata, sort_keys=True)),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="Reward configuration mismatch",
+    ):
+        load_model(model_path)
