@@ -217,10 +217,7 @@ def test_act_returns_only_task1_actions(
     agent = make_agent(training=True)
     game_state = make_game_state(coins=[(5, 3)])
 
-    selected_actions = {
-        callbacks.act(agent, game_state)
-        for _ in range(200)
-    }
+    selected_actions = {callbacks.act(agent, game_state) for _ in range(200)}
 
     assert selected_actions <= set(ACTIONS)
     assert "BOMB" not in selected_actions
@@ -247,14 +244,8 @@ def test_evaluation_action_sequence_is_seeded(
 
     game_state = make_game_state(coins=[(5, 3)])
 
-    first_actions = [
-        callbacks.act(first_agent, game_state)
-        for _ in range(20)
-    ]
-    second_actions = [
-        callbacks.act(second_agent, game_state)
-        for _ in range(20)
-    ]
+    first_actions = [callbacks.act(first_agent, game_state) for _ in range(20)]
+    second_actions = [callbacks.act(second_agent, game_state) for _ in range(20)]
 
     assert first_actions == second_actions
 
@@ -301,10 +292,7 @@ def test_evaluation_does_not_modify_model(
 
     bytes_after_evaluation = model_path.read_bytes()
 
-    assert (
-        bytes_after_evaluation
-        == bytes_before_evaluation
-    )
+    assert bytes_after_evaluation == bytes_before_evaluation
 
 
 def test_initial_lifecycle_transition_is_ignored(
@@ -357,10 +345,7 @@ def test_ordinary_transition_updates_q_table(
 
     right_index = ACTIONS.index("RIGHT")
 
-    assert (
-        agent.q_table.q_values(old_state)[right_index]
-        > 0.0
-    )
+    assert agent.q_table.q_values(old_state)[right_index] > 0.0
     assert len(agent.absolute_td_errors) == 1
     assert agent.episode_reward > 0.0
 
@@ -399,9 +384,7 @@ def test_terminal_transition_does_not_bootstrap(
 ) -> None:
     agent = make_agent(training=True)
 
-    last_game_state = make_game_state(
-        coins=[(5, 3)]
-    )
+    last_game_state = make_game_state(coins=[(5, 3)])
     last_state = state_to_features(last_game_state)
 
     assert last_state is not None
@@ -414,18 +397,13 @@ def test_terminal_transition_does_not_bootstrap(
     )
 
     expected_reward = reward_from_events(["WAITED"])
-    expected_value = (
-        agent.q_table.learning_rate
-        * expected_reward
-    )
+    expected_value = agent.q_table.learning_rate * expected_reward
 
     wait_index = ACTIONS.index("WAIT")
 
-    assert (
-        agent.q_table.q_values(last_state)[wait_index]
-        == pytest.approx(expected_value)
-    )
-    assert metrics["q_table_size"] == 1.0
+    assert agent.q_table.q_values(last_state)[wait_index] == pytest.approx(expected_value)
+    assert metrics["q_table_size"] == 1
+    assert isinstance(metrics["q_table_size"], int)
     assert model_path.is_file()
 
 
@@ -434,9 +412,7 @@ def test_end_of_round_reports_metrics_and_decays_epsilon(
 ) -> None:
     agent = make_agent(training=True)
 
-    last_game_state = make_game_state(
-        coins=[(5, 3)]
-    )
+    last_game_state = make_game_state(coins=[(5, 3)])
 
     metrics = train.end_of_round(
         agent,
@@ -445,9 +421,7 @@ def test_end_of_round_reports_metrics_and_decays_epsilon(
         ["WAITED"],
     )
 
-    assert metrics["epsilon"] == pytest.approx(
-        INITIAL_EPSILON
-    )
+    assert metrics["epsilon"] == pytest.approx(INITIAL_EPSILON)
     assert "shaped_reward" in metrics
     assert "q_table_size" in metrics
     assert "mean_abs_td_error" in metrics
@@ -457,17 +431,13 @@ def test_end_of_round_reports_metrics_and_decays_epsilon(
         INITIAL_EPSILON * EPSILON_DECAY,
     )
 
-    assert agent.epsilon == pytest.approx(
-        expected_next_epsilon
-    )
+    assert agent.epsilon == pytest.approx(expected_next_epsilon)
     assert agent.completed_episodes == 1
     assert model_path.is_file()
 
     loaded = load_model(model_path)
 
-    assert loaded.epsilon == pytest.approx(
-        expected_next_epsilon
-    )
+    assert loaded.epsilon == pytest.approx(expected_next_epsilon)
     assert loaded.completed_episodes == 1
 
 
@@ -476,9 +446,7 @@ def test_episode_metrics_are_reset_after_round(
 ) -> None:
     agent = make_agent(training=True)
 
-    last_game_state = make_game_state(
-        coins=[(5, 3)]
-    )
+    last_game_state = make_game_state(coins=[(5, 3)])
 
     train.end_of_round(
         agent,

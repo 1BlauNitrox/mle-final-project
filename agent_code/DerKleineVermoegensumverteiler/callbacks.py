@@ -23,7 +23,7 @@ def setup(self) -> None:
     agent_seed = _read_agent_seed()
 
     self.rng = np.random.default_rng(agent_seed)
-    
+
     if MODEL_PATH.is_file():
         loaded = load_model(MODEL_PATH)
 
@@ -38,32 +38,28 @@ def setup(self) -> None:
         self.logger.info(
             "Loaded model with %d states after %d episodes",
             len(self.q_table),
-            self.completed_episodes
+            self.completed_episodes,
         )
         return
-    
+
     if not self.train:
-        raise FileNotFoundError(
-            f"Evaluation model does not exist: {MODEL_PATH}")
-    
+        raise FileNotFoundError(f"Evaluation model does not exist: {MODEL_PATH}")
+
     self.q_table = QTable()
     self.completed_episodes = 0
     self.epsilon = INITIAL_EPSILON
 
-    self.logger.info(
-        "Initialized new model with seed %d",
-        agent_seed
-    )
+    self.logger.info("Initialized new model with seed %d", agent_seed)
 
 
 def act(self, game_state: dict) -> str:
     """Choose an action using epsilon-greedy exploration during training."""
-    
+
     state = state_to_features(game_state)
 
     if state is None:
         return "WAIT"
-    
+
     epsilon = self.epsilon if self.train else 0.0
 
     return self.q_table.select_action(
@@ -72,17 +68,16 @@ def act(self, game_state: dict) -> str:
         rng=self.rng,
     )
 
+
 def _read_agent_seed() -> int:
     """Read the agent seed from the environment."""
-    
+
     raw_seed = os.environ.get("BOMBERMAN_AGENT_SEED")
 
     if raw_seed is None:
         return DEFAULT_SEED
-    
+
     try:
         return int(raw_seed)
     except ValueError as error:
-        raise ValueError(
-            "BOMBERMAN_AGENT_SEED must be an integer"
-        ) from error
+        raise ValueError("BOMBERMAN_AGENT_SEED must be an integer") from error
