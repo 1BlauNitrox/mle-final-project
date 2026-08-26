@@ -33,7 +33,7 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Lint team-owned Python
-        run: ruff check tests training scripts agent_code/_team_agent_template
+        run: ruff check tests training scripts agent_code/_team_agent_template agent_code/DerKleineVermoegensumverteiler
 
       - name: Compile Python sources
         run: python -m compileall -q .

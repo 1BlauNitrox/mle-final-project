@@ -97,7 +97,7 @@ def end_of_round(
     metrics = {
         "shaped_reward": float(self.episode_reward),
         "epsilon": completed_episode_epsilon,
-        "q_table_size": float(len(self.q_table)),
+        "q_table_size": len(self.q_table),
         "mean_abs_td_error": float(mean_abs_td_error)
     }
 
