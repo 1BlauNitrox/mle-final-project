@@ -25,7 +25,24 @@ game state, so it is useful only as an integration baseline.
 
 ## Learning method
 
-<!-- Algorithm, update rule, exploration strategy, and relevant citations. -->
+The agent uses ag feature-based tabular Q-learning model. Each encoded state maps
+to one floating-ponint value for each of the five oredered task 1 actions.
+
+Unseen states are initialized to zero and reading them during evaluation
+does not add it to the Q-table.
+
+Training uses the update:
+
+```text
+Q(s, a) <- 0(s, a) + alpha *
+           (reward + gamma * max Q(s', a') - Q(s, a))
+```
+Terminal transitions do not bootstrap from a future state, bute use only
+the final reward.
+
+Training action selection is epsilon-greedy. Random exploration and greedy
+tie-breaking use an explicitly seeded NumPy generator. Evaluation uses
+epsilon = 0
 
 - Incremental sample-average action values
 - Epsilon-greedy exploration with epsilon 0.20 during training
