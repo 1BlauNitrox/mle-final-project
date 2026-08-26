@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from statistics import fmean
 
-from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON, REWARDS
+from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
 from .features import state_to_features
+from .rewards import reward_from_events
 
 
 def setup_training(self) -> None:
@@ -107,9 +107,5 @@ def end_of_round(
 
     return metrics
 
-
-def reward_from_events(events: Iterable[str]) -> float:
-    """Convert framework events into a scalar baseline reward."""
-    return sum(REWARDS.get(event, 0.0) for event in events)
 
 

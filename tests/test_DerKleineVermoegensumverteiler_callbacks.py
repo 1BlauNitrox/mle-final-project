@@ -13,9 +13,8 @@ from agent_code.DerKleineVermoegensumverteiler.config import (
     INITIAL_EPSILON,
     MINIMUM_EPSILON,
 )
-from agent_code.DerKleineVermoegensumverteiler.features import (
-    state_to_features,
-)
+from agent_code.DerKleineVermoegensumverteiler.features import state_to_features
+from agent_code.DerKleineVermoegensumverteiler.rewards import reward_from_events
 
 
 def make_game_state(
@@ -184,7 +183,7 @@ def test_terminal_transition_does_not_bootstrap() -> None:
         ["WAITED"],
     )
 
-    expected_reward = train.reward_from_events(["WAITED"])
+    expected_reward = reward_from_events(["WAITED"])
     expected_value = (
         agent.q_table.learning_rate * expected_reward
     )

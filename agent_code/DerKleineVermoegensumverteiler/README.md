@@ -81,10 +81,19 @@ or encodes a preffered or optimal state.
 
 ## Rewards and custom events
 
-<!-- List values, rationale, and reward-shaping risks. -->
+The initial Task 1 reward mapping is intentionally minimal:
 
-The scaffold uses simple rewards for coins, kills, survival, invalid actions,
-self-kills, and deaths. Replace these through controlled experiments.
+| Event | Reward | Rationale |
+| --- | ---: | --- |
+| `COIN_COLLECTED` | `+10.0` | Provides the primary task signal. |
+| `INVALID_ACTION` | `-0.5` | Discourages attempts to enter blocked tiles. |
+| `WAITED` | `-0.1` | Discourages unproductive waiting without dominating the coin reward. |
+
+All other framework events currently have zero reward.
+
+The baseline does not use distance-based or movement-based reward shaping.
+Adding such shaping is reserved for a controlled follow-up experiment so its
+effect can be compared against this minimal baseline.
 
 ## Training procedure
 
