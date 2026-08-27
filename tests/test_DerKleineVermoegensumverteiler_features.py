@@ -38,21 +38,18 @@ def test_none_state_produces_no_features() -> None:
 
 
 def test_feature_vector_is_hashable() -> None:
-    features = state_to_features(
-        make_game_state(coins=[(5, 3)])
-    )
+    features = state_to_features(make_game_state(coins=[(5, 3)]))
 
     assert isinstance(features, tuple)
     hash(features)
 
 
 def test_all_adjacent_tiles_are_free_in_open_space() -> None:
-    features = state_to_features(
-        make_game_state(coins=[(5, 3)])
-    )
+    features = state_to_features(make_game_state(coins=[(5, 3)]))
 
     assert features is not None
     assert features[:4] == (1, 1, 1, 1)
+
 
 def test_direction_deltas_match_action_order() -> None:
     from agent_code.DerKleineVermoegensumverteiler.features import (
@@ -121,9 +118,7 @@ def test_aligned_coin_has_zero_for_unchanged_axis() -> None:
 
 
 def test_missing_coins_use_explicit_no_coin_encoding() -> None:
-    features = state_to_features(
-        make_game_state(coins=[])
-    )
+    features = state_to_features(make_game_state(coins=[]))
 
     assert features is not None
     assert features[4:] == (0, 0, 0, 0)
