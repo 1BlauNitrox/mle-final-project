@@ -11,11 +11,11 @@ from typing import Any
 
 import numpy as np
 
-from .config import ACTIONS, REWARDS
+from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON, REWARDS
 from .features import FEATURE_COUNT, FEATURE_SCHEMA_VERSION
 from .model import QTable
 
-MODEL_SCHEMA_VERSION = 1
+MODEL_SCHEMA_VERSION = 2
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -53,6 +53,8 @@ def save_model(
         "learning_rate": q_table.learning_rate,
         "discount_factor": q_table.discount_factor,
         "epsilon": epsilon,
+        "epsilon_decay": EPSILON_DECAY,
+        "minimum_epsilon": MINIMUM_EPSILON,
         "completed_episodes": completed_episodes,
         "rewards": REWARDS,
     }
@@ -110,14 +112,12 @@ def load_model(path: Path = MODEL_PATH) -> LoadedModel:
             if set(archive.files) != required_entries:
                 raise ValueError("Model archive has unexpected entries")
 
-            states = np.asarray(
-                archive["states"],
-                dtype=np.int64,
+            raw_states = np.asarray(
+                archive["states"]
             ).copy()
 
-            q_values = np.asarray(
-                archive["q_values"],
-                dtype=np.float64,
+            raw_q_values = np.asarray(
+                archive["q_values"]
             ).copy()
 
             metadata_text = str(archive["metadata"].item())
@@ -133,6 +133,11 @@ def load_model(path: Path = MODEL_PATH) -> LoadedModel:
         raise ValueError(f"Could not load model archive: {path}") from error
 
     _validate_metadata(metadata)
+    _validate_raw_states(raw_states)
+
+    states = raw_states.astype(np.int64, copy=True)
+    q_values = raw_q_values.astype(np.float64, copy=True)
+
     _validate_arrays(states, q_values)
 
     q_table = QTable(
@@ -176,6 +181,73 @@ def _serialize_q_table(q_table: QTable) -> tuple[np.ndarray, np.ndarray]:
 
     return states, q_values
 
+def _validate_raw_states(states: np.ndarray) -> None:
+    """Validate the raw states before converting to int64."""
+
+    if states.ndim != 2:
+        raise ValueError("Model states must be a two-dimensional array")
+    
+    if states.shape[1] != FEATURE_COUNT:
+        raise ValueError("Model states have an incompatible shape")
+    
+    if np.issubdtype(states.dtype, np.bool_) and not np.issubdtype(states.dtype, np.number):
+        raise ValueError("Model states must be numeric integers")
+    
+    if not np.all(np.isfinite(states)):
+        raise ValueError("Model states must be finite")
+    
+    if not np.all(states == np.floor(states)):
+        raise ValueError("Model states must contain integral values")
+    
+    integer_states = states.astype(np.int64)
+
+    feature_domains = (
+        {0, 1},
+        {0, 1},
+        {0, 1},
+        {0, 1},
+        {0, 1},
+        {-1, 0, 1},
+        {-1, 0, 1},
+        {0, 1, 2, 3}
+    )
+
+    for column, allowed_values in enumerate(feature_domains):
+        present_values = set(integer_states[:, column])
+
+        if not present_values.issubset(allowed_values):
+            raise ValueError(
+                f"Model state features {column} contains invalid values"
+            )
+        
+    if integer_states.shape[0] == 0:
+        return
+    
+    coin_visible = integer_states[:, 4]
+    coin_dx = integer_states[:, 5]
+    coin_dy = integer_states[:, 6]
+    distance_bin = integer_states[:, 7]
+
+    hidden_coin_rows = coin_visible == 0
+
+    if np.any(
+        hidden_coin_rows
+        & (
+            (coin_dx != 0)
+            | (coin_dy != 0)
+            | (distance_bin != 0)
+        )
+    ):
+        raise ValueError(
+            "Missing coins must have zero direction and distance"
+        )
+    
+    visible_coin_rows = coin_visible == 1
+
+    if np.any(visible_coin_rows & (distance_bin == 0)):
+        raise ValueError(
+            "Visible coins must have a non-zero distance bin"
+        )
 
 def _validate_arrays(
     states: np.ndarray,
@@ -225,6 +297,8 @@ def _validate_metadata(metadata: Any) -> None:
         "learning_rate",
         "discount_factor",
         "epsilon",
+        "epsilon_decay",
+        "minimum_epsilon",
         "completed_episodes",
         "rewards",
     }
@@ -250,11 +324,17 @@ def _validate_metadata(metadata: Any) -> None:
     epsilon = metadata["epsilon"]
     completed_episodes = metadata["completed_episodes"]
 
-    if not isinstance(epsilon, (int, float)):
+    if isinstance(epsilon, bool) or not isinstance(epsilon, (int, float)):
         raise ValueError("Stored epsilon must be a number")
 
     if not 0.0 <= float(epsilon) <= 1.0:
         raise ValueError("Stored epsilon must be in [0, 1]")
 
-    if not isinstance(completed_episodes, int) or completed_episodes < 0:
+    if type(completed_episodes) is not int or completed_episodes < 0:
         raise ValueError("Stored completed_episodes must be a non-negative integer")
+    
+    if metadata["epsilon_decay"] != EPSILON_DECAY:
+        raise ValueError("Epsilon decay mismatch")
+
+    if metadata["minimum_epsilon"] != MINIMUM_EPSILON:
+        raise ValueError("Minimum epsilon mismatch")

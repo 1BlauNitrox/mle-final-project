@@ -298,3 +298,114 @@ def test_load_rejects_reward_configuration_mismatch(
         match="Reward configuration mismatch",
     ):
         load_model(model_path)
+
+def rewrite_archive(
+    model_path: Path,
+    *,
+    states: np.ndarray | None = None,
+    q_values: np.ndarray | None = None,
+    metadata_updates: dict | None = None,
+) -> None:
+    with np.load(model_path, allow_pickle=False) as archive:
+        stored_states = archive["states"].copy()
+        stored_q_values = archive["q_values"].copy()
+        metadata = json.loads(str(archive["metadata"].item()))
+
+    if metadata_updates:
+        metadata.update(metadata_updates)
+
+    np.savez_compressed(
+        model_path,
+        states=stored_states if states is None else states,
+        q_values=stored_q_values if q_values is None else q_values,
+        metadata=np.array(json.dumps(metadata, sort_keys=True)),
+    )
+
+def test_non_integral_state_values_are_rejected(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "model.npz"
+
+    save_model(
+        QTable(),
+        epsilon=1.0,
+        completed_episodes=0,
+        path=model_path,
+    )
+
+    rewrite_archive(
+        model_path,
+        states=np.array(
+            [[1, 1, 1, 1, 1, 1, 0, 1.5]],
+            dtype=float,
+        ),
+        q_values=np.zeros((1, len(ACTIONS))),
+    )
+
+    with pytest.raises(ValueError, match="integral values"):
+        load_model(model_path)
+
+def test_invalid_state_feature_domain_is_rejected(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "model.npz"
+
+    save_model(
+        QTable(),
+        epsilon=1.0,
+        completed_episodes=0,
+        path=model_path,
+    )
+
+    rewrite_archive(
+        model_path,
+        states=np.array([[2, 1, 1, 1, 1, 1, 0, 2]]),
+        q_values=np.zeros((1, len(ACTIONS))),
+    )
+
+    with pytest.raises(ValueError, match="contains invalid values"):
+        load_model(model_path)
+
+def test_boolean_completed_episodes_is_rejected(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "model.npz"
+
+    save_model(
+        QTable(),
+        epsilon=1.0,
+        completed_episodes=0,
+        path=model_path,
+    )
+
+    rewrite_archive(
+        model_path,
+        metadata_updates={"completed_episodes": True},
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="non-negative integer",
+    ):
+        load_model(model_path)
+
+def test_epsilon_decay_mismatch_is_rejected(
+    tmp_path: Path,
+) -> None:
+    model_path = tmp_path / "model.npz"
+
+    save_model(
+        QTable(),
+        epsilon=1.0,
+        completed_episodes=0,
+        path=model_path,
+    )
+
+    rewrite_archive(
+        model_path,
+        metadata_updates={"epsilon_decay": 0.5},
+    )
+
+    with pytest.raises(ValueError, match="Epsilon decay mismatch"):
+        load_model(model_path)
+
