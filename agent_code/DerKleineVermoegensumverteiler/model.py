@@ -50,7 +50,7 @@ class QTable:
         values = self.q_values(state)
         maximum = np.max(values)
 
-        best_indices = np.flatnonzero(np.isclose(values, maximum))
+        best_indices = np.flatnonzero(values == maximum)
 
         select_index = int(rng.choice(best_indices))
         return ACTIONS[select_index]

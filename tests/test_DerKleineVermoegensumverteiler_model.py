@@ -201,3 +201,29 @@ def test_invalid_epsilon_is_rejected(
             epsilon=epsilon,
             rng=np.random.default_rng(1),
         )
+
+def test_greedy_selection_does_not_treat_close_values_as_tie() -> None:
+    model = QTable()
+
+    model.values[STATE] = np.array(
+        [
+            1.0,
+            1.0 - 1e-12,
+            0.0,
+            0.0,
+            0.0,
+        ]
+    )
+
+    rng = np.random.default_rng(42)
+
+    selected_actions = {
+        model.select_action(
+            STATE,
+            epsilon=0.0,
+            rng=rng,
+        )
+        for _ in range(100)
+    }
+
+    assert selected_actions == {"UP"}
