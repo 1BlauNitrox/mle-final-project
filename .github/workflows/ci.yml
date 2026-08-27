@@ -33,7 +33,7 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Lint team-owned Python
-        run: ruff check tests training scripts agent_code/_team_agent_template
+        run: ruff check tests training scripts agent_code/_team_agent_template agent_code/DerKleineVermoegensumverteiler
 
       - name: Compile Python sources
         run: python -m compileall -q .
@@ -59,3 +59,64 @@ jobs:
 
       - name: Play one complete headless round
         run: python main.py play --agents random_agent --no-gui --n-rounds 1 --seed 1
+
+  agent-smoke:
+    name: Task 1 agent smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Train Task 1 agent
+        run: |
+          python -m training.run_experiment \
+            --agent DerKleineVermoegensumverteiler \
+            --mode training \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 1001 \
+            --agent-seed 2001
+
+      - name: Verify training outputs
+        run: |
+          test -s agent_code/DerKleineVermoegensumverteiler/model.npz
+          run_directory="$(find training_outputs -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+          test -s "$run_directory/metadata.json"
+          test -s "$run_directory/episodes.csv"
+          test -s "$run_directory/summary.json"
+          python -m training.plot_run "$run_directory"
+
+      - name: Record model checksum
+        run: |
+          sha256sum agent_code/DerKleineVermoegensumverteiler/model.npz \
+            | cut -d ' ' -f 1 > /tmp/model-before.sha256
+
+      - name: Evaluate Task 1 agent
+        run: |
+          python -m training.run_experiment \
+            --agent DerKleineVermoegensumverteiler \
+            --mode evaluation \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 3001 \
+            --agent-seed 2001
+
+      - name: Verify read-only evaluation
+        run: |
+          sha256sum agent_code/DerKleineVermoegensumverteiler/model.npz \
+            | cut -d ' ' -f 1 > /tmp/model-after.sha256
+          diff /tmp/model-before.sha256 /tmp/model-after.sha256
+
+      - name: Package agent
+        run: |
+          python scripts/package_agent.py DerKleineVermoegensumverteiler
+          test -s dist/final-project-agent-code.zip

@@ -122,3 +122,6 @@ experiments/**/raw/
 report.pdf
 final-report*.pdf
 final_project.pdf
+
+# macOS metadata
+.DS_Store
