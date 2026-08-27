@@ -60,7 +60,7 @@ jobs:
       - name: Play one complete headless round
         run: python main.py play --agents random_agent --no-gui --n-rounds 1 --seed 1
 
-    agent-smoke:
+  agent-smoke:
     name: Task 1 agent smoke test
     runs-on: ubuntu-latest
     steps:
