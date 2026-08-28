@@ -3,6 +3,7 @@
 from dataclasses import replace
 
 import numpy as np
+import pytest
 import torch
 from torch import nn
 
@@ -529,3 +530,97 @@ def test_invalid_epsilon_is_rejected() -> None:
         assert "epsilon" in str(error).lower()
     else:
         raise AssertionError("Expected invalid epsilon to fail.")
+
+def test_learner_state_round_trip_resumes_training_exactly() -> None:
+    config = make_small_config(target_update_interval=10)
+    original = DQNLearner(config=config, seed=123)
+    batch = make_training_batch()
+
+    original.train_batch(batch)
+    saved_state = original.state_dict()
+
+    restored = DQNLearner(config=config, seed=999)
+    restored.load_state_dict(saved_state)
+
+    assert restored.update_steps == original.update_steps
+
+    original_result = original.train_batch(batch)
+    restored_result = restored.train_batch(batch)
+
+    assert restored_result.loss == pytest.approx(original_result.loss)
+    assert restored_result.mean_abs_td_error == pytest.approx(
+        original_result.mean_abs_td_error
+    )
+    assert (
+        restored_result.target_synchronized
+        == original_result.target_synchronized
+    )
+
+    for original_parameter, restored_parameter in zip(
+        original.online_network.parameters(),
+        restored.online_network.parameters(),
+        strict=True,
+    ):
+        torch.testing.assert_close(
+            original_parameter,
+            restored_parameter,
+        )
+
+    for original_parameter, restored_parameter in zip(
+        original.target_network.parameters(),
+        restored.target_network.parameters(),
+        strict=True,
+    ):
+        torch.testing.assert_close(
+            original_parameter,
+            restored_parameter,
+        )
+
+
+def test_learner_state_dict_is_a_defensive_copy() -> None:
+    learner = DQNLearner(
+        config=make_small_config(),
+        seed=123,
+    )
+    parameters_before = copy_parameters(learner.online_network)
+
+    saved_state = learner.state_dict()
+    saved_online_state = saved_state["online_network"]
+
+    assert isinstance(saved_online_state, dict)
+
+    first_tensor = next(iter(saved_online_state.values()))
+    first_tensor.add_(100.0)
+
+    parameters_after = copy_parameters(learner.online_network)
+
+    for before, after in zip(
+        parameters_before,
+        parameters_after,
+        strict=True,
+    ):
+        torch.testing.assert_close(before, after)
+
+
+def test_learner_state_with_missing_field_is_rejected() -> None:
+    learner = DQNLearner(
+        config=make_small_config(),
+        seed=123,
+    )
+    saved_state = learner.state_dict()
+    del saved_state["optimizer"]
+
+    with pytest.raises(ValueError):
+        learner.load_state_dict(saved_state)
+
+
+def test_negative_update_count_is_rejected() -> None:
+    learner = DQNLearner(
+        config=make_small_config(),
+        seed=123,
+    )
+    saved_state = learner.state_dict()
+    saved_state["update_steps"] = -1
+
+    with pytest.raises(ValueError):
+        learner.load_state_dict(saved_state)

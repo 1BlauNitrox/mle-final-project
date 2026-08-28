@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import torch
@@ -266,4 +267,54 @@ class DQNLearner:
             self.online_network.state_dict()
         )
         self.target_network.eval()
+    
+    def state_dict(self) -> dict[str, Any]:
+        """Export all state required to resume DQN optimization."""
+        return {
+            "online_network": deepcopy(
+                self.online_network.state_dict()
+            ),
+            "target_network": deepcopy(
+                self.target_network.state_dict()
+            ),
+            "optimizer": deepcopy(self.optimizer.state_dict()),
+            "update_steps": self.update_steps,
+        }
+
+    def load_state_dict(self, state: dict[str, Any]) -> None:
+        """Restore network, optimizer and update-counter state."""
+        required_fields = {
+            "online_network",
+            "target_network",
+            "optimizer",
+            "update_steps",
+        }
+
+        if not isinstance(state, dict) or set(state) != required_fields:
+            raise ValueError("Learner state has unexpected fields.")
+
+        update_steps = state["update_steps"]
+
+        if type(update_steps) is not int or update_steps < 0:
+            raise ValueError(
+                "Learner update_steps must be a non-negative integer."
+            )
+
+        try:
+            self.online_network.load_state_dict(
+                state["online_network"],
+                strict=True,
+            )
+            self.target_network.load_state_dict(
+                state["target_network"],
+                strict=True,
+            )
+            self.optimizer.load_state_dict(state["optimizer"])
+        except (KeyError, TypeError, ValueError, RuntimeError) as error:
+            raise ValueError("Learner state is incompatible.") from error
+
+        self.update_steps = update_steps
+        self.online_network.train()
+        self.target_network.eval()
+        self.target_network.requires_grad_(False)
 
