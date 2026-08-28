@@ -1,7 +1,9 @@
 # DagobertDuckDQN
 
-> Status: DQN implementation for visible-coin navigation; framework smoke
-> validation and scientific comparison remain pending.
+> Status: DQN implementation for visible-coin navigation; unit, framework,
+> packaging, isolation, determinism, and decision-time smoke checks pass.
+> Scientific comparison remains pending. Official Docker validation is a
+> submission-stage follow-up rather than evidence for this implementation.
 
 ## Hypothesis
 
@@ -316,8 +318,34 @@ Implemented unit and contract tests cover:
 - framework callback initialization; and
 - ordinary, surviving-terminal, and death-terminal transitions.
 
-Framework training/evaluation smoke runs, timing measurements, clean-framework
-validation, and packaging remain to be completed.
+The following integration checks were run on 2026-08-28 on Windows with an
+Intel Core i7-8550U CPU, Python 3.13.15, and CPU-only PyTorch 2.13.0:
+
+- a two-round seeded training smoke run produced a non-empty checkpoint and
+  reported a mean absolute TD error;
+- a one-round resumed training run continued at epsilon `0.9801`, changed the
+  checkpoint, and increased its stored replay data;
+- evaluation reported no learning metrics and left the checkpoint hash and
+  modification time unchanged;
+- two repeated two-round evaluations with world seed `5001` and agent seed
+  `2001` produced identical per-episode actions, scores, and termination data;
+- a ten-round evaluation with world seed `6001` measured a mean episode p95
+  decision time of approximately `0.73 ms` and a maximum of approximately
+  `6.02 ms`, below the issue gates of `50 ms` and `100 ms` respectively;
+- evaluation setup configured PyTorch to use exactly one CPU thread;
+- a 20-round evaluation with world seed `6003` measured approximately
+  `213.64 MiB` peak working-set memory across the Windows virtual-environment
+  launcher and runtime process, below the `8 GiB` limit, and left the
+  checkpoint unchanged;
+- `scripts/package_agent.py` produced an archive containing only the agent
+  directory and excluding caches, logs, tests, and other agents; and
+- the packaged agent completed a one-round headless evaluation from a clean
+  `git archive` export of `main` with exit code zero.
+
+These are implementation smoke checks, not a scientific performance
+evaluation. The temporary checkpoint and raw run directories are not intended
+for version control. Official Docker compatibility must still be validated
+before selecting this agent for final submission.
 
 ## Scientific evaluation
 
@@ -336,7 +364,7 @@ criterion before performance training begins.
 - Hyperparameters have not been tuned.
 - The agent handles only visible-coin navigation.
 - No candidate model artifact exists yet.
-- Framework smoke validation is still pending.
-- Decision-time and memory limits still require measurement.
+- Official Docker compatibility has not yet been tested and remains required
+  before final submission.
 - Scientific comparison with the tabular model requires a separate
   preregistered experiment.
