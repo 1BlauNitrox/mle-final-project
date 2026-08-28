@@ -86,6 +86,7 @@ def test_evaluation_defaults_to_one_torch_thread() -> None:
         ("epsilon_decay", 0.0),
         ("gradient_clip_norm", 0.0),
         ("torch_num_threads", 0),
+        ("torch_num_threads", 2),
     ],
 )
 

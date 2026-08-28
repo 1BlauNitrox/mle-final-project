@@ -89,8 +89,8 @@ class DQNConfig:
         if not 0.0 < self.epsilon_decay <= 1.0:
             raise ValueError("epsilon_decay must be in (0, 1].")
 
-        if self.torch_num_threads <= 0:
-            raise ValueError("torch_num_threads must be positive.")
+        if self.torch_num_threads != 1:
+            raise ValueError("torch_num_threads must be exactly one.")
 
 
 DEFAULT_CONFIG = DQNConfig()
