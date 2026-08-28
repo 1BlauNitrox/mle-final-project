@@ -6,7 +6,7 @@ experiment:
   status: preregistered
   owner: LiliWestermann
   reviewer: 
-  experiment_commit: 
+  experiment_commit: "92c4768bc33c996e84a149e3a30a00c297dfec07"
 
 revisions:
   pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
@@ -44,6 +44,7 @@ agent:
 
 environment:
   scenario: coin-heaven
+  available_coins_per_episode: 50
   opponents: []
   episode_step_limit: 400
 
