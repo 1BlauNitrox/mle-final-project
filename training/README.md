@@ -97,6 +97,22 @@ framework and the runner adds:
 
 Only this first agent is trained.
 
+### Issue #41 registered DQN series
+
+The five `DagobertDuckDQN` development-baseline runs are controlled by their
+preregistered launcher:
+
+```bash
+python -m training.run_dqn_task1_baseline
+```
+
+It runs the five fixed 10,000-episode jobs serially, requires a clean worktree
+and the registered source fingerprint, rejects seed collisions and an existing
+checkpoint, and moves every final checkpoint into the ignored series directory
+before the next independent run. It is not a general sweep interface. The
+prospective protocol and blockers are recorded under
+`experiments/2026-09-01-dqn-task1-development-baseline/`.
+
 The runner exposes `--agent-seed` through the environment variable:
 
 ```text
@@ -594,7 +610,12 @@ The following agent-specific learning metrics are optional:
 | `shaped_reward` | number | Cumulative shaped reward for the episode. |
 | `epsilon` | number | Exploration probability associated with the episode. |
 | `q_table_size` | integer | Number of represented states or state-action entries, as defined by the agent. |
+| `replay_size` | integer | Number of transitions currently stored in experience replay. |
+| `update_count` | integer | Cumulative optimizer-update count. |
+| `mean_loss` | number | Mean optimizer loss for updates in the episode. |
 | `mean_abs_td_error` | number | Mean absolute temporal-difference error for the episode. |
+| `target_synchronizations` | integer | Cumulative target-network synchronization count. |
+| `episode_target_synchronizations` | integer | Target-network synchronizations performed during the episode. |
 
 Missing optional metrics are represented by empty CSV fields. They must not be
 replaced by zero because zero is a valid measured value and has a different

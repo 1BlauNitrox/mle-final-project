@@ -204,7 +204,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertIsNone(row["shaped_reward"])
         self.assertIsNone(row["epsilon"])
         self.assertIsNone(row["q_table_size"])
+        self.assertIsNone(row["replay_size"])
+        self.assertIsNone(row["update_count"])
+        self.assertIsNone(row["mean_loss"])
         self.assertIsNone(row["mean_abs_td_error"])
+        self.assertIsNone(row["target_synchronizations"])
+        self.assertIsNone(row["episode_target_synchronizations"])
 
     def test_optional_metrics_are_preserved(self) -> None:
         agent_statistics = make_agent_statistics(
@@ -212,7 +217,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
                 "shaped_reward": -2.5,
                 "epsilon": 0.25,
                 "q_table_size": 42,
+                "replay_size": 256,
+                "update_count": 17,
+                "mean_loss": 0.5,
                 "mean_abs_td_error": 0.125,
+                "target_synchronizations": 3,
+                "episode_target_synchronizations": 1,
             },
         )
 
@@ -228,7 +238,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(-2.5, row["shaped_reward"])
         self.assertEqual(0.25, row["epsilon"])
         self.assertEqual(42, row["q_table_size"])
+        self.assertEqual(256, row["replay_size"])
+        self.assertEqual(17, row["update_count"])
+        self.assertEqual(0.5, row["mean_loss"])
         self.assertEqual(0.125, row["mean_abs_td_error"])
+        self.assertEqual(3, row["target_synchronizations"])
+        self.assertEqual(1, row["episode_target_synchronizations"])
 
     def test_learning_metrics_must_be_namespaced_object(self) -> None:
         agent_statistics = make_agent_statistics(

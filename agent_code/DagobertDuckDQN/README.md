@@ -285,7 +285,11 @@ experiment pipeline:
 
 - cumulative shaped reward;
 - epsilon used during the completed episode; and
-- mean absolute TD error when at least one optimizer update occurred.
+- replay-buffer size;
+- cumulative optimizer-update count;
+- mean Huber loss and mean absolute TD error when at least one optimizer update
+  occurred; and
+- per-episode and cumulative target-network synchronization counts.
 
 An episode without an optimizer update reports the TD-error metric as
 unavailable rather than zero.
@@ -379,4 +383,6 @@ criterion before performance training begins.
 - Final submission compatibility must be repeated with the selected trained
   artifact in the course-provided environment.
 - Scientific comparison with the tabular model requires a separate
-  preregistered experiment.
+  preregistered experiment. Issue #41 is preregistered, but its training remains
+  blocked until the complete issue #36 baseline and non-author review are
+  available.

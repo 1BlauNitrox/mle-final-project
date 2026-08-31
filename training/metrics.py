@@ -38,7 +38,12 @@ CSV_COLUMNS = (
     "shaped_reward",
     "epsilon",
     "q_table_size",
+    "replay_size",
+    "update_count",
+    "mean_loss",
     "mean_abs_td_error",
+    "target_synchronizations",
+    "episode_target_synchronizations",
 )
 
 REQUIRED_AGENT_FIELDS = (
@@ -341,9 +346,39 @@ def _normalize_agent_episode(
             round_number=round_number,
             agent_name=agent_name,
         ),
+        "replay_size": _optional_non_negative_int(
+            learning_metrics.get("replay_size"),
+            field="replay_size",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "update_count": _optional_non_negative_int(
+            learning_metrics.get("update_count"),
+            field="update_count",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "mean_loss": _optional_number(
+            learning_metrics.get("mean_loss"),
+            field="mean_loss",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
         "mean_abs_td_error": _optional_number(
             learning_metrics.get("mean_abs_td_error"),
             field="mean_abs_td_error",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "target_synchronizations": _optional_non_negative_int(
+            learning_metrics.get("target_synchronizations"),
+            field="target_synchronizations",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "episode_target_synchronizations": _optional_non_negative_int(
+            learning_metrics.get("episode_target_synchronizations"),
+            field="episode_target_synchronizations",
             round_number=round_number,
             agent_name=agent_name,
         ),
