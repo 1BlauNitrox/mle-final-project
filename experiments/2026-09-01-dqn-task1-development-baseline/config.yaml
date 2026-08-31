@@ -1,0 +1,189 @@
+schema_version: 1
+
+experiment:
+  issue: 41
+  name: dqn-task1-development-baseline
+  status: preregistered_not_started
+  owner: Waffelmanufaktur
+  reviewer: null
+  branch: experiment/41-dqn-task1-development-baseline
+
+revisions:
+  instrumentation_commit: "cc3dc32979a1d25a0d33ad5e65c5a64783f009cd"
+  pr_38_merge_commit: "0f315f323f4363ead44ab6893ea34dce47d72f25"
+  imported_framework_revision: "0f55c1d"
+  tabular_baseline_branch_commit: "a4bbca53c709ea93d71c6a69e0de1c9186532202"
+  tabular_implementation_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
+  agent_source_sha256: "56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e"
+
+agent:
+  name: DagobertDuckDQN
+  algorithm: deep_q_network
+  actions: [UP, RIGHT, DOWN, LEFT, WAIT]
+  forbidden_actions: [BOMB]
+  feature_count: 8
+  feature_schema_version: 1
+  network:
+    hidden_sizes: [64, 64]
+    output_size: 5
+  hyperparameters:
+    learning_rate: 0.001
+    discount_factor: 0.9
+    gradient_clip_norm: 10.0
+    batch_size: 64
+    replay_capacity: 10000
+    replay_warmup: 256
+    target_update_interval: 250
+    initial_epsilon: 1.0
+    epsilon_decay: 0.99
+    minimum_epsilon: 0.1
+    torch_num_threads: 1
+  rewards:
+    COIN_COLLECTED: 10.0
+    INVALID_ACTION: -0.5
+    WAITED: -0.1
+    all_other_events: 0.0
+
+environment:
+  scenario: coin-heaven
+  available_coins_per_episode: 50
+  opponents: []
+  episode_step_limit: 400
+
+training:
+  runs: 5
+  episodes_per_run: 10000
+  maximum_total_episodes: 50000
+  fresh_model_per_run: true
+  checkpoint_selection: final_checkpoint
+  evaluation_based_selection: false
+  execution: serial
+  seeds:
+    - {run: 1, world_seed: 12001, agent_seed: 22001}
+    - {run: 2, world_seed: 12002, agent_seed: 22002}
+    - {run: 3, world_seed: 12003, agent_seed: 22003}
+    - {run: 4, world_seed: 12004, agent_seed: 22004}
+    - {run: 5, world_seed: 12005, agent_seed: 22005}
+  seed_collision_check:
+    checked_at: "2026-09-01"
+    sources:
+      - training_outputs/**/metadata.json
+      - tracked_repository_text
+    collisions_found: false
+
+evaluation:
+  training_enabled: false
+  episodes_per_model_per_seed: 1
+  development_world_seeds: {start: 31001, end: 31040}
+  reserved_confirmation_seeds:
+    start: 31041
+    end: 31050
+    use_in_this_experiment: false
+  final_held_out_seeds:
+    use_in_this_experiment: false
+  pairing:
+    model: same_run_index
+    episode: same_world_seed
+  runtime:
+    cpu_threads: 1
+    multiprocessing: false
+    maximum_memory_gb: 8
+  artifact_integrity:
+    hash_algorithm: sha256
+    hash_before_and_after_evaluation: true
+    model_must_remain_unchanged: true
+
+metrics:
+  primary: coin_collection_fraction
+  training_diagnostics:
+    - shaped_reward
+    - epsilon
+    - replay_size
+    - update_count
+    - mean_loss
+    - mean_abs_td_error
+    - target_synchronizations
+    - episode_target_synchronizations
+    - wall_time
+    - checkpoint_size
+  evaluation:
+    - initially_available_coins
+    - coins_collected
+    - coin_collection_fraction
+    - full_clear
+    - zero_coin
+    - survival_steps
+    - episode_steps
+    - steps_per_coin
+    - coins_per_100_steps
+    - invalid_actions
+    - attempted_actions
+    - invalid_action_rate
+    - environment_score
+    - action_counts
+    - decision_time_median_ms
+    - decision_time_p95_ms
+    - decision_time_max_ms
+
+success_criteria:
+  completed_models: 5
+  completed_dqn_evaluation_episodes: 200
+  aggregate_mean_coin_collection_fraction_min: 0.80
+  individual_mean_coin_collection_fraction_min: 0.75
+  minimum_models_reaching_individual_threshold: 4
+  paired_bootstrap_resamples: 10000
+  dqn_minus_tabular_ci95_lower_bound_min_exclusive: -0.02
+  invalid_action_rate_max_exclusive: 0.01
+  bomb_action_count: 0
+  deterministic_evaluation_required: true
+  immutable_model_required: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+
+compute_budget:
+  maximum_cpu_hours: 24
+  maximum_evaluation_memory_gb: 8
+  paid_resources: false
+  owner_confirmed_local_overnight_run: true
+
+runtime_environment_at_preregistration:
+  operating_system: Windows 11 10.0.26200
+  python: 3.13.15
+  processor: Intel64 Family 6 Model 142 Stepping 10, GenuineIntel
+  logical_processors: 8
+  available_memory_bytes_observed: 16971796480
+  dependencies:
+    numpy: 2.5.2
+    torch: 2.13.0
+    pygame: 2.6.1
+    scipy: 1.18.1
+    scikit_learn: 1.9.0
+    matplotlib: 3.11.1
+
+baseline:
+  agent: DerKleineVermoegensumverteiler
+  issue: 36
+  pull_request: 37
+  status_at_preregistration: open_review_required
+  reuse_registered_results: true
+  artifact_sha256:
+    run_01: 2e55b43db148c38977dd8a96d6498df2bbe0c0964b9320d45589843e8fbcc2f0
+    run_02: 868668e9f6d61075dff1bf9b5076347391aa5628967377722a22a163089c09bc
+    run_03: eb7e9e1bd141bf5e29f8eb99e429eb7b54097e26cf31ae2c474002ef434a8f84
+    run_04: 890fe090a04243dde6f3bdf069e4fbdb694bd8196a75d4ecb8b5ca2c1d4fcce7
+    run_05: 771c9e05de8de6c3055988e2929b08406cd6bba61048c57ddbc91c03717dfe4a
+
+outputs:
+  raw_root: training_outputs/issue-41-dqn-task1-baseline
+  raw_artifacts_ignored_by_git: true
+  committed_after_completion:
+    - README.md
+    - config.yaml
+    - summary.csv
+    - figures/
+
+blockers_before_training:
+  - non_author_reviewer_not_assigned
+  - issue_36_not_closed
+  - pull_request_37_not_merged_or_approved
+  - all_five_tabular_artifacts_not_available_locally
