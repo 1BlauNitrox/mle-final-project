@@ -723,13 +723,14 @@ Framework changes may support faster training or custom scenarios, but:
 - record the upstream framework commit used by the experiment; and
 - avoid placing evaluation-critical behavior only in modified framework code.
 
-The imported Dockerfile retains the course dependency set but explicitly pins
-Python 3.13. Its moving Miniconda base changed to Python 3.14, where the
-Dockerfile's supplied TensorFlow dependency was unavailable and prevented the
-official compatibility image from building before any agent code ran. The pin
-matches the repository's documented development target and keeps the container
-usable for compatibility checks; submitted agents must still be tested in the
-course-provided environment.
+The imported Dockerfile retains the course dependency set but pins the public
+`continuumio/miniconda3:25.3.1-1` base, which bundles Python 3.13. The previous
+moving base changed to Python 3.14, where the Dockerfile's supplied TensorFlow
+dependency was unavailable and prevented the compatibility image from building
+before any agent code ran. Pinning the published image matches the repository's
+documented development target, avoids automatically accepting later interactive
+channel terms, and makes the compatibility check reproducible. Submitted agents
+must still be tested in the course-provided environment.
 
 ## Alternatives considered
 
