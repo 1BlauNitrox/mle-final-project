@@ -1,9 +1,8 @@
 # DagobertDuckDQN
 
 > Status: DQN implementation for visible-coin navigation; unit, framework,
-> packaging, isolation, determinism, and decision-time smoke checks pass.
-> Scientific comparison remains pending. Official Docker validation is a
-> submission-stage follow-up rather than evidence for this implementation.
+> packaging, isolation, determinism, decision-time, and official-Docker smoke
+> checks pass. Scientific comparison remains pending.
 
 ## Hypothesis
 
@@ -340,12 +339,25 @@ Intel Core i7-8550U CPU, Python 3.13.15, and CPU-only PyTorch 2.13.0:
 - `scripts/package_agent.py` produced an archive containing only the agent
   directory and excluding caches, logs, tests, and other agents; and
 - the packaged agent completed a one-round headless evaluation from a clean
-  `git archive` export of `main` with exit code zero.
+  `git archive` export of `main` with exit code zero;
+- GitHub Actions run `33416810178` built the supplied Dockerfile from the pinned
+  Miniconda Python 3.13 base, installed only the agent-local runtime requirement
+  into the test image, and validated PyTorch `2.13.0`;
+- inside that image, a seeded two-round smoke training run produced the package
+  checkpoint, and a training-disabled evaluation against three `random_agent`
+  instances preserved its SHA-256 checksum;
+- the packaged agent was extracted into a clean framework export and completed
+  another evaluation against three `random_agent` instances without modifying
+  its checkpoint; and
+- the Docker evaluation used Python `3.13.9`, PyTorch `2.13.0+cu130`, and one
+  PyTorch CPU thread on Linux. Its mean episode p95 decision time was about
+  `0.171 ms`, and its maximum was about `0.601 ms`.
 
 These are implementation smoke checks, not a scientific performance
 evaluation. The temporary checkpoint and raw run directories are not intended
-for version control. Official Docker compatibility must still be validated
-before selecting this agent for final submission.
+for version control. The Docker checks validate dependency, packaging, and
+runtime compatibility; they do not replace the final submission-stage test with
+the selected trained artifact in the course-provided environment.
 
 ## Scientific evaluation
 
@@ -364,7 +376,7 @@ criterion before performance training begins.
 - Hyperparameters have not been tuned.
 - The agent handles only visible-coin navigation.
 - No candidate model artifact exists yet.
-- Official Docker compatibility has not yet been tested and remains required
-  before final submission.
+- Final submission compatibility must be repeated with the selected trained
+  artifact in the course-provided environment.
 - Scientific comparison with the tabular model requires a separate
   preregistered experiment.
