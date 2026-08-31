@@ -22,7 +22,7 @@ FEATURE_SCHEMA_VERSION = 1
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
-    "WAITED": -0.1,     
+    "WAITED": -0.1,
 }
 
 @dataclass(frozen=True)

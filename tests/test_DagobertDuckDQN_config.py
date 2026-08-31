@@ -34,7 +34,7 @@ def test_action_indices_match_network_outputs() -> None:
         "LEFT": 3,
         "WAIT": 4,
     }
-    
+
 def test_initial_reward_mapping_matches_tabular_agent() -> None:
     assert REWARDS == {
         "COIN_COLLECTED": 10.0,

@@ -38,7 +38,7 @@ def test_network_architecture_matches_configuration() -> None:
     network = build_q_network(DEFAULT_CONFIG, seed=1)
 
     linear_layers = [
-        module 
+        module
         for module in network.modules()
         if isinstance(module, nn.Linear)
     ]
@@ -62,7 +62,7 @@ def test_equal_seeds_produce_equal_parameters() -> None:
         first.parameters(),
         second.parameters(),
         strict=True,
-    ): 
+    ):
         torch.testing.assert_close(
             first_parameter,
             second_parameter
@@ -109,21 +109,21 @@ def test_wrong_feature_count_is_rejected() -> None:
         assert "feature" in str(error).lower()
     else:
         raise AssertionError("Expected a ValueError for invalid input shape")
-    
+
 def test_non_float32_input_is_rejected() -> None:
     network = build_q_network(DEFAULT_CONFIG, seed=1)
     invalid_state = torch.zeros(
         DEFAULT_CONFIG.input_dim,
         dtype=torch.float64
     )
-    
+
     try:
         network(invalid_state)
     except ValueError as error:
         assert "float32" in str(error)
     else:
         raise AssertionError("Expected a ValueError for invalid input dtype")
-    
+
 def test_outputs_are_finite() -> None:
     network = build_q_network(DEFAULT_CONFIG, seed=1)
     state = torch.ones(DEFAULT_CONFIG.input_dim, dtype=torch.float32)
@@ -200,7 +200,7 @@ def test_invalid_bellman_discount_factor_is_rejected() -> None:
         assert "discount" in str(error).lower()
     else:
         raise AssertionError("Expected an invalid discoutn factor to fail")
-    
+
 def make_small_config(**changes):
     """Create a fast configuration for unit tests."""
     config = replace(

@@ -324,7 +324,7 @@ def test_failed_save_preserves_existing_checkpoint(
     def fail_during_serialization(*args, **kwargs) -> None:
         del args, kwargs
         raise RuntimeError("simulated serialization failure")
-    
+
     monkeypatch.setattr(
         "agent_code.DagobertDuckDQN.persistence.torch.save",
         fail_during_serialization
@@ -340,6 +340,6 @@ def test_failed_save_preserves_existing_checkpoint(
             agent_seed=123,
             path=path,
         )
-    
+
     assert path.read_bytes() == original_bytes
     assert list(tmp_path.iterdir()) == [path]

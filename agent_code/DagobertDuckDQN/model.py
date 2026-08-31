@@ -43,7 +43,7 @@ class QNetwork(nn.Module):
             dimensions[:-1],
             dimensions[1:],
             strict=True
-        ): 
+        ):
             layers.append(nn.Linear(input_size, output_size))
 
             if output_size != config.output_dim:
@@ -55,21 +55,21 @@ class QNetwork(nn.Module):
         """Calculate Q-Values for one state or a state batch"""
         if inputs.ndim not in (1, 2):
             raise ValueError("Network input must be a state or state batch")
-        
+
         if inputs.shape[-1] != self.config.input_dim:
             raise ValueError(
                 f"Expected {self.config.input_dim} input features,"
                 f"got {inputs.shape[-1]}"
             )
-        
+
         if inputs.dtype != torch.float32:
             raise ValueError("Network input must use float32")
-        
+
         if inputs.device.type != "cpu":
             raise ValueError("DagobertDuckDQN supports CPU tensors only")
-        
+
         return self.layers(inputs)
-    
+
 def build_q_network(
     config: DQNConfig = DEFAULT_CONFIG,
     *,
@@ -100,11 +100,11 @@ def select_action(
 
     if state_values.dtype != np.float32:
         raise ValueError("state must use float32.")
-    
+
     if rng.random() < epsilon:
         action_index = int(rng.integers(len(ACTIONS)))
         return ACTIONS[action_index]
-    
+
     state_tensor = torch.from_numpy(state_values).to(CPU_DEVICE)
 
     with torch.no_grad():
@@ -114,7 +114,7 @@ def select_action(
 
     if not np.all(np.isfinite(q_values_array)):
         raise ValueError("Network produced non-finite Q-Values")
-    
+
     maximum = np.max(q_values_array)
     best_indices = np.flatnonzero(q_values_array == maximum)
     selected_index = int(rng.choice(best_indices))
@@ -131,27 +131,27 @@ def compute_bellman_targets(
     """Calculate fixed DQN targets for one transition batch"""
     if not 0.0 <= discount_factor <= 1.0:
         raise ValueError("discount factor must be in [0,1]")
-    
+
     if rewards.ndim != 1:
         raise ValueError("rewards must be one-dimensional")
-    
+
     batch_size = rewards.shape[0]
 
     if next_q_values.shape != (batch_size, len(ACTIONS)):
         raise ValueError("next_q_values have an incompatible shape")
-    
+
     if terminals.shape != (batch_size, ):
         raise ValueError("terminals have an incompatibel shape")
-    
+
     if rewards.dtype != torch.float32:
         raise ValueError("rewards must use float32")
-    
+
     if next_q_values.dtype != torch.float32:
         raise ValueError("next_q_values must use float32")
-    
+
     if terminals.dtype != torch.bool:
         raise ValueError("terminals must use bool")
-    
+
     with torch.no_grad():
         maximum_next_q_values = next_q_values.max(dim=1).values
         bootstrap_mask = (~terminals).to(dtype=torch.float32)
@@ -162,7 +162,7 @@ def compute_bellman_targets(
             * bootstrap_mask
             * maximum_next_q_values
         )
-    
+
 class DQNLearner:
     """Online network, target network and optimizer for DQN training."""
 
@@ -267,7 +267,7 @@ class DQNLearner:
             self.online_network.state_dict()
         )
         self.target_network.eval()
-    
+
     def state_dict(self) -> dict[str, Any]:
         """Export all state required to resume DQN optimization."""
         return {
@@ -317,4 +317,3 @@ class DQNLearner:
         self.online_network.train()
         self.target_network.eval()
         self.target_network.requires_grad_(False)
-

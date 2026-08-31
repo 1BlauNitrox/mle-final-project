@@ -39,7 +39,7 @@ class ReplayBuffer:
     def __init__(self, *, capacity: int, seed: int):
         if capacity <= 0:
             raise ValueError("Capacity must be positive")
-        
+
         self.capacity = capacity
         self._transitions: deque[Transition] = deque(maxlen=capacity)
         self._rng = np.random.default_rng(seed)
@@ -47,7 +47,7 @@ class ReplayBuffer:
     def __len__(self) -> int:
         """Return the number of stored transitions"""
         return len(self._transitions)
-    
+
     def add(
         self,
         *,
@@ -66,17 +66,17 @@ class ReplayBuffer:
             or not 0 <= int(action_index) < len(ACTIONS)
         ):
             raise ValueError("action_index is outside the action space")
-        
+
         if (
             isinstance(reward, bool)
             or not isinstance(reward, Real)
             or not np.isfinite(float(reward))
-        ): 
+        ):
             raise ValueError("reward must be a finite number")
-        
+
         if not isinstance(terminal, bool):
             raise ValueError("terminal must be a bool")
-        
+
         if terminal:
             if next_state is not None:
                 raise ValueError("A terminal must not have a next state")
@@ -95,15 +95,15 @@ class ReplayBuffer:
                 terminal=terminal
             )
         )
-    
+
     def sample(self, batch_size: int) -> ReplayBatch:
         """Sample transitions uniformly without replacement"""
         if batch_size <= 0:
             raise ValueError("batch_size must be positive")
-        
+
         if batch_size > len(self._transitions):
             raise ValueError("Not enough transitions for the requested batch")
-        
+
         indices = self._rng.choice(
             len(self._transitions),
             size=batch_size,
@@ -112,7 +112,7 @@ class ReplayBuffer:
         selected = [self._transitions[int(index)] for index in indices]
 
         return _transitions_to_batch(selected)
-    
+
     def state_dict(self) -> dict[str, Any]:
         """Export replay data and RNG state using validated array types"""
         batch = _transitions_to_batch(list(self._transitions))
@@ -126,7 +126,7 @@ class ReplayBuffer:
             "terminals": batch.terminals.copy(),
             "rng_state": deepcopy(self._rng.bit_generator.state)
         }
-    
+
     def load_state_dict(self, state: dict[str, Any]) -> None:
         """Restore replay contents and sampling state atomically"""
         required_fields = {
@@ -141,12 +141,12 @@ class ReplayBuffer:
 
         if not isinstance(state, dict) or set(state) != required_fields:
             raise ValueError("Replay state has unexpected fields")
-        
+
         capacity = state["capacity"]
 
         if type(capacity) is not int or capacity != self.capacity:
             raise ValueError("Replay capacity does not match configuration")
-        
+
         states = _require_array(
             state["states"],
             name="states",
@@ -253,10 +253,10 @@ def _copy_state(state: np.ndarray, *, name: str) -> np.ndarray:
             f"{name} must have shape ({FEATURE_COUNT}, ), "
             f"got {values.shape}"
         )
-    
+
     if not np.all(np.isfinite(values)):
         raise ValueError(f"{name} must contain only finite values")
-    
+
     return values.copy()
 
 def _transitions_to_batch(
@@ -266,12 +266,12 @@ def _transitions_to_batch(
     if not transitions:
         return ReplayBatch(
             states=np.empty((0, FEATURE_COUNT), dtype=np.float32),
-            action_indices=np.empty(0, dtype=np.int64), 
+            action_indices=np.empty(0, dtype=np.int64),
             rewards=np.empty(0, dtype=np.float32),
             next_states=np.empty((0, FEATURE_COUNT), dtype=np.float32),
             terminals=np.empty(0, dtype=np.bool_)
         )
-    
+
     return ReplayBatch(
         states=np.stack(
             [transition.state for transition in transitions]
@@ -309,10 +309,8 @@ def _require_array(
     """Require an array with an exact persistence dtype"""
     if not isinstance(value, np.ndarray):
         raise ValueError(f"Replay {name} must be a NumPy array")
-    
+
     if value.dtype != dtype:
         raise ValueError(f"Replay {name} has an incompatible dtype")
-    
+
     return value
-
-

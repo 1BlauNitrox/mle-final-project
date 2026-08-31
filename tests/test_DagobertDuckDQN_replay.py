@@ -19,7 +19,7 @@ def add_transition(
     """Add one distinguishable transition"""
     buffer.add(
         state=make_state(value),
-        action_index=int(value) % 5, 
+        action_index=int(value) % 5,
         reward=value,
         next_state=None if terminal else make_state(value + 0.1),
         terminal=terminal,
@@ -217,7 +217,7 @@ def test_state_dict_round_trip_restores_data_and_rng() -> None:
             float(value),
             terminal=value==5,
         )
-    
+
     saved_state = original.state_dict()
 
     restored = ReplayBuffer(capacity=10, seed=999)
@@ -287,5 +287,3 @@ def test_terminal_state_dict_requires_zero_placeholder() -> None:
 
     with pytest.raises(ValueError):
         restored.load_state_dict(saved_state)
-
-
