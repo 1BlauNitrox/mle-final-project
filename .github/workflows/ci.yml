@@ -287,6 +287,9 @@ jobs:
           docker run --rm \
             --volume "${{ github.workspace }}:/home/bomberman" \
             --workdir /home/bomberman \
+            --env GIT_CONFIG_COUNT=1 \
+            --env GIT_CONFIG_KEY_0=safe.directory \
+            --env GIT_CONFIG_VALUE_0=/home/bomberman \
             bomberman-dqn:pr \
             python -m training.run_experiment \
               --agent DagobertDuckDQN \
@@ -313,6 +316,9 @@ jobs:
           docker run --rm \
             --volume "${{ github.workspace }}:/home/bomberman" \
             --workdir /home/bomberman \
+            --env GIT_CONFIG_COUNT=1 \
+            --env GIT_CONFIG_KEY_0=safe.directory \
+            --env GIT_CONFIG_VALUE_0=/home/bomberman \
             bomberman-dqn:pr \
             python -m training.run_experiment \
               --agent DagobertDuckDQN \
