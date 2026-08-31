@@ -10,9 +10,9 @@ experiments/
 └── YYYY-MM-DD-short-name/
     ├── README.md
     ├── config.yaml
-    ├── episodes.csv
+    ├── episodes.csv (only local)
     ├── summary.csv
-    ├── artifacts.json
+    ├── artifacts.json (only local)
     └── figures/
         ├── coin_fraction.png
         ├── learning_curve.png
