@@ -99,9 +99,16 @@ def test_reward_function_accepts_generators() -> None:
     assert reward == pytest.approx(expected)
 
 
-def test_initial_mapping_is_minimal() -> None:
+def test_reward_mapping_matches_task_1_contract() -> None:
     assert set(REWARDS) == {
         "COIN_COLLECTED",
         "INVALID_ACTION",
+        "MOVED_AWAY_FROM_COIN",
+        "MOVED_TOWARDS_COIN",
         "WAITED",
     }
+
+
+def test_directional_coin_rewards_have_expected_signs() -> None:
+    assert reward_from_events(["MOVED_TOWARDS_COIN"]) > 0.0
+    assert reward_from_events(["MOVED_AWAY_FROM_COIN"]) < 0.0
