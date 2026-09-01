@@ -43,7 +43,7 @@ class DQNConfig:
     target_update_interval: int = 250
 
     initial_epsilon: float = 1.0
-    epsilon_decay: float = 0.99
+    epsilon_decay: float = 0.999
     minimum_epsilon: float = 0.1
 
     default_seed: int = 0
