@@ -1,0 +1,43 @@
+experiment:
+  issue: 52
+  name: dqn-slower-epsilon
+  status: preregistered_not_started
+  branch: experiment/-dqn-task1-epsilon-optimized
+
+independent_variable:
+  name: epsilon_decay
+  baseline: 0.99
+  treatment: 0.999
+
+agent:
+  name: DagobertDuckDQN
+  algorithm: deep_q_network
+  actions: [UP, RIGHT, DOWN, LEFT, WAIT]
+  forbidden_actions: [BOMB]
+  feature_count: 8
+  feature_schema_version: 1
+  network:
+    hidden_sizes: [64, 64]
+    output_size: 5
+agent:
+  hyperparameters:
+  learning_rate: 0.001
+  discount_factor: 0.9
+  batch_size: 64
+  replay_capacity: 10000
+  replay_warmup: 256
+  target_update_interval: 250
+  initial_epsilon: float = 1.0
+  epsilon_decay: float = 0.999
+  minimum_epsilon: float = 0.1
+rewards:
+  COIN_COLLECTED: 10.0
+  INVALID_ACTION: -0.5
+  WAITED: -0.1
+  all_other_events: 0.0
+  
+environment:
+  scenario: coin-heaven
+  available_coins_per_episode: 50
+  opponents: []
+  episode_step_limit: 400

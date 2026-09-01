@@ -29,12 +29,12 @@ AGENT = "DagobertDuckDQN"
 SCENARIO = "coin-heaven"
 EPISODES_PER_RUN = 10_000
 EXPECTED_AGENT_SOURCE_SHA256 = (
-    "56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e"
+    "f9e029b12c72cf6733abc682eeb5cb485db6ae6a9e53f0f428086d2a16439447"
 )
 CHECKPOINT_PATH = (
     REPOSITORY_ROOT / "agent_code" / AGENT / "checkpoint.pt"
 )
-DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "issue-41-dqn-task1-baseline"
+DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "experiment-dqn-slower-epsilon"
 
 
 @dataclass(frozen=True)
