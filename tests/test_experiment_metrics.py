@@ -424,6 +424,7 @@ class FrameworkStepMetricTests(unittest.TestCase):
         self.assertEqual(2, recorded["attempted_actions"])
         self.assertEqual([1.0, 3.0], recorded["decision_times_ms"])
         self.assertEqual(50, recorded["initially_available_coins"])
+        self.assertIsInstance(recorded["initially_available_coins"], int)
 
 
 class AgentLearningMetricInterfaceTests(unittest.TestCase):

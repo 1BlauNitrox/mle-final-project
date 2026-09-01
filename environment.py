@@ -86,8 +86,8 @@ class GenericWorld:
 
         # Arena with wall and crate layout
         self.arena, self.coins, self.active_agents = self.build_arena()
-        self.initially_available_coins = sum(
-            coin.collectable for coin in self.coins
+        self.initially_available_coins = int(
+            sum(coin.collectable for coin in self.coins)
         )
 
         for agent in self.active_agents:
