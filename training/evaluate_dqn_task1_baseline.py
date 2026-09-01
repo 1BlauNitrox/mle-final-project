@@ -10,6 +10,7 @@ import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from time import sleep
 from typing import Any
 
 from training.aggregate import read_episodes_csv
@@ -18,6 +19,8 @@ from training.run_experiment import run_experiment
 
 DEVELOPMENT_SEEDS = tuple(range(31_001, 31_041))
 EVALUATION_PASSES = ("primary", "repeat")
+MANIFEST_REPLACE_ATTEMPTS = 10
+MANIFEST_REPLACE_RETRY_SECONDS = 0.1
 DETERMINISTIC_COLUMNS = (
     "episode_steps",
     "survival_steps",
@@ -336,7 +339,14 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
         json.dumps(data, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    temporary_path.replace(path)
+    for attempt in range(MANIFEST_REPLACE_ATTEMPTS):
+        try:
+            temporary_path.replace(path)
+            return
+        except PermissionError:
+            if attempt == MANIFEST_REPLACE_ATTEMPTS - 1:
+                raise
+            sleep(MANIFEST_REPLACE_RETRY_SECONDS * (attempt + 1))
 
 
 def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:

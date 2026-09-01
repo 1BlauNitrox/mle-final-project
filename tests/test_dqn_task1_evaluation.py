@@ -86,3 +86,29 @@ def test_completed_job_requires_all_runner_outputs(tmp_path: Path) -> None:
     for name in ("metadata.json", "episodes.csv", "summary.json"):
         (run_directory / name).write_text("data", encoding="utf-8")
     assert evaluation._job_is_complete(job, tmp_path)
+
+
+def test_manifest_write_retries_transient_windows_lock(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    destination = tmp_path / "manifest.json"
+    original_replace = Path.replace
+    attempts = 0
+
+    def flaky_replace(source: Path, target: Path) -> Path:
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise PermissionError("temporarily locked")
+        return original_replace(source, target)
+
+    monkeypatch.setattr(Path, "replace", flaky_replace)
+    monkeypatch.setattr(evaluation, "sleep", lambda _seconds: None)
+
+    evaluation._write_json(destination, {"status": "completed"})
+
+    assert attempts == 3
+    assert json.loads(destination.read_text(encoding="utf-8")) == {
+        "status": "completed"
+    }
