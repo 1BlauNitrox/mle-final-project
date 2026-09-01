@@ -3,3 +3,4 @@
 matplotlib>=3.9.2
 pytest>=9.1.1
 ruff>=0.9
+PyYAML>=6.0
