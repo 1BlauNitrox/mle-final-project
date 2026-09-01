@@ -58,13 +58,24 @@ def game_events_occurred(
 
     if old_state is None or new_state is None:
         return
+    
+    training_events = list(events)
+
+    movement_event = _coin_movement_event(
+        old_game_state,
+        new_game_state,
+        self_action,
+    )
+
+    if movement_event is not None:
+        training_events.append(movement_event)
 
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
         state=old_state,
         action=self_action,
         next_state=new_state,
-        reward=reward_from_events(events),
+        reward=reward_from_events(training_events),
     )
 
 def end_of_round(
@@ -193,3 +204,45 @@ def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
         return None
     
     return (round_number, step_number)
+
+def _coin_movement_event(
+    old_game_state: dict,
+    new_game_state: dict,
+    action: str,
+) -> str | None:
+    """Return a reward-shaping event based on distance to the nearest old coin."""
+
+    if action not in {"UP", "RIGHT", "DOWN", "LEFT"}:
+        return None
+
+    coins = old_game_state.get("coins", [])
+
+    if not coins:
+        return None
+
+    old_position = old_game_state["self"][3]
+    new_position = new_game_state["self"][3]
+
+    old_distance = min(
+        _manhattan_distance(old_position, coin)
+        for coin in coins
+    )
+    new_distance = min(
+        _manhattan_distance(new_position, coin)
+        for coin in coins
+    )
+
+    if new_distance < old_distance:
+        return "MOVED_TOWARDS_COIN"
+
+    if new_distance > old_distance:
+        return "MOVED_AWAY_FROM_COIN"
+
+    return None
+
+
+def _manhattan_distance(
+    first: tuple[int, int],
+    second: tuple[int, int],
+) -> int:
+    return abs(first[0] - second[0]) + abs(first[1] - second[1])

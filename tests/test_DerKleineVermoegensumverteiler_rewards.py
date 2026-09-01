@@ -99,9 +99,11 @@ def test_reward_function_accepts_generators() -> None:
     assert reward == pytest.approx(expected)
 
 
-def test_initial_mapping_is_minimal() -> None:
+def test_reward_mappig_contains_registered_rewards() -> None:
     assert set(REWARDS) == {
         "COIN_COLLECTED",
         "INVALID_ACTION",
         "WAITED",
+        "MOVED_TOWARDS_COIN",
+        "MOVED_AWAY_FROM_COIN",
     }
