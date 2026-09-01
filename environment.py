@@ -86,6 +86,9 @@ class GenericWorld:
 
         # Arena with wall and crate layout
         self.arena, self.coins, self.active_agents = self.build_arena()
+        self.initially_available_coins = sum(
+            coin.collectable for coin in self.coins
+        )
 
         for agent in self.active_agents:
             agent.start_round()
@@ -319,6 +322,10 @@ class GenericWorld:
                 "decision_time_median_ms": decision_time_median_ms,
                 "decision_time_p95_ms": decision_time_p95_ms,
                 "decision_time_max_ms": decision_time_max_ms,
+                "decision_times_ms": [
+                    float(value) * 1000.0 for value in a.decision_times
+                ],
+                "initially_available_coins": self.initially_available_coins,
                 "learning_metrics": dict(a.learning_metrics),
             }
 

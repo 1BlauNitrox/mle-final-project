@@ -400,7 +400,7 @@ class FrameworkStepMetricTests(unittest.TestCase):
             name="slow_agent",
             score=0,
             dead=False,
-            decision_times=[],
+            decision_times=[0.001, 0.003],
             statistics=statistics,
             learning_metrics={},
             survival_steps=5,
@@ -412,6 +412,7 @@ class FrameworkStepMetricTests(unittest.TestCase):
         world.agents = [agent]
         world.round_id = "Round 01"
         world.round_statistics = {}
+        world.initially_available_coins = 50
 
         GenericWorld.end_round(world)
 
@@ -421,6 +422,8 @@ class FrameworkStepMetricTests(unittest.TestCase):
         self.assertEqual(7, recorded["episode_steps"])
         self.assertEqual(5, recorded["survival_steps"])
         self.assertEqual(2, recorded["attempted_actions"])
+        self.assertEqual([1.0, 3.0], recorded["decision_times_ms"])
+        self.assertEqual(50, recorded["initially_available_coins"])
 
 
 class AgentLearningMetricInterfaceTests(unittest.TestCase):
