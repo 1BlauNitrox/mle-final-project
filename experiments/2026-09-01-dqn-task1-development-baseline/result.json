@@ -1,0 +1,60 @@
+{
+  "criteria": {
+    "aggregate_fraction": {
+      "passed": true,
+      "threshold": ">= 0.80",
+      "value": 0.8334
+    },
+    "bomb_actions": {
+      "passed": true,
+      "threshold": "= 0",
+      "value": 0
+    },
+    "deterministic": {
+      "passed": true,
+      "value": true
+    },
+    "immutable": {
+      "passed": true,
+      "value": true
+    },
+    "individual_models": {
+      "passed": false,
+      "threshold": ">= 4 models at >= 0.75",
+      "value": 3
+    },
+    "invalid_actions": {
+      "passed": false,
+      "threshold": "< 0.01",
+      "value_aggregate": 0.16415779911757072,
+      "value_maximum_model": 0.6085209003215434
+    },
+    "latency": {
+      "passed": true,
+      "threshold": "p95 < 50 ms and max < 100 ms",
+      "value_max_ms": 27.600526809692383,
+      "value_p95_ms": 0.7519721984863281
+    },
+    "paired_non_inferiority": {
+      "passed": null,
+      "reason": "tabular per-seed rows and original artifacts unavailable",
+      "threshold": "95% CI lower bound > -0.02",
+      "value": null
+    }
+  },
+  "evaluation_commits": [
+    "255f627c68b0b84a9c86dc989aa38424d8aebb4c",
+    "573443ad38dc7c12030c84b75be75d5d6f8ac93e"
+  ],
+  "evaluation_duration_seconds_primary": 1000.8893752001313,
+  "evaluation_manifest_sha256": "39994a923a0ca9c476511d1c9cfcf4f9e7f350754fb21dc85ff8faa94b67aa75",
+  "evaluation_repeat_episodes": 200,
+  "schema_version": 1,
+  "series_directory": "20260831T235351723566Z",
+  "tabular_comparison": {
+    "available_aggregate_fraction": 0.8995,
+    "dqn_minus_tabular_aggregate_difference": -0.06609999999999994,
+    "paired_bootstrap_ci95": null,
+    "status": "not_computable_missing_tabular_per_seed_rows"
+  }
+}

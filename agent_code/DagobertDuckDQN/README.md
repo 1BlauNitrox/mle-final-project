@@ -1,8 +1,7 @@
 # DagobertDuckDQN
 
-> Status: DQN implementation for visible-coin navigation; unit, framework,
-> packaging, isolation, determinism, decision-time, and official-Docker smoke
-> checks pass. Scientific comparison remains pending.
+> Status: Task 1 development baseline evaluated in issue #41. The result is
+> mixed/negative and no candidate is frozen.
 
 ## Hypothesis
 
@@ -10,9 +9,8 @@ A small Deep Q-Network using the same eight input features, five actions, and
 initial reward mapping as the tabular Task 1 agent can learn visible-coin
 navigation in `coin-heaven`.
 
-This hypothesis has not yet been evaluated scientifically. The implementation
-tests establish correctness and reproducibility properties, not navigation
-performance.
+Issue #41 evaluated this hypothesis scientifically. Aggregate navigation met
+its threshold, but reproducibility and invalid-action thresholds failed.
 
 ## Scope
 
@@ -241,8 +239,8 @@ atomic replacement. A failed write leaves an existing checkpoint unchanged.
 Evaluation loads only a frozen online policy, disables gradients and
 exploration, and does not write the checkpoint.
 
-No candidate checkpoint is currently committed. A smoke-test checkpoint must
-not be treated as a trained artifact.
+No candidate checkpoint is committed. The five development artifacts remain in
+the ignored raw experiment store and must not be mistaken for a frozen model.
 
 ## Training
 
@@ -365,24 +363,32 @@ the selected trained artifact in the course-provided environment.
 
 ## Scientific evaluation
 
-No scientific performance evaluation has been performed, and this agent does
-not claim completion under `docs/0007-task-1-baseline-contract.md`, which is
-normative for the tabular baseline.
+Issue #41 trained five independent 10,000-episode models and evaluated each on
+development seeds `31001`--`31040`. The aggregate coin-collection fraction was
+`0.8334`, but only three models reached the individual `0.75` threshold.
+Aggregate invalid-action rate was `0.1642`, dominated by run 4 (`0.6085`). Run
+3 collected only `0.4830` of available coins on average and selected `WAIT`
+6,487 times. Across all models, `BOMB` was never selected. Exact repeats were
+deterministic, artifacts stayed byte-identical, maximum model p95 decision time
+was `0.752 ms`, and maximum observed decision time was `27.601 ms`.
 
-A separate prospective experiment must define the DQN-versus-tabular
-hypothesis, equal compute budget, seed populations, metrics, and success
-criterion before performance training begins.
+The paired DQN-minus-tabular bootstrap could not be computed because PR #37
+does not retain per-seed tabular rows and its original artifacts are not
+available. Its reported aggregate fraction is `0.8995`, versus `0.8334` here;
+that descriptive difference is not a paired confidence interval. Full
+configuration, hashes, failures, figures, and the negative decision are in
+`experiments/2026-09-01-dqn-task1-development-baseline/`.
 
 ## Known limitations and next steps
 
 - The eight-feature representation contains no pathfinding or global maze map.
 - Reward shaping is intentionally minimal.
-- Hyperparameters have not been tuned.
+- Hyperparameters have not been tuned; run-to-run stability is inadequate.
+- The policy can repeatedly choose invalid moves because legal actions are not
+  masked; this caused the registered invalid-action criterion to fail.
 - The agent handles only visible-coin navigation.
-- No candidate model artifact exists yet.
+- No candidate should be frozen from issue #41.
 - Final submission compatibility must be repeated with the selected trained
   artifact in the course-provided environment.
-- Scientific comparison with the tabular model requires a separate
-  preregistered experiment. Issue #41 is preregistered, but its training remains
-  blocked until the complete issue #36 baseline and non-author review are
-  available.
+- The next experiment should prospectively test one controlled change aimed at
+  invalid actions and instability, such as legal-action masking.

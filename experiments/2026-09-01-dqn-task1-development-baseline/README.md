@@ -1,111 +1,70 @@
 # Task 1 DagobertDuckDQN development baseline
 
-## Status
+## Status and lineage
 
-This experiment is preregistered but has not started. No registered training or
-development-evaluation seed has been consumed.
+Issue #41 is complete with a mixed, overall negative decision. Training used
+commit `e7e8b52f50b2acb46ccad04905d76c6948304e21` and agent fingerprint
+`56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e`.
+Evaluation used commits `573443a` and `255f627`; the latter only adds retry
+handling for transient Windows manifest locks.
 
-Training is blocked until the non-author reviewer is assigned and the complete
-Task 1 tabular baseline from issue #36 / PR #37 is accepted and available. As
-of 2026-09-01, PR #37 is open, requires review, and its five reported model
-checksums are not backed by five locally available artifacts in this worktree.
+Five fresh DQN runs used world seeds `12001`--`12005`, agent seeds
+`22001`--`22005`, 10,000 `coin-heaven` episodes each, no opponents, and final
+checkpoint selection. Evaluation used only seeds `31001`--`31040`. Reserved
+seeds `31041`--`31050` and final held-out seeds remain unused.
 
-## Metadata
+## Training and retained failure
 
-- Issue: [#41](https://github.com/1BlauNitrox/mle-final-project/issues/41)
-- DQN implementation: PR #38, merge commit
-  `0f315f323f4363ead44ab6893ea34dce47d72f25`
-- Observation and launcher implementation:
-  `cc3dc32979a1d25a0d33ad5e65c5a64783f009cd`
-- Tabular comparison: issue #36 / PR #37, branch commit
-  `a4bbca53c709ea93d71c6a69e0de1c9186532202`
-- Branch: `experiment/41-dqn-task1-development-baseline`
-- Agent: `DagobertDuckDQN`
-- Owner: Waffelmanufaktur
-- Reviewer: not yet assigned
-- Date: 2026-09-01
+Runs 1--4 completed normally. Run 5 first failed after 616 episodes when
+Windows denied an atomic checkpoint replacement. Its raw output and partial
+checkpoint (`d778e033896d02c11f4e7e25dfc936fd45bcd0e6df010a9e9bb7b1f6a735057a`)
+are retained. A prospective issue amendment authorized one fresh retry and a
+60,000-episode attempted budget. The unchanged retry completed. Successful
+training took 37,482 seconds (10.41 hours); 50,616 episodes were attempted.
 
-## Hypothesis
+| Run | World / agent seed | Duration [s] | Final artifact SHA-256 |
+| ---: | --- | ---: | --- |
+| 1 | 12001 / 22001 | 7092.31 | `144540fd2d99067bb010c25583a004f1bba559023becf26d38c92095e2df5cd0` |
+| 2 | 12002 / 22002 | 7607.56 | `89859bd01bcb4e8fe87b614861c696cfbf1260c0cd07185adb781f48ba7c316e` |
+| 3 | 12003 / 22003 | 7843.45 | `9f2beac25df249dc2650f180045e0e826626d5eee3a2dd6d96c6ac3b74c8ff84` |
+| 4 | 12004 / 22004 | 7520.98 | `f1a09fbea1587e55e22375608467959f6261f63252212cb765e01a551de72d55` |
+| 5 | 12005 / 22005 | 7418.15 | `1dc1fd50b2477896a3d80dd04e8e803a895777ce74494d0bc9210b4c0de7a862` |
 
-With the fixed Task 1 implementation from PR #38 and the same 10,000-episode
-interaction budget used for the tabular baseline, `DagobertDuckDQN` will learn
-reproducible visible-coin navigation while remaining non-inferior to
-`DerKleineVermoegensumverteiler`.
+Each final artifact is 862,778 bytes. Raw logs, checkpoints, per-episode rows,
+and the manifest remain under the ignored series
+`training_outputs/issue-41-dqn-task1-baseline/20260831T235351723566Z/`.
 
-Success requires all thresholds registered in issue #41 and `config.yaml`. A
-negative or mixed result remains valid and will not trigger exclusions or
-post-hoc changes in this experiment.
+## Development results
 
-## Setup
+All 200 primary episodes and 200 exact repeats completed. Deterministic outcome
+fields matched and every artifact remained byte-identical. Every `act()` time
+is retained in raw statistics. Observed process memory was about 215 MB for the
+agent plus 67 MB for the orchestrator, below 8 GB.
 
-The machine-readable configuration is in `config.yaml`. The principal fixed
-conditions are:
+| Model | Mean fraction | SD | Full clears | Invalid rate | WAIT | BOMB | p95 / max [ms] |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| run-01 | 1.0000 | 0.0000 | 40 | 0.000000 | 10 | 0 | 0.502 / 2.115 |
+| run-02 | 0.9965 | 0.0221 | 39 | 0.001456 | 2 | 0 | 0.493 / 2.786 |
+| run-03 | 0.4830 | 0.3152 | 1 | 0.000254 | 6487 | 0 | 0.752 / 17.426 |
+| run-04 | 0.7395 | 0.3006 | 13 | 0.608521 | 6 | 0 | 0.393 / 1.655 |
+| run-05 | 0.9480 | 0.1657 | 32 | 0.001087 | 0 | 0 | 0.746 / 27.601 |
+| **Aggregate** | **0.8334** | **0.2875** | **125** | **0.164158** | **6505** | **0** | **0.752 / 27.601** |
 
-- five serial, independent training runs of exactly 10,000 episodes;
-- `coin-heaven`, no opponents, final-checkpoint selection;
-- training world seeds `12001` through `12005`;
-- agent seeds `22001` through `22005`;
-- development world seeds `31001` through `31040`;
-- reserved seeds `31041` through `31050` remain unused;
-- no final held-out Task 1 seed is inspected;
-- one PyTorch CPU thread and no evaluation multiprocessing.
+`summary.csv` contains the compact values and `result.json` the mechanical
+criterion decisions. The aggregate performance gate passed, but only three
+models reached 0.75 and the aggregate and run-04 invalid-action gates failed.
+No-bomb, determinism, immutability, and latency gates passed.
 
-The agent-source fingerprint after adding observation-only diagnostics is:
+PR #37 contains aggregate tabular rows but not the 200 model-index/world-seed
+pairs; its five original artifacts are unavailable locally and in GitHub
+Actions. The paired bootstrap interval therefore cannot be computed without
+inventing evidence. Descriptively, its reported aggregate is 0.8995 and DQN is
+0.0661 lower; this is not a paired confidence interval.
 
-```text
-56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e
-```
+## Decision
 
-The diagnostics add no reward, feature, action, update, replay, optimizer, or
-checkpoint-selection change. They expose loss, replay size, optimizer-update
-count, and target-network synchronization counts already produced by the fixed
-DQN training process.
-
-## Seed-collision check
-
-On 2026-09-01, the registered training and development seeds were checked
-against tracked repository text and every local
-`training_outputs/**/metadata.json`. No prior scientific or smoke run used a
-registered issue #41 training world seed or agent seed, and none used a
-development seed from `31001` through `31040`.
-
-The launcher repeats the training-seed metadata check immediately before the
-first run and refuses to start on a collision, dirty worktree, source-hash
-mismatch, or pre-existing DQN checkpoint.
-
-## Overnight training launcher
-
-After every blocker above is resolved and the preregistration commit is clean,
-run from the repository root:
-
-```powershell
-.venv\Scripts\python.exe -m training.run_dqn_task1_baseline
-```
-
-The launcher runs serially to avoid five CPU-heavy DQN jobs contending with one
-another. Each run starts without `checkpoint.pt`. Its mechanically selected
-final checkpoint is moved into the ignored series artifact directory, hashed,
-and recorded in `series.json` before the next run begins. Failed runs and any
-partial checkpoint are retained; later registered runs continue without
-silently retrying or replacing the failure.
-
-Raw outputs are written below:
-
-```text
-training_outputs/issue-41-dqn-task1-baseline/<series timestamp>/
-```
-
-They remain outside Git. The compact results, figures, checksums, producing
-commit, interpretation, and next decision will be added here after training and
-the registered evaluation.
-
-## Results
-
-Not available. Training has not started.
-
-## Decision and follow-up
-
-Do not launch the scientific runs until the listed blockers are resolved. Once
-they are resolved, use the committed launcher without changing the registered
-features, rewards, hyperparameters, seeds, metrics, thresholds, or checkpoint
-selection rule.
+Do not freeze a DQN candidate. Preserve this mixed result and prospectively
+register one controlled follow-up focused on invalid-action handling and
+run-to-run instability, changing one factor only (for example legal-action
+masking). Do not use reserved or final held-out seeds in that follow-up unless
+specified prospectively.

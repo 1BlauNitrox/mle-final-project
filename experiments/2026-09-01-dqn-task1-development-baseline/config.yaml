@@ -3,13 +3,15 @@ schema_version: 1
 experiment:
   issue: 41
   name: dqn-task1-development-baseline
-  status: preregistered_not_started
+  status: completed_mixed_negative
   owner: Waffelmanufaktur
   reviewer: null
   branch: experiment/41-dqn-task1-development-baseline
 
 revisions:
   instrumentation_commit: "cc3dc32979a1d25a0d33ad5e65c5a64783f009cd"
+  training_commit: "e7e8b52f50b2acb46ccad04905d76c6948304e21"
+  evaluation_commits: ["573443ad38dc7c12030c84b75be75d5d6f8ac93e", "255f627c68b0b84a9c86dc989aa38424d8aebb4c"]
   pr_38_merge_commit: "0f315f323f4363ead44ab6893ea34dce47d72f25"
   imported_framework_revision: "0f55c1d"
   tabular_baseline_branch_commit: "a4bbca53c709ea93d71c6a69e0de1c9186532202"
@@ -53,7 +55,8 @@ environment:
 training:
   runs: 5
   episodes_per_run: 10000
-  maximum_total_episodes: 50000
+  maximum_total_episodes: 60000
+  attempted_episodes: 50616
   fresh_model_per_run: true
   checkpoint_selection: final_checkpoint
   evaluation_based_selection: false
@@ -183,7 +186,21 @@ outputs:
     - figures/
 
 blockers_before_training:
-  - non_author_reviewer_not_assigned
-  - issue_36_not_closed
-  - pull_request_37_not_merged_or_approved
-  - all_five_tabular_artifacts_not_available_locally
+  - none
+
+results:
+  successful_training_runs: 5
+  completed_primary_evaluation_episodes: 200
+  deterministic_repeat_episodes: 200
+  aggregate_mean_coin_collection_fraction: 0.8334
+  models_reaching_0_75: 3
+  aggregate_invalid_action_rate: 0.1641577991
+  maximum_model_invalid_action_rate: 0.6085209003
+  bomb_actions: 0
+  deterministic: true
+  immutable: true
+  decision_time_p95_ms_maximum_model: 0.7519721985
+  decision_time_max_ms: 27.6005268097
+  paired_bootstrap_ci95: null
+  paired_bootstrap_status: unavailable_missing_tabular_per_seed_evidence
+  decision: do_not_freeze_register_controlled_follow_up
