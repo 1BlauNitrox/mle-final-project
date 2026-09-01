@@ -49,8 +49,8 @@ class RegisteredRun:
 REGISTERED_RUNS = tuple(
     RegisteredRun(
         run=index,
-        world_seed=12_000 + index,
-        agent_seed=22_000 + index,
+        world_seed=13_000 + index,
+        agent_seed=23_000 + index,
     )
     for index in range(1, 6)
 )
