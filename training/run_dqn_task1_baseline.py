@@ -29,12 +29,12 @@ AGENT = "DagobertDuckDQN"
 SCENARIO = "coin-heaven"
 EPISODES_PER_RUN = 10_000
 EXPECTED_AGENT_SOURCE_SHA256 = (
-    "f9e029b12c72cf6733abc682eeb5cb485db6ae6a9e53f0f428086d2a16439447"
+    "117e29862c5834b9c78a3479206491542465ebb10e55090cbcfc0c6736f2a8a1"
 )
 CHECKPOINT_PATH = (
     REPOSITORY_ROOT / "agent_code" / AGENT / "checkpoint.pt"
 )
-DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "experiment-dqn-slower-epsilon"
+DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "experiment-dqn-slower-learning"
 
 
 @dataclass(frozen=True)
@@ -49,10 +49,10 @@ class RegisteredRun:
 REGISTERED_RUNS = tuple(
     RegisteredRun(
         run=index,
-        world_seed=13_000 + index,
-        agent_seed=23_000 + index,
+        world_seed=14_000 + index,
+        agent_seed=24_000 + index,
     )
-    for index in range(1, 6)
+    for index in range(1, 4)
 )
 
 
