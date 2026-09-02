@@ -3,10 +3,10 @@ schema_version: 1
 experiment:
   issue: 35
   name: task1-LowerLearningRate-DerKleineVermoegensumverteiler
-  status: preregistered
+  status: completed
   owner: LiliWestermann
   reviewer: 
-  experiment_commit: auto
+  experiment_commit: "5af393d4c2c5b46d04751b270f4d865aec41ccaf"
 
 revisions:
   pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
