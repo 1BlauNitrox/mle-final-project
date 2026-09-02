@@ -10,7 +10,7 @@ experiment:
 
 revisions:
   pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
-  agent_implementation_commit: "a08db670257f23bea90c5bdb5f3974ca79cecf7e"
+  agent_implementation_commit: "adb8ffeae4aefb7a43c8b556519671e62247563d"
   imported_framework_revision: "0f55c1d"
   agent_source_sha256: "10d1cb28534d8a9ac6cbe49755a549d31218e6991042662fc734b0bf632f4dec"
 
@@ -141,7 +141,7 @@ success_criteria:
   decision_time_p95_ms_max_exclusive: 50
   decision_time_max_ms_max_exclusive: 100
   steps_per_coin_max_exclusive: 2.6
-  steps_per_coin_aggregate_max_exclusive: 24.8
+  steps_per_coin_aggregate_max_exclusive: 4
 
 compute_budget:
   maximum_training_episodes: 50000
