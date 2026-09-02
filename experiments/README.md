@@ -71,41 +71,6 @@ Accepted, rejected or inconclusive.
 Link the next issue created from the result.
 ```
 
-The config.yml contains the exact machine-readable protocol:
-
-For example:
-```text
-experiment: bfs-coin-navigation
-
-baseline:
-  agent: DerKleineVermoegensumverteiler
-  commit: abc123
-  feature_schema: 1
-
-candidate:
-  agent: DerKleineVermoegensumverteilerBFS
-  commit: def456
-  feature_schema: 2
-
-training:
-  episodes_per_run: 10000
-  world_seeds: [11001, 11002, 11003, 11004, 11005]
-  agent_seeds: [21001, 21002, 21003, 21004, 21005]
-
-evaluation:
-  scenario: coin-heaven
-  opponents: []
-  world_seeds: [31001, 31002, 31003]
-  training_enabled: false
-
-success:
-  minimum_mean_improvement: 0.05
-  confidence_interval_lower_bound: 0.0
-  maximum_invalid_action_rate: 0.01
-  maximum_p95_decision_ms: 50
-  required_bomb_count: 0
-```
-
 
 Do not commit raw logs, replay collections, temporary checkpoints, or large
 training outputs. Record external artifact locations and checksums when those
