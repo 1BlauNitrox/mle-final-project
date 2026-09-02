@@ -260,11 +260,13 @@ class ExperimentRunnerTests(unittest.TestCase):
     def test_successful_run_writes_completed_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary_directory:
             output_root = Path(temporary_directory)
+            child_environment: dict[str, str] = {}
 
             def fake_subprocess_run(
                 command: list[str],
-                **_: object,
+                **kwargs: object,
             ) -> SimpleNamespace:
+                child_environment.update(kwargs["env"])
                 statistics_index = command.index("--save-stats") + 1
                 statistics_path = Path(command[statistics_index])
                 statistics_path.write_text(
@@ -309,6 +311,7 @@ class ExperimentRunnerTests(unittest.TestCase):
                     agent_seed=None,
                     opponents=[],
                     output_root=output_root,
+                    environment_overrides={"BOMBERMAN_TEST_INPUT": "registered"},
                 )
 
             metadata = json.loads(
@@ -323,6 +326,7 @@ class ExperimentRunnerTests(unittest.TestCase):
         self.assertEqual("a" * 40, metadata["git_commit"])
         self.assertFalse(metadata["git_dirty"])
         self.assertEqual("random_agent", metadata["observed_agent"])
+        self.assertEqual("registered", child_environment["BOMBERMAN_TEST_INPUT"])
         self.assertEqual(
             "agent_code/random_agent",
             metadata["agent_configuration"]["path"],

@@ -123,6 +123,28 @@ An agent must explicitly read and use this variable for the seed to control its
 randomness. Recording an agent seed does not by itself make an agent
 reproducible.
 
+The registered evaluator stages each immutable model as the ignored local file
+`agent_code/DagobertDuckDQN/.evaluation-checkpoint.pt`. It passes only that file
+name to the agent, which still resolves the artifact relative to its own module.
+This keeps the worktree clean, avoids redundant per-job snapshots, and leaves
+the normal submission path `checkpoint.pt` unchanged.
+
+After evaluation, export the reviewable observations and verify every committed
+table and figure with:
+
+```bash
+python -m training.dqn_task1_evidence export \
+  training_outputs/issue-41-dqn-task1-baseline/<series-id> \
+  experiments/2026-09-01-dqn-task1-development-baseline/evidence
+python -m training.dqn_task1_evidence verify \
+  experiments/2026-09-01-dqn-task1-development-baseline
+```
+
+The evidence bundle contains all evaluation episode rows, all raw evaluation
+decision times, all training episode rows, the failed training run, artifact
+hashes, and a sanitized evaluation manifest. The verifier checks evidence
+hashes and rebuilds the committed summaries and figures byte-for-byte.
+
 ### Adding opponents
 
 Pass zero to three opponents after `--opponents`:

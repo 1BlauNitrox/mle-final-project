@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import csv
 import json
 from pathlib import Path
 
 import pytest
 
 import training.evaluate_dqn_task1_baseline as evaluation
+from training.metrics import CSV_COLUMNS
 
 
 def test_registered_evaluation_matrix_matches_issue_41() -> None:
@@ -31,7 +33,7 @@ def test_remove_known_checkpoint_rejects_unknown_file(
 ) -> None:
     checkpoint = tmp_path / "checkpoint.pt"
     checkpoint.write_bytes(b"unknown")
-    monkeypatch.setattr(evaluation, "CHECKPOINT_PATH", checkpoint)
+    monkeypatch.setattr(evaluation, "STAGED_CHECKPOINT_PATH", checkpoint)
 
     with pytest.raises(RuntimeError, match="unrecognized"):
         evaluation._remove_known_checkpoint(
@@ -46,7 +48,7 @@ def test_remove_known_checkpoint_deletes_only_matching_copy(
     checkpoint = tmp_path / "checkpoint.pt"
     checkpoint.write_bytes(b"known")
     digest = evaluation._sha256(checkpoint)
-    monkeypatch.setattr(evaluation, "CHECKPOINT_PATH", checkpoint)
+    monkeypatch.setattr(evaluation, "STAGED_CHECKPOINT_PATH", checkpoint)
 
     evaluation._remove_known_checkpoint(
         {"run-01": {"sha256": digest}}
@@ -83,9 +85,32 @@ def test_completed_job_requires_all_runner_outputs(tmp_path: Path) -> None:
     job = {"status": "completed", "run_directory": "run"}
 
     assert not evaluation._job_is_complete(job, tmp_path)
-    for name in ("metadata.json", "episodes.csv", "summary.json"):
+    for name in ("metadata.json", "summary.json"):
         (run_directory / name).write_text("data", encoding="utf-8")
+    row = _deterministic_row(digest="a" * 64)
+    row.update({"schema_version": 1, "round": 1, "agent": evaluation.AGENT, "mode": "evaluation"})
+    with (run_directory / "episodes.csv").open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
+        writer.writeheader()
+        writer.writerow(row)
     assert evaluation._job_is_complete(job, tmp_path)
+
+
+def test_completed_job_without_action_digest_is_repeated(tmp_path: Path) -> None:
+    run_directory = tmp_path / "run"
+    run_directory.mkdir()
+    for name in ("metadata.json", "summary.json"):
+        (run_directory / name).write_text("data", encoding="utf-8")
+    row = _deterministic_row(digest=None)
+    row.update({"schema_version": 1, "round": 1, "agent": evaluation.AGENT, "mode": "evaluation"})
+    with (run_directory / "episodes.csv").open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
+        writer.writeheader()
+        writer.writerow(row)
+
+    assert not evaluation._job_is_complete(
+        {"status": "completed", "run_directory": "run"}, tmp_path
+    )
 
 
 def test_executed_action_sequence_digest_depends_on_order() -> None:

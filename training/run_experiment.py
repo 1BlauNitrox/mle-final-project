@@ -33,6 +33,7 @@ def run_experiment(
     agent_seed: int | None,
     opponents: list[str],
     output_root: Path,
+    environment_overrides: dict[str, str] | None = None,
 ) -> Path:
     """Run one game job and create a self-contained experiment directory."""
     _validate_arguments(
@@ -106,6 +107,8 @@ def run_experiment(
     environment = os.environ.copy()
     if agent_seed is not None:
         environment["BOMBERMAN_AGENT_SEED"] = str(agent_seed)
+    if environment_overrides:
+        environment.update(environment_overrides)
 
     start_time = monotonic()
 

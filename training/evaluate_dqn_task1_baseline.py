@@ -22,6 +22,8 @@ EVALUATION_PASSES = ("primary", "repeat")
 MANIFEST_REPLACE_ATTEMPTS = 10
 MANIFEST_REPLACE_RETRY_SECONDS = 0.1
 ACTION_SEQUENCE_COLUMN = "executed_action_sequence_sha256"
+EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
+STAGED_CHECKPOINT_PATH = CHECKPOINT_PATH.with_name(".evaluation-checkpoint.pt")
 DETERMINISTIC_COLUMNS = (
     ACTION_SEQUENCE_COLUMN,
     "episode_steps",
@@ -85,7 +87,7 @@ def evaluate_series(series_directory: Path) -> Path:
             artifact_path = artifacts_directory / model.artifact_name
             artifact_hash_before = _sha256(artifact_path)
             model_record["artifact_sha256_before"] = artifact_hash_before
-            shutil.copy2(artifact_path, CHECKPOINT_PATH)
+            shutil.copy2(artifact_path, STAGED_CHECKPOINT_PATH)
 
             for pass_name in EVALUATION_PASSES:
                 for world_seed in DEVELOPMENT_SEEDS:
@@ -129,6 +131,9 @@ def evaluate_series(series_directory: Path) -> Path:
                             agent_seed=model.agent_seed,
                             opponents=[],
                             output_root=output_root,
+                            environment_overrides={
+                                EVALUATION_CHECKPOINT_ENV: STAGED_CHECKPOINT_PATH.name
+                            },
                         )
                         job_record["run_directory"] = run_directory.relative_to(
                             series_directory
@@ -145,7 +150,7 @@ def evaluate_series(series_directory: Path) -> Path:
                     _write_json(manifest_path, manifest)
 
             artifact_hash_after = _sha256(artifact_path)
-            checkpoint_hash_after = _sha256(CHECKPOINT_PATH)
+            checkpoint_hash_after = _sha256(STAGED_CHECKPOINT_PATH)
             model_record["artifact_sha256_after"] = artifact_hash_after
             model_record["checkpoint_sha256_after"] = checkpoint_hash_after
             model_record["immutable"] = (
@@ -170,7 +175,7 @@ def evaluate_series(series_directory: Path) -> Path:
                 raise RuntimeError(
                     f"Evaluation validation failed for {model_key}"
                 )
-            CHECKPOINT_PATH.unlink()
+            STAGED_CHECKPOINT_PATH.unlink()
 
         manifest["status"] = "completed"
         manifest["finished_at"] = _utc_now()
@@ -201,9 +206,9 @@ def _validate_artifacts(
 def _remove_known_checkpoint(
     artifact_records: dict[str, dict[str, Any]],
 ) -> None:
-    if not CHECKPOINT_PATH.exists():
+    if not STAGED_CHECKPOINT_PATH.exists():
         return
-    checkpoint_hash = _sha256(CHECKPOINT_PATH)
+    checkpoint_hash = _sha256(STAGED_CHECKPOINT_PATH)
     known_hashes = {
         record["sha256"] for record in artifact_records.values()
     }
@@ -212,7 +217,7 @@ def _remove_known_checkpoint(
             "Refusing to replace an unrecognized agent checkpoint: "
             f"{checkpoint_hash}"
         )
-    CHECKPOINT_PATH.unlink()
+    STAGED_CHECKPOINT_PATH.unlink()
 
 
 def _load_or_create_manifest(
@@ -322,10 +327,22 @@ def _job_is_complete(
     if not isinstance(relative, str):
         return False
     run_directory = series_directory / relative
-    return (
+    outputs_exist = (
         (run_directory / "metadata.json").is_file()
         and (run_directory / "episodes.csv").is_file()
         and (run_directory / "summary.json").is_file()
+    )
+    if not outputs_exist:
+        return False
+    try:
+        rows = read_episodes_csv(run_directory / "episodes.csv")
+    except (OSError, ValueError):
+        return False
+    matching = [row for row in rows if row["agent"] == AGENT]
+    return (
+        len(matching) == 1
+        and isinstance(matching[0].get(ACTION_SEQUENCE_COLUMN), str)
+        and bool(matching[0][ACTION_SEQUENCE_COLUMN])
     )
 
 

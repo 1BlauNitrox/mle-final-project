@@ -23,9 +23,8 @@ from training.evaluate_dqn_task1_baseline import (
     MODELS,
 )
 
-AVAILABLE_COINS = 50
+COIN_HEAVEN_INITIAL_COINS = 50
 ROLLING_WINDOW = 250
-TABULAR_AGGREGATE_FRACTION = 0.8995
 SUMMARY_FIELDS = (
     "model",
     "training_world_seed",
@@ -134,15 +133,6 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
         "evaluation_repeat_episodes": _completed_repeat_episodes(manifest),
         "criteria": criteria,
-        "tabular_comparison": {
-            "available_aggregate_fraction": TABULAR_AGGREGATE_FRACTION,
-            "dqn_minus_tabular_aggregate_difference": (
-                aggregate["mean_collection_fraction"]
-                - TABULAR_AGGREGATE_FRACTION
-            ),
-            "paired_bootstrap_ci95": None,
-            "status": "not_computable_missing_tabular_per_seed_rows",
-        },
     }
     _write_json(experiment_directory / "result.json", result)
     return result
@@ -431,7 +421,10 @@ def _plot_learning_curves(
         metadata = training_runs[model.agent_seed]
         rows = read_episodes_csv(metadata["directory"] / "episodes.csv")
         coins = np.asarray(
-            [row["coins_collected"] / AVAILABLE_COINS for row in rows],
+            [
+                row["coins_collected"] / COIN_HEAVEN_INITIAL_COINS
+                for row in rows
+            ],
             dtype=float,
         )
         rolling = np.convolve(coins, kernel, mode="valid")
@@ -462,7 +455,10 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
-    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(value, allow_nan=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _sha256(path: Path) -> str:

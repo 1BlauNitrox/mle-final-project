@@ -239,6 +239,12 @@ atomic replacement. A failed write leaves an existing checkpoint unchanged.
 Evaluation loads only a frozen online policy, disables gradients and
 exploration, and does not write the checkpoint.
 
+Repository evaluation tooling may set `BOMBERMAN_EVALUATION_CHECKPOINT` to one
+file name. The agent resolves that name inside this directory; path components
+are rejected. This permits an ignored, temporary artifact copy during a
+registered evaluation without changing the default submission artifact
+`checkpoint.pt` or relying on an absolute path.
+
 No candidate checkpoint is committed. The five development artifacts remain in
 the ignored raw experiment store and must not be mistaken for a frozen model.
 
