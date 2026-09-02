@@ -1,5 +1,5 @@
 -r requirements.txt
 
-matplotlib>=3.9.2
+matplotlib>=3.10.9
 pytest>=9.1.1
 ruff>=0.16.5
