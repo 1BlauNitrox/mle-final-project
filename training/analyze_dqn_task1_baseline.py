@@ -1,4 +1,4 @@
-"""Create the compact Issue #41 record from retained raw DQN outputs."""
+"""Analyze retained DQN outputs produced by the Issue #41 evaluation workflow."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from training.aggregate import read_episodes_csv
 from training.evaluate_dqn_task1_baseline import (
     AGENT,
     DEVELOPMENT_SEEDS,
-    MODELS,
+    EvaluationModel,
 )
 
 AVAILABLE_COINS = 50
@@ -70,12 +70,13 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     if manifest.get("status") != "completed":
         raise ValueError("Evaluation manifest is not completed")
 
-    training_runs = _completed_training_runs(series_directory)
+    models = _models_from_manifest(manifest)
+    training_runs = _completed_training_runs(series_directory, models)
     model_summaries: list[dict[str, Any]] = []
     evaluation_commits: set[str] = set()
     evaluation_duration_seconds = 0.0
 
-    for model in MODELS:
+    for model in models:
         model_name = f"run-{model.run:02d}"
         training = training_runs[model.agent_seed]
         rows: list[dict[str, Any]] = []
@@ -121,7 +122,7 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     )
     _plot_evaluation(model_summaries, figures_directory)
     _plot_failures(model_summaries, figures_directory)
-    _plot_learning_curves(training_runs, figures_directory)
+    _plot_learning_curves(training_runs, models, figures_directory)
 
     criteria = _evaluate_criteria(model_summaries, aggregate, manifest)
     result = {
@@ -132,7 +133,7 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
         ),
         "evaluation_commits": sorted(evaluation_commits),
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
-        "evaluation_repeat_episodes": 200,
+        "evaluation_repeat_episodes": len(models) * len(DEVELOPMENT_SEEDS),
         "criteria": criteria,
         "tabular_comparison": {
             "available_aggregate_fraction": TABULAR_AGGREGATE_FRACTION,
@@ -290,17 +291,23 @@ def _evaluate_criteria(
     maximum_model_invalid = max(row["invalid_action_rate"] for row in summaries)
     deterministic = all(record["deterministic"] for record in manifest["models"].values())
     immutable = all(record["immutable"] for record in manifest["models"].values())
+    complete_issue_41_matrix = len(summaries) == 5
+    individual_models_criterion = {
+        "value": models_above_threshold,
+        "threshold": ">= 4 models at >= 0.75",
+        "passed": models_above_threshold >= 4 if complete_issue_41_matrix else None,
+    }
+    if not complete_issue_41_matrix:
+        individual_models_criterion["reason"] = (
+            "Issue #41 criterion requires exactly 5 completed models"
+        )
     return {
         "aggregate_fraction": {
             "value": aggregate["mean_collection_fraction"],
             "threshold": ">= 0.80",
             "passed": aggregate["mean_collection_fraction"] >= 0.80,
         },
-        "individual_models": {
-            "value": models_above_threshold,
-            "threshold": ">= 4 models at >= 0.75",
-            "passed": models_above_threshold >= 4,
-        },
+        "individual_models": individual_models_criterion,
         "paired_non_inferiority": {
             "value": None,
             "threshold": "95% CI lower bound > -0.02",
@@ -331,7 +338,26 @@ def _evaluate_criteria(
     }
 
 
-def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]]:
+def _models_from_manifest(
+    manifest: dict[str, Any],
+) -> tuple[EvaluationModel, ...]:
+    models = tuple(
+        EvaluationModel(
+            run=record["run"],
+            agent_seed=record["agent_seed"],
+            artifact_name=record["artifact_name"],
+        )
+        for record in manifest["artifacts"].values()
+    )
+    if not models:
+        raise ValueError("Evaluation manifest has no models")
+    return tuple(sorted(models, key=lambda model: model.run))
+
+
+def _completed_training_runs(
+    series_directory: Path,
+    models: tuple[EvaluationModel, ...],
+) -> dict[int, dict[str, Any]]:
     records: dict[int, dict[str, Any]] = {}
     for metadata_path in sorted(series_directory.glob("**/metadata.json")):
         if "evaluations" in metadata_path.parts:
@@ -344,7 +370,7 @@ def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]
         ):
             metadata["directory"] = metadata_path.parent
             records[metadata["agent_seed"]] = metadata
-    expected = {model.agent_seed for model in MODELS}
+    expected = {model.agent_seed for model in models}
     if set(records) != expected:
         raise ValueError(f"Completed training seeds differ: {sorted(records)}")
     return records
@@ -401,11 +427,13 @@ def _plot_failures(
 
 
 def _plot_learning_curves(
-    training_runs: dict[int, dict[str, Any]], figures_directory: Path
+    training_runs: dict[int, dict[str, Any]],
+    models: tuple[EvaluationModel, ...],
+    figures_directory: Path,
 ) -> None:
     figure, axis = plt.subplots(figsize=(9, 5))
     kernel = np.ones(ROLLING_WINDOW) / ROLLING_WINDOW
-    for model in MODELS:
+    for model in models:
         metadata = training_runs[model.agent_seed]
         rows = read_episodes_csv(metadata["directory"] / "episodes.csv")
         coins = np.asarray(

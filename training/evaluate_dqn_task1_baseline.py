@@ -1,4 +1,4 @@
-"""Evaluate the five Issue #41 DQN artifacts on registered development seeds."""
+"""Evaluate completed DQN artifacts on the Issue #41 development seeds."""
 
 from __future__ import annotations
 
@@ -67,17 +67,19 @@ def evaluate_series(series_directory: Path) -> Path:
     evaluations_directory = series_directory / "evaluations"
     manifest_path = series_directory / "evaluation_manifest.json"
 
-    artifact_records = _validate_artifacts(artifacts_directory)
+    models = _models_from_series(series_directory)
+    artifact_records = _validate_artifacts(artifacts_directory, models)
     _remove_known_checkpoint(artifact_records)
     manifest = _load_or_create_manifest(
         manifest_path=manifest_path,
         series_directory=series_directory,
         artifact_records=artifact_records,
+        models=models,
     )
     evaluations_directory.mkdir(exist_ok=True)
 
     try:
-        for model in MODELS:
+        for model in models:
             model_key = f"run-{model.run:02d}"
             model_record = manifest["models"][model_key]
             artifact_path = artifacts_directory / model.artifact_name
@@ -181,9 +183,10 @@ def evaluate_series(series_directory: Path) -> Path:
 
 def _validate_artifacts(
     artifacts_directory: Path,
+    models: tuple[EvaluationModel, ...] = MODELS,
 ) -> dict[str, dict[str, Any]]:
     records: dict[str, dict[str, Any]] = {}
-    for model in MODELS:
+    for model in models:
         path = artifacts_directory / model.artifact_name
         if not path.is_file():
             raise FileNotFoundError(f"Missing model artifact: {path}")
@@ -194,6 +197,48 @@ def _validate_artifacts(
             "size_bytes": path.stat().st_size,
         }
     return records
+
+
+def _models_from_series(series_directory: Path) -> tuple[EvaluationModel, ...]:
+    """Select every successfully completed final artifact recorded by a series."""
+    series = json.loads(
+        (series_directory / "series.json").read_text(encoding="utf-8")
+    )
+    models: list[EvaluationModel] = []
+    seen_runs: set[int] = set()
+    seen_agent_seeds: set[int] = set()
+
+    for record in series.get("runs", []):
+        if record.get("status") != "completed":
+            continue
+        artifact = record.get("artifact")
+        artifact_path = artifact.get("path") if isinstance(artifact, dict) else None
+        if not isinstance(artifact_path, str):
+            raise ValueError("Completed training run has no artifact path")
+
+        run = record.get("run")
+        agent_seed = record.get("agent_seed")
+        if not isinstance(run, int) or not isinstance(agent_seed, int):
+            raise ValueError("Completed training run has invalid run or agent seed")
+        if run in seen_runs or agent_seed in seen_agent_seeds:
+            raise ValueError("Completed training runs must have unique runs and seeds")
+
+        path = Path(artifact_path)
+        if path.parent.as_posix() != "artifacts":
+            raise ValueError(f"Artifact is outside the artifacts directory: {path}")
+        models.append(
+            EvaluationModel(
+                run=run,
+                agent_seed=agent_seed,
+                artifact_name=path.name,
+            )
+        )
+        seen_runs.add(run)
+        seen_agent_seeds.add(agent_seed)
+
+    if not models:
+        raise ValueError("Training series has no completed runs to evaluate")
+    return tuple(sorted(models, key=lambda model: model.run))
 
 
 def _remove_known_checkpoint(
@@ -218,6 +263,7 @@ def _load_or_create_manifest(
     manifest_path: Path,
     series_directory: Path,
     artifact_records: dict[str, dict[str, Any]],
+    models: tuple[EvaluationModel, ...] = MODELS,
 ) -> dict[str, Any]:
     if manifest_path.is_file():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -245,7 +291,7 @@ def _load_or_create_manifest(
                 "immutable": None,
                 "deterministic": None,
             }
-            for model in MODELS
+            for model in models
         },
         "jobs": {},
     }
@@ -354,7 +400,7 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "series_directory",
         type=Path,
-        help="Completed Issue #41 training-series directory",
+        help="Training-series directory containing at least one completed run",
     )
     return parser.parse_args(argv)
 

@@ -25,6 +25,57 @@ def test_registered_evaluation_matrix_matches_issue_41() -> None:
     ]
 
 
+def test_models_from_series_selects_only_completed_runs(tmp_path: Path) -> None:
+    (tmp_path / "series.json").write_text(
+        json.dumps(
+            {
+                "runs": [
+                    {
+                        "run": 1,
+                        "agent_seed": 23001,
+                        "status": "completed",
+                        "artifact": {
+                            "path": "artifacts/run-01-final-checkpoint.pt"
+                        },
+                    },
+                    {
+                        "run": 2,
+                        "agent_seed": 23002,
+                        "status": "failed",
+                        "artifact": {
+                            "path": "artifacts/run-02-failed-checkpoint.pt"
+                        },
+                    },
+                    {
+                        "run": 3,
+                        "agent_seed": 23003,
+                        "status": "completed",
+                        "artifact": {
+                            "path": "artifacts/run-03-final-checkpoint.pt"
+                        },
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    assert evaluation._models_from_series(tmp_path) == (
+        evaluation.EvaluationModel(1, 23001, "run-01-final-checkpoint.pt"),
+        evaluation.EvaluationModel(3, 23003, "run-03-final-checkpoint.pt"),
+    )
+
+
+def test_models_from_series_requires_a_completed_run(tmp_path: Path) -> None:
+    (tmp_path / "series.json").write_text(
+        json.dumps({"runs": [{"run": 1, "status": "failed"}]}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="no completed runs"):
+        evaluation._models_from_series(tmp_path)
+
+
 def test_remove_known_checkpoint_rejects_unknown_file(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
