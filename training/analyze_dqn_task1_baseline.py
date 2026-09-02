@@ -132,7 +132,7 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
         ),
         "evaluation_commits": sorted(evaluation_commits),
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
-        "evaluation_repeat_episodes": 200,
+        "evaluation_repeat_episodes": _completed_repeat_episodes(manifest),
         "criteria": criteria,
         "tabular_comparison": {
             "available_aggregate_fraction": TABULAR_AGGREGATE_FRACTION,
@@ -146,6 +146,21 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     }
     _write_json(experiment_directory / "result.json", result)
     return result
+
+
+def _completed_repeat_episodes(manifest: dict[str, Any]) -> int:
+    """Count completed determinism-repeat jobs recorded in the manifest."""
+    completed = sum(
+        1
+        for job in manifest["jobs"].values()
+        if job.get("pass") == "repeat" and job.get("status") == "completed"
+    )
+    expected = len(MODELS) * len(DEVELOPMENT_SEEDS)
+    if completed != expected:
+        raise ValueError(
+            f"Expected {expected} completed repeat evaluations, found {completed}"
+        )
+    return completed
 
 
 def _summarize_rows(
@@ -167,7 +182,9 @@ def _summarize_rows(
         dtype=float,
     )
     total_coins = sum(row["coins_collected"] for row in rows)
-    total_steps = sum(row["episode_steps"] for row in rows)
+    # docs/0007 defines the step basis for these metrics as survival_steps, not
+    # episode_steps. The two coincide only while the agent cannot die.
+    total_steps = sum(row["survival_steps"] for row in rows)
     attempted = sum(row["attempted_actions"] for row in rows)
     invalid = sum(row["invalid_actions"] for row in rows)
     decisions = np.asarray(decision_times, dtype=float)
@@ -197,8 +214,11 @@ def _summarize_rows(
         "zero_coin_count": int(np.count_nonzero(fractions == 0.0)),
         "zero_coin_rate": float(np.mean(fractions == 0.0)),
         "total_coins": total_coins,
-        "steps_per_coin": total_steps / total_coins if total_coins else math.inf,
-        "coins_per_100_steps": 100.0 * total_coins / total_steps,
+        "total_steps": total_steps,
+        "steps_per_coin": total_steps / total_coins if total_coins else None,
+        "coins_per_100_steps": (
+            100.0 * total_coins / total_steps if total_steps else None
+        ),
         "invalid_actions": invalid,
         "attempted_actions": attempted,
         "invalid_action_rate": invalid / attempted if attempted else 0.0,
@@ -213,6 +233,7 @@ def _summarize_rows(
 def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
     weighted_fields = (
         "total_coins",
+        "total_steps",
         "invalid_actions",
         "attempted_actions",
         "action_up",
@@ -227,10 +248,7 @@ def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
     )
     totals = {field: sum(row[field] for row in summaries) for field in weighted_fields}
     episodes = sum(row["evaluation_episodes"] for row in summaries)
-    total_steps = sum(
-        row["total_coins"] * row["steps_per_coin"] for row in summaries
-    )
-    per_episode_fractions: list[float] = []
+    total_steps = totals["total_steps"]
     # The combined sample moments can be recovered exactly from group moments.
     combined_mean = sum(
         row["mean_collection_fraction"] * row["evaluation_episodes"]
@@ -244,7 +262,6 @@ def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
         for row in summaries
     )
     combined_std = math.sqrt(combined_ss / (episodes - 1))
-    del per_episode_fractions
     return {
         "model": "aggregate",
         "training_world_seed": "",
@@ -262,8 +279,13 @@ def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
         "zero_coin_count": totals["zero_coin_count"],
         "zero_coin_rate": totals["zero_coin_count"] / episodes,
         "total_coins": totals["total_coins"],
-        "steps_per_coin": total_steps / totals["total_coins"],
-        "coins_per_100_steps": 100.0 * totals["total_coins"] / total_steps,
+        "total_steps": total_steps,
+        "steps_per_coin": (
+            total_steps / totals["total_coins"] if totals["total_coins"] else None
+        ),
+        "coins_per_100_steps": (
+            100.0 * totals["total_coins"] / total_steps if total_steps else None
+        ),
         "invalid_actions": totals["invalid_actions"],
         "attempted_actions": totals["attempted_actions"],
         "invalid_action_rate": totals["invalid_actions"] / totals["attempted_actions"],
@@ -427,8 +449,10 @@ def _plot_learning_curves(
 
 
 def _write_summary_csv(path: Path, rows: Iterable[dict[str, Any]]) -> None:
+    # total_steps is an aggregation input rather than a reported metric, so it is
+    # carried on the summary rows but excluded from the committed CSV schema.
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=SUMMARY_FIELDS)
+        writer = csv.DictWriter(file, fieldnames=SUMMARY_FIELDS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 

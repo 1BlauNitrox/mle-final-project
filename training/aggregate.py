@@ -347,10 +347,9 @@ def _aggregate_group(
                 rows,
                 "target_synchronizations",
             ),
-            "total_episode_target_synchronizations": sum(
-                row["episode_target_synchronizations"]
-                for row in rows
-                if row.get("episode_target_synchronizations") is not None
+            "total_episode_target_synchronizations": _sum_available(
+                rows,
+                "episode_target_synchronizations",
             ),
         },
     }
@@ -530,6 +529,19 @@ def _mean_available(
         if row.get(field) is not None
     ]
     return fmean(values) if values else None
+
+
+def _sum_available(
+    rows: Iterable[Mapping[str, Any]],
+    field: str,
+) -> float | int | None:
+    """Return the sum of available values or null if all are missing."""
+    values = [
+        row[field]
+        for row in rows
+        if row.get(field) is not None
+    ]
+    return sum(values) if values else None
 
 
 def _maximum_available(

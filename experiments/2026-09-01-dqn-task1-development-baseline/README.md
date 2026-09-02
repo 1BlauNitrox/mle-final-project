@@ -53,7 +53,21 @@ agent plus 67 MB for the orchestrator, below 8 GB.
 `summary.csv` contains the compact values and `result.json` the mechanical
 criterion decisions. The aggregate performance gate passed, but only three
 models reached 0.75 and the aggregate and run-04 invalid-action gates failed.
-No-bomb, determinism, immutability, and latency gates passed.
+No-bomb, immutability, and latency gates passed.
+
+### Determinism is not yet verified for these artifacts
+
+The recorded determinism result was produced by a check that compared episode
+outcomes and per-action **totals** only. Two runs can execute the same moves in
+a different order and still produce identical totals, so that check could not
+establish the reproducibility the repository contract requires.
+
+The check has since been strengthened to compare a digest of the ordered
+executed action sequence, and the framework now records that digest. Verifying
+these five artifacts under the stronger check requires re-running the 400
+evaluation episodes against them, which has not been done. Until then the
+determinism gate for this experiment is **unverified**, not passed. The
+strengthened check applies to every subsequent experiment.
 
 PR #37 contains aggregate tabular rows but not the 200 model-index/world-seed
 pairs; its five original artifacts are unavailable locally and in GitHub

@@ -21,7 +21,9 @@ DEVELOPMENT_SEEDS = tuple(range(31_001, 31_041))
 EVALUATION_PASSES = ("primary", "repeat")
 MANIFEST_REPLACE_ATTEMPTS = 10
 MANIFEST_REPLACE_RETRY_SECONDS = 0.1
+ACTION_SEQUENCE_COLUMN = "executed_action_sequence_sha256"
 DETERMINISTIC_COLUMNS = (
+    ACTION_SEQUENCE_COLUMN,
     "episode_steps",
     "survival_steps",
     "score",
@@ -278,6 +280,17 @@ def _model_is_deterministic(
                 world_seed=world_seed,
             ),
         )
+        # An absent digest must fail loudly. Treating it as an equal empty
+        # string would let an uninstrumented run pass the determinism gate.
+        for row, label in ((primary, "primary"), (repeat, "repeat")):
+            digest = row.get(ACTION_SEQUENCE_COLUMN)
+            if not isinstance(digest, str) or not digest:
+                raise ValueError(
+                    f"The {label} evaluation of run-{model.run:02d} on world seed "
+                    f"{world_seed} recorded no {ACTION_SEQUENCE_COLUMN}, so "
+                    "determinism cannot be verified"
+                )
+
         if any(primary[column] != repeat[column] for column in DETERMINISTIC_COLUMNS):
             return False
     return True

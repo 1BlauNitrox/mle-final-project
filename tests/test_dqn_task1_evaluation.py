@@ -88,6 +88,112 @@ def test_completed_job_requires_all_runner_outputs(tmp_path: Path) -> None:
     assert evaluation._job_is_complete(job, tmp_path)
 
 
+def test_executed_action_sequence_digest_depends_on_order() -> None:
+    from environment import GenericWorld
+
+    world = GenericWorld.__new__(GenericWorld)
+    world.replay = {
+        "actions": {
+            "forward": ["UP", "RIGHT"],
+            "reversed": ["RIGHT", "UP"],
+            "repeat": ["UP", "RIGHT"],
+        }
+    }
+
+    forward = world.executed_action_sequence_digest("forward")
+
+    assert forward != world.executed_action_sequence_digest("reversed")
+    assert forward == world.executed_action_sequence_digest("repeat")
+    assert world.executed_action_sequence_digest("absent") is None
+
+
+def test_executed_action_sequence_digest_is_none_before_a_round_starts() -> None:
+    from environment import GenericWorld
+
+    world = GenericWorld.__new__(GenericWorld)
+
+    assert world.executed_action_sequence_digest("any") is None
+
+
+def _deterministic_row(*, digest: str | None, **overrides: object) -> dict[str, object]:
+    row: dict[str, object] = {
+        evaluation.ACTION_SEQUENCE_COLUMN: digest,
+        "episode_steps": 100,
+        "survival_steps": 100,
+        "score": 50,
+        "coins_collected": 50,
+        "invalid_actions": 0,
+        "attempted_actions": 100,
+        "invalid_action_rate": 0.0,
+        "survived": True,
+        "termination_reason": "step_limit",
+        "action_up": 25,
+        "action_right": 25,
+        "action_down": 25,
+        "action_left": 25,
+        "action_wait": 0,
+        "action_bomb": 0,
+        "action_unknown": 0,
+    }
+    row.update(overrides)
+    return row
+
+
+def _check_determinism(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    primary: dict[str, object],
+    repeat: dict[str, object],
+) -> bool:
+    monkeypatch.setattr(evaluation, "DEVELOPMENT_SEEDS", (31_001,))
+
+    def fake_read_job_row(*, manifest, series_directory, job_key):  # noqa: ANN001
+        return primary if ":primary:" in job_key else repeat
+
+    monkeypatch.setattr(evaluation, "_read_job_row", fake_read_job_row)
+
+    return evaluation._model_is_deterministic(
+        manifest={},
+        series_directory=Path("."),
+        model=evaluation.MODELS[0],
+    )
+
+
+def test_identical_evaluations_are_deterministic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    row = _deterministic_row(digest="a" * 64)
+
+    assert _check_determinism(monkeypatch, primary=row, repeat=dict(row))
+
+
+def test_reordered_actions_fail_determinism_despite_equal_totals(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Action totals cannot distinguish UP,RIGHT from RIGHT,UP."""
+    primary = _deterministic_row(digest="a" * 64)
+    repeat = _deterministic_row(digest="b" * 64)
+
+    # Every non-sequence field is identical, so only the digest can catch this.
+    assert all(
+        primary[column] == repeat[column]
+        for column in evaluation.DETERMINISTIC_COLUMNS
+        if column != evaluation.ACTION_SEQUENCE_COLUMN
+    )
+    assert not _check_determinism(monkeypatch, primary=primary, repeat=repeat)
+
+
+@pytest.mark.parametrize("missing", [None, ""])
+def test_absent_action_sequence_digest_fails_loudly(
+    monkeypatch: pytest.MonkeyPatch,
+    missing: str | None,
+) -> None:
+    row = _deterministic_row(digest=missing)
+
+    with pytest.raises(ValueError, match="determinism cannot be verified"):
+        _check_determinism(monkeypatch, primary=row, repeat=dict(row))
+
+
 def test_manifest_write_retries_transient_windows_lock(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

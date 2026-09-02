@@ -25,6 +25,7 @@ CSV_COLUMNS = (
     "invalid_action_rate",
     "survived",
     "termination_reason",
+    "executed_action_sequence_sha256",
     "action_up",
     "action_right",
     "action_down",
@@ -308,6 +309,14 @@ def _normalize_agent_episode(
             round_number=round_number,
             agent_name=agent_name,
         ),
+        # Optional so that statistics recorded before this field existed remain
+        # readable; an empty value means the sequence was not instrumented.
+        "executed_action_sequence_sha256": _optional_string(
+            statistics.get("executed_action_sequence_sha256"),
+            field="executed_action_sequence_sha256",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
         **action_counts,
         "action_unknown": unknown_actions,
         "decision_time_median_ms": _optional_number(
@@ -517,6 +526,25 @@ def _boolean(
             expected="a boolean",
         )
     return value
+
+
+def _optional_string(
+    value: object,
+    *,
+    field: str,
+    round_number: int,
+    agent_name: str,
+) -> str | None:
+    "Validate an optional non-empty string field."
+    if value is None:
+        return None
+
+    return _string(
+        value,
+        field=field,
+        round_number=round_number,
+        agent_name=agent_name,
+    )
 
 
 def _string(
