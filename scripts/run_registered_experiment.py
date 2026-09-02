@@ -605,7 +605,6 @@ def main() -> int:
 
     require_clean_registered_commit(config)
 
-    issue = config["experiment"]["issue"]
     artifact_root = (
         REPOSITORY_ROOT
         / "training_artifacts"
