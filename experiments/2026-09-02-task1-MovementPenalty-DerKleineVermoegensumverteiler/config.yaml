@@ -5,7 +5,7 @@ experiment:
   name: task1-MovementPenalty-DerKleineVermoegensumverteiler
   status: completed
   owner: LiliWestermann
-  reviewer: 
+  reviewer:
   experiment_commit: auto
 
 revisions:

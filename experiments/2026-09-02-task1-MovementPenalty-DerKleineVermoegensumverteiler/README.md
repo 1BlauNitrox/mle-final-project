@@ -40,7 +40,7 @@ The complete machine-readable configuration is stored in `config.yaml`.
 - Training disabled during evaluation
 
 ## Independent variable
-The independent variable is the reward function. We added the four Rewards 
+The independent variable is the reward function. We added the four Rewards
 MOVED_LEFT: -0.1, MOVED_RIGHT: -0.1, MOVED_UP: -0.1 and MOVED_DOWN: -0.1.
 
 ## Controlled variables
@@ -61,7 +61,7 @@ Compared with the baseline experiment, the following variables remain unchanged:
 Only the reward function is changed.
 
 ## Metrics and success criterion
-The metrics and thresholds are registered in `config.yaml`. They must not be changed 
+The metrics and thresholds are registered in `config.yaml`. They must not be changed
 after the first scientific training run begins.
 
 ## Results
@@ -119,17 +119,17 @@ collection fraction by 26.66 percentage points and increased the number of
 steps per coin by approximately 134.5%.
 
 ## Interpretation
-The hypothesis was not supported. Adding the general movement penalty increased 
+The hypothesis was not supported. Adding the general movement penalty increased
 the steps per coin from 3.598 to 8.438 and the aggregated coin collection
 fraction decreased form 0.9196 to 0.653.
 
 We see that the runs vary even more, as the use of th WAIT action was extremely
-high in run 5 and run 2 produced an invalid-action rate od 0.5478. This 
-indicates, that the new reward encourages undesirable behaviour rather than 
+high in run 5 and run 2 produced an invalid-action rate od 0.5478. This
+indicates, that the new reward encourages undesirable behaviour rather than
 reduce unnecessary movement as hoped.
 
 An explanation could be, that the reward does not distinguish between necessary
-and unnecessary movent, but penalizes each movement the same. 
+and unnecessary movent, but penalizes each movement the same.
 
 The registered collection-fraction, invalid-action-rate, individual-model and
 steps-per-coin success criterie were not met.

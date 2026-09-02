@@ -58,7 +58,7 @@ def game_events_occurred(
 
     if old_state is None or new_state is None:
         return
-    
+
     training_events = list(events)
 
     movement_event = _coin_movement_event(
@@ -157,7 +157,7 @@ def _finalize_pennding_transition(self) -> None:
 
     if pending is None:
         return
-    
+
     _apply_update(
         self,
         state=pending.state,
@@ -202,7 +202,7 @@ def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
 
     if round_number is None or step_number is None:
         return None
-    
+
     return (round_number, step_number)
 
 def _coin_movement_event(

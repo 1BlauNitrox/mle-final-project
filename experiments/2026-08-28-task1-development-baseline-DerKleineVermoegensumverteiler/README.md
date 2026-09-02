@@ -16,10 +16,10 @@
 - Owner: LiliWestermann
 
 ## Hypothesis
-Five training runs will provide a good development baseline for task 1 with the agent 
+Five training runs will provide a good development baseline for task 1 with the agent
 `DerKleineVermoegensumverteiler` unchanged after PR #32 implementation.
 
-We expect at least 0.80 aggregated mean coin collection fraction -> 4 out of 5 
+We expect at least 0.80 aggregated mean coin collection fraction -> 4 out of 5
 models reach 0.75 and all invalif action rates are below 0.01.
 
 A negative or mixed result remains valid and will be retained.
@@ -102,14 +102,14 @@ As shown in the prvious table all Thresholds have passed, so the primary perform
 fully supported. This indicates that the unchanged baseline can learn effective Task 1 behaviour
 with acceptable reproducibility across independent training runs.
 
-Run 4 perfomed worse than the others, this difference is consistent with sensitivity to the registered 
+Run 4 perfomed worse than the others, this difference is consistent with sensitivity to the registered
 training-world and agent-seeds, because all controlled variables were held constant.
 
 There are many full clear episodes, which shows that that the mean performance was not only produced
 by partial coin collection. No zero-coin episodes occured, so all model colected at least some coins.
 
 Run 2 & 5 had comparatively high `WAIT`counts, which may indicate that ties between action values or uncertainty
-exist in frequently visited encoded states. It coul mean that the current rewards are not sufficient 
+exist in frequently visited encoded states. It coul mean that the current rewards are not sufficient
 to distinguish useful movement reliably in some states.
 
 `BOMB`was selected zero times, so compliance with task 1 is confirmed.

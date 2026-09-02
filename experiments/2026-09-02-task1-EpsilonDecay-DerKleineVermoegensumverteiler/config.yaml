@@ -5,7 +5,7 @@ experiment:
   name: task1-EpsilonDecay-DerKleineVermoegensumverteiler
   status: completed
   owner: LiliWestermann
-  reviewer: 
+  reviewer:
   experiment_commit: "4faf7bc7ab4ee66babf67b1f7b1d33b8ad439dc5"
 
 revisions:

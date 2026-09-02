@@ -18,7 +18,7 @@
 Can we get more stable training?
 
 ## Hypothesis
-If we change the epsilon decay from 0.99 to 0.9995 the epsilon reaches its 
+If we change the epsilon decay from 0.99 to 0.9995 the epsilon reaches its
 minimal value after approximatly 4600 episodes and not already after approximatly
 229 episodes. Therefore the agents explores longer and gets less stuck early in
 bad strategies.
@@ -60,7 +60,7 @@ Compared with the baseline experiment, the following variables remain unchanged:
 Only the epsilon decay is changed.
 
 ## Metrics and success criterion
-The metrics and thresholds are registered in `config.yaml`. They must not be changed 
+The metrics and thresholds are registered in `config.yaml`. They must not be changed
 after the first scientific training run begins.
 
 ## Results

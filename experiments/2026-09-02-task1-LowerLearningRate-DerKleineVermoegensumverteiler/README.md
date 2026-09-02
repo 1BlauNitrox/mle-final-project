@@ -62,7 +62,7 @@ Compared with the baseline experiment, the following variables remain unchanged:
 Only the learning rate is changed.
 
 ## Metrics and success criterion
-The metrics and thresholds are registered in `config.yaml`. They must not be changed 
+The metrics and thresholds are registered in `config.yaml`. They must not be changed
 after the first scientific training run begins.
 
 ## Results
@@ -157,7 +157,3 @@ preferred over the previous value of `0.1`.
 The lower learning rate of 0.05 is accepted and will become the new baseline,
 because it substantially reduced between-model variation while also improving
 aggregate coin collection, full clear rate and steps per coin.
-
-
-
-

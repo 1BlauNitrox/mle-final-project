@@ -5,7 +5,7 @@ experiment:
   name: task1-development-baseline-DerKleineVermoegensumverteiler
   status: preregistered
   owner: LiliWestermann
-  reviewer: 
+  reviewer:
   experiment_commit: "92c4768bc33c996e84a149e3a30a00c297dfec07"
 
 revisions:

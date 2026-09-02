@@ -610,7 +610,7 @@ def test_death_finalizes_pending_and_death_transitions(
     ] == pytest.approx(expected_death_value)
 
     assert agent.pending_transition is None
-    
+
     expected_movement_reward = reward_from_events(
     ["MOVED_TOWARDS_COIN"]
     )

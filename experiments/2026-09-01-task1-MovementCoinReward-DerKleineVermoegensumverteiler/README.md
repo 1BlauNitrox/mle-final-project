@@ -19,8 +19,8 @@ collect each coin getting smaller if we change the rewards?
 
 ## Hypothesis
 If we add a reward for movement in the direction of a coin the agent will prefer
-to collect coins that are closer together and therefore won't have to walk 
-across the whole board to collect the last coins, because he left them in 
+to collect coins that are closer together and therefore won't have to walk
+across the whole board to collect the last coins, because he left them in
 otherwise deserted corners.
 
 We expect a smaller steps_per_coin value than baseline.
@@ -40,7 +40,7 @@ The complete machine-readable configuration is stored in `config.yaml`.
 - Training disabled during evaluation
 
 ## Independent variable
-The independent variable is the reward function. We added the two Rewards 
+The independent variable is the reward function. We added the two Rewards
 MOVED_TOWARDS_COIN: 0.1 and MOVED_AWAY_FROM_COIN: -0.1.
 
 ## Controlled variables
@@ -61,7 +61,7 @@ Compared with the baseline experiment, the following variables remain unchanged:
 Only the reward function is changed.
 
 ## Metrics and success criterion
-The metrics and thresholds are registered in `config.yaml`. They must not be changed 
+The metrics and thresholds are registered in `config.yaml`. They must not be changed
 after the first scientific training run begins.
 
 ## Results
@@ -99,25 +99,25 @@ evaluation episodes.
 
 The Hypothesis is supported on the aggregate level. With the change we have
 3.598 steps per coin, whereas the baseline had 4.031. And the coin collection
-fraction increased from 0.8995 to 0.9196. 
+fraction increased from 0.8995 to 0.9196.
 
 The full-clear rate also increases from 81.5% to 87.5%. Three model collected
 every coin over all evaluation episodes, but its not fully stable: run 3
 collected only 65.35% an took 8.464 steps per coin.
 
-The aggregate collection fraction criterion was met and as requested four out of 
+The aggregate collection fraction criterion was met and as requested four out of
 five models met the collection fraction above 0.75.
 
-The individual steps per coin threshold was not met, we hoped for values 
+The individual steps per coin threshold was not met, we hoped for values
 beneath 2.6, but no run reached that goal. For this criterion in overall best run
 is still run 03 from the baseline experiment with 2.6.
 
 ## Decision and follow-up
 
-The changes are a improvement because the aggregate collection efficiency and 
+The changes are a improvement because the aggregate collection efficiency and
 full-clear rate improved relative to the baseline.
 
-Because the goal for individual steps per coin was not met we could try 
+Because the goal for individual steps per coin was not met we could try
 another reward instead, maybe a penalty for every movement, so that the agent chooses
 to make as few as possible.
 

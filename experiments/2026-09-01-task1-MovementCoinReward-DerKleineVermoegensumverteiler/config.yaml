@@ -5,7 +5,7 @@ experiment:
   name: task1-MovementCoinReward-DerKleineVermoegensumverteiler
   status: preregistered
   owner: LiliWestermann
-  reviewer: 
+  reviewer:
   experiment_commit: auto
 
 revisions:
