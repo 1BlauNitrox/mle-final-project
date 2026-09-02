@@ -312,6 +312,10 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertIsNone(
             overall["learning_metrics"]["mean_abs_td_error"]
         )
+        # Zero is a valid measurement and must not stand in for missing data.
+        self.assertIsNone(
+            overall["learning_metrics"]["total_episode_target_synchronizations"]
+        )
 
     def test_aggregates_available_learning_metrics(self) -> None:
         rows = [
