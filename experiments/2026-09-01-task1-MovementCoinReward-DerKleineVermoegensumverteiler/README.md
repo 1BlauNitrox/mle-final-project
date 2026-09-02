@@ -41,7 +41,7 @@ The complete machine-readable configuration is stored in `config.yaml`.
 
 ## Independent variable
 The independent variable is the reward function. We added the two Rewards 
-MOVED_TOWARDS_COIN: 1.0 and MOVED_AWAY_FROM_COIN: -1.0.
+MOVED_TOWARDS_COIN: 0.1 and MOVED_AWAY_FROM_COIN: -0.1.
 
 ## Controlled variables
 Compared with the baseline experiment, the following variables remain unchanged:

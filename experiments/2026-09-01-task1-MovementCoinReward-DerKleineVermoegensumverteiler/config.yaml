@@ -40,8 +40,8 @@ agent:
     COIN_COLLECTED: 10.0
     INVALID_ACTION: -0.5
     WAITED: -0.1
-    MOVED_TOWARDS_COIN: 1.0
-    MOVED_AWAY_FROM_COIN: -1.0
+    MOVED_TOWARDS_COIN: 0.1
+    MOVED_AWAY_FROM_COIN: -0.1
     all_other_events: 0.0
 
 environment:
