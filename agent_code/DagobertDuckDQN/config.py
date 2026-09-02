@@ -33,7 +33,7 @@ class DQNConfig:
     hidden_sizes: tuple[int, ...] = (64, 64)
     output_dim: int = len(ACTIONS)
 
-    learning_rate: float = 0.001
+    learning_rate: float = 0.0001
     discount_factor: float = 0.9
     gradient_clip_norm: float = 10.0
 
