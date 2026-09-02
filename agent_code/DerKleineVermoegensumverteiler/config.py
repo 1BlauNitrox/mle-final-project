@@ -20,12 +20,8 @@ REWARDS: dict[str, float] = {
     "INVALID_ACTION": -0.5,
     "WAITED": -0.1,
     "COIN_COLLECTED": 10.0,
-    #"MOVED_TOWARDS_COIN": 0.1,
-    #"MOVED_AWAY_FROM_COIN": -0.1,
-    "MOVED_LEFT": -0.1,
-    "MOVED_RIGHT": -0.1,
-    "MOVED_UP": -0.1,
-    "MOVED_DOWN": -0.1,
+    "MOVED_TOWARDS_COIN": 0.1,
+    "MOVED_AWAY_FROM_COIN": -0.1,
 }
 
 # seeds
