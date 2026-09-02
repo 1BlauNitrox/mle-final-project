@@ -59,12 +59,23 @@ def game_events_occurred(
     if old_features is None or new_features is None:
         return
 
+    training_events = list(events)
+
+    movement_event = _coin_movement_event(
+        old_game_state,
+        new_game_state,
+        self_action,
+    )
+
+    if movement_event is not None:
+        training_events.append(movement_event)
+
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
         state=normalize_features(old_features),
         action=self_action,
         action_index=ACTION_TO_INDEX[self_action],
-        reward=reward_from_events(events),
+        reward=reward_from_events(training_events),
         next_state=normalize_features(new_features),
     )
 
@@ -206,6 +217,47 @@ def _record_transition(
     self.absolute_td_errors.append(result.mean_abs_td_error)
     if result.target_synchronized:
         self.episode_target_synchronizations += 1
+
+
+def _coin_movement_event(
+    old_game_state: dict,
+    new_game_state: dict,
+    action: str,
+) -> str | None:
+    """Return a shaping event based on distance to the nearest visible coin.
+
+    Both distances are measured against the coins visible in the old state so
+    that the event stays defined on the step where a coin is collected and
+    disappears.
+    """
+    if action not in {"UP", "RIGHT", "DOWN", "LEFT"}:
+        return None
+
+    coins = old_game_state.get("coins", [])
+
+    if not coins:
+        return None
+
+    old_position = old_game_state["self"][3]
+    new_position = new_game_state["self"][3]
+
+    old_distance = min(_manhattan_distance(old_position, coin) for coin in coins)
+    new_distance = min(_manhattan_distance(new_position, coin) for coin in coins)
+
+    if new_distance < old_distance:
+        return "MOVED_TOWARDS_COIN"
+
+    if new_distance > old_distance:
+        return "MOVED_AWAY_FROM_COIN"
+
+    return None
+
+
+def _manhattan_distance(
+    first: tuple[int, int],
+    second: tuple[int, int],
+) -> int:
+    return abs(first[0] - second[0]) + abs(first[1] - second[1])
 
 
 def _transition_identity(

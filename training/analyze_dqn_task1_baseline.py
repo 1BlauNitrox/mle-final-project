@@ -19,8 +19,12 @@ import matplotlib.pyplot as plt  # noqa: E402
 from training.aggregate import read_episodes_csv
 from training.evaluate_dqn_task1_baseline import (
     AGENT,
+    DEFAULT_PROFILE,
     DEVELOPMENT_SEEDS,
     MODELS,
+    PROFILES,
+    ExperimentProfile,
+    models_for,
 )
 
 COIN_HEAVEN_INITIAL_COINS = 50
@@ -58,8 +62,13 @@ SUMMARY_FIELDS = (
 )
 
 
-def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any]:
+def analyze(
+    series_directory: Path,
+    experiment_directory: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> dict[str, Any]:
     """Analyze retained outputs and write compact tables and figures."""
+    models = models_for(profile)
     series_directory = series_directory.resolve()
     experiment_directory = experiment_directory.resolve()
     figures_directory = experiment_directory / "figures"
@@ -69,12 +78,12 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     if manifest.get("status") != "completed":
         raise ValueError("Evaluation manifest is not completed")
 
-    training_runs = _completed_training_runs(series_directory)
+    training_runs = _completed_training_runs(series_directory, models)
     model_summaries: list[dict[str, Any]] = []
     evaluation_commits: set[str] = set()
     evaluation_duration_seconds = 0.0
 
-    for model in MODELS:
+    for model in models:
         model_name = f"run-{model.run:02d}"
         training = training_runs[model.agent_seed]
         rows: list[dict[str, Any]] = []
@@ -120,7 +129,7 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     )
     _plot_evaluation(model_summaries, figures_directory)
     _plot_failures(model_summaries, figures_directory)
-    _plot_learning_curves(training_runs, figures_directory)
+    _plot_learning_curves(training_runs, figures_directory, models)
 
     criteria = _evaluate_criteria(model_summaries, aggregate, manifest)
     result = {
@@ -131,21 +140,24 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
         ),
         "evaluation_commits": sorted(evaluation_commits),
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
-        "evaluation_repeat_episodes": _completed_repeat_episodes(manifest),
+        "evaluation_repeat_episodes": _completed_repeat_episodes(manifest, models),
         "criteria": criteria,
     }
     _write_json(experiment_directory / "result.json", result)
     return result
 
 
-def _completed_repeat_episodes(manifest: dict[str, Any]) -> int:
+def _completed_repeat_episodes(
+    manifest: dict[str, Any],
+    models: tuple[Any, ...] = MODELS,
+) -> int:
     """Count completed determinism-repeat jobs recorded in the manifest."""
     completed = sum(
         1
         for job in manifest["jobs"].values()
         if job.get("pass") == "repeat" and job.get("status") == "completed"
     )
-    expected = len(MODELS) * len(DEVELOPMENT_SEEDS)
+    expected = len(models) * len(DEVELOPMENT_SEEDS)
     if completed != expected:
         raise ValueError(
             f"Expected {expected} completed repeat evaluations, found {completed}"
@@ -343,7 +355,10 @@ def _evaluate_criteria(
     }
 
 
-def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]]:
+def _completed_training_runs(
+    series_directory: Path,
+    models: tuple[Any, ...] = MODELS,
+) -> dict[int, dict[str, Any]]:
     records: dict[int, dict[str, Any]] = {}
     for metadata_path in sorted(series_directory.glob("**/metadata.json")):
         if "evaluations" in metadata_path.parts:
@@ -356,7 +371,7 @@ def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]
         ):
             metadata["directory"] = metadata_path.parent
             records[metadata["agent_seed"]] = metadata
-    expected = {model.agent_seed for model in MODELS}
+    expected = {model.agent_seed for model in models}
     if set(records) != expected:
         raise ValueError(f"Completed training seeds differ: {sorted(records)}")
     return records
@@ -413,11 +428,13 @@ def _plot_failures(
 
 
 def _plot_learning_curves(
-    training_runs: dict[int, dict[str, Any]], figures_directory: Path
+    training_runs: dict[int, dict[str, Any]],
+    figures_directory: Path,
+    models: tuple[Any, ...] = MODELS,
 ) -> None:
     figure, axis = plt.subplots(figsize=(9, 5))
     kernel = np.ones(ROLLING_WINDOW) / ROLLING_WINDOW
-    for model in MODELS:
+    for model in models:
         metadata = training_runs[model.agent_seed]
         rows = read_episodes_csv(metadata["directory"] / "episodes.csv")
         coins = np.asarray(
@@ -471,12 +488,23 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("series_directory", type=Path)
     parser.add_argument("experiment_directory", type=Path)
+    parser.add_argument(
+        "--issue",
+        type=int,
+        default=DEFAULT_PROFILE.issue,
+        choices=sorted(PROFILES),
+        help="Preregistered experiment profile the series belongs to",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
-    analyze(arguments.series_directory, arguments.experiment_directory)
+    analyze(
+        arguments.series_directory,
+        arguments.experiment_directory,
+        PROFILES[arguments.issue],
+    )
     return 0
 
 

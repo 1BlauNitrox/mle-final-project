@@ -39,35 +39,81 @@ DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "issue-41-dqn-task1-baseline"
 
 @dataclass(frozen=True)
 class RegisteredRun:
-    """One immutable training seed pair from Issue #41."""
+    """One immutable training seed pair from a registered experiment."""
 
     run: int
     world_seed: int
     agent_seed: int
 
 
-REGISTERED_RUNS = tuple(
-    RegisteredRun(
-        run=index,
-        world_seed=12_000 + index,
-        agent_seed=22_000 + index,
-    )
-    for index in range(1, 6)
-)
+@dataclass(frozen=True)
+class ExperimentProfile:
+    """The preregistered identity of one five-run training series.
+
+    The source fingerprint is part of the registration: a series must refuse to
+    start if the agent code no longer matches what its experiment record
+    describes.
+    """
+
+    issue: int
+    world_seed_base: int
+    agent_seed_base: int
+    expected_agent_source_sha256: str
+    series_directory_name: str
+
+    @property
+    def registered_runs(self) -> tuple[RegisteredRun, ...]:
+        return tuple(
+            RegisteredRun(
+                run=index,
+                world_seed=self.world_seed_base + index,
+                agent_seed=self.agent_seed_base + index,
+            )
+            for index in range(1, 6)
+        )
 
 
-def run_registered_series(output_root: Path) -> Path:
+PROFILES: dict[int, ExperimentProfile] = {
+    41: ExperimentProfile(
+        issue=41,
+        world_seed_base=12_000,
+        agent_seed_base=22_000,
+        expected_agent_source_sha256=(
+            "56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e"
+        ),
+        series_directory_name="issue-41-dqn-task1-baseline",
+    ),
+    58: ExperimentProfile(
+        issue=58,
+        world_seed_base=15_000,
+        agent_seed_base=25_000,
+        expected_agent_source_sha256=(
+            "PENDING"
+        ),
+        series_directory_name="issue-58-dqn-task1-movement-shaping",
+    ),
+}
+
+DEFAULT_PROFILE = PROFILES[41]
+REGISTERED_RUNS = DEFAULT_PROFILE.registered_runs
+
+
+def run_registered_series(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> Path:
     """Train all registered models and preserve every final checkpoint."""
-    source_reference = _preflight(output_root)
+    source_reference = _preflight(output_root, profile)
     series_directory = _create_series_directory(output_root)
     runs_directory = series_directory / "runs"
     artifacts_directory = series_directory / "artifacts"
     runs_directory.mkdir()
     artifacts_directory.mkdir()
 
+    registered_runs = profile.registered_runs
     manifest_path = series_directory / "series.json"
     manifest: dict[str, Any] = {
-        "issue": ISSUE_NUMBER,
+        "issue": profile.issue,
         "status": "running",
         "agent": AGENT,
         "scenario": SCENARIO,
@@ -80,12 +126,12 @@ def run_registered_series(output_root: Path) -> Path:
         "started_at": _utc_now(),
         "finished_at": None,
         "runtime": _runtime_metadata(),
-        "registered_runs": [asdict(run) for run in REGISTERED_RUNS],
+        "registered_runs": [asdict(run) for run in registered_runs],
         "runs": [],
     }
     _write_json(manifest_path, manifest)
 
-    for registered_run in REGISTERED_RUNS:
+    for registered_run in registered_runs:
         run_record: dict[str, Any] = {
             **asdict(registered_run),
             "status": "running",
@@ -165,7 +211,10 @@ def run_registered_series(output_root: Path) -> Path:
     return series_directory
 
 
-def _preflight(output_root: Path) -> dict[str, str | None]:
+def _preflight(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> dict[str, str | None]:
     """Reject state that could resume, overwrite, or contaminate a run."""
     if _git_is_dirty():
         raise RuntimeError(
@@ -179,13 +228,13 @@ def _preflight(output_root: Path) -> dict[str, str | None]:
 
     source_reference = _agent_configuration_reference(AGENT)
     source_hash = source_reference["sha256"]
-    if source_hash != EXPECTED_AGENT_SOURCE_SHA256:
+    if source_hash != profile.expected_agent_source_sha256:
         raise RuntimeError(
-            "Agent source fingerprint differs from the preregistered value: "
-            f"{source_hash}"
+            f"Agent source fingerprint differs from the value preregistered "
+            f"for issue #{profile.issue}: {source_hash}"
         )
 
-    collisions = _find_seed_collisions(output_root)
+    collisions = _find_seed_collisions(output_root, profile)
     if collisions:
         rendered = ", ".join(str(path) for path in collisions)
         raise RuntimeError(
@@ -196,10 +245,14 @@ def _preflight(output_root: Path) -> dict[str, str | None]:
     return source_reference
 
 
-def _find_seed_collisions(output_root: Path) -> list[Path]:
+def _find_seed_collisions(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> list[Path]:
     """Find prior runner metadata using a registered world or agent seed."""
-    registered_world_seeds = {run.world_seed for run in REGISTERED_RUNS}
-    registered_agent_seeds = {run.agent_seed for run in REGISTERED_RUNS}
+    registered_runs = profile.registered_runs
+    registered_world_seeds = {run.world_seed for run in registered_runs}
+    registered_agent_seeds = {run.agent_seed for run in registered_runs}
     search_root = output_root.resolve().parent
     collisions: list[Path] = []
 
@@ -288,18 +341,32 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
 def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--issue",
+        type=int,
+        default=DEFAULT_PROFILE.issue,
+        choices=sorted(PROFILES),
+        help="Preregistered experiment profile to run",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
-        default=DEFAULT_SERIES_ROOT,
-        help="Root for the ignored series directory and model artifacts",
+        default=None,
+        help=(
+            "Root for the ignored series directory and model artifacts. "
+            "Defaults to the selected profile's series directory."
+        ),
     )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
+    profile = PROFILES[arguments.issue]
+    output_root = arguments.output_root or (
+        DEFAULT_OUTPUT_ROOT / profile.series_directory_name
+    )
     try:
-        series_directory = run_registered_series(arguments.output_root)
+        series_directory = run_registered_series(output_root, profile)
     except Exception as error:
         print(f"Training series failed: {error}", file=sys.stderr)
         return 1

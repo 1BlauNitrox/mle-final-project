@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -82,7 +83,10 @@ def test_series_runs_serially_and_moves_each_final_checkpoint(
 
     source_hash = "a" * 64
     monkeypatch.setattr(baseline, "CHECKPOINT_PATH", checkpoint_path)
-    monkeypatch.setattr(baseline, "EXPECTED_AGENT_SOURCE_SHA256", source_hash)
+    profile = replace(
+        baseline.DEFAULT_PROFILE,
+        expected_agent_source_sha256=source_hash,
+    )
     monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
     monkeypatch.setattr(baseline, "_git_commit", lambda: "b" * 40)
     monkeypatch.setattr(
@@ -97,7 +101,7 @@ def test_series_runs_serially_and_moves_each_final_checkpoint(
     monkeypatch.setattr(baseline, "run_experiment", fake_run_experiment)
     monkeypatch.setattr(baseline, "plot_run", lambda _path: [])
 
-    series_directory = baseline.run_registered_series(output_root)
+    series_directory = baseline.run_registered_series(output_root, profile)
     manifest = json.loads(
         (series_directory / "series.json").read_text(encoding="utf-8")
     )
@@ -141,7 +145,10 @@ def test_failed_run_is_retained_and_later_runs_continue(
 
     source_hash = "c" * 64
     monkeypatch.setattr(baseline, "CHECKPOINT_PATH", checkpoint_path)
-    monkeypatch.setattr(baseline, "EXPECTED_AGENT_SOURCE_SHA256", source_hash)
+    profile = replace(
+        baseline.DEFAULT_PROFILE,
+        expected_agent_source_sha256=source_hash,
+    )
     monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
     monkeypatch.setattr(baseline, "_git_commit", lambda: "d" * 40)
     monkeypatch.setattr(
@@ -157,7 +164,7 @@ def test_failed_run_is_retained_and_later_runs_continue(
     monkeypatch.setattr(baseline, "plot_run", lambda _path: [])
 
     with pytest.raises(RuntimeError, match="1 of 5 training runs failed"):
-        baseline.run_registered_series(output_root)
+        baseline.run_registered_series(output_root, profile)
 
     series_directory = next(output_root.iterdir())
     manifest = json.loads(

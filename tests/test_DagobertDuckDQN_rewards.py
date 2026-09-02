@@ -99,9 +99,19 @@ def test_reward_function_accepts_generators() -> None:
     assert reward == pytest.approx(expected)
 
 
-def test_initial_mapping_is_minimal() -> None:
+def test_mapping_contains_exactly_the_registered_events() -> None:
     assert set(REWARDS) == {
         "COIN_COLLECTED",
         "INVALID_ACTION",
         "WAITED",
+        "MOVED_TOWARDS_COIN",
+        "MOVED_AWAY_FROM_COIN",
     }
+
+
+def test_movement_shaping_is_symmetric_and_small() -> None:
+    """Symmetry removes the incentive to oscillate for repeated approach reward."""
+    assert REWARDS["MOVED_TOWARDS_COIN"] == -REWARDS["MOVED_AWAY_FROM_COIN"]
+    assert REWARDS["MOVED_TOWARDS_COIN"] > 0.0
+    assert REWARDS["MOVED_TOWARDS_COIN"] < abs(REWARDS["WAITED"]) * 2
+    assert REWARDS["MOVED_TOWARDS_COIN"] < REWARDS["COIN_COLLECTED"] / 10

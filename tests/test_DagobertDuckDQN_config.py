@@ -35,11 +35,14 @@ def test_action_indices_match_network_outputs() -> None:
         "WAIT": 4,
     }
 
-def test_initial_reward_mapping_matches_tabular_agent() -> None:
+def test_reward_mapping_matches_tabular_agent() -> None:
+    """Both families must share a reward definition for #53 to compare them."""
     assert REWARDS == {
         "COIN_COLLECTED": 10.0,
         "INVALID_ACTION": -0.5,
         "WAITED": -0.1,
+        "MOVED_TOWARDS_COIN": 0.1,
+        "MOVED_AWAY_FROM_COIN": -0.1,
     }
 
 def test_network_dimensions_match_contract() -> None:
