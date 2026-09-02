@@ -88,7 +88,7 @@ PROFILES: dict[int, ExperimentProfile] = {
         world_seed_base=15_000,
         agent_seed_base=25_000,
         expected_agent_source_sha256=(
-            "PENDING"
+            "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
         ),
         series_directory_name="issue-58-dqn-task1-movement-shaping",
     ),

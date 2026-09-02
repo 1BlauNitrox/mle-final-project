@@ -34,9 +34,10 @@ independent_variable:
 revisions:
   repository_commit_at_preregistration: "dbe259721409092448e8594cbeaaca469c4f9835"
   baseline_training_commit: "e7e8b52f50b2acb46ccad04905d76c6948304e21"
-  candidate_commit: null
+  candidate_commit: "84396eb"
   imported_framework_revision: "0f55c1d"
-  agent_source_sha256_at_preregistration: "74407c19bf880e8f0a174427b559456c0bed2ec4d1e8ef20dd619402a9fe0fba"
+  agent_source_sha256_before_shaping: "74407c19bf880e8f0a174427b559456c0bed2ec4d1e8ef20dd619402a9fe0fba"
+  agent_source_sha256_at_preregistration: "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
   tabular_shaping_source_pull_request: 37
 
 agent:
@@ -249,14 +250,20 @@ outputs:
     from the repository alone.
 
 blockers_before_training:
-  - >-
-    Fix the 0 * inf aggregation defect in
-    training/analyze_dqn_task1_baseline.py. steps_per_coin becomes math.inf for
-    a zero-coin model and _aggregate_summaries multiplies it by a zero coin
-    count, producing NaN in the aggregate and an invalid NaN token in
-    result.json. A divergent zero-coin run is a realistic outcome of this
-    experiment.
-  - Assign an owner and a non-author reviewer.
+  - resolved: >-
+      The 0 * inf aggregation defect in
+      training/analyze_dqn_task1_baseline.py is fixed. total_steps is carried
+      forward instead of being recovered from a ratio, and an undefined
+      steps_per_coin reports null. Covered by regression tests.
+  - resolved: Owner and non-author reviewer assigned.
+
+launch:
+  runner: python -m training.run_dqn_task1_baseline --issue 58
+  evaluator: python -m training.evaluate_dqn_task1_baseline --issue 58 <series>
+  analyzer: >-
+    python -m training.analyze_dqn_task1_baseline --issue 58 <series>
+    experiments/2026-09-02-dqn-task1-movement-shaping
+  preflight_requires_clean_worktree: true
 
 results:
   status: not_started
