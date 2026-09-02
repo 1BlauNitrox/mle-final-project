@@ -107,4 +107,3 @@ def test_reward_mappig_contains_registered_rewards() -> None:
         "MOVED_TOWARDS_COIN",
         "WAITED"
     }
-    
