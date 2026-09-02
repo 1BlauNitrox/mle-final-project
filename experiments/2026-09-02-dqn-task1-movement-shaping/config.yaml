@@ -4,8 +4,8 @@ experiment:
   issue: 58
   name: dqn-task1-movement-shaping
   status: preregistered
-  owner: null
-  reviewer: null
+  owner: 1BlauNitrox
+  reviewer: Waffelmanufaktur
   branch: experiment/58-dqn-task1-movement-shaping
   owner_required_before_training: true
 
