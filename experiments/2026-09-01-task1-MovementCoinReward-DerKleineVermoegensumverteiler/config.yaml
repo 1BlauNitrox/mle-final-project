@@ -12,7 +12,7 @@ revisions:
   pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
   agent_implementation_commit: "a08db670257f23bea90c5bdb5f3974ca79cecf7e"
   imported_framework_revision: "0f55c1d"
-  agent_source_sha256: "47640c7005f5232d37e7e1f75133c3d8ed299f2cc81f33a3bb4754c6b9817036"
+  agent_source_sha256: "10d1cb28534d8a9ac6cbe49755a549d31218e6991042662fc734b0bf632f4dec"
 
 agent:
   name: DerKleineVermoegensumverteiler
