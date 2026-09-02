@@ -609,7 +609,8 @@ def main() -> int:
     artifact_root = (
         REPOSITORY_ROOT
         / "training_artifacts"
-        / f"issue-{issue}"
+        / config["output_directories"]["artifact_directory"]
+
     )
     experiment_directory = config_path.parent
 

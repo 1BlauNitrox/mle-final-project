@@ -104,6 +104,22 @@ def test_reward_mappig_contains_registered_rewards() -> None:
         "COIN_COLLECTED",
         "INVALID_ACTION",
         "WAITED",
-        "MOVED_TOWARDS_COIN",
-        "MOVED_AWAY_FROM_COIN",
+        #"MOVED_TOWARDS_COIN",
+        #"MOVED_AWAY_FROM_COIN",
+        "MOVED_LEFT",
+        "MOVED_RIGHT",
+        "MOVED_UP",
+        "MOVED_DOWN",
     }
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        "MOVED_LEFT",
+        "MOVED_RIGHT",
+        "MOVED_UP",
+        "MOVED_DOWN",
+    ],
+)
+def test_successful_movement_has_negative_reward(event: str) -> None:
+    assert reward_from_events([event]) == pytest.approx(-0.1)
