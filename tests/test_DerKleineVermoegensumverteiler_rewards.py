@@ -105,8 +105,6 @@ def test_reward_mappig_contains_registered_rewards() -> None:
         "INVALID_ACTION",
         "MOVED_AWAY_FROM_COIN",
         "MOVED_TOWARDS_COIN",
-        "WAITED",
-        "MOVED_TOWARDS_COIN",
-        "MOVED_AWAY_FROM_COIN",
+        "WAITED"
     }
 
