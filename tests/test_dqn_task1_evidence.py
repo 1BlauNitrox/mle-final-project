@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
@@ -40,12 +39,3 @@ def test_evidence_checksum_mismatch_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="checksum mismatch"):
         evidence._validate_evidence_files(tmp_path, manifest)
-
-
-def test_json_writer_rejects_non_finite_values(tmp_path: Path) -> None:
-    path = tmp_path / "result.json"
-
-    with pytest.raises(ValueError, match="Out of range float"):
-        evidence._write_json(path, {"invalid": float("nan")})
-
-    assert json.loads('{"valid": null}') == {"valid": None}

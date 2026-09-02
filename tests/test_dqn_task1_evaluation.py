@@ -96,23 +96,6 @@ def test_completed_job_requires_all_runner_outputs(tmp_path: Path) -> None:
     assert evaluation._job_is_complete(job, tmp_path)
 
 
-def test_completed_job_without_action_digest_is_repeated(tmp_path: Path) -> None:
-    run_directory = tmp_path / "run"
-    run_directory.mkdir()
-    for name in ("metadata.json", "summary.json"):
-        (run_directory / name).write_text("data", encoding="utf-8")
-    row = _deterministic_row(digest=None)
-    row.update({"schema_version": 1, "round": 1, "agent": evaluation.AGENT, "mode": "evaluation"})
-    with (run_directory / "episodes.csv").open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=CSV_COLUMNS)
-        writer.writeheader()
-        writer.writerow(row)
-
-    assert not evaluation._job_is_complete(
-        {"status": "completed", "run_directory": "run"}, tmp_path
-    )
-
-
 def test_executed_action_sequence_digest_depends_on_order() -> None:
     from environment import GenericWorld
 

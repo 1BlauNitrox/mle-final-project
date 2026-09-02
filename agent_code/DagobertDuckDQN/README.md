@@ -374,15 +374,17 @@ development seeds `31001`--`31040`. The aggregate coin-collection fraction was
 `0.8334`, but only three models reached the individual `0.75` threshold.
 Aggregate invalid-action rate was `0.1642`, dominated by run 4 (`0.6085`). Run
 3 collected only `0.4830` of available coins on average and selected `WAIT`
-6,487 times. Across all models, `BOMB` was never selected. Exact repeats were
-deterministic, artifacts stayed byte-identical, maximum model p95 decision time
-was `0.752 ms`, and maximum observed decision time was `27.601 ms`.
+6,487 times. Across all models, `BOMB` was never selected. Repeated outcomes and
+action totals matched, artifacts stayed byte-identical, maximum model p95
+decision time was `0.752 ms`, and maximum observed decision time was
+`27.601 ms`. Ordered action sequences were not recorded in this original run,
+so its determinism gate remains unverified under the strengthened check from
+PR #59.
 
-The paired DQN-minus-tabular bootstrap could not be computed because PR #37
-does not retain per-seed tabular rows and its original artifacts are not
-available. Its reported aggregate fraction is `0.8995`, versus `0.8334` here;
-that descriptive difference is not a paired confidence interval. Full
-configuration, hashes, failures, figures, and the negative decision are in
+The frozen DQN-versus-tabular candidate comparison is tracked separately in
+issue #53. No tabular aggregate is embedded in this DQN-only result. Full
+configuration, reviewable observations, hashes, failures, figures, and the
+negative decision are in
 `experiments/2026-09-01-dqn-task1-development-baseline/`.
 
 ## Known limitations and next steps

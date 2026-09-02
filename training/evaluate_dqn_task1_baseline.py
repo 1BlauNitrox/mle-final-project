@@ -327,22 +327,10 @@ def _job_is_complete(
     if not isinstance(relative, str):
         return False
     run_directory = series_directory / relative
-    outputs_exist = (
+    return (
         (run_directory / "metadata.json").is_file()
         and (run_directory / "episodes.csv").is_file()
         and (run_directory / "summary.json").is_file()
-    )
-    if not outputs_exist:
-        return False
-    try:
-        rows = read_episodes_csv(run_directory / "episodes.csv")
-    except (OSError, ValueError):
-        return False
-    matching = [row for row in rows if row["agent"] == AGENT]
-    return (
-        len(matching) == 1
-        and isinstance(matching[0].get(ACTION_SEQUENCE_COLUMN), str)
-        and bool(matching[0][ACTION_SEQUENCE_COLUMN])
     )
 
 

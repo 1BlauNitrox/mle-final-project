@@ -50,11 +50,5 @@
   "evaluation_manifest_sha256": "39994a923a0ca9c476511d1c9cfcf4f9e7f350754fb21dc85ff8faa94b67aa75",
   "evaluation_repeat_episodes": 200,
   "schema_version": 1,
-  "series_directory": "20260831T235351723566Z",
-  "tabular_comparison": {
-    "available_aggregate_fraction": 0.8995,
-    "dqn_minus_tabular_aggregate_difference": -0.06609999999999994,
-    "paired_bootstrap_ci95": null,
-    "status": "not_computable_missing_tabular_per_seed_rows"
-  }
+  "series_directory": "20260831T235351723566Z"
 }

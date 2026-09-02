@@ -2,7 +2,10 @@
 
 ## Status and lineage
 
-Issue #41 is complete with a mixed, overall negative decision. Training used
+This record preserves the completed DQN-only portion of issue #41 with a mixed,
+overall negative decision. Issue #41 remains open because its original paired
+DQN-versus-tabular acceptance criteria were not evaluated. The separate frozen
+candidate comparison is tracked by issue #53. Training used
 commit `e7e8b52f50b2acb46ccad04905d76c6948304e21` and agent fingerprint
 `56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e`.
 Evaluation used commits `573443a` and `255f627`; the latter only adds retry
@@ -30,9 +33,30 @@ training took 37,482 seconds (10.41 hours); 50,616 episodes were attempted.
 | 4 | 12004 / 22004 | 7520.98 | `f1a09fbea1587e55e22375608467959f6261f63252212cb765e01a551de72d55` |
 | 5 | 12005 / 22005 | 7418.15 | `1dc1fd50b2477896a3d80dd04e8e803a895777ce74494d0bc9210b4c0de7a862` |
 
-Each final artifact is 862,778 bytes. Raw logs, checkpoints, per-episode rows,
-and the manifest remain under the ignored series
-`training_outputs/issue-41-dqn-task1-baseline/20260831T235351723566Z/`.
+Each final artifact is 862,778 bytes. The `evidence/` directory commits all 400
+normalized evaluation rows, raw decision times, complete training episode rows,
+the failed run, artifact hashes, and a sanitized manifest. The full raw archive,
+including checkpoints and framework statistics, is available from the
+[Issue #41 evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue-41-dqn-task1-evidence-v1).
+Its size is 14,249,462 bytes and its SHA-256 is
+`177ce5c8dfae0cc35c13f0687363e827746a7793e5eb25b7b44ee43d2eb423b8`.
+The archive excludes only redundant per-job agent snapshots, Python caches, and
+an aborted unreported verification attempt from 2026-09-02.
+
+Rebuild and byte-compare every committed summary and figure from a fresh clone:
+
+```bash
+python -m training.dqn_task1_evidence verify \
+  experiments/2026-09-01-dqn-task1-development-baseline
+```
+
+Retrieve and verify the raw archive:
+
+```bash
+curl -L -o issue-41-evidence.tar.gz \
+  https://github.com/1BlauNitrox/mle-final-project/releases/download/issue-41-dqn-task1-evidence-v1/issue-41-dqn-task1-baseline-evidence-v1.tar.gz
+python -c "import hashlib, pathlib; print(hashlib.sha256(pathlib.Path('issue-41-evidence.tar.gz').read_bytes()).hexdigest())"
+```
 
 ## Development results
 
@@ -69,11 +93,9 @@ evaluation episodes against them, which has not been done. Until then the
 determinism gate for this experiment is **unverified**, not passed. The
 strengthened check applies to every subsequent experiment.
 
-PR #37 contains aggregate tabular rows but not the 200 model-index/world-seed
-pairs; its five original artifacts are unavailable locally and in GitHub
-Actions. The paired bootstrap interval therefore cannot be computed without
-inventing evidence. Descriptively, its reported aggregate is 0.8995 and DQN is
-0.0661 lower; this is not a paired confidence interval.
+The DQN-versus-tabular comparison is not part of this result record. Issue #53
+owns that comparison between frozen candidates, so this analysis contains no
+hardcoded tabular aggregate or unpaired descriptive difference.
 
 ## Decision
 
