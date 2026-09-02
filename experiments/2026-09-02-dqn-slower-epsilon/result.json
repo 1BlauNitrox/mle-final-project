@@ -1,0 +1,60 @@
+{
+  "criteria": {
+    "aggregate_fraction": {
+      "passed": false,
+      "threshold": ">= 0.80",
+      "value": 0.6980000000000001
+    },
+    "bomb_actions": {
+      "passed": true,
+      "threshold": "= 0",
+      "value": 0
+    },
+    "deterministic": {
+      "passed": true,
+      "value": true
+    },
+    "immutable": {
+      "passed": true,
+      "value": true
+    },
+    "individual_models": {
+      "passed": null,
+      "reason": "Issue #41 criterion requires exactly 5 completed models",
+      "threshold": ">= 4 models at >= 0.75",
+      "value": 2
+    },
+    "invalid_actions": {
+      "passed": true,
+      "threshold": "< 0.01",
+      "value_aggregate": 0.0006569093727829308,
+      "value_maximum_model": 0.0007287870900572618
+    },
+    "latency": {
+      "passed": true,
+      "threshold": "p95 < 50 ms and max < 100 ms",
+      "value_max_ms": 2.696514129638672,
+      "value_p95_ms": 0.6403446197509756
+    },
+    "paired_non_inferiority": {
+      "passed": null,
+      "reason": "tabular per-seed rows and original artifacts unavailable",
+      "threshold": "95% CI lower bound > -0.02",
+      "value": null
+    }
+  },
+  "evaluation_commits": [
+    "e6d8e9c784595d8a1574d00b398f23d67154281a"
+  ],
+  "evaluation_duration_seconds_primary": 572.9689270999515,
+  "evaluation_manifest_sha256": "0148c72b27b124707315c406a6635bf97a57d380a5ceb68b26fbfe8d0df993bd",
+  "evaluation_repeat_episodes": 120,
+  "schema_version": 1,
+  "series_directory": "20260901T232618113109Z",
+  "tabular_comparison": {
+    "available_aggregate_fraction": 0.8995,
+    "dqn_minus_tabular_aggregate_difference": -0.2014999999999999,
+    "paired_bootstrap_ci95": null,
+    "status": "not_computable_missing_tabular_per_seed_rows"
+  }
+}
