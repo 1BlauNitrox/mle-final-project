@@ -348,9 +348,7 @@ def test_ordinary_transition_updates_q_table(
 
     # The first transition is initially kept pending because the framework
     # might end the round and report the same transition as terminal.
-    assert agent.q_table.q_values(first_old_state)[
-        right_index
-    ] == pytest.approx(0.0)
+    assert agent.q_table.q_values(first_old_state)[right_index] == pytest.approx(0.0)
     assert agent.pending_transition is not None
     assert agent.absolute_td_errors == []
     assert agent.episode_reward == pytest.approx(0.0)
@@ -371,16 +369,14 @@ def test_ordinary_transition_updates_q_table(
 
     # Receiving the next callback proves that the first transition was not
     # terminal. It must now be finalized as an ordinary update.
-    assert agent.q_table.q_values(first_old_state)[
-        right_index
-    ] > 0.0
+    assert agent.q_table.q_values(first_old_state)[right_index] > 0.0
     assert len(agent.absolute_td_errors) == 1
-    assert agent.episode_reward == pytest.approx(
-        reward_from_events([
-            "COIN_COLLECTED",
-            "MOVED_TOWARDS_COIN",
-            ])
+    expected_reward = reward_from_events(["COIN_COLLECTED"]) + train._potential_shaping_reward(
+        first_old_game_state,
+        first_new_game_state,
     )
+
+    assert agent.episode_reward == pytest.approx(expected_reward)
 
     # The second transition is now pending.
     assert agent.pending_transition is not None
@@ -433,7 +429,10 @@ def test_terminal_transition_does_not_bootstrap(
         ["WAITED"],
     )
 
-    expected_reward = reward_from_events(["WAITED"])
+    expected_reward = reward_from_events(["WAITED"]) + train._potential_shaping_reward(
+        last_game_state,
+        None,
+    )
     expected_value = agent.q_table.learning_rate * expected_reward
 
     wait_index = ACTIONS.index("WAIT")
@@ -496,6 +495,7 @@ def test_episode_metrics_are_reset_after_round(
     assert agent.absolute_td_errors == []
     assert model_path.is_file()
 
+
 def test_surviving_final_transition_is_updated_once_as_terminal(
     model_path: Path,
 ) -> None:
@@ -524,9 +524,7 @@ def test_surviving_final_transition_is_updated_once_as_terminal(
     )
 
     # No ordinary update yet because the transition may be the final one.
-    assert agent.q_table.q_values(old_state)[
-        ACTIONS.index("RIGHT")
-    ] == pytest.approx(0.0)
+    assert agent.q_table.q_values(old_state)[ACTIONS.index("RIGHT")] == pytest.approx(0.0)
     assert agent.pending_transition is not None
 
     metrics = train.end_of_round(
@@ -538,15 +536,19 @@ def test_surviving_final_transition_is_updated_once_as_terminal(
 
     expected_reward = reward_from_events(
         ["COIN_COLLECTED", "SURVIVED_ROUND"]
+    ) + train._potential_shaping_reward(
+        old_game_state,
+        None,
     )
     expected_value = agent.q_table.learning_rate * expected_reward
 
-    assert agent.q_table.q_values(old_state)[
-        ACTIONS.index("RIGHT")
-    ] == pytest.approx(expected_value)
+    assert agent.q_table.q_values(old_state)[ACTIONS.index("RIGHT")] == pytest.approx(
+        expected_value
+    )
     assert len(agent.absolute_td_errors) == 0
     assert agent.pending_transition is None
     assert metrics["shaped_reward"] == pytest.approx(expected_reward)
+
 
 def test_death_finalizes_pending_and_death_transitions(
     model_path: Path,
@@ -600,21 +602,76 @@ def test_death_finalizes_pending_and_death_transitions(
     # The separate death transition was finalized terminally.
     expected_death_reward = reward_from_events(
         ["WAITED", "GOT_KILLED"]
+    ) + train._potential_shaping_reward(
+        death_state,
+        None,
     )
-    expected_death_value = (
-        agent.q_table.learning_rate * expected_death_reward
-    )
+    expected_death_value = agent.q_table.learning_rate * expected_death_reward
 
-    assert agent.q_table.q_values(death_features)[
-        ACTIONS.index("WAIT")
-    ] == pytest.approx(expected_death_value)
+    assert agent.q_table.q_values(death_features)[ACTIONS.index("WAIT")] == pytest.approx(
+        expected_death_value
+    )
 
     assert agent.pending_transition is None
 
-    expected_movement_reward = reward_from_events(
-    ["MOVED_TOWARDS_COIN"]
+    expected_first_reward = reward_from_events([]) + train._potential_shaping_reward(
+        first_old_state,
+        first_new_state,
     )
 
-    assert metrics["shaped_reward"] == pytest.approx(
-        expected_movement_reward + expected_death_reward
+    assert metrics["shaped_reward"] == pytest.approx(expected_first_reward + expected_death_reward)
+
+
+def test_moving_towards_coin_produces_potential_reward() -> None:
+    old_state = make_game_state(
+        position=(3, 3),
+        coins=[(8, 3)],
+        step=1,
     )
+    new_state = make_game_state(
+        position=(4, 3),
+        coins=[(8, 3)],
+        step=2,
+    )
+
+    reward = train._potential_shaping_reward(
+        old_state,
+        new_state,
+    )
+
+    assert reward == pytest.approx(0.14)
+
+
+def test_moving_away_from_coin_produces_potential_reward() -> None:
+    old_state = make_game_state(
+        position=(3, 3),
+        coins=[(8, 3)],
+        step=1,
+    )
+    new_state = make_game_state(
+        position=(2, 3),
+        coins=[(8, 3)],
+        step=2,
+    )
+
+    reward = train._potential_shaping_reward(
+        old_state,
+        new_state,
+    )
+
+    assert reward == pytest.approx(-0.04)
+
+
+def test_terminal_state_has_zero_potential() -> None:
+    old_state = make_game_state(
+        position=(3, 3),
+        coins=[(8, 3)],
+        step=1,
+    )
+
+    reward = train._potential_shaping_reward(
+        old_state,
+        None,
+    )
+
+    assert reward == pytest.approx(0.5)

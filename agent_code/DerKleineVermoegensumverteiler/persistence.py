@@ -112,13 +112,9 @@ def load_model(path: Path = MODEL_PATH) -> LoadedModel:
             if set(archive.files) != required_entries:
                 raise ValueError("Model archive has unexpected entries")
 
-            raw_states = np.asarray(
-                archive["states"]
-            ).copy()
+            raw_states = np.asarray(archive["states"]).copy()
 
-            raw_q_values = np.asarray(
-                archive["q_values"]
-            ).copy()
+            raw_q_values = np.asarray(archive["q_values"]).copy()
 
             metadata_text = str(archive["metadata"].item())
 
@@ -181,48 +177,38 @@ def _serialize_q_table(q_table: QTable) -> tuple[np.ndarray, np.ndarray]:
 
     return states, q_values
 
+
 def _validate_raw_states(states: np.ndarray) -> None:
     """Validate the raw states before converting to int64."""
 
     if states.ndim != 2:
         raise ValueError("Model states must be a two-dimensional array")
-    
+
     if states.shape[1] != FEATURE_COUNT:
         raise ValueError("Model states have an incompatible shape")
-    
+
     if np.issubdtype(states.dtype, np.bool_) and not np.issubdtype(states.dtype, np.number):
         raise ValueError("Model states must be numeric integers")
-    
+
     if not np.all(np.isfinite(states)):
         raise ValueError("Model states must be finite")
-    
+
     if not np.all(states == np.floor(states)):
         raise ValueError("Model states must contain integral values")
-    
+
     integer_states = states.astype(np.int64)
 
-    feature_domains = (
-        {0, 1},
-        {0, 1},
-        {0, 1},
-        {0, 1},
-        {0, 1},
-        {-1, 0, 1},
-        {-1, 0, 1},
-        {0, 1, 2, 3}
-    )
+    feature_domains = ({0, 1}, {0, 1}, {0, 1}, {0, 1}, {0, 1}, {-1, 0, 1}, {-1, 0, 1}, {0, 1, 2, 3})
 
     for column, allowed_values in enumerate(feature_domains):
         present_values = set(integer_states[:, column])
 
         if not present_values.issubset(allowed_values):
-            raise ValueError(
-                f"Model state features {column} contains invalid values"
-            )
-        
+            raise ValueError(f"Model state features {column} contains invalid values")
+
     if integer_states.shape[0] == 0:
         return
-    
+
     coin_visible = integer_states[:, 4]
     coin_dx = integer_states[:, 5]
     coin_dy = integer_states[:, 6]
@@ -230,24 +216,14 @@ def _validate_raw_states(states: np.ndarray) -> None:
 
     hidden_coin_rows = coin_visible == 0
 
-    if np.any(
-        hidden_coin_rows
-        & (
-            (coin_dx != 0)
-            | (coin_dy != 0)
-            | (distance_bin != 0)
-        )
-    ):
-        raise ValueError(
-            "Missing coins must have zero direction and distance"
-        )
-    
+    if np.any(hidden_coin_rows & ((coin_dx != 0) | (coin_dy != 0) | (distance_bin != 0))):
+        raise ValueError("Missing coins must have zero direction and distance")
+
     visible_coin_rows = coin_visible == 1
 
     if np.any(visible_coin_rows & (distance_bin == 0)):
-        raise ValueError(
-            "Visible coins must have a non-zero distance bin"
-        )
+        raise ValueError("Visible coins must have a non-zero distance bin")
+
 
 def _validate_arrays(
     states: np.ndarray,
@@ -317,7 +293,7 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["actions"] != list(ACTIONS):
         raise ValueError("Actions mismatch")
-    
+
     if metadata["rewards"] != REWARDS:
         raise ValueError("Reward configuration mismatch")
 
@@ -332,7 +308,7 @@ def _validate_metadata(metadata: Any) -> None:
 
     if type(completed_episodes) is not int or completed_episodes < 0:
         raise ValueError("Stored completed_episodes must be a non-negative integer")
-    
+
     if metadata["epsilon_decay"] != EPSILON_DECAY:
         raise ValueError("Epsilon decay mismatch")
 

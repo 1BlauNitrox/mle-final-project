@@ -6,7 +6,14 @@ from dataclasses import dataclass
 from statistics import fmean
 from typing import Any
 
-from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
+# from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
+from .config import (
+    ACTIONS,
+    DISCOUNT_FACTOR,
+    EPSILON_DECAY,
+    MINIMUM_EPSILON,
+    POTENTIAL_SCALE,
+)
 from .features import StateFeatures, state_to_features
 from .persistence import MODEL_PATH, save_model
 from .rewards import reward_from_events
@@ -21,6 +28,8 @@ class PendingTransition:
     action: str
     next_state: StateFeatures
     reward: float
+    state_potential: float
+
 
 def setup_training(self) -> None:
     """Initialize training-only state."""
@@ -30,6 +39,7 @@ def setup_training(self) -> None:
     self.pending_transition: PendingTransition | None = None
 
     self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
+
 
 def game_events_occurred(
     self,
@@ -59,24 +69,35 @@ def game_events_occurred(
     if old_state is None or new_state is None:
         return
 
-    training_events = list(events)
+    # training_events = list(events)
 
-    movement_event = _coin_movement_event(
+    # movement_event = _coin_movement_event(
+    #    old_game_state,
+    #    new_game_state,
+    #    self_action,
+    # )
+
+    # if movement_event is not None:
+    #    training_events.append(movement_event)
+
+    state_potential = _coin_potential(old_game_state)
+
+    shaping_reward = _potential_shaping_reward(
         old_game_state,
         new_game_state,
-        self_action,
     )
 
-    if movement_event is not None:
-        training_events.append(movement_event)
+    transition_reward = reward_from_events(events) + shaping_reward
 
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
         state=old_state,
         action=self_action,
         next_state=new_state,
-        reward=reward_from_events(training_events),
+        reward=transition_reward,
+        state_potential=state_potential,
     )
+
 
 def end_of_round(
     self,
@@ -103,9 +124,9 @@ def end_of_round(
             self,
             state=pending.state,
             action=pending.action,
-            reward=reward_from_events(events),
+            reward=(reward_from_events(events) - pending.state_potential),
             next_state=None,
-            terminal=True
+            terminal=True,
         )
     else:
         _finalize_pennding_transition(self)
@@ -114,13 +135,16 @@ def end_of_round(
             last_state = state_to_features(last_game_state)
 
             if last_state is not None:
-               _apply_update(
+                _apply_update(
                     self,
                     state=last_state,
                     action=last_action,
-                    reward=reward_from_events(events),
+                    reward=(
+                        reward_from_events(events)
+                        + _potential_shaping_reward(last_game_state, None)
+                    ),
                     next_state=None,
-                    terminal=True
+                    terminal=True,
                 )
 
     completed_episode_epsilon = float(self.epsilon)
@@ -150,6 +174,7 @@ def end_of_round(
 
     return metrics
 
+
 def _finalize_pennding_transition(self) -> None:
     """Apply the pending transition if it exists."""
 
@@ -164,10 +189,11 @@ def _finalize_pennding_transition(self) -> None:
         action=pending.action,
         reward=pending.reward,
         next_state=pending.next_state,
-        terminal=False
+        terminal=False,
     )
 
     self.pending_transition = None
+
 
 def _apply_update(
     self,
@@ -181,15 +207,12 @@ def _apply_update(
     """Update the Q-table and record diagnostics."""
 
     td_error = self.q_table.update(
-        state=state,
-        action=action,
-        reward=reward,
-        next_state=next_state,
-        terminal=terminal
+        state=state, action=action, reward=reward, next_state=next_state, terminal=terminal
     )
 
     self.episode_reward += reward
     self.absolute_td_errors.append(abs(td_error))
+
 
 def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
     """Return a unique identity for the transition based on the game state."""
@@ -205,40 +228,71 @@ def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
 
     return (round_number, step_number)
 
-def _coin_movement_event(
-    old_game_state: dict,
-    new_game_state: dict,
-    action: str,
-) -> str | None:
-    """Return a reward-shaping event based on distance to the nearest old coin."""
 
-    if action not in {"UP", "RIGHT", "DOWN", "LEFT"}:
-        return None
+# def _coin_movement_event(
+#    old_game_state: dict,
+#    new_game_state: dict,
+#    action: str,
+# ) -> str | None:
+#    """Return a reward-shaping event based on distance to the nearest old coin."""
+#
+#    if action not in {"UP", "RIGHT", "DOWN", "LEFT"}:
+#        return None
 
-    coins = old_game_state.get("coins", [])
+#    coins = old_game_state.get("coins", [])
+
+#    if not coins:
+#        return None
+
+#    old_position = old_game_state["self"][3]
+#    new_position = new_game_state["self"][3]
+
+#    old_distance = min(
+#        _manhattan_distance(old_position, coin)
+#        for coin in coins
+#    )
+#    new_distance = min(
+#        _manhattan_distance(new_position, coin)
+#        for coin in coins
+#    )
+
+#    if new_distance < old_distance:
+#        return "MOVED_TOWARDS_COIN"
+
+#    if new_distance > old_distance:
+#        return "MOVED_AWAY_FROM_COIN"
+
+#    return None
+
+
+def _coin_potential(game_state: dict | None) -> float:
+    """Return the potential based on distance to the nearest remaining coin."""
+
+    if game_state is None:
+        return 0.0
+
+    coins = game_state.get("coins", [])
 
     if not coins:
-        return None
+        return 0.0
 
-    old_position = old_game_state["self"][3]
-    new_position = new_game_state["self"][3]
+    position = game_state["self"][3]
 
-    old_distance = min(
-        _manhattan_distance(old_position, coin)
-        for coin in coins
-    )
-    new_distance = min(
-        _manhattan_distance(new_position, coin)
-        for coin in coins
-    )
+    nearest_distance = min(_manhattan_distance(position, coin) for coin in coins)
 
-    if new_distance < old_distance:
-        return "MOVED_TOWARDS_COIN"
+    return -POTENTIAL_SCALE * nearest_distance
 
-    if new_distance > old_distance:
-        return "MOVED_AWAY_FROM_COIN"
 
-    return None
+def _potential_shaping_reward(
+    old_game_state: dict,
+    new_game_state: dict | None,
+) -> float:
+    """Calculate gamma * Phi(next_state) - Phi(state)."""
+
+    old_potential = _coin_potential(old_game_state)
+    new_potential = _coin_potential(new_game_state)
+
+    return DISCOUNT_FACTOR * new_potential - old_potential
 
 
 def _manhattan_distance(
