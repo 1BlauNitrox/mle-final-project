@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -33,10 +35,20 @@ jobs:
         run: python -m pip install -r requirements-dev.txt
 
       - name: Lint team-owned Python
-        run: ruff check tests training scripts agent_code/_team_agent_template
+        run: >
+          ruff check
+          tests
+          training
+          scripts
+          agent_code/_team_agent_template
+          agent_code/DerKleineVermoegensumverteiler
+          agent_code/DagobertDuckDQN
 
       - name: Compile Python sources
         run: python -m compileall -q .
+
+      - name: Check whitespace
+        run: git diff --check origin/main...HEAD
 
       - name: Run tests
         run: python -m pytest
@@ -59,3 +71,357 @@ jobs:
 
       - name: Play one complete headless round
         run: python main.py play --agents random_agent --no-gui --n-rounds 1 --seed 1
+
+  agent-smoke:
+    name: Task 1 agent smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Train Task 1 agent
+        run: |
+          python -m training.run_experiment \
+            --agent DerKleineVermoegensumverteiler \
+            --mode training \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 1001 \
+            --agent-seed 2001
+
+      - name: Verify training outputs
+        run: |
+          test -s agent_code/DerKleineVermoegensumverteiler/model.npz
+          run_directory="$(find training_outputs -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+          test -s "$run_directory/metadata.json"
+          test -s "$run_directory/episodes.csv"
+          test -s "$run_directory/summary.json"
+          python -m training.plot_run "$run_directory"
+
+      - name: Record model checksum
+        run: |
+          sha256sum agent_code/DerKleineVermoegensumverteiler/model.npz \
+            | cut -d ' ' -f 1 > /tmp/model-before.sha256
+
+      - name: Evaluate Task 1 agent
+        run: |
+          python -m training.run_experiment \
+            --agent DerKleineVermoegensumverteiler \
+            --mode evaluation \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 3001 \
+            --agent-seed 2001
+
+      - name: Verify read-only evaluation
+        run: |
+          sha256sum agent_code/DerKleineVermoegensumverteiler/model.npz \
+            | cut -d ' ' -f 1 > /tmp/model-after.sha256
+          diff /tmp/model-before.sha256 /tmp/model-after.sha256
+
+      - name: Package agent
+        run: |
+          python scripts/package_agent.py DerKleineVermoegensumverteiler
+          test -s dist/final-project-agent-code.zip
+
+  dqn-agent-smoke:
+    name: DQN agent smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Train DQN past replay warm-up
+        run: |
+          test ! -e agent_code/DagobertDuckDQN/checkpoint.pt
+          python -m training.run_experiment \
+            --agent DagobertDuckDQN \
+            --mode training \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 1001 \
+            --agent-seed 2001
+
+      - name: Verify checkpoint and learning output
+        run: |
+          test -s agent_code/DagobertDuckDQN/checkpoint.pt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          from agent_code.DagobertDuckDQN.persistence import (
+              CHECKPOINT_PATH,
+              load_training_checkpoint,
+          )
+
+          checkpoint = load_training_checkpoint(CHECKPOINT_PATH)
+          if checkpoint.completed_episodes != 2:
+              raise SystemExit("initial training did not complete two episodes")
+          if checkpoint.learner.update_steps <= 0:
+              raise SystemExit("initial training did not cross replay warm-up")
+
+          run_directory = sorted(Path("training_outputs").iterdir())[-1]
+          summary = json.loads((run_directory / "summary.json").read_text())
+          if summary["overall"]["learning_metrics"]["mean_abs_td_error"] is None:
+              raise SystemExit("training did not report mean absolute TD error")
+
+          Path("/tmp/dqn-episodes-before.txt").write_text(
+              str(checkpoint.completed_episodes), encoding="utf-8"
+          )
+          Path("/tmp/dqn-updates-before.txt").write_text(
+              str(checkpoint.learner.update_steps), encoding="utf-8"
+          )
+          PY
+
+      - name: Resume DQN training
+        run: |
+          python -m training.run_experiment \
+            --agent DagobertDuckDQN \
+            --mode training \
+            --scenario coin-heaven \
+            --rounds 1 \
+            --world-seed 1002 \
+            --agent-seed 2001
+
+      - name: Verify resumed counters
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          from agent_code.DagobertDuckDQN.persistence import (
+              CHECKPOINT_PATH,
+              load_training_checkpoint,
+          )
+
+          checkpoint = load_training_checkpoint(CHECKPOINT_PATH)
+          previous_episodes = int(Path("/tmp/dqn-episodes-before.txt").read_text())
+          previous_updates = int(Path("/tmp/dqn-updates-before.txt").read_text())
+          if checkpoint.completed_episodes <= previous_episodes:
+              raise SystemExit("resumed episode counter did not advance")
+          if checkpoint.learner.update_steps <= previous_updates:
+              raise SystemExit("resumed optimizer counter did not advance")
+          PY
+          sha256sum agent_code/DagobertDuckDQN/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/dqn-checkpoint-before.sha256
+
+      - name: Evaluate DQN without mutation
+        run: |
+          python -m training.run_experiment \
+            --agent DagobertDuckDQN \
+            --mode evaluation \
+            --scenario coin-heaven \
+            --rounds 2 \
+            --world-seed 3001 \
+            --agent-seed 2001
+          sha256sum agent_code/DagobertDuckDQN/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/dqn-checkpoint-after.sha256
+          diff /tmp/dqn-checkpoint-before.sha256 /tmp/dqn-checkpoint-after.sha256
+
+      - name: Package and inspect DQN
+        run: |
+          python scripts/package_agent.py DagobertDuckDQN
+          test -s dist/final-project-agent-code.zip
+          python - <<'PY'
+          from zipfile import ZipFile
+
+          with ZipFile("dist/final-project-agent-code.zip") as archive:
+              names = archive.namelist()
+
+          if not names:
+              raise SystemExit("DQN package is empty")
+          if any(not name.startswith("DagobertDuckDQN/") for name in names):
+              raise SystemExit("DQN package contains files outside the selected agent")
+          required = {
+              "DagobertDuckDQN/callbacks.py",
+              "DagobertDuckDQN/train.py",
+              "DagobertDuckDQN/requirements.txt",
+              "DagobertDuckDQN/checkpoint.pt",
+          }
+          missing = required.difference(names)
+          if missing:
+              raise SystemExit(f"DQN package is missing: {sorted(missing)}")
+          PY
+
+  dqn-official-docker:
+    name: DQN official Docker compatibility
+    runs-on: ubuntu-latest
+    needs: dqn-agent-smoke
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build supplied Dockerfile
+        run: docker build --tag bomberman-dqn:pr .
+
+      - name: Verify agent-local dependencies
+        run: |
+          docker build \
+            --tag bomberman-dqn-agent:pr \
+            --file - \
+            . <<'DOCKERFILE'
+          FROM bomberman-dqn:pr
+          COPY agent_code/DagobertDuckDQN/requirements.txt /tmp/dqn-requirements.txt
+          RUN python -m pip install -r /tmp/dqn-requirements.txt
+          DOCKERFILE
+          docker run --rm --interactive bomberman-dqn-agent:pr python - <<'PY'
+          from importlib.metadata import version
+
+          from packaging.requirements import Requirement
+
+          requirement = Requirement("torch>=2.13,<2.14")
+          installed = version("torch")
+          if installed not in requirement.specifier:
+              raise SystemExit(
+                  f"installed torch {installed} does not satisfy {requirement.specifier}"
+              )
+          print(f"Validated agent requirement with torch {installed}")
+          PY
+
+      - name: Create Docker smoke checkpoint
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}:/home/bomberman" \
+            --workdir /home/bomberman \
+            --env GIT_CONFIG_COUNT=1 \
+            --env GIT_CONFIG_KEY_0=safe.directory \
+            --env GIT_CONFIG_VALUE_0=/home/bomberman \
+            bomberman-dqn-agent:pr \
+            python -m training.run_experiment \
+              --agent DagobertDuckDQN \
+              --mode training \
+              --scenario coin-heaven \
+              --rounds 2 \
+              --world-seed 7001 \
+              --agent-seed 8001
+          test -s agent_code/DagobertDuckDQN/checkpoint.pt
+          sha256sum agent_code/DagobertDuckDQN/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/docker-checkpoint-before.sha256
+
+      - name: Package agent in Docker
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}:/home/bomberman" \
+            --workdir /home/bomberman \
+            bomberman-dqn-agent:pr \
+            python scripts/package_agent.py DagobertDuckDQN
+          test -s dist/final-project-agent-code.zip
+
+      - name: Evaluate against three random agents in Docker
+        run: |
+          docker run --rm \
+            --volume "${{ github.workspace }}:/home/bomberman" \
+            --workdir /home/bomberman \
+            --env GIT_CONFIG_COUNT=1 \
+            --env GIT_CONFIG_KEY_0=safe.directory \
+            --env GIT_CONFIG_VALUE_0=/home/bomberman \
+            bomberman-dqn-agent:pr \
+            python -m training.run_experiment \
+              --agent DagobertDuckDQN \
+              --mode evaluation \
+              --scenario classic \
+              --rounds 1 \
+              --world-seed 9001 \
+              --agent-seed 8001 \
+              --opponents random_agent random_agent random_agent
+          sha256sum agent_code/DagobertDuckDQN/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/docker-checkpoint-after.sha256
+          diff /tmp/docker-checkpoint-before.sha256 /tmp/docker-checkpoint-after.sha256
+
+      - name: Inspect Docker result and package
+        run: |
+          docker run --rm --interactive \
+            --volume "${{ github.workspace }}:/home/bomberman" \
+            --workdir /home/bomberman \
+            bomberman-dqn-agent:pr \
+            python - <<'PY'
+          import json
+          import logging
+          import os
+          import platform
+          import sys
+          from pathlib import Path
+          from types import SimpleNamespace
+          from zipfile import ZipFile
+
+          import torch
+          from agent_code.DagobertDuckDQN.callbacks import setup
+
+          os.environ["BOMBERMAN_AGENT_SEED"] = "8001"
+          agent = SimpleNamespace(train=False, logger=logging.getLogger("docker-check"))
+          setup(agent)
+          if torch.get_num_threads() != 1:
+              raise SystemExit("Docker evaluation did not configure one CPU thread")
+
+          run_directory = sorted(Path("training_outputs").iterdir())[-1]
+          metadata = json.loads((run_directory / "metadata.json").read_text())
+          summary = json.loads((run_directory / "summary.json").read_text())
+          if metadata["status"] != "completed":
+              raise SystemExit("Docker evaluation did not complete")
+
+          timings = summary["overall"]["decision_time_ms"]
+          if timings["mean_episode_p95"] >= 50.0:
+              raise SystemExit("Docker evaluation exceeded the p95 latency gate")
+          if timings["maximum"] >= 100.0:
+              raise SystemExit("Docker evaluation exceeded the maximum latency gate")
+
+          with ZipFile("dist/final-project-agent-code.zip") as archive:
+              names = archive.namelist()
+          if any(not name.startswith("DagobertDuckDQN/") for name in names):
+              raise SystemExit("Docker package contains another agent")
+          if "DagobertDuckDQN/checkpoint.pt" not in names:
+              raise SystemExit("Docker package is missing its checkpoint")
+
+          print(
+              json.dumps(
+                  {
+                      "python": sys.version,
+                      "platform": platform.platform(),
+                      "torch": torch.__version__,
+                      "torch_threads": torch.get_num_threads(),
+                      "decision_time_ms": timings,
+                  },
+                  indent=2,
+              )
+          )
+          PY
+
+      - name: Evaluate packaged agent in clean framework
+        run: |
+          clean_framework="$(mktemp -d)"
+          git archive HEAD | tar -x -C "$clean_framework"
+          rm -rf "$clean_framework/agent_code/DagobertDuckDQN"
+          unzip -q dist/final-project-agent-code.zip -d "$clean_framework/agent_code"
+          before="$(sha256sum "$clean_framework/agent_code/DagobertDuckDQN/checkpoint.pt")"
+          docker run --rm \
+            --volume "$clean_framework:/home/bomberman" \
+            --workdir /home/bomberman \
+            bomberman-dqn-agent:pr \
+            python main.py play \
+              --agents DagobertDuckDQN random_agent random_agent random_agent \
+              --scenario classic \
+              --no-gui \
+              --n-rounds 1 \
+              --seed 9002
+          after="$(sha256sum "$clean_framework/agent_code/DagobertDuckDQN/checkpoint.pt")"
+          test "$before" = "$after"
