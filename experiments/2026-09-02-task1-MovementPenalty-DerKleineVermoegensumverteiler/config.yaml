@@ -3,7 +3,7 @@ schema_version: 1
 experiment:
   issue: 35
   name: task1-MovementPenalty-DerKleineVermoegensumverteiler
-  status: preregistered
+  status: completed
   owner: LiliWestermann
   reviewer: 
   experiment_commit: auto
