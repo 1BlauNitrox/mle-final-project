@@ -12,7 +12,7 @@ LEARNING_RATE: float = 0.1
 DISCOUNT_FACTOR: float = 0.9
 
 INITIAL_EPSILON: float = 1.0
-EPSILON_DECAY: float = 0.9995
+EPSILON_DECAY: float = 0.99
 MINIMUM_EPSILON: float = 0.1
 
 # rewards
