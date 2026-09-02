@@ -536,15 +536,47 @@ Feature extraction and action selection must be shared consistently between
 training and evaluation. Evaluation behavior must not depend on importing the
 training callback module.
 
+### DQN specialization
+
+`DagobertDuckDQN` follows the same agent-local responsibility boundaries while
+replacing the tabular value function with a neural approximation:
+
+```text
+game_state
+-> eight raw features
+-> float32 normalization
+-> seeded epsilon-greedy action selection
+-> pending framework transition
+-> bounded replay buffer
+-> sampled mini-batch
+-> online-network update against a frozen target network
+```
+
+`callbacks.setup()` creates or restores training state when `self.train` is
+true. Evaluation instead loads only a frozen online network and creates no
+optimizer or replay buffer. `callbacks.act()` performs feature extraction,
+normalization, and action selection but never updates parameters.
+
+`train.py` owns pending-transition resolution, replay insertion, mini-batch
+updates, epsilon decay, learning diagnostics, and checkpoint writes. The newest
+surviving transition remains pending until the next callback establishes
+whether it is ordinary or terminal. This preserves the terminal-transition
+rules described above and prevents duplicate learning at the end of a surviving
+round.
+
+The DQN uses one CPU thread during evaluation and contains no multiprocessing.
+Its evaluation modules import only from its own agent directory and declared
+runtime dependencies.
+
 ## Model persistence
 
-Evaluation-time model paths must be derived from the agent module location:
+Evaluation-time artifact paths must be derived from the agent module location:
 
 ```python
 from pathlib import Path
 
 AGENT_DIRECTORY = Path(__file__).resolve().parent
-MODEL_PATH = AGENT_DIRECTORY / "model.npz"
+ARTIFACT_PATH = AGENT_DIRECTORY / "model.ext"
 ```
 
 Agent code must not use:
@@ -555,23 +587,39 @@ Agent code must not use:
 - a path inside `training/`; or
 - a path to another agent.
 
-Training may write a resumable model artifact. Evaluation must load the selected
+Training may write a resumable artifact. Evaluation must load the selected
 artifact without modifying it.
 
-The saved artifact must contain or be accompanied by all configuration that
-affects evaluation, including:
+Every artifact must contain or be accompanied by all configuration that affects
+evaluation, including:
 
 - action order;
-- feature representation version;
-- Q-values;
+- feature representation and normalization versions;
+- learned parameters;
 - deterministic tie-breaking configuration; and
 - any agent seed required for reproducibility.
+
+A resumable neural-agent checkpoint must additionally preserve all state that
+affects the next training update. For `DagobertDuckDQN`, this includes online
+and target weights, optimizer state, optimizer update count, bounded replay
+contents, replay and action RNG states, epsilon, completed episodes,
+hyperparameters, rewards, and schema versions.
+
+DQN checkpoints are written to a temporary file in the agent directory,
+flushed and synchronized, and then installed with atomic replacement.
+Evaluation uses restricted CPU deserialization, extracts only the online policy,
+sets it to evaluation mode, disables gradients, and creates no training
+objects.
 
 Persistence tests must verify:
 
 - save/load round trips;
+- exact optimizer and replay continuation;
+- RNG-state continuation;
 - evaluation-relevant configuration preservation;
+- schema rejection;
 - relative-path behavior;
+- failed-write recovery;
 - deterministic loading; and
 - byte-for-byte non-mutation during evaluation.
 
@@ -674,6 +722,15 @@ Framework changes may support faster training or custom scenarios, but:
 - retest trained agents against an unchanged upstream framework;
 - record the upstream framework commit used by the experiment; and
 - avoid placing evaluation-critical behavior only in modified framework code.
+
+The imported Dockerfile retains the course dependency set but pins the public
+`continuumio/miniconda3:25.3.1-1` base, which bundles Python 3.13. The previous
+moving base changed to Python 3.14, where the Dockerfile's supplied TensorFlow
+dependency was unavailable and prevented the compatibility image from building
+before any agent code ran. Pinning the published image matches the repository's
+documented development target, avoids automatically accepting later interactive
+channel terms, and makes the compatibility check reproducible. Submitted agents
+must still be tested in the course-provided environment.
 
 ## Alternatives considered
 

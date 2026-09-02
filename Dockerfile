@@ -1,4 +1,6 @@
-FROM continuumio/miniconda3
+# Miniconda 25.3.1-1 is the published Python 3.13 image. A fixed base prevents
+# the course Dockerfile from silently moving to an unsupported Python runtime.
+FROM continuumio/miniconda3:25.3.1-1
 WORKDIR /home/bomberman
 RUN apt-get update
 RUN apt-get -y install gcc g++

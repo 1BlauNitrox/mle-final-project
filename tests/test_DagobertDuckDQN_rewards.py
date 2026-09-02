@@ -2,10 +2,10 @@
 
 import pytest
 
-from agent_code.DerKleineVermoegensumverteiler.config import (
+from agent_code.DagobertDuckDQN.config import (
     REWARDS,
 )
-from agent_code.DerKleineVermoegensumverteiler.rewards import (
+from agent_code.DagobertDuckDQN.rewards import (
     reward_from_events,
 )
 
@@ -99,14 +99,9 @@ def test_reward_function_accepts_generators() -> None:
     assert reward == pytest.approx(expected)
 
 
-def test_reward_mappig_contains_registered_rewards() -> None:
+def test_initial_mapping_is_minimal() -> None:
     assert set(REWARDS) == {
         "COIN_COLLECTED",
         "INVALID_ACTION",
-        "MOVED_AWAY_FROM_COIN",
-        "MOVED_TOWARDS_COIN",
         "WAITED",
-        "MOVED_TOWARDS_COIN",
-        "MOVED_AWAY_FROM_COIN",
     }
-

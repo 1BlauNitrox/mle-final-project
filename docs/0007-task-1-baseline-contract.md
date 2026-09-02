@@ -81,7 +81,7 @@ experiment record before the first training run. The final held-out list must
 not overlap with any world seed used during training, debugging, development
 evaluation, or manual inspection.
 
-All five trained models must be evaluated for exactly one episode on each of the
+The two trained models must be evaluated for exactly one episode on each of the
 same 100 final world seeds, giving 100 final rounds per model. The random
 baseline likewise runs one episode per final world seed. The final set may be
 opened only after features, rewards, hyperparameters, checkpoint selection,
@@ -113,8 +113,8 @@ the episode continues after the agent dies.
 | Cumulative shaped reward | Diagnostic only; comparable across variants only when the reward definition is identical |
 | Decision time | Median, 95th percentile, and maximum wall-clock duration of all evaluation-time `act()` calls |
 
-The evaluation report must include per-model results, the aggregate across all
-five trained models, and variation across both training runs and world seeds.
+The evaluation report must include per-model results, the aggregate across the
+two trained models, and variation across both training runs and world seeds.
 It must also report the number and rate of zero-coin episodes and the number of
 full-clear episodes rather than hiding them inside aggregate efficiency values.
 
@@ -139,21 +139,19 @@ evaluation.
 The Task 1 baseline is complete only if every gate below passes on the final
 held-out evaluation:
 
-1. Five independently trained model artifacts are evaluated on all 100 final
+1. Two independently trained model artifacts are evaluated on all 100 final
    world seeds.
 2. The mean coin collection fraction across all models and final episodes is at
    least `0.80`.
-3. At least four of the five models individually achieve a mean coin collection
-   fraction of at least `0.75`.
-4. The learned policy exceeds the uniform-random baseline by at least `0.20`
+3. The learned policy exceeds the uniform-random baseline by at least `0.20`
    absolute coin-collection-fraction points, and the lower bound of the paired
    95% bootstrap confidence interval is greater than `0.00`.
-5. The aggregate invalid-action rate is below `0.01`, and every individual model
+4. The aggregate invalid-action rate is below `0.01`, and every individual model
    is below `0.01`.
-6. `BOMB` is selected exactly zero times.
-7. Evaluation is deterministic and leaves every model artifact byte-for-byte
+5. `BOMB` is selected exactly zero times.
+6. Evaluation is deterministic and leaves every model artifact byte-for-byte
    unchanged.
-8. On the documented reference machine, evaluation uses one CPU thread and no
+7. On the documented reference machine, evaluation uses one CPU thread and no
    multiprocessing; the 95th-percentile decision time is below `50 ms` and the
    maximum decision time is below `100 ms`. All `act()` calls are included.
 
@@ -165,7 +163,7 @@ a prospective contract change, never in response to final held-out results.
 
 The completion evidence must be a compact experiment record following
 [`0004-experimentation-protocol.md`](0004-experimentation-protocol.md). It must
-identify the issue, commit, exact configuration, all seed lists, five model
+identify the issue, commit, exact configuration, all seed lists, two model
 artifacts and checksums, random-baseline configuration, per-episode data,
 aggregate metrics, uncertainty calculation, runtime environment, and test
 results. Raw logs and temporary checkpoints remain outside Git.

@@ -7,3 +7,6 @@ tqdm>=4.70.0
 # Optional GUI. Python 3.13 is recommended because pygame currently has
 # reliable prebuilt wheels for it.
 pygame>=2.6.1; python_version < "3.14"
+
+# Neural-network runtime for DagobertDuckDQN.
+torch>=2.13,<2.14
