@@ -3,10 +3,10 @@ schema_version: 1
 experiment:
   issue: 35
   name: task1-RewardsAsInLecture-DerKleineVermoegensumverteiler
-  status: preregistered
+  status: completed
   owner: LiliWestermann
   reviewer:
-  experiment_commit: 
+  experiment_commit: `fa23b903ca3e6ad4df809739d1ae61ffaa8681ac`
 
 revisions:
   pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
