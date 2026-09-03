@@ -39,6 +39,16 @@ revisions:
   agent_source_sha256_before_shaping: "74407c19bf880e8f0a174427b559456c0bed2ec4d1e8ef20dd619402a9fe0fba"
   agent_source_sha256_at_preregistration: "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
   tabular_shaping_source_pull_request: 37
+  agent_source_sha256_at_evaluation: "8e5f20b857f113ccbf1929fe9b9dd3ab80713c0acb62c06b1c2d3bece7a363e6"
+  evaluation_source_deviation: >-
+    Evaluation ran on a later agent revision than training. The only difference
+    is the BOMBERMAN_EVALUATION_CHECKPOINT indirection that PR #49 added to
+    callbacks._setup_evaluation_policy, plus the agent card. It resolves which
+    checkpoint file the frozen policy loads and is required for the staged
+    evaluation artifact; it does not touch the training path, the network, the
+    features, the rewards or action selection. Recorded rather than avoided,
+    because evaluating with the older revision would reintroduce the worktree
+    dirtying that PR #49 fixed.
 
 agent:
   name: DagobertDuckDQN

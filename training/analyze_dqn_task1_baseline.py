@@ -26,8 +26,20 @@ from training.evaluate_dqn_task1_baseline import (
     ExperimentProfile,
     models_for,
 )
+from training.paired_bootstrap import (
+    BOOTSTRAP_RESAMPLES,
+    paired_bootstrap,
+    read_primary_fractions,
+)
+from training.run_experiment import REPOSITORY_ROOT
 
 COIN_HEAVEN_INITIAL_COINS = 50
+# Registered in the issue #58 experiment record before evaluation ran.
+PAIRED_BASELINE_EVIDENCE = Path(
+    "experiments/2026-09-01-dqn-task1-development-baseline/evidence/evaluation-episodes.csv"
+)
+PAIRED_RESAMPLER_SEED = 58
+PAIRED_NON_INFERIORITY_MARGIN = -0.02
 ROLLING_WINDOW = 250
 SUMMARY_FIELDS = (
     "model",
@@ -80,6 +92,7 @@ def analyze(
 
     training_runs = _completed_training_runs(series_directory, models)
     model_summaries: list[dict[str, Any]] = []
+    fractions_by_model: dict[str, dict[int, float]] = {}
     evaluation_commits: set[str] = set()
     evaluation_duration_seconds = 0.0
 
@@ -103,6 +116,9 @@ def analyze(
             available = statistics["initially_available_coins"]
             row["initially_available_coins"] = available
             rows.append(row)
+            fractions_by_model.setdefault(model_name, {})[seed] = (
+                row["coins_collected"] / available
+            )
             decision_times.extend(statistics["decision_times_ms"])
 
             metadata = _read_json(run_directory / "metadata.json")
@@ -131,7 +147,8 @@ def analyze(
     _plot_failures(model_summaries, figures_directory)
     _plot_learning_curves(training_runs, figures_directory, models)
 
-    criteria = _evaluate_criteria(model_summaries, aggregate, manifest)
+    paired = _paired_against_baseline(fractions_by_model)
+    criteria = _evaluate_criteria(model_summaries, aggregate, manifest, paired)
     result = {
         "schema_version": 1,
         "series_directory": series_directory.name,
@@ -142,6 +159,7 @@ def analyze(
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
         "evaluation_repeat_episodes": _completed_repeat_episodes(manifest, models),
         "criteria": criteria,
+        "paired_comparison": paired,
     }
     _write_json(experiment_directory / "result.json", result)
     return result
@@ -303,10 +321,49 @@ def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _paired_criterion(paired: dict[str, Any] | None) -> dict[str, Any]:
+    """Score the registered non-inferiority margin against the paired interval."""
+    threshold = f"95% CI lower bound > {PAIRED_NON_INFERIORITY_MARGIN}"
+
+    if paired is None:
+        return {
+            "value": None,
+            "threshold": threshold,
+            "passed": None,
+            "reason": "baseline per-seed evidence unavailable",
+        }
+
+    return {
+        "value": paired["mean_difference"],
+        "ci95": [paired["ci_lower"], paired["ci_upper"]],
+        "threshold": threshold,
+        "passed": paired["ci_lower"] > PAIRED_NON_INFERIORITY_MARGIN,
+        "resamples": paired["resamples"],
+        "resampler_seed": paired["resampler_seed"],
+    }
+
+
+def _paired_against_baseline(
+    fractions_by_model: dict[str, dict[int, float]],
+) -> dict[str, Any] | None:
+    """Compare this series with the registered baseline when it is available."""
+    baseline_path = REPOSITORY_ROOT / PAIRED_BASELINE_EVIDENCE
+    if not baseline_path.is_file():
+        return None
+
+    return paired_bootstrap(
+        fractions_by_model,
+        read_primary_fractions(baseline_path),
+        resampler_seed=PAIRED_RESAMPLER_SEED,
+        resamples=BOOTSTRAP_RESAMPLES,
+    ).as_dict()
+
+
 def _evaluate_criteria(
     summaries: list[dict[str, Any]],
     aggregate: dict[str, Any],
     manifest: dict[str, Any],
+    paired: dict[str, Any] | None = None,
 ) -> dict[str, dict[str, Any]]:
     models_above_threshold = sum(
         row["mean_collection_fraction"] >= 0.75 for row in summaries
@@ -325,12 +382,7 @@ def _evaluate_criteria(
             "threshold": ">= 4 models at >= 0.75",
             "passed": models_above_threshold >= 4,
         },
-        "paired_non_inferiority": {
-            "value": None,
-            "threshold": "95% CI lower bound > -0.02",
-            "passed": None,
-            "reason": "tabular per-seed rows and original artifacts unavailable",
-        },
+        "paired_non_inferiority": _paired_criterion(paired),
         "invalid_actions": {
             "value_aggregate": aggregate["invalid_action_rate"],
             "value_maximum_model": maximum_model_invalid,
