@@ -110,7 +110,7 @@ def test_shaping_reward_reaches_the_pending_transition() -> None:
         epsilon=0.0,
         logger=__import__("logging").getLogger("shaping-test"),
     )
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     training.game_events_occurred(
         agent,
@@ -122,6 +122,4 @@ def test_shaping_reward_reaches_the_pending_transition() -> None:
 
     # No framework events, so the reward is the shaping term alone.
     assert agent.pending_transition is not None
-    assert agent.pending_transition.reward == pytest.approx(
-        REWARDS["MOVED_TOWARDS_COIN"]
-    )
+    assert agent.pending_transition.reward == pytest.approx(REWARDS["MOVED_TOWARDS_COIN"])
