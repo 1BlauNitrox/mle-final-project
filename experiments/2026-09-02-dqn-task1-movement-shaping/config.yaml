@@ -1,0 +1,296 @@
+schema_version: 1
+
+experiment:
+  issue: 58
+  name: dqn-task1-movement-shaping
+  status: completed_negative
+  owner: 1BlauNitrox
+  reviewer: Waffelmanufaktur
+  branch: experiment/58-dqn-task1-movement-shaping
+  owner_required_before_training: true
+
+independent_variable:
+  name: movement_coin_reward_shaping
+  baseline: absent
+  treatment:
+    MOVED_TOWARDS_COIN: 0.1
+    MOVED_AWAY_FROM_COIN: -0.1
+  derivation: >-
+    Emitted in train.py from the observed transition. For a movement action,
+    compare the minimum Manhattan distance from the old position to any coin
+    visible in the old state against the same distance from the new position.
+    Decrease emits MOVED_TOWARDS_COIN, increase emits MOVED_AWAY_FROM_COIN,
+    and an unchanged distance, an absent coin list, or a non-movement action
+    emits nothing. Mirrors _coin_movement_event in
+    DerKleineVermoegensumverteiler after PR #37.
+  potential_based: false
+  potential_based_note: >-
+    Not of the form gamma * Psi(s') - Psi(s), so policy invariance under
+    Ng, Harada and Russell (1999) and lecture Theorem 9.19 is not guaranteed.
+    Accepted deliberately to keep exactly one variable changed relative to the
+    tabular result being ported. A potential-based variant is a separate
+    follow-up experiment.
+
+revisions:
+  repository_commit_at_preregistration: "dbe259721409092448e8594cbeaaca469c4f9835"
+  baseline_training_commit: "e7e8b52f50b2acb46ccad04905d76c6948304e21"
+  candidate_commit: "84396eb"
+  imported_framework_revision: "0f55c1d"
+  agent_source_sha256_before_shaping: "74407c19bf880e8f0a174427b559456c0bed2ec4d1e8ef20dd619402a9fe0fba"
+  agent_source_sha256_at_preregistration: "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
+  tabular_shaping_source_pull_request: 37
+  agent_source_sha256_at_evaluation: "8e5f20b857f113ccbf1929fe9b9dd3ab80713c0acb62c06b1c2d3bece7a363e6"
+  evaluation_source_deviation: >-
+    Evaluation ran on a later agent revision than training. The only difference
+    is the BOMBERMAN_EVALUATION_CHECKPOINT indirection that PR #49 added to
+    callbacks._setup_evaluation_policy, plus the agent card. It resolves which
+    checkpoint file the frozen policy loads and is required for the staged
+    evaluation artifact; it does not touch the training path, the network, the
+    features, the rewards or action selection. Recorded rather than avoided,
+    because evaluating with the older revision would reintroduce the worktree
+    dirtying that PR #49 fixed.
+
+agent:
+  name: DagobertDuckDQN
+  algorithm: deep_q_network
+  actions: [UP, RIGHT, DOWN, LEFT, WAIT]
+  forbidden_actions: [BOMB]
+  feature_count: 8
+  feature_schema_version: 1
+  network:
+    hidden_sizes: [64, 64]
+    output_size: 5
+  hyperparameters:
+    learning_rate: 0.001
+    discount_factor: 0.9
+    gradient_clip_norm: 10.0
+    batch_size: 64
+    replay_capacity: 10000
+    replay_warmup: 256
+    target_update_interval: 250
+    initial_epsilon: 1.0
+    epsilon_decay: 0.99
+    minimum_epsilon: 0.1
+    torch_num_threads: 1
+  rewards:
+    COIN_COLLECTED: 10.0
+    INVALID_ACTION: -0.5
+    WAITED: -0.1
+    MOVED_TOWARDS_COIN: 0.1
+    MOVED_AWAY_FROM_COIN: -0.1
+    all_other_events: 0.0
+
+environment:
+  scenario: coin-heaven
+  available_coins_per_episode: 50
+  opponents: []
+  episode_step_limit: 400
+
+training:
+  runs: 5
+  episodes_per_run: 10000
+  fresh_model_per_run: true
+  checkpoint_selection: final_checkpoint
+  evaluation_based_selection: false
+  execution: serial
+  retain_failed_runs: true
+  seeds:
+    - {run: 1, world_seed: 15001, agent_seed: 25001}
+    - {run: 2, world_seed: 15002, agent_seed: 25002}
+    - {run: 3, world_seed: 15003, agent_seed: 25003}
+    - {run: 4, world_seed: 15004, agent_seed: 25004}
+    - {run: 5, world_seed: 15005, agent_seed: 25005}
+  seed_collision_check:
+    checked_at: "2026-09-02"
+    known_used_blocks:
+      tabular_campaign: {world: "11001-11010", agent: "21001-21010"}
+      dqn_baseline_issue_41: {world: "12001-12005", agent: "22001-22005"}
+      dqn_slower_epsilon: {world: "13001-13003", agent: "23001-23003"}
+      dqn_slower_learning_reserved: {world: "14001-14005", agent: "24001-24005"}
+    collisions_found: false
+
+evaluation:
+  training_enabled: false
+  episodes_per_model_per_seed: 1
+  development_world_seeds: {start: 31001, end: 31040}
+  identical_to_baseline_seeds: true
+  deterministic_repeat_pass: true
+  reserved_confirmation_seeds:
+    start: 31041
+    end: 31050
+    use_in_this_experiment: false
+  final_held_out_seeds:
+    use_in_this_experiment: false
+  pairing:
+    model: same_run_index
+    episode: same_world_seed
+  runtime:
+    cpu_threads: 1
+    multiprocessing: false
+    maximum_memory_gb: 8
+  artifact_integrity:
+    hash_algorithm: sha256
+    hash_before_and_after_evaluation: true
+    model_must_remain_unchanged: true
+
+metrics:
+  primary: coin_collection_fraction
+  primary_secondary: models_reaching_individual_threshold
+  training_diagnostics:
+    - shaped_reward
+    - epsilon
+    - replay_size
+    - update_count
+    - mean_loss
+    - mean_abs_td_error
+    - target_synchronizations
+    - episode_target_synchronizations
+    - wall_time
+  evaluation:
+    - initially_available_coins
+    - coins_collected
+    - coin_collection_fraction
+    - full_clear
+    - zero_coin
+    - survival_steps
+    - episode_steps
+    - steps_per_coin
+    - coins_per_100_steps
+    - invalid_actions
+    - attempted_actions
+    - invalid_action_rate
+    - environment_score
+    - action_counts
+    - decision_time_median_ms
+    - decision_time_p95_ms
+    - decision_time_max_ms
+
+success_criteria:
+  primary:
+    minimum_models_reaching_individual_threshold: 4
+    individual_mean_coin_collection_fraction_min: 0.75
+    invalid_action_rate_max_exclusive: 0.01
+    per_model_invalid_action_rate_max_exclusive: 0.01
+  guardrails:
+    completed_models: 5
+    completed_primary_evaluation_episodes: 200
+    aggregate_mean_coin_collection_fraction_min: 0.80
+    bomb_action_count: 0
+    deterministic_evaluation_required: true
+    immutable_model_required: true
+    decision_time_p95_ms_max_exclusive: 50
+    decision_time_max_ms_max_exclusive: 100
+  comparison_with_baseline:
+    baseline_experiment: 2026-09-01-dqn-task1-development-baseline
+    paired_bootstrap_resamples: 10000
+    paired_bootstrap_resampler_seed: 58
+    resampling: two_stage_runs_then_paired_world_seeds
+    computable: true
+    computable_reason: identical evaluation seeds and run indices in both experiments
+    reported_regardless_of_outcome: true
+
+stopping_rule:
+  is_final_task1_tuning_experiment: true
+  on_pass: freeze_via_issue_42_then_unblock_issue_43
+  on_fail: >-
+    Do not run a third Task 1 tuning experiment. Amend issue #42 prospectively
+    to permit a documented neutral selection rule such as the median-performing
+    run, freeze on that basis, retain the instability as a negative result, and
+    proceed to issue #43.
+  rationale: >-
+    The agent-code deadline is 21 September 2026 with Tasks 2 to 4 outstanding.
+
+compute_budget:
+  estimated_cpu_hours: 10.5
+  estimate_basis: 37482 seconds for the same five-run 10000-episode budget in issue 41
+  maximum_cpu_hours: 24
+  maximum_evaluation_memory_gb: 8
+  paid_resources: false
+  gpu: false
+
+runtime_environment_at_preregistration:
+  operating_system: Windows 11 10.0.26200
+  python: 3.13.14
+  processor: AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD
+  logical_processors: 16
+  total_physical_memory_bytes: 17105416192
+  dependencies:
+    numpy: 2.5.1
+    torch: 2.13.0+cpu
+    pygame: 2.6.1
+    scipy: 1.18.0
+    scikit_learn: 1.9.0
+    matplotlib: 3.11.1
+  note: >-
+    Issue 41 was measured on an Intel Core i7-8550U. Coin-collection metrics are
+    hardware independent given fixed seeds, but decision-time gates are
+    machine specific and must be reported with the machine that produced them.
+
+baseline:
+  experiment: 2026-09-01-dqn-task1-development-baseline
+  issue: 41
+  pull_request: 49
+  status_at_preregistration: open_changes_requested
+  aggregate_mean_coin_collection_fraction: 0.8334
+  models_reaching_0_75: 3
+  aggregate_invalid_action_rate: 0.1641577991
+  maximum_model_invalid_action_rate: 0.6085209003
+  full_clears: 125
+  wait_actions: 6505
+  artifact_sha256:
+    run_01: 144540fd2d99067bb010c25583a004f1bba559023becf26d38c92095e2df5cd0
+    run_02: 89859bd01bcb4e8fe87b614861c696cfbf1260c0cd07185adb781f48ba7c316e
+    run_03: 9f2beac25df249dc2650f180045e0e826626d5eee3a2dd6d96c6ac3b74c8ff84
+    run_04: f1a09fbea1587e55e22375608467959f6261f63252212cb765e01a551de72d55
+    run_05: 1dc1fd50b2477896a3d80dd04e8e803a895777ce74494d0bc9210b4c0de7a862
+
+outputs:
+  raw_root: training_outputs/issue-58-dqn-task1-movement-shaping
+  raw_artifacts_ignored_by_git: true
+  committed_after_completion:
+    - README.md
+    - config.yaml
+    - summary.csv
+    - episodes.csv
+    - result.json
+    - figures/
+  per_seed_rows_must_be_committed: true
+  per_seed_rows_reason: >-
+    Issue 41 could not compute its paired interval because per-seed rows were
+    not retained. Committing them here keeps the paired bootstrap reproducible
+    from the repository alone.
+
+blockers_before_training:
+  - resolved: >-
+      The 0 * inf aggregation defect in
+      training/analyze_dqn_task1_baseline.py is fixed. total_steps is carried
+      forward instead of being recovered from a ratio, and an undefined
+      steps_per_coin reports null. Covered by regression tests.
+  - resolved: Owner and non-author reviewer assigned.
+
+launch:
+  runner: python -m training.run_dqn_task1_baseline --issue 58
+  evaluator: python -m training.evaluate_dqn_task1_baseline --issue 58 <series>
+  analyzer: >-
+    python -m training.analyze_dqn_task1_baseline --issue 58 <series>
+    experiments/2026-09-02-dqn-task1-movement-shaping
+  preflight_requires_clean_worktree: true
+
+results:
+  status: completed
+  primary_criterion: failed
+  failing_part: invalid_action_rate
+  aggregate_mean_coin_collection_fraction: 0.8154
+  models_reaching_0_75: 4
+  aggregate_invalid_action_rate: 0.1758040206
+  maximum_model_invalid_action_rate: 0.4616833633
+  full_clears: 92
+  zero_coin_episodes: 1
+  wait_actions: 2676
+  bomb_actions: 0
+  paired_mean_difference: -0.018
+  paired_ci95: [-0.2471, 0.2414125]
+  paired_non_inferiority: failed
+  decision: rejected
+  stopping_rule_branch: on_fail
+  run_5_attempts: 2

@@ -89,6 +89,44 @@ conversation before merge.
 Because the PR body contains `Closes #<issue>`, merging into `main`
 automatically closes the linked issue.
 
+## Continuous integration policy
+
+The CI workflow runs for pull-request updates and pushes to `main`. It does not
+also run for ordinary pushes to a branch with an open pull request, because that
+would execute the same revision twice under different GitHub event references.
+
+The branch-protection checks `Quality checks` and `Bomberman smoke test` run on
+every pull request. More expensive agent and official-Docker smoke jobs are
+selected conservatively from the complete changed-path set:
+
+- documentation, agent-card prose, tests, and retained experiment records rely
+  on the required quality and framework checks;
+- an agent implementation runs that agent's smoke test;
+- DQN implementation or agent-local dependency changes also run the official
+  Docker compatibility test;
+- shared framework, training, packaging, or CI changes run all optional checks;
+- unfamiliar non-documentation paths default to all optional checks.
+
+Change detection uses the pull request's recorded base and head SHAs. A push to
+`main` uses the event's before and after SHAs. Optional jobs consume no artifacts
+from one another and therefore run in parallel. Never narrow these filters merely
+to make a workflow faster; avoiding a false negative takes priority over runner
+time.
+
+The classifier is a correctness gate, not merely a scheduling hint. The
+required `Quality checks` job depends on successful change detection and fails
+explicitly if the detector fails. This prevents an unexpected Git revision or
+script error from silently skipping optional compatibility checks while leaving
+the protected checks green.
+
+The official course image is built with the runner's standard Docker builder on
+every relevant workflow. A Buildx GitHub Actions cache was measured during PR
+#61 and deliberately rejected: the approximately 4 GB image required 233 seconds
+to load into Docker and 208 seconds to export to the cache, increasing the cold
+Docker job from about 4 minutes to more than 11 minutes. Revisit caching only if
+a smaller official image or a pre-built registry image makes it measurably faster
+without weakening the compatibility, packaging, or clean-framework checks.
+
 ## Commit messages
 
 Use concise, imperative conventional-style messages:

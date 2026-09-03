@@ -1,0 +1,3425 @@
+{
+  "artifacts": {
+    "run-01": {
+      "agent_seed": 25001,
+      "artifact_name": "run-01-final-checkpoint.pt",
+      "path": "run-01-final-checkpoint.pt",
+      "run": 1,
+      "sha256": "f89d5f7236ffe85b99faf29f44a1c15163f54896a5339deabaade8c533adb993",
+      "size_bytes": 862842
+    },
+    "run-02": {
+      "agent_seed": 25002,
+      "artifact_name": "run-02-final-checkpoint.pt",
+      "path": "run-02-final-checkpoint.pt",
+      "run": 2,
+      "sha256": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
+      "size_bytes": 862842
+    },
+    "run-03": {
+      "agent_seed": 25003,
+      "artifact_name": "run-03-final-checkpoint.pt",
+      "path": "run-03-final-checkpoint.pt",
+      "run": 3,
+      "sha256": "791f5a0b8bd9723709b739c5eff786480db6d38b13a4d72f99d499ae64ae19de",
+      "size_bytes": 862842
+    },
+    "run-04": {
+      "agent_seed": 25004,
+      "artifact_name": "run-04-final-checkpoint.pt",
+      "path": "run-04-final-checkpoint.pt",
+      "run": 4,
+      "sha256": "d6b5a04623c3795b8c4e934c010292e94dec4430f7659bbb49657952af12b38e",
+      "size_bytes": 862842
+    },
+    "run-05": {
+      "agent_seed": 25005,
+      "artifact_name": "run-05-final-checkpoint.pt",
+      "path": "run-05-final-checkpoint.pt",
+      "run": 5,
+      "sha256": "20cec58f309e5d3edd26db331e2da937660ff2fae4baa80831cc1fbb3d312465",
+      "size_bytes": 862842
+    }
+  },
+  "development_seeds": [
+    31001,
+    31002,
+    31003,
+    31004,
+    31005,
+    31006,
+    31007,
+    31008,
+    31009,
+    31010,
+    31011,
+    31012,
+    31013,
+    31014,
+    31015,
+    31016,
+    31017,
+    31018,
+    31019,
+    31020,
+    31021,
+    31022,
+    31023,
+    31024,
+    31025,
+    31026,
+    31027,
+    31028,
+    31029,
+    31030,
+    31031,
+    31032,
+    31033,
+    31034,
+    31035,
+    31036,
+    31037,
+    31038,
+    31039,
+    31040
+  ],
+  "evaluation_commits": [
+    "8f6fc1dc6761f535d49afeb6764c1ff95e48efad"
+  ],
+  "evaluation_duration_seconds_primary": 927.3878141999885,
+  "evaluation_passes": [
+    "primary",
+    "repeat"
+  ],
+  "files": {
+    "evaluation-decision-times.csv.gz": {
+      "sha256": "ce95c7bba26ee105596bbad33af175e1bd1a44eb6e80f122b6b375f82b092bbc",
+      "size_bytes": 747246
+    },
+    "evaluation-episodes.csv": {
+      "sha256": "63fe0e0bc716b1fe9fdce548ac079229ffdff11a05086a3af0260533d67fdcab",
+      "size_bytes": 122310
+    },
+    "training-episodes.csv.gz": {
+      "sha256": "a44617f03e466ffc90c0e31c133c556a96f38f9f91d0e705f4e4f6dfd5359240",
+      "size_bytes": 6189514
+    }
+  },
+  "issue": 58,
+  "jobs": {
+    "run-01:primary:31001": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-01:primary:31002": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-01:primary:31003": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-01:primary:31004": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-01:primary:31005": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-01:primary:31006": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-01:primary:31007": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-01:primary:31008": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-01:primary:31009": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-01:primary:31010": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-01:primary:31011": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-01:primary:31012": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-01:primary:31013": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-01:primary:31014": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-01:primary:31015": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-01:primary:31016": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-01:primary:31017": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-01:primary:31018": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-01:primary:31019": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-01:primary:31020": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-01:primary:31021": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-01:primary:31022": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-01:primary:31023": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-01:primary:31024": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-01:primary:31025": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-01:primary:31026": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-01:primary:31027": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-01:primary:31028": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-01:primary:31029": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-01:primary:31030": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-01:primary:31031": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-01:primary:31032": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-01:primary:31033": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-01:primary:31034": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-01:primary:31035": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-01:primary:31036": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-01:primary:31037": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-01:primary:31038": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-01:primary:31039": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-01:primary:31040": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-01:repeat:31001": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-01:repeat:31002": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-01:repeat:31003": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-01:repeat:31004": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-01:repeat:31005": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-01:repeat:31006": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-01:repeat:31007": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-01:repeat:31008": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-01:repeat:31009": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-01:repeat:31010": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-01:repeat:31011": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-01:repeat:31012": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-01:repeat:31013": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-01:repeat:31014": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-01:repeat:31015": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-01:repeat:31016": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-01:repeat:31017": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-01:repeat:31018": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-01:repeat:31019": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-01:repeat:31020": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-01:repeat:31021": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-01:repeat:31022": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-01:repeat:31023": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-01:repeat:31024": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-01:repeat:31025": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-01:repeat:31026": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-01:repeat:31027": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-01:repeat:31028": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-01:repeat:31029": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-01:repeat:31030": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-01:repeat:31031": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-01:repeat:31032": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-01:repeat:31033": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-01:repeat:31034": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-01:repeat:31035": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-01:repeat:31036": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-01:repeat:31037": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-01:repeat:31038": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-01:repeat:31039": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-01:repeat:31040": {
+      "agent_seed": 25001,
+      "error": null,
+      "model_run": 1,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-02:primary:31001": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-02:primary:31002": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-02:primary:31003": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-02:primary:31004": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-02:primary:31005": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-02:primary:31006": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-02:primary:31007": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-02:primary:31008": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-02:primary:31009": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-02:primary:31010": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-02:primary:31011": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-02:primary:31012": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-02:primary:31013": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-02:primary:31014": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-02:primary:31015": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-02:primary:31016": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-02:primary:31017": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-02:primary:31018": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-02:primary:31019": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-02:primary:31020": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-02:primary:31021": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-02:primary:31022": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-02:primary:31023": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-02:primary:31024": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-02:primary:31025": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-02:primary:31026": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-02:primary:31027": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-02:primary:31028": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-02:primary:31029": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-02:primary:31030": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-02:primary:31031": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-02:primary:31032": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-02:primary:31033": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-02:primary:31034": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-02:primary:31035": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-02:primary:31036": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-02:primary:31037": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-02:primary:31038": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-02:primary:31039": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-02:primary:31040": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-02:repeat:31001": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-02:repeat:31002": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-02:repeat:31003": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-02:repeat:31004": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-02:repeat:31005": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-02:repeat:31006": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-02:repeat:31007": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-02:repeat:31008": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-02:repeat:31009": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-02:repeat:31010": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-02:repeat:31011": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-02:repeat:31012": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-02:repeat:31013": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-02:repeat:31014": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-02:repeat:31015": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-02:repeat:31016": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-02:repeat:31017": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-02:repeat:31018": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-02:repeat:31019": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-02:repeat:31020": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-02:repeat:31021": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-02:repeat:31022": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-02:repeat:31023": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-02:repeat:31024": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-02:repeat:31025": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-02:repeat:31026": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-02:repeat:31027": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-02:repeat:31028": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-02:repeat:31029": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-02:repeat:31030": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-02:repeat:31031": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-02:repeat:31032": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-02:repeat:31033": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-02:repeat:31034": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-02:repeat:31035": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-02:repeat:31036": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-02:repeat:31037": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-02:repeat:31038": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-02:repeat:31039": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-02:repeat:31040": {
+      "agent_seed": 25002,
+      "error": null,
+      "model_run": 2,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-03:primary:31001": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-03:primary:31002": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-03:primary:31003": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-03:primary:31004": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-03:primary:31005": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-03:primary:31006": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-03:primary:31007": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-03:primary:31008": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-03:primary:31009": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-03:primary:31010": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-03:primary:31011": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-03:primary:31012": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-03:primary:31013": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-03:primary:31014": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-03:primary:31015": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-03:primary:31016": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-03:primary:31017": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-03:primary:31018": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-03:primary:31019": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-03:primary:31020": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-03:primary:31021": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-03:primary:31022": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-03:primary:31023": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-03:primary:31024": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-03:primary:31025": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-03:primary:31026": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-03:primary:31027": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-03:primary:31028": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-03:primary:31029": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-03:primary:31030": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-03:primary:31031": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-03:primary:31032": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-03:primary:31033": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-03:primary:31034": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-03:primary:31035": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-03:primary:31036": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-03:primary:31037": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-03:primary:31038": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-03:primary:31039": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-03:primary:31040": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-03:repeat:31001": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-03:repeat:31002": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-03:repeat:31003": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-03:repeat:31004": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-03:repeat:31005": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-03:repeat:31006": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-03:repeat:31007": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-03:repeat:31008": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-03:repeat:31009": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-03:repeat:31010": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-03:repeat:31011": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-03:repeat:31012": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-03:repeat:31013": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-03:repeat:31014": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-03:repeat:31015": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-03:repeat:31016": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-03:repeat:31017": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-03:repeat:31018": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-03:repeat:31019": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-03:repeat:31020": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-03:repeat:31021": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-03:repeat:31022": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-03:repeat:31023": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-03:repeat:31024": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-03:repeat:31025": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-03:repeat:31026": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-03:repeat:31027": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-03:repeat:31028": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-03:repeat:31029": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-03:repeat:31030": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-03:repeat:31031": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-03:repeat:31032": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-03:repeat:31033": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-03:repeat:31034": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-03:repeat:31035": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-03:repeat:31036": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-03:repeat:31037": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-03:repeat:31038": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-03:repeat:31039": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-03:repeat:31040": {
+      "agent_seed": 25003,
+      "error": null,
+      "model_run": 3,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-04:primary:31001": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-04:primary:31002": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-04:primary:31003": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-04:primary:31004": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-04:primary:31005": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-04:primary:31006": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-04:primary:31007": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-04:primary:31008": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-04:primary:31009": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-04:primary:31010": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-04:primary:31011": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-04:primary:31012": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-04:primary:31013": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-04:primary:31014": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-04:primary:31015": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-04:primary:31016": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-04:primary:31017": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-04:primary:31018": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-04:primary:31019": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-04:primary:31020": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-04:primary:31021": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-04:primary:31022": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-04:primary:31023": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-04:primary:31024": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-04:primary:31025": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-04:primary:31026": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-04:primary:31027": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-04:primary:31028": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-04:primary:31029": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-04:primary:31030": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-04:primary:31031": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-04:primary:31032": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-04:primary:31033": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-04:primary:31034": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-04:primary:31035": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-04:primary:31036": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-04:primary:31037": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-04:primary:31038": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-04:primary:31039": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-04:primary:31040": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-04:repeat:31001": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-04:repeat:31002": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-04:repeat:31003": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-04:repeat:31004": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-04:repeat:31005": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-04:repeat:31006": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-04:repeat:31007": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-04:repeat:31008": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-04:repeat:31009": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-04:repeat:31010": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-04:repeat:31011": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-04:repeat:31012": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-04:repeat:31013": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-04:repeat:31014": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-04:repeat:31015": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-04:repeat:31016": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-04:repeat:31017": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-04:repeat:31018": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-04:repeat:31019": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-04:repeat:31020": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-04:repeat:31021": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-04:repeat:31022": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-04:repeat:31023": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-04:repeat:31024": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-04:repeat:31025": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-04:repeat:31026": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-04:repeat:31027": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-04:repeat:31028": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-04:repeat:31029": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-04:repeat:31030": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-04:repeat:31031": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-04:repeat:31032": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-04:repeat:31033": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-04:repeat:31034": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-04:repeat:31035": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-04:repeat:31036": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-04:repeat:31037": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-04:repeat:31038": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-04:repeat:31039": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-04:repeat:31040": {
+      "agent_seed": 25004,
+      "error": null,
+      "model_run": 4,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-05:primary:31001": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-05:primary:31002": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-05:primary:31003": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-05:primary:31004": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-05:primary:31005": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-05:primary:31006": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-05:primary:31007": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-05:primary:31008": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-05:primary:31009": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-05:primary:31010": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-05:primary:31011": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-05:primary:31012": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-05:primary:31013": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-05:primary:31014": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-05:primary:31015": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-05:primary:31016": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-05:primary:31017": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-05:primary:31018": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-05:primary:31019": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-05:primary:31020": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-05:primary:31021": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-05:primary:31022": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-05:primary:31023": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-05:primary:31024": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-05:primary:31025": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-05:primary:31026": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-05:primary:31027": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-05:primary:31028": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-05:primary:31029": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-05:primary:31030": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-05:primary:31031": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-05:primary:31032": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-05:primary:31033": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-05:primary:31034": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-05:primary:31035": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-05:primary:31036": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-05:primary:31037": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-05:primary:31038": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-05:primary:31039": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-05:primary:31040": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "primary",
+      "status": "completed",
+      "world_seed": 31040
+    },
+    "run-05:repeat:31001": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31001
+    },
+    "run-05:repeat:31002": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31002
+    },
+    "run-05:repeat:31003": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31003
+    },
+    "run-05:repeat:31004": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31004
+    },
+    "run-05:repeat:31005": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31005
+    },
+    "run-05:repeat:31006": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31006
+    },
+    "run-05:repeat:31007": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31007
+    },
+    "run-05:repeat:31008": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31008
+    },
+    "run-05:repeat:31009": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31009
+    },
+    "run-05:repeat:31010": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31010
+    },
+    "run-05:repeat:31011": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31011
+    },
+    "run-05:repeat:31012": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31012
+    },
+    "run-05:repeat:31013": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31013
+    },
+    "run-05:repeat:31014": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31014
+    },
+    "run-05:repeat:31015": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31015
+    },
+    "run-05:repeat:31016": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31016
+    },
+    "run-05:repeat:31017": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31017
+    },
+    "run-05:repeat:31018": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31018
+    },
+    "run-05:repeat:31019": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31019
+    },
+    "run-05:repeat:31020": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31020
+    },
+    "run-05:repeat:31021": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31021
+    },
+    "run-05:repeat:31022": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31022
+    },
+    "run-05:repeat:31023": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31023
+    },
+    "run-05:repeat:31024": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31024
+    },
+    "run-05:repeat:31025": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31025
+    },
+    "run-05:repeat:31026": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31026
+    },
+    "run-05:repeat:31027": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31027
+    },
+    "run-05:repeat:31028": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31028
+    },
+    "run-05:repeat:31029": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31029
+    },
+    "run-05:repeat:31030": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31030
+    },
+    "run-05:repeat:31031": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31031
+    },
+    "run-05:repeat:31032": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31032
+    },
+    "run-05:repeat:31033": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31033
+    },
+    "run-05:repeat:31034": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31034
+    },
+    "run-05:repeat:31035": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31035
+    },
+    "run-05:repeat:31036": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31036
+    },
+    "run-05:repeat:31037": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31037
+    },
+    "run-05:repeat:31038": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31038
+    },
+    "run-05:repeat:31039": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31039
+    },
+    "run-05:repeat:31040": {
+      "agent_seed": 25005,
+      "error": null,
+      "model_run": 5,
+      "pass": "repeat",
+      "status": "completed",
+      "world_seed": 31040
+    }
+  },
+  "models": {
+    "run-01": {
+      "artifact_sha256_after": "f89d5f7236ffe85b99faf29f44a1c15163f54896a5339deabaade8c533adb993",
+      "artifact_sha256_before": "f89d5f7236ffe85b99faf29f44a1c15163f54896a5339deabaade8c533adb993",
+      "checkpoint_sha256_after": "f89d5f7236ffe85b99faf29f44a1c15163f54896a5339deabaade8c533adb993",
+      "deterministic": true,
+      "immutable": true,
+      "status": "completed"
+    },
+    "run-02": {
+      "artifact_sha256_after": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
+      "artifact_sha256_before": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
+      "checkpoint_sha256_after": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
+      "deterministic": true,
+      "immutable": true,
+      "status": "completed"
+    },
+    "run-03": {
+      "artifact_sha256_after": "791f5a0b8bd9723709b739c5eff786480db6d38b13a4d72f99d499ae64ae19de",
+      "artifact_sha256_before": "791f5a0b8bd9723709b739c5eff786480db6d38b13a4d72f99d499ae64ae19de",
+      "checkpoint_sha256_after": "791f5a0b8bd9723709b739c5eff786480db6d38b13a4d72f99d499ae64ae19de",
+      "deterministic": true,
+      "immutable": true,
+      "status": "completed"
+    },
+    "run-04": {
+      "artifact_sha256_after": "d6b5a04623c3795b8c4e934c010292e94dec4430f7659bbb49657952af12b38e",
+      "artifact_sha256_before": "d6b5a04623c3795b8c4e934c010292e94dec4430f7659bbb49657952af12b38e",
+      "checkpoint_sha256_after": "d6b5a04623c3795b8c4e934c010292e94dec4430f7659bbb49657952af12b38e",
+      "deterministic": true,
+      "immutable": true,
+      "status": "completed"
+    },
+    "run-05": {
+      "artifact_sha256_after": "20cec58f309e5d3edd26db331e2da937660ff2fae4baa80831cc1fbb3d312465",
+      "artifact_sha256_before": "20cec58f309e5d3edd26db331e2da937660ff2fae4baa80831cc1fbb3d312465",
+      "checkpoint_sha256_after": "20cec58f309e5d3edd26db331e2da937660ff2fae4baa80831cc1fbb3d312465",
+      "deterministic": true,
+      "immutable": true,
+      "status": "completed"
+    }
+  },
+  "schema_version": 1,
+  "source_evaluation_manifest_sha256": "dfa5973df82ef5a351a6cfa9c86ffd16aa34740d1c34b888ca91b801b4422b85",
+  "source_series_directory": "20260902T213535561904Z",
+  "source_training_series_sha256": "04d029b9e841d99fffa1e4e3b64f644d9912d50082314e1d8517fd1516c939e2",
+  "training_runs": [
+    {
+      "agent_seed": 25001,
+      "duration_seconds": 8486.624962100002,
+      "error": null,
+      "git_commit": "5a0b147f28e2d9ec14ed31da48bcbc6912539145",
+      "model": "run-01",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260902T213535758357Z-dagobertduckdqn-coin-heaven",
+      "status": "completed",
+      "world_seed": 15001
+    },
+    {
+      "agent_seed": 25002,
+      "duration_seconds": 8548.6927019,
+      "error": null,
+      "git_commit": "5a0b147f28e2d9ec14ed31da48bcbc6912539145",
+      "model": "run-02",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260902T235705070687Z-dagobertduckdqn-coin-heaven",
+      "status": "completed",
+      "world_seed": 15002
+    },
+    {
+      "agent_seed": 25003,
+      "duration_seconds": 8231.516527200001,
+      "error": null,
+      "git_commit": "5a0b147f28e2d9ec14ed31da48bcbc6912539145",
+      "model": "run-03",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260903T021936398562Z-dagobertduckdqn-coin-heaven",
+      "status": "completed",
+      "world_seed": 15003
+    },
+    {
+      "agent_seed": 25004,
+      "duration_seconds": 9317.181913799985,
+      "error": null,
+      "git_commit": "5a0b147f28e2d9ec14ed31da48bcbc6912539145",
+      "model": "run-04",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260903T043651776139Z-dagobertduckdqn-coin-heaven",
+      "status": "completed",
+      "world_seed": 15004
+    },
+    {
+      "agent_seed": 25005,
+      "duration_seconds": 3752.185017999989,
+      "error": "RuntimeError: Bomberman process failed with return code 1",
+      "git_commit": "5a0b147f28e2d9ec14ed31da48bcbc6912539145",
+      "model": "run-05",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260903T071212717667Z-dagobertduckdqn-coin-heaven",
+      "status": "failed",
+      "world_seed": 15005
+    },
+    {
+      "agent_seed": 25005,
+      "duration_seconds": 9769.191987700004,
+      "error": null,
+      "git_commit": "00ce45c7440e0281e32d97eeeb44dc1f9a2e3af4",
+      "model": "run-05",
+      "rounds": 10000,
+      "source_run_directory": "runs/20260903T082528613563Z-dagobertduckdqn-coin-heaven",
+      "status": "completed",
+      "world_seed": 15005
+    }
+  ]
+}

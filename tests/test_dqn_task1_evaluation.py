@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 from pathlib import Path
 
@@ -130,6 +131,59 @@ def test_executed_action_sequence_digest_depends_on_order() -> None:
     assert forward != world.executed_action_sequence_digest("reversed")
     assert forward == world.executed_action_sequence_digest("repeat")
     assert world.executed_action_sequence_digest("absent") is None
+
+
+def test_executed_action_sequence_digest_normalizes_any_non_action_value() -> None:
+    """act() can return anything; agents.py already tolerates this by bucketing
+    non-conforming values into "action_unknown" rather than rejecting them.
+
+    rule_based_agent returns None in some states, so a multi-agent round would
+    otherwise raise while merely recording statistics. The same is true for any
+    other value a misbehaving or future agent might return, not only None.
+    """
+    from environment import GenericWorld
+
+    world = GenericWorld.__new__(GenericWorld)
+    world.replay = {
+        "actions": {
+            "with_none": ["UP", None, "RIGHT"],
+            "with_int": ["UP", 42, "RIGHT"],
+            "with_list": ["UP", ["UP"], "RIGHT"],
+            "with_bad_string": ["UP", "nonsense", "RIGHT"],
+            "with_wait": ["UP", "WAIT", "RIGHT"],
+            "repeat_of_none": ["UP", None, "RIGHT"],
+        }
+    }
+
+    none_digest = world.executed_action_sequence_digest("with_none")
+
+    assert isinstance(none_digest, str) and len(none_digest) == 64
+    # None, an int, a list and an invalid string all normalize to the same
+    # <unknown> token, so they collapse onto one digest.
+    assert none_digest == world.executed_action_sequence_digest("with_int")
+    assert none_digest == world.executed_action_sequence_digest("with_list")
+    assert none_digest == world.executed_action_sequence_digest(
+        "with_bad_string"
+    )
+    # WAIT is a real action and must stay distinguishable from "unknown".
+    assert none_digest != world.executed_action_sequence_digest("with_wait")
+    assert none_digest == world.executed_action_sequence_digest(
+        "repeat_of_none"
+    )
+
+
+def test_executed_action_sequence_digest_passes_through_every_valid_action() -> None:
+    from environment import GenericWorld
+
+    world = GenericWorld.__new__(GenericWorld)
+    sequence = ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"]
+    world.replay = {"actions": {"agent": list(sequence)}}
+
+    digest = world.executed_action_sequence_digest("agent")
+
+    assert digest == hashlib.sha256(
+        "\n".join(sequence).encode("utf-8")
+    ).hexdigest()
 
 
 def test_executed_action_sequence_digest_is_none_before_a_round_starts() -> None:

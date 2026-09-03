@@ -49,3 +49,44 @@ def test_json_writer_rejects_non_finite_values(tmp_path: Path) -> None:
         evidence._write_json(path, {"invalid": float("nan")})
 
     assert json.loads('{"valid": null}') == {"valid": None}
+
+
+def test_write_csv_survives_a_clean_checkout(tmp_path: Path) -> None:
+    """The manifest checksum is computed immediately after writing, before the
+    file is ever committed. Git's `text=auto` normalizes any CRLF to LF the
+    moment the file is committed, so if the writer emits CRLF (csv's own
+    default line terminator, independent of platform), the checksum recorded
+    here goes stale the instant the file is checked into git: every later
+    checkout of the same content comes back a few bytes shorter than what was
+    hashed, and `dqn_task1_evidence verify` reports a checksum mismatch on a
+    perfectly clean checkout, as happened for issue #58.
+
+    Pinning the writer to `\\n` up front means the bytes it hands to
+    `_sha256` are already what git will store, so the round trip through
+    commit and checkout is a no-op and the recorded checksum never drifts.
+    """
+    path = tmp_path / "evaluation-episodes.csv"
+
+    evidence._write_csv(path, [{"model": "run-01", "world_seed": 31001}])
+
+    written = path.read_bytes()
+    assert b"\r\n" not in written
+    assert written.count(b"\n") == 2  # header + one data row
+
+
+def test_verify_evidence_rejects_a_manifest_from_another_issue(
+    tmp_path: Path,
+) -> None:
+    """--issue selects which profile's models/seeds are used to rebuild the
+    record; silently accepting evidence from a different issue would compare
+    against the wrong agent seeds without any warning.
+    """
+    evidence_directory = tmp_path / "evidence"
+    evidence_directory.mkdir()
+    (evidence_directory / evidence.MANIFEST_FILE).write_text(
+        json.dumps({"issue": 41}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="issue 41.*issue 58"):
+        evidence.verify_evidence(tmp_path, evidence.PROFILES[58])

@@ -14,7 +14,14 @@ from time import sleep
 from typing import Any
 
 from training.aggregate import read_episodes_csv
-from training.run_dqn_task1_baseline import AGENT, CHECKPOINT_PATH, SCENARIO
+from training.run_dqn_task1_baseline import (
+    AGENT,
+    CHECKPOINT_PATH,
+    DEFAULT_PROFILE,
+    PROFILES,
+    SCENARIO,
+    ExperimentProfile,
+)
 from training.run_experiment import run_experiment
 
 DEVELOPMENT_SEEDS = tuple(range(31_001, 31_041))
@@ -54,34 +61,44 @@ class EvaluationModel:
     artifact_name: str
 
 
-MODELS = tuple(
-    EvaluationModel(
-        run=index,
-        agent_seed=22_000 + index,
-        artifact_name=f"run-{index:02d}-final-checkpoint.pt",
+def models_for(profile: ExperimentProfile = DEFAULT_PROFILE) -> tuple[EvaluationModel, ...]:
+    """Evaluation uses each model's own training agent seed, as issue #41 did."""
+    return tuple(
+        EvaluationModel(
+            run=run.run,
+            agent_seed=run.agent_seed,
+            artifact_name=f"run-{run.run:02d}-final-checkpoint.pt",
+        )
+        for run in profile.registered_runs
     )
-    for index in range(1, 6)
-)
 
 
-def evaluate_series(series_directory: Path) -> Path:
+MODELS = models_for()
+
+
+def evaluate_series(
+    series_directory: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> Path:
     """Run or resume all primary and deterministic-repeat evaluations."""
+    models = models_for(profile)
     series_directory = series_directory.resolve()
     artifacts_directory = series_directory / "artifacts"
     evaluations_directory = series_directory / "evaluations"
     manifest_path = series_directory / "evaluation_manifest.json"
 
-    artifact_records = _validate_artifacts(artifacts_directory)
+    artifact_records = _validate_artifacts(artifacts_directory, models)
     _remove_known_checkpoint(artifact_records)
     manifest = _load_or_create_manifest(
         manifest_path=manifest_path,
         series_directory=series_directory,
         artifact_records=artifact_records,
+        models=models,
     )
     evaluations_directory.mkdir(exist_ok=True)
 
     try:
-        for model in MODELS:
+        for model in models:
             model_key = f"run-{model.run:02d}"
             model_record = manifest["models"][model_key]
             artifact_path = artifacts_directory / model.artifact_name
@@ -188,9 +205,10 @@ def evaluate_series(series_directory: Path) -> Path:
 
 def _validate_artifacts(
     artifacts_directory: Path,
+    models: tuple[EvaluationModel, ...] = MODELS,
 ) -> dict[str, dict[str, Any]]:
     records: dict[str, dict[str, Any]] = {}
-    for model in MODELS:
+    for model in models:
         path = artifacts_directory / model.artifact_name
         if not path.is_file():
             raise FileNotFoundError(f"Missing model artifact: {path}")
@@ -225,6 +243,7 @@ def _load_or_create_manifest(
     manifest_path: Path,
     series_directory: Path,
     artifact_records: dict[str, dict[str, Any]],
+    models: tuple[EvaluationModel, ...] = MODELS,
 ) -> dict[str, Any]:
     if manifest_path.is_file():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -252,7 +271,7 @@ def _load_or_create_manifest(
                 "immutable": None,
                 "deterministic": None,
             }
-            for model in MODELS
+            for model in models
         },
         "jobs": {},
     }
@@ -384,7 +403,14 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "series_directory",
         type=Path,
-        help="Completed Issue #41 training-series directory",
+        help="Completed training-series directory",
+    )
+    parser.add_argument(
+        "--issue",
+        type=int,
+        default=DEFAULT_PROFILE.issue,
+        choices=sorted(PROFILES),
+        help="Preregistered experiment profile the series belongs to",
     )
     return parser.parse_args(argv)
 
@@ -392,7 +418,10 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
     try:
-        manifest_path = evaluate_series(arguments.series_directory)
+        manifest_path = evaluate_series(
+            arguments.series_directory,
+            PROFILES[arguments.issue],
+        )
     except Exception as error:
         print(f"Evaluation failed: {error}", file=sys.stderr)
         return 1
