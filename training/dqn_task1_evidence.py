@@ -18,6 +18,7 @@ from training.aggregate import read_episodes_csv
 from training.analyze_dqn_task1_baseline import (
     _aggregate_summaries,
     _evaluate_criteria,
+    _paired_against_baseline,
     _plot_evaluation,
     _plot_failures,
     _plot_learning_curves,
@@ -25,7 +26,15 @@ from training.analyze_dqn_task1_baseline import (
     _write_json,
     _write_summary_csv,
 )
-from training.evaluate_dqn_task1_baseline import AGENT, DEVELOPMENT_SEEDS, MODELS
+from training.evaluate_dqn_task1_baseline import (
+    AGENT,
+    DEFAULT_PROFILE,
+    DEVELOPMENT_SEEDS,
+    MODELS,
+    PROFILES,
+    ExperimentProfile,
+    models_for,
+)
 
 EVIDENCE_SCHEMA_VERSION = 1
 EVALUATION_EPISODES_FILE = "evaluation-episodes.csv"
@@ -34,8 +43,13 @@ TRAINING_EPISODES_FILE = "training-episodes.csv.gz"
 MANIFEST_FILE = "manifest.json"
 
 
-def export_evidence(series_directory: Path, evidence_directory: Path) -> None:
+def export_evidence(
+    series_directory: Path,
+    evidence_directory: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> None:
     """Export compact source observations without raw logs or snapshots."""
+    models = models_for(profile)
     series_directory = series_directory.resolve()
     evidence_directory = evidence_directory.resolve()
     evidence_directory.mkdir(parents=True, exist_ok=True)
@@ -100,7 +114,7 @@ def export_evidence(series_directory: Path, evidence_directory: Path) -> None:
             )
         }
 
-    training_runs, training_rows = _collect_training_evidence(series_directory)
+    training_runs, training_rows = _collect_training_evidence(series_directory, models)
     _write_csv(evidence_directory / EVALUATION_EPISODES_FILE, evaluation_rows)
     _write_gzip_csv(evidence_directory / DECISION_TIMES_FILE, decision_rows)
     _write_gzip_csv(evidence_directory / TRAINING_EPISODES_FILE, training_rows)
@@ -135,8 +149,12 @@ def export_evidence(series_directory: Path, evidence_directory: Path) -> None:
     _write_json(evidence_directory / MANIFEST_FILE, manifest)
 
 
-def verify_evidence(experiment_directory: Path) -> None:
+def verify_evidence(
+    experiment_directory: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> None:
     """Rebuild every committed table and figure and require byte equality."""
+    models = models_for(profile)
     experiment_directory = experiment_directory.resolve()
     evidence_directory = experiment_directory / "evidence"
     manifest = _read_json(evidence_directory / MANIFEST_FILE)
@@ -152,12 +170,13 @@ def verify_evidence(experiment_directory: Path) -> None:
             decisions_by_model[row["model"]].append(float(row["duration_ms"]))
 
     summaries: list[dict[str, Any]] = []
+    fractions_by_model: dict[str, dict[int, float]] = {}
     training_by_model = {
         run["model"]: run
         for run in manifest["training_runs"]
         if run["status"] == "completed"
     }
-    for model in MODELS:
+    for model in models:
         model_name = f"run-{model.run:02d}"
         rows = [
             row
@@ -168,6 +187,9 @@ def verify_evidence(experiment_directory: Path) -> None:
             row["initially_available_coins"] = int(
                 row["initially_available_coins"]
             )
+            fractions_by_model.setdefault(model_name, {})[
+                int(row["world_seed"])
+            ] = row["coins_collected"] / row["initially_available_coins"]
         training = training_by_model[model_name]
         summaries.append(
             _summarize_rows(
@@ -183,7 +205,9 @@ def verify_evidence(experiment_directory: Path) -> None:
         )
 
     aggregate = _aggregate_summaries(summaries)
-    result = _result_from_evidence(manifest, summaries, aggregate)
+    result = _result_from_evidence(
+        manifest, summaries, aggregate, models, fractions_by_model
+    )
 
     with TemporaryDirectory() as temporary_directory_name:
         temporary_directory = Path(temporary_directory_name)
@@ -200,7 +224,7 @@ def verify_evidence(experiment_directory: Path) -> None:
             temporary_directory,
             training_by_model,
         )
-        _plot_learning_curves(training_metadata, figures_directory)
+        _plot_learning_curves(training_metadata, figures_directory, models)
 
         for relative_path in (
             Path("summary.csv"),
@@ -219,17 +243,25 @@ def _result_from_evidence(
     manifest: dict[str, Any],
     summaries: list[dict[str, Any]],
     aggregate: dict[str, Any],
+    models: tuple[Any, ...] = MODELS,
+    fractions_by_model: dict[str, dict[int, float]] | None = None,
 ) -> dict[str, Any]:
     completed_repeats = sum(
         job["pass"] == "repeat" and job["status"] == "completed"
         for job in manifest["jobs"].values()
     )
-    expected_repeats = len(MODELS) * len(DEVELOPMENT_SEEDS)
+    expected_repeats = len(models) * len(DEVELOPMENT_SEEDS)
     if completed_repeats != expected_repeats:
         raise ValueError(
             f"Expected {expected_repeats} completed repeats, found "
             f"{completed_repeats}"
         )
+    paired = (
+        None
+        if fractions_by_model is None
+        else _paired_against_baseline(fractions_by_model)
+    )
+
     return {
         "schema_version": 1,
         "series_directory": manifest["source_series_directory"],
@@ -241,14 +273,16 @@ def _result_from_evidence(
             "evaluation_duration_seconds_primary"
         ],
         "evaluation_repeat_episodes": completed_repeats,
-        "criteria": _evaluate_criteria(summaries, aggregate, manifest),
+        "criteria": _evaluate_criteria(summaries, aggregate, manifest, paired),
+        "paired_comparison": paired,
     }
 
 
 def _collect_training_evidence(
     series_directory: Path,
+    models: tuple[Any, ...] = MODELS,
 ) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
-    model_by_seed = {model.agent_seed: f"run-{model.run:02d}" for model in MODELS}
+    model_by_seed = {model.agent_seed: f"run-{model.run:02d}" for model in models}
     runs: list[dict[str, Any]] = []
     episode_rows: list[dict[str, str]] = []
     for metadata_path in sorted(series_directory.glob("**/metadata.json")):
@@ -385,18 +419,29 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     export_parser = subparsers.add_parser("export")
     export_parser.add_argument("series_directory", type=Path)
     export_parser.add_argument("evidence_directory", type=Path)
+    export_parser.add_argument(
+        "--issue", type=int, default=DEFAULT_PROFILE.issue, choices=sorted(PROFILES)
+    )
     verify_parser = subparsers.add_parser("verify")
     verify_parser.add_argument("experiment_directory", type=Path)
+    verify_parser.add_argument(
+        "--issue", type=int, default=DEFAULT_PROFILE.issue, choices=sorted(PROFILES)
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
     try:
+        profile = PROFILES[arguments.issue]
         if arguments.command == "export":
-            export_evidence(arguments.series_directory, arguments.evidence_directory)
+            export_evidence(
+                arguments.series_directory,
+                arguments.evidence_directory,
+                profile,
+            )
         else:
-            verify_evidence(arguments.experiment_directory)
+            verify_evidence(arguments.experiment_directory, profile)
     except Exception as error:
         print(f"Evidence {arguments.command} failed: {error}", file=sys.stderr)
         return 1

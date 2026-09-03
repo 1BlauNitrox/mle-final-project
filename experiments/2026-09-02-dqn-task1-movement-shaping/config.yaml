@@ -3,7 +3,7 @@ schema_version: 1
 experiment:
   issue: 58
   name: dqn-task1-movement-shaping
-  status: preregistered
+  status: completed_negative
   owner: 1BlauNitrox
   reviewer: Waffelmanufaktur
   branch: experiment/58-dqn-task1-movement-shaping
@@ -277,4 +277,20 @@ launch:
   preflight_requires_clean_worktree: true
 
 results:
-  status: not_started
+  status: completed
+  primary_criterion: failed
+  failing_part: invalid_action_rate
+  aggregate_mean_coin_collection_fraction: 0.8154
+  models_reaching_0_75: 4
+  aggregate_invalid_action_rate: 0.1758040206
+  maximum_model_invalid_action_rate: 0.4616833633
+  full_clears: 92
+  zero_coin_episodes: 1
+  wait_actions: 2676
+  bomb_actions: 0
+  paired_mean_difference: -0.018
+  paired_ci95: [-0.2471, 0.2414125]
+  paired_non_inferiority: failed
+  decision: rejected
+  stopping_rule_branch: on_fail
+  run_5_attempts: 2
