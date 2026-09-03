@@ -340,6 +340,38 @@ But the models that previously failed by waiting now fail by attempting blocked
 moves, and two models that were fine before (run-01 at a 0.46 invalid rate,
 run-03 at 0.31) are now among the worst. Full clears fell from 125 to 92.
 
+### The invalid-action rate is a deadlock count, not an error rate
+
+Reporting `0.1758` as an aggregate rate misrepresents the mechanism. The
+per-episode distribution is sharply bimodal:
+
+| Invalid-action rate | Episodes |
+| --- | ---: |
+| `< 1%` | 171 |
+| `1-20%` | **0** |
+| `20-80%` | 12 |
+| `> 80%` | 17 |
+
+Nothing lands between 1% and 20%. An episode is either clean or catastrophic.
+
+The catastrophic case is a deadlock. In run-01 on world seed `31028`, 399 of 400
+actions were `DOWN` and 399 were rejected: the agent faced a wall, the greedy
+policy selected the same blocked direction, the environment refused it, the
+state was unchanged, and therefore the next argmax was identical. The episode
+ended at the step limit with 1 coin.
+
+The same model collects 42 of 50 coins on seed `31001`, and run-04 clears all 50
+in 123 steps with zero invalid actions. So this is not a model that learned
+badly; it is a deterministic policy with an absorbing failure state that some
+starting positions lead into and others do not.
+
+Epsilon at `0.1` guarantees escape during training, which is why training curves
+never show it. Evaluation has no such escape.
+
+This also means the aggregate coin fraction understates the working policy: 171
+of 200 episodes are clean, and the aggregate is dragged down by 29 episodes in
+which the agent is frozen rather than playing badly.
+
 ### The training-versus-evaluation gap is the most important observation
 
 Training-time coin collection over the last 500 episodes was 0.990, 0.989,
