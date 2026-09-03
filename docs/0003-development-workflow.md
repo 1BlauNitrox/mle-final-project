@@ -113,6 +113,12 @@ from one another and therefore run in parallel. Never narrow these filters merel
 to make a workflow faster; avoiding a false negative takes priority over runner
 time.
 
+The classifier is a correctness gate, not merely a scheduling hint. The
+required `Quality checks` job depends on successful change detection and fails
+explicitly if the detector fails. This prevents an unexpected Git revision or
+script error from silently skipping optional compatibility checks while leaving
+the protected checks green.
+
 The official course image is built with the runner's standard Docker builder on
 every relevant workflow. A Buildx GitHub Actions cache was measured during PR
 #61 and deliberately rejected: the approximately 4 GB image required 233 seconds

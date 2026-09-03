@@ -47,7 +47,15 @@ jobs:
   quality:
     name: Quality checks
     runs-on: ubuntu-latest
+    needs: changes
+    if: ${{ !cancelled() }}
     steps:
+      - name: Require successful change detection
+        if: needs.changes.result != 'success'
+        run: |
+          echo "Change detection failed; optional jobs cannot be selected safely."
+          exit 1
+
       - name: Check out repository
         uses: actions/checkout@v7
         with:

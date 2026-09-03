@@ -204,6 +204,10 @@ same workflow twice for one pull-request commit. Every relevant official-Docker
 job still builds the supplied image locally and executes all compatibility,
 packaging, and clean-framework checks.
 
+Change detection fails closed through the required quality job: if affected
+components cannot be determined, `Quality checks` fails instead of allowing a
+merge that silently skipped optional compatibility coverage.
+
 The manual **Package agent** workflow validates an agent directory and produces
 the exact zip artifact for the MaMPF submission. There is no production
 deployment target; continuous delivery means producing a validated submission
