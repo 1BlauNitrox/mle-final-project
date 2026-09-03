@@ -144,6 +144,54 @@ jobs:
           unzip -l dist/final-project-agent-code.zip \
             | grep 'DerKleineVermoegensumverteiler/reference-results.csv'
 
+      - name: Evaluate packaged agent in clean framework
+        run: |
+          clean_framework="$(mktemp -d)"
+
+          git archive HEAD | tar -x -C "$clean_framework"
+
+          rm -rf \
+            "$clean_framework/agent_code/DerKleineVermoegensumverteiler"
+
+          unzip -q \
+            dist/final-project-agent-code.zip \
+            -d "$clean_framework/agent_code"
+
+          test -s \
+            "$clean_framework/agent_code/DerKleineVermoegensumverteiler/model.npz"
+          test -s \
+            "$clean_framework/agent_code/DerKleineVermoegensumverteiler/requirements.txt"
+
+          python -m pip install -r \
+            "$clean_framework/agent_code/DerKleineVermoegensumverteiler/requirements.txt"
+
+          before="$(
+            sha256sum \
+              "$clean_framework/agent_code/DerKleineVermoegensumverteiler/model.npz" \
+              | cut -d ' ' -f 1
+          )"
+
+          (
+            cd "$clean_framework"
+
+            python main.py play \
+              --agents DerKleineVermoegensumverteiler \
+              --scenario coin-heaven \
+              --no-gui \
+              --n-rounds 1 \
+              --seed 3001
+          )
+
+          after="$(
+            sha256sum \
+              "$clean_framework/agent_code/DerKleineVermoegensumverteiler/model.npz" \
+              | cut -d ' ' -f 1
+          )"
+
+          test "$before" = "$after"
+          test "$after" = \
+            "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"
+
   dqn-agent-smoke:
     name: DQN agent smoke test
     runs-on: ubuntu-latest
