@@ -1,4 +1,27 @@
-"""Central configuration for the DagobertDuckDQN agent"""
+"""Central configuration for the DQN Task 2 successor.
+
+Hyperparameter revision (issue #44): the Task 1 defaults are not reused
+verbatim. `DagobertDuckDQN`'s `epsilon_decay=0.99` over a 10,000-episode
+training budget reaches its `minimum_epsilon` floor after about 230 episodes
+(`0.99**230 ~= 0.1`) -- under 3% of the run. Issue #58 found training reached
+0.989-1.000 mean coin collection while deterministic greedy evaluation of the
+same checkpoints only reached 0.65-0.92: the policy was trained almost
+entirely at minimum exploration and never had to cope with its own greedy
+mistakes during the other 97%. `epsilon_decay=0.9997` reaches the same floor
+around episode 8,000 instead, spending most of the budget exploring. This is
+an implementation default for Task 2, not a validated fix -- it has not been
+tested as a controlled variable and must not be cited as evidence until it
+is (mirrors the caveat issue #58 applies to its own reward-shaping values).
+
+`learning_rate` and `target_update_interval` are also revised, conservatively,
+for the larger Task 2 input/action space (21 features and 6 actions versus 8
+and 5): a smaller learning rate and less frequent target synchronization
+both reduce how much a single noisy update can move the value estimates.
+`replay_warmup` is raised so training does not start learning from as narrow
+a slice of experience. None of these three carry the same specific,
+computed rationale as the epsilon schedule; they are documented, deliberate,
+and still implementation defaults pending a real experiment.
+"""
 
 from __future__ import annotations
 
@@ -10,25 +33,39 @@ ACTIONS: tuple[str, ...] = (
     "DOWN",
     "LEFT",
     "WAIT",
+    "BOMB",
 )
 
 ACTION_TO_INDEX: dict[str, int] = {
     action: index for index, action in enumerate(ACTIONS)
 }
 
-FEATURE_COUNT = 8
-FEATURE_SCHEMA_VERSION = 1
+FEATURE_COUNT = 21
+FEATURE_SCHEMA_VERSION = 2
 
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
     "WAITED": -0.1,
-    # Custom shaping events emitted by train.py, matching the definition and
-    # magnitudes validated on the tabular agent. Not potential-based, so policy
-    # invariance is not guaranteed; see the issue #58 experiment record.
+    # Inherited from the Task 1 lineage (issue #58); not potential-based.
     "MOVED_TOWARDS_COIN": 0.1,
     "MOVED_AWAY_FROM_COIN": -0.1,
+    # Task 2 additions (issue #44). All native framework events (events.py);
+    # no custom derivation is required for these five.
+    "CRATE_DESTROYED": 1.0,
+    "COIN_FOUND": 2.0,
+    "KILLED_SELF": -10.0,
+    "GOT_KILLED": -10.0,
+    "SURVIVED_ROUND": 5.0,
+    # Custom shaping derived from the pre-action state (train.py), rewarding
+    # BOMB only when it will actually destroy a crate. BOMB_DROPPED and
+    # BOMB_EXPLODED are deliberately left unrewarded so bomb placement is
+    # learned from its consequences, not from a flat per-placement bonus
+    # that would encourage spamming bombs regardless of target.
+    "USEFUL_BOMB_PLACED": 0.5,
+    "WASTEFUL_BOMB_PLACED": -0.5,
 }
+
 
 @dataclass(frozen=True)
 class DQNConfig:
@@ -38,17 +75,17 @@ class DQNConfig:
     hidden_sizes: tuple[int, ...] = (64, 64)
     output_dim: int = len(ACTIONS)
 
-    learning_rate: float = 0.001
+    learning_rate: float = 0.0005
     discount_factor: float = 0.9
     gradient_clip_norm: float = 10.0
 
     batch_size: int = 64
     replay_capacity: int = 10_000
-    replay_warmup: int = 256
-    target_update_interval: int = 250
+    replay_warmup: int = 500
+    target_update_interval: int = 500
 
     initial_epsilon: float = 1.0
-    epsilon_decay: float = 0.99
+    epsilon_decay: float = 0.9997
     minimum_epsilon: float = 0.1
 
     default_seed: int = 0
