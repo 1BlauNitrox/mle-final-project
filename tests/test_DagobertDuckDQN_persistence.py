@@ -1,5 +1,6 @@
 """Tests for DagobertDuckDQN checkpoint persistence."""
 
+import os
 from dataclasses import replace
 from pathlib import Path
 
@@ -7,6 +8,7 @@ import numpy as np
 import pytest
 import torch
 
+import agent_code.DagobertDuckDQN.persistence as persistence
 from agent_code.DagobertDuckDQN.config import DEFAULT_CONFIG
 from agent_code.DagobertDuckDQN.model import DQNLearner
 from agent_code.DagobertDuckDQN.persistence import (
@@ -343,3 +345,50 @@ def test_failed_save_preserves_existing_checkpoint(
 
     assert path.read_bytes() == original_bytes
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_checkpoint_replace_retries_transient_windows_lock(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """A brief antivirus lock must not end a multi-hour training run."""
+    source = tmp_path / "source.tmp"
+    destination = tmp_path / "checkpoint.pt"
+    source.write_bytes(b"payload")
+    attempts = 0
+    original_replace = os.replace
+
+    def flaky_replace(a, b):
+        nonlocal attempts
+        attempts += 1
+        if attempts < 3:
+            raise PermissionError("temporarily locked")
+        return original_replace(a, b)
+
+    monkeypatch.setattr(persistence.os, "replace", flaky_replace)
+    monkeypatch.setattr(persistence, "sleep", lambda _seconds: None)
+
+    persistence._replace_with_retry(source, destination)
+
+    assert attempts == 3
+    assert destination.read_bytes() == b"payload"
+
+
+def test_checkpoint_replace_gives_up_after_the_registered_attempts(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    attempts = 0
+
+    def always_locked(a, b):
+        nonlocal attempts
+        attempts += 1
+        raise PermissionError("locked")
+
+    monkeypatch.setattr(persistence.os, "replace", always_locked)
+    monkeypatch.setattr(persistence, "sleep", lambda _seconds: None)
+
+    with pytest.raises(PermissionError):
+        persistence._replace_with_retry(tmp_path / "a", tmp_path / "b")
+
+    assert attempts == persistence.CHECKPOINT_REPLACE_ATTEMPTS

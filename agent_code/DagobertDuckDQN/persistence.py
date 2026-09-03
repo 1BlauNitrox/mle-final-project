@@ -8,6 +8,7 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from time import sleep
 from typing import Any
 
 import numpy as np
@@ -28,6 +29,8 @@ from .model import (
 from .replay import ReplayBuffer
 
 CHECKPOINT_SCHEMA_VERSION = 1
+CHECKPOINT_REPLACE_ATTEMPTS = 10
+CHECKPOINT_REPLACE_RETRY_SECONDS = 0.1
 MODEL_SCHEMA_VERSION = 1
 CHECKPOINT_PATH = Path(__file__).resolve().parent / "checkpoint.pt"
 
@@ -52,6 +55,26 @@ class LoadedEvaluationCheckpoint:
     config: DQNConfig
     network: QNetwork
     completed_episodes: int
+
+
+def _replace_with_retry(source: Path, destination: Path) -> None:
+    """Replace the checkpoint atomically, retrying transient Windows locks.
+
+    Windows refuses os.replace while any process holds a handle on either file,
+    which antivirus and search indexers do briefly and unpredictably. This runs
+    after every episode, so one unlucky moment out of tens of thousands of
+    attempts ends a multi-hour training run: both the issue #41 and the issue
+    #58 series lost their fifth run to exactly this. POSIX rename is already
+    atomic and never raises here, so the retry is inert off Windows.
+    """
+    for attempt in range(CHECKPOINT_REPLACE_ATTEMPTS):
+        try:
+            os.replace(source, destination)
+            return
+        except PermissionError:
+            if attempt == CHECKPOINT_REPLACE_ATTEMPTS - 1:
+                raise
+            sleep(CHECKPOINT_REPLACE_RETRY_SECONDS * (attempt + 1))
 
 
 def save_checkpoint(
@@ -115,7 +138,7 @@ def save_checkpoint(
             temporary_file.flush()
             os.fsync(temporary_file.fileno())
 
-        os.replace(temporary_path, path)
+        _replace_with_retry(temporary_path, path)
     except Exception:
         if temporary_path is not None and temporary_path.exists():
             temporary_path.unlink()
