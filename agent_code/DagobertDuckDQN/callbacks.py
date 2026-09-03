@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import numpy as np
 import torch
@@ -16,6 +17,8 @@ from .persistence import (
     load_training_checkpoint,
 )
 from .replay import ReplayBuffer
+
+EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 
 
 def setup(self) -> None:
@@ -96,7 +99,7 @@ def _setup_training_policy(self, agent_seed: int) -> None:
 
 def _setup_evaluation_policy(self, agent_seed: int) -> None:
     """Load a frozen evaluation network without training objects."""
-    loaded = load_evaluation_checkpoint(CHECKPOINT_PATH)
+    loaded = load_evaluation_checkpoint(_evaluation_checkpoint_path())
 
     self.config = loaded.config
     self.policy_network = loaded.network
@@ -108,6 +111,18 @@ def _setup_evaluation_policy(self, agent_seed: int) -> None:
         "Loaded frozen DQN policy after %d training episodes",
         self.completed_episodes,
     )
+
+
+def _evaluation_checkpoint_path() -> Path:
+    """Resolve an optional repository-managed evaluation artifact locally."""
+    file_name = os.environ.get(EVALUATION_CHECKPOINT_ENV)
+    if file_name is None:
+        return CHECKPOINT_PATH
+    if not file_name or file_name != os.path.basename(file_name):
+        raise ValueError(
+            f"{EVALUATION_CHECKPOINT_ENV} must contain one file name."
+        )
+    return CHECKPOINT_PATH.with_name(file_name)
 
 
 def _initial_random_streams(

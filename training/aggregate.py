@@ -66,11 +66,16 @@ OPTIONAL_FLOAT_COLUMNS = (
     "decision_time_max_ms",
     "shaped_reward",
     "epsilon",
+    "mean_loss",
     "mean_abs_td_error",
 )
 
 OPTIONAL_INTEGER_COLUMNS = (
     "q_table_size",
+    "replay_size",
+    "update_count",
+    "target_synchronizations",
+    "episode_target_synchronizations",
 )
 
 NON_NEGATIVE_INTEGER_COLUMNS = (
@@ -322,9 +327,29 @@ def _aggregate_group(
                 rows,
                 "q_table_size",
             ),
+            "maximum_replay_size": _maximum_available(
+                rows,
+                "replay_size",
+            ),
+            "maximum_update_count": _maximum_available(
+                rows,
+                "update_count",
+            ),
+            "mean_loss": _mean_available(
+                rows,
+                "mean_loss",
+            ),
             "mean_abs_td_error": _mean_available(
                 rows,
                 "mean_abs_td_error",
+            ),
+            "maximum_target_synchronizations": _maximum_available(
+                rows,
+                "target_synchronizations",
+            ),
+            "total_episode_target_synchronizations": _sum_available(
+                rows,
+                "episode_target_synchronizations",
             ),
         },
     }
@@ -504,6 +529,19 @@ def _mean_available(
         if row.get(field) is not None
     ]
     return fmean(values) if values else None
+
+
+def _sum_available(
+    rows: Iterable[Mapping[str, Any]],
+    field: str,
+) -> float | int | None:
+    """Return the sum of available values or null if all are missing."""
+    values = [
+        row[field]
+        for row in rows
+        if row.get(field) is not None
+    ]
+    return sum(values) if values else None
 
 
 def _maximum_available(
