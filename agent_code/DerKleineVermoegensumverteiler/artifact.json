@@ -1,0 +1,66 @@
+{
+    "manifest_schema_version": 1,
+    "status": "frozen",
+    "task": "task1_visible_coin_navigation",
+    "agent": "DerKleineVermoegensumverteiler",
+    "artifact": {
+      "path": "model.npz",
+      "sha256": "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307",
+      "size_bytes": 6845
+    },
+    "model_contract": {
+      "algorithm": "feature_based_tabular_q_learning",
+      "model_schema_version": 2,
+      "feature_schema_version": 1,
+      "action_order": [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT"
+      ],
+      "forbidden_actions": [
+        "BOMB"
+      ]
+    },
+    "provenance": {
+      "producing_experiment": "2026-09-02-task1-LowerLearningRate-DerKleineVermoegensumverteiler",
+      "producing_run": 1,
+      "producing_experiment_commit": "5af393d4c2c5b46d04751b270f4d865aec41ccaf",
+      "producing_agent_commit": "0df4eb1b01d1dd6cef5c4111c42544468db1fc28",
+      "producing_agent_source_sha256": "a74a9efeacc8c772675666f7768a7fbf3ee5bea509d36af93834405976335600",
+      "campaign_merge_commit": "9d58f3260dbdc11bdbe7ec8838acc94bce8d89c3",
+      "frozen_source_commit": "22c91de3c97998d5c70b0109befbdecef3d34e90",
+      "framework_revision": "0f55c1d",
+      "training_world_seed": 11006,
+      "agent_seed": 21006
+    },
+    "development_reference": {
+      "scenario": "coin-heaven",
+      "world_seed_start": 31001,
+      "world_seed_end": 31040,
+      "episodes": 40,
+      "mean_collection_fraction": 1.0,
+      "full_clear_rate": 1.0,
+      "steps_per_coin": 2.6065,
+      "invalid_action_rate": 0.0003836562440053712,
+      "bomb_action_count": 0,
+      "mean_episode_p95_ms": 0.030071437358856194,
+      "maximum_decision_time_ms": 0.7798671722412109
+    },
+    "selection": {
+      "population": "five lower-learning-rate development models",
+      "rule": [
+        "maximum mean_collection_fraction",
+        "minimum steps_per_coin",
+        "minimum invalid_action_rate",
+        "minimum run number"
+      ]
+    },
+    "policy": {
+      "training_allowed": false,
+      "mutable": false,
+      "retraining_requires_new_issue": true,
+      "task2_requires_separately_named_successor": true
+    }
+  }
