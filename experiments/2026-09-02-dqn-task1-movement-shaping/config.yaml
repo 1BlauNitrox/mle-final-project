@@ -173,6 +173,7 @@ success_criteria:
   comparison_with_baseline:
     baseline_experiment: 2026-09-01-dqn-task1-development-baseline
     paired_bootstrap_resamples: 10000
+    paired_bootstrap_resampler_seed: 58
     resampling: two_stage_runs_then_paired_world_seeds
     computable: true
     computable_reason: identical evaluation seeds and run indices in both experiments
