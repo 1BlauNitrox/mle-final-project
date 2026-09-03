@@ -354,7 +354,13 @@ class GenericWorld:
         if replay is None or agent_name not in replay.get("actions", {}):
             return None
 
-        actions = replay["actions"][agent_name]
+        # An agent may return None, which the framework counts as an
+        # unknown action rather than rejecting. Encode it explicitly so the
+        # digest stays order-sensitive instead of raising on a legal state.
+        actions = [
+            "<none>" if action is None else action
+            for action in replay["actions"][agent_name]
+        ]
         return hashlib.sha256("\n".join(actions).encode("utf-8")).hexdigest()
 
     def time_to_stop(self):

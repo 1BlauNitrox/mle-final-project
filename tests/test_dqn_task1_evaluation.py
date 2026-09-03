@@ -132,6 +132,30 @@ def test_executed_action_sequence_digest_depends_on_order() -> None:
     assert world.executed_action_sequence_digest("absent") is None
 
 
+def test_executed_action_sequence_digest_handles_a_none_action() -> None:
+    """The framework accepts a None action and counts it as unknown.
+
+    rule_based_agent returns None in some states, so a multi-agent round would
+    otherwise raise while merely recording statistics.
+    """
+    from environment import GenericWorld
+
+    world = GenericWorld.__new__(GenericWorld)
+    world.replay = {
+        "actions": {
+            "with_none": ["UP", None, "RIGHT"],
+            "with_wait": ["UP", "WAIT", "RIGHT"],
+            "repeat": ["UP", None, "RIGHT"],
+        }
+    }
+
+    digest = world.executed_action_sequence_digest("with_none")
+
+    assert isinstance(digest, str) and len(digest) == 64
+    assert digest != world.executed_action_sequence_digest("with_wait")
+    assert digest == world.executed_action_sequence_digest("repeat")
+
+
 def test_executed_action_sequence_digest_is_none_before_a_round_starts() -> None:
     from environment import GenericWorld
 
