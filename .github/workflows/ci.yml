@@ -82,6 +82,7 @@ jobs:
           agent_code/_team_agent_template
           agent_code/DerKleineVermoegensumverteiler
           agent_code/DagobertDuckDQN
+          agent_code/DerKleineSprengstoffkapitalist
 
       - name: Compile Python sources
         run: python -m compileall -q .
@@ -528,3 +529,121 @@ jobs:
               --seed 9002
           after="$(sha256sum "$clean_framework/agent_code/DagobertDuckDQN/checkpoint.pt")"
           test "$before" = "$after"
+
+  tabular-task2-successor-smoke:
+    name: Tabular Task 2 successor smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Verify successor artifact and lineage
+        run: |
+          test -s agent_code/DerKleineSprengstoffkapitalist/model.npz
+          test -s agent_code/DerKleineSprengstoffkapitalist/artifact.json
+          test -s agent_code/DerKleineSprengstoffkapitalist/parent-artifact.json
+          test -s agent_code/DerKleineSprengstoffkapitalist/requirements.txt
+
+          test "$(
+            stat -c '%s' \
+              agent_code/DerKleineSprengstoffkapitalist/model.npz
+          )" = "6845"
+
+          echo \
+            "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307  agent_code/DerKleineSprengstoffkapitalist/model.npz" \
+            | sha256sum --check
+
+          cmp \
+            agent_code/DerKleineVermoegensumverteiler/model.npz \
+            agent_code/DerKleineSprengstoffkapitalist/model.npz
+
+      - name: Run successor differential tests
+        run: >
+          python -m pytest
+          tests/test_DerKleineSprengstoffkapitalist_successor.py
+          -v
+
+      - name: Package successor
+        run: |
+          python scripts/package_agent.py \
+            DerKleineSprengstoffkapitalist
+
+          test -s dist/final-project-agent-code.zip
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineSprengstoffkapitalist/model.npz'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineSprengstoffkapitalist/artifact.json'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineSprengstoffkapitalist/features/__init__.py'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineSprengstoffkapitalist/features/assemble.py'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineSprengstoffkapitalist/features/navigation.py'
+
+      - name: Evaluate packaged successor in clean framework
+        run: |
+          clean_framework="$(mktemp -d)"
+
+          git archive HEAD | tar -x -C "$clean_framework"
+
+          rm -rf \
+            "$clean_framework/agent_code/DerKleineSprengstoffkapitalist"
+
+          unzip -q \
+            dist/final-project-agent-code.zip \
+            -d "$clean_framework/agent_code"
+
+          test -s \
+            "$clean_framework/agent_code/DerKleineSprengstoffkapitalist/model.npz"
+
+          test -s \
+            "$clean_framework/agent_code/DerKleineSprengstoffkapitalist/requirements.txt"
+
+          python -m pip install -r \
+            "$clean_framework/agent_code/DerKleineSprengstoffkapitalist/requirements.txt"
+
+          before="$(
+            sha256sum \
+              "$clean_framework/agent_code/DerKleineSprengstoffkapitalist/model.npz" \
+              | cut -d ' ' -f 1
+          )"
+
+          (
+            cd "$clean_framework"
+
+            python main.py play \
+              --agents DerKleineSprengstoffkapitalist \
+              --scenario coin-heaven \
+              --no-gui \
+              --n-rounds 1 \
+              --seed 3001
+          )
+
+          after="$(
+            sha256sum \
+              "$clean_framework/agent_code/DerKleineSprengstoffkapitalist/model.npz" \
+              | cut -d ' ' -f 1
+          )"
+
+          test "$before" = "$after"
+
+          test "$after" = \
+            "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"

@@ -36,12 +36,25 @@ agent_code/<agent_name>/
 |-- train.py            # Required training interface
 |-- README.md           # Required agent card
 |-- model.py            # Optional learned model implementation
-|-- features.py         # Optional state representation
+|-- features.py         # Optional state representation for small agents
+|-- features/           # Optional feature package for growing agents
+|   |-- __init__.py     # Stable public feature API
+|   |-- assemble.py     # Complete state-vector assembly
+|   `-- navigation.py   # Focused feature helpers
 |-- rewards.py          # Optional reward definitions
 |-- config.py           # Optional default hyperparameters
 |-- requirements.txt    # Only if agent-specific extras are required
 `-- model.*             # Trained parameters required at evaluation
 ```
+
+An agent uses either a single `features.py` module or a `features/` package,
+not both. A feature package is appropriate when later milestones require
+independently testable feature groups.
+
+The package's `__init__.py` exposes the stable public API used by
+`callbacks.py`, `train.py`, `model.py`, and `persistence.py`. Internal
+reorganization must therefore not require those consumers to import individual
+implementation modules.
 
 The exact optional modules can differ by agent. The invariants are:
 
@@ -52,6 +65,43 @@ The exact optional modules can differ by agent. The invariants are:
   another agent;
 - its final policy contains no multiprocessing; and
 - it loads its trained parameters relative to its own module location.
+
+## Frozen agents and development successors
+
+A frozen evaluation agent is immutable. Later development must not change its
+source, configuration, documentation, artifact, schema, or behavior.
+
+Development beyond a frozen milestone therefore uses a separately named
+successor directory. The successor must:
+
+- record the parent agent and artifact provenance;
+- copy or migrate the parent artifact through an explicit checksum-verified
+  process;
+- preserve parent behavior until a later issue deliberately changes it;
+- remain self-contained during evaluation;
+- never import runtime code from the parent agent;
+- distinguish inherited evidence from new successor evidence;
+- avoid performance claims until a registered experiment supports them.
+
+Repository-level differential tests may import both agents to verify behavior
+preservation. The submitted successor package itself must not depend on the
+parent directory.
+
+The initial tabular Task 2 lineage is:
+
+```text
+DerKleineVermoegensumverteiler
+    frozen Task 1 parent
+              |
+              | checksum-verified artifact migration
+              v
+DerKleineSprengstoffkapitalist
+    behavior-preserving Task 2 successor scaffold
+```
+The successor initially retains the parent's five-action policy, eight-feature
+schema, rewards, Q-learning implementation, and read-only evaluation behavior.
+Task 2 features, bomb actions, reward changes, training, and performance claims
+require later issues and experiments.
 
 ## Framework agent loading
 
