@@ -118,6 +118,7 @@ results/
 # Project artifacts
 /dist/
 /training_outputs/
+/training_artifacts/
 /checkpoints/
 /tmp/
 # Registered evaluators stage immutable artifacts under this fixed local name.

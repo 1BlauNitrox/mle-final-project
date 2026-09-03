@@ -8,7 +8,7 @@ ACTIONS: tuple[str, ...] = ("UP", "RIGHT", "DOWN", "LEFT", "WAIT")
 ACTION_TO_INDEX: dict[str, int] = {action: index for index, action in enumerate(ACTIONS)}
 
 # hyperparameters
-LEARNING_RATE: float = 0.1
+LEARNING_RATE: float = 0.05
 DISCOUNT_FACTOR: float = 0.9
 
 INITIAL_EPSILON: float = 1.0
@@ -20,8 +20,8 @@ REWARDS: dict[str, float] = {
     "INVALID_ACTION": -0.5,
     "WAITED": -0.1,
     "COIN_COLLECTED": 10.0,
-    "MOVED_TOWARDS_COIN": 1.0,
-    "MOVED_AWAY_FROM_COIN": -1.0,
+    "MOVED_TOWARDS_COIN": 0.1,
+    "MOVED_AWAY_FROM_COIN": -0.1,
 }
 
 # seeds

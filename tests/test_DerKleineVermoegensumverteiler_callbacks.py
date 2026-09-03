@@ -376,7 +376,10 @@ def test_ordinary_transition_updates_q_table(
     ] > 0.0
     assert len(agent.absolute_td_errors) == 1
     assert agent.episode_reward == pytest.approx(
-        reward_from_events(["COIN_COLLECTED"])
+        reward_from_events([
+            "COIN_COLLECTED",
+            "MOVED_TOWARDS_COIN",
+            ])
     )
 
     # The second transition is now pending.
@@ -607,6 +610,11 @@ def test_death_finalizes_pending_and_death_transitions(
     ] == pytest.approx(expected_death_value)
 
     assert agent.pending_transition is None
+
+    expected_movement_reward = reward_from_events(
+    ["MOVED_TOWARDS_COIN"]
+    )
+
     assert metrics["shaped_reward"] == pytest.approx(
-        expected_death_reward
+        expected_movement_reward + expected_death_reward
     )

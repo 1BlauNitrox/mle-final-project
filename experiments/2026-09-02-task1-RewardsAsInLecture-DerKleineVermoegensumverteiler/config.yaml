@@ -1,0 +1,179 @@
+schema_version: 1
+
+experiment:
+  issue: 35
+  name: task1-RewardsAsInLecture-DerKleineVermoegensumverteiler
+  status: completed
+  owner: LiliWestermann
+  reviewer:
+  experiment_commit: `fa23b903ca3e6ad4df809739d1ae61ffaa8681ac`
+
+revisions:
+  pr_32_merge_commit: "59f454c3cd84f03832b7c43f5b1b4adf053001d0"
+  agent_implementation_commit: "401feb66b772f902a5bd7702bb8549b7d56a2f0d"
+  imported_framework_revision: "0f55c1d"
+  agent_source_sha256: "03d0e6f66653fc18751fb69c3c74250c344f37e3110ce0643ca9b08ebe5f49e1"
+
+agent:
+  name: DerKleineVermoegensumverteiler
+  algorithm: feature_based_tabular_q_learning
+
+  actions:
+    - UP
+    - RIGHT
+    - DOWN
+    - LEFT
+    - WAIT
+
+  forbidden_actions:
+    - BOMB
+
+  hyperparameters:
+    alpha: 0.05
+    gamma: 0.9
+    initial_epsilon: 1.0
+    epsilon_decay: 0.99
+    minimum_epsilon: 0.1
+    evaluation_epsilon: 0.0
+
+  rewards:
+    COIN_COLLECTED: 10.0
+    INVALID_ACTION: -0.5
+    WAITED: -0.1
+    all_other_events: 0.0
+
+  reward_shaping:
+    type: potential_based
+    potential: negative_manhattan_distance_to_nearest_coin
+    scale: 0.1
+    discount_factor: 0.9
+    terminal_potential: 0.0
+
+environment:
+  scenario: coin-heaven
+  available_coins_per_episode: 50
+  opponents: []
+  episode_step_limit: 400
+
+training:
+  runs: 5
+  episodes_per_run: 10000
+  fresh_model_per_run: true
+  checkpoint_selection: final_checkpoint
+  evaluation_based_selection: false
+
+  seeds:
+    - run: 1
+      world_seed: 11006
+      agent_seed: 21006
+    - run: 2
+      world_seed: 11007
+      agent_seed: 21007
+    - run: 3
+      world_seed: 11008
+      agent_seed: 21008
+    - run: 4
+      world_seed: 11009
+      agent_seed: 21009
+    - run: 5
+      world_seed: 11010
+      agent_seed: 21010
+
+evaluation:
+  training_enabled: false
+  episodes_per_model_per_seed: 1
+
+  development_world_seeds:
+    start: 31001
+    end: 31040
+
+  reserved_confirmation_seeds:
+    start: 31041
+    end: 31050
+    use_in_this_experiment: false
+
+  final_held_out_seeds:
+    required_size: 100
+    use_in_this_experiment: false
+
+  runtime:
+    cpu_threads: 1
+    multiprocessing: false
+    maximum_memory_gb: 8
+
+  artifact_integrity:
+    hash_algorithm: sha256
+    hash_before_and_after_evaluation: true
+    model_must_remain_unchanged: true
+
+metrics:
+  primary: coin_collection_fraction
+
+  required:
+    - available_coins
+    - coins_collected
+    - coin_collection_fraction
+    - full_clear
+    - zero_coin
+    - survival_steps
+    - episode_steps
+    - invalid_actions
+    - attempted_actions
+    - invalid_action_rate
+    - environment_score
+    - action_counts
+    - decision_time_median_ms
+    - decision_time_p95_ms
+    - decision_time_max_ms
+    - steps_per_coin
+
+  stability:
+    - between_model_std_collection_fraction
+    - minimum_model_collection_fraction
+    - maximum_model_collection_fraction
+    - model_collection_fraction_range
+    - between_model_std_steps_per_coin
+
+  training_diagnostics:
+    - cumulative_reward
+    - epsilon
+    - q_table_size
+    - mean_abs_td_error
+
+success_criteria:
+  completed_models: 5
+  completed_evaluation_episodes: 200
+  aggregate_mean_coin_collection_fraction_min: 0.80
+  individual_mean_coin_collection_fraction_min: 0.75
+  minimum_models_reaching_individual_threshold: 5
+  invalid_action_rate_max_exclusive: 0.01
+  bomb_action_count: 0
+  deterministic_evaluation_required: true
+  immutable_model_required: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+  steps_per_coin_max_exclusive: 2.7
+  steps_per_coin_aggregate_max_exclusive: 3.599
+
+compute_budget:
+  maximum_training_episodes: 50000
+  evaluation_episodes: 200
+  maximum_cpu_hours: 12
+  paid_resources: false
+
+outputs:
+  commit:
+    - README.md
+    - config.yaml
+    - summary.csv
+    - figures/
+
+  keep_outside_git:
+    - model_artifacts
+    - raw_logs
+    - replays
+    - temporary_checkpoints
+    - raw_training_outputs
+
+output_directories:
+  artifact_directory: issue-35-rewards-as-in-lecture
