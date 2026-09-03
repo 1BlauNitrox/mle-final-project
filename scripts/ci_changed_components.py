@@ -59,6 +59,28 @@ FRAMEWORK_RUNTIME_FILES = {
 }
 
 
+def revision_for_event(
+    event_name: str,
+    *,
+    pr_base_sha: str | None = None,
+    pr_head_sha: str | None = None,
+    push_before_sha: str | None = None,
+    push_sha: str | None = None,
+) -> str:
+    """Return the correct Git revision range for a supported Actions event."""
+    if event_name == "pull_request":
+        if not pr_base_sha or not pr_head_sha:
+            raise ValueError("pull_request requires base and head SHAs")
+        return f"{pr_base_sha}...{pr_head_sha}"
+
+    if event_name == "push":
+        if not push_before_sha or not push_sha:
+            raise ValueError("push requires before and current SHAs")
+        return f"{push_before_sha}..{push_sha}"
+
+    raise ValueError(f"unsupported GitHub Actions event: {event_name}")
+
+
 def classify_path(raw_path: str) -> AffectedComponents:
     """Return the optional CI jobs that can be affected by one path.
 
@@ -156,11 +178,20 @@ def write_github_output(path: Path, affected: AffectedComponents) -> None:
 
 def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+    revision_source = parser.add_mutually_exclusive_group(required=True)
+    revision_source.add_argument(
         "--revision",
-        required=True,
         help="Git revision range to inspect, for example BASE...HEAD",
     )
+    revision_source.add_argument(
+        "--event-name",
+        choices=("pull_request", "push"),
+        help="GitHub Actions event used to construct the revision range",
+    )
+    parser.add_argument("--pr-base-sha")
+    parser.add_argument("--pr-head-sha")
+    parser.add_argument("--push-before-sha")
+    parser.add_argument("--push-sha")
     parser.add_argument(
         "--github-output",
         type=Path,
@@ -172,7 +203,16 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
-    paths = changed_paths(arguments.revision)
+    revision = arguments.revision
+    if revision is None:
+        revision = revision_for_event(
+            arguments.event_name,
+            pr_base_sha=arguments.pr_base_sha,
+            pr_head_sha=arguments.pr_head_sha,
+            push_before_sha=arguments.push_before_sha,
+            push_sha=arguments.push_sha,
+        )
+    paths = changed_paths(revision)
     affected = classify_paths(paths)
     write_github_output(arguments.github_output, affected)
     print(

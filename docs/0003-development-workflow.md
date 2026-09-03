@@ -113,11 +113,13 @@ from one another and therefore run in parallel. Never narrow these filters merel
 to make a workflow faster; avoiding a false negative takes priority over runner
 time.
 
-The official course image is built with Docker Buildx and a repository-scoped
-GitHub Actions layer cache. The image is loaded into the job's Docker daemon, so
-all compatibility, packaging, and clean-framework checks still run on every
-relevant workflow. A cache hit may accelerate image construction; it never
-replaces the compatibility checks themselves.
+The official course image is built with the runner's standard Docker builder on
+every relevant workflow. A Buildx GitHub Actions cache was measured during PR
+#61 and deliberately rejected: the approximately 4 GB image required 233 seconds
+to load into Docker and 208 seconds to export to the cache, increasing the cold
+Docker job from about 4 minutes to more than 11 minutes. Revisit caching only if
+a smaller official image or a pre-built registry image makes it measurably faster
+without weakening the compatibility, packaging, or clean-framework checks.
 
 ## Commit messages
 

@@ -14,8 +14,48 @@ from scripts.ci_changed_components import (
     AffectedComponents,
     classify_path,
     classify_paths,
+    revision_for_event,
     write_github_output,
 )
+
+
+@pytest.mark.parametrize(
+    ("event_name", "kwargs", "expected"),
+    [
+        (
+            "pull_request",
+            {"pr_base_sha": "base", "pr_head_sha": "head"},
+            "base...head",
+        ),
+        (
+            "push",
+            {"push_before_sha": "before", "push_sha": "current"},
+            "before..current",
+        ),
+    ],
+)
+def test_revision_for_event_uses_event_appropriate_range(
+    event_name: str,
+    kwargs: dict[str, str],
+    expected: str,
+) -> None:
+    assert revision_for_event(event_name, **kwargs) == expected
+
+
+@pytest.mark.parametrize(
+    ("event_name", "kwargs"),
+    [
+        ("pull_request", {"pr_base_sha": "base"}),
+        ("push", {"push_sha": "current"}),
+        ("workflow_dispatch", {}),
+    ],
+)
+def test_revision_for_event_rejects_incomplete_or_unknown_events(
+    event_name: str,
+    kwargs: dict[str, str],
+) -> None:
+    with pytest.raises(ValueError):
+        revision_for_event(event_name, **kwargs)
 
 
 @pytest.mark.parametrize(

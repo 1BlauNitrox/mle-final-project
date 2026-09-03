@@ -36,13 +36,12 @@ jobs:
           PUSH_BEFORE_SHA: ${{ github.event.before }}
           PUSH_SHA: ${{ github.sha }}
         run: |
-          if [ "$EVENT_NAME" = "pull_request" ]; then
-            revision="$PR_BASE_SHA...$PR_HEAD_SHA"
-          else
-            revision="$PUSH_BEFORE_SHA..$PUSH_SHA"
-          fi
           python scripts/ci_changed_components.py \
-            --revision "$revision" \
+            --event-name "$EVENT_NAME" \
+            --pr-base-sha "$PR_BASE_SHA" \
+            --pr-head-sha "$PR_HEAD_SHA" \
+            --push-before-sha "$PUSH_BEFORE_SHA" \
+            --push-sha "$PUSH_SHA" \
             --github-output "$GITHUB_OUTPUT"
 
   quality:
@@ -308,17 +307,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
       - name: Build supplied Dockerfile
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          load: true
-          tags: bomberman-dqn:pr
-          cache-from: type=gha,scope=bomberman-official-image
-          cache-to: type=gha,mode=max,scope=bomberman-official-image
+        run: docker build --tag bomberman-dqn:pr .
 
       - name: Verify agent-local dependencies
         run: |
