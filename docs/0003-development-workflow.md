@@ -113,6 +113,12 @@ from one another and therefore run in parallel. Never narrow these filters merel
 to make a workflow faster; avoiding a false negative takes priority over runner
 time.
 
+The official course image is built with Docker Buildx and a repository-scoped
+GitHub Actions layer cache. The image is loaded into the job's Docker daemon, so
+all compatibility, packaging, and clean-framework checks still run on every
+relevant workflow. A cache hit may accelerate image construction; it never
+replaces the compatibility checks themselves.
+
 ## Commit messages
 
 Use concise, imperative conventional-style messages:

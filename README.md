@@ -200,7 +200,9 @@ agent-training and official Docker compatibility jobs use conservative changed-
 path classification: documentation and retained experiment records skip them,
 while agent, framework, training, packaging, dependency, Docker, and CI changes
 run every relevant check. This keeps required checks stable without running the
-same workflow twice for one pull-request commit.
+same workflow twice for one pull-request commit. The official Docker build uses
+Buildx and GitHub Actions layer caching; its compatibility checks still execute
+against a locally loaded image on every relevant run.
 
 The manual **Package agent** workflow validates an agent directory and produces
 the exact zip artifact for the MaMPF submission. There is no production
