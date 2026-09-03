@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import pickle
@@ -86,6 +87,9 @@ class GenericWorld:
 
         # Arena with wall and crate layout
         self.arena, self.coins, self.active_agents = self.build_arena()
+        self.initially_available_coins = int(
+            sum(coin.collectable for coin in self.coins)
+        )
 
         for agent in self.active_agents:
             agent.start_round()
@@ -319,6 +323,13 @@ class GenericWorld:
                 "decision_time_median_ms": decision_time_median_ms,
                 "decision_time_p95_ms": decision_time_p95_ms,
                 "decision_time_max_ms": decision_time_max_ms,
+                "decision_times_ms": [
+                    float(value) * 1000.0 for value in a.decision_times
+                ],
+                "initially_available_coins": self.initially_available_coins,
+                "executed_action_sequence_sha256": (
+                    self.executed_action_sequence_digest(a.name)
+                ),
                 "learning_metrics": dict(a.learning_metrics),
             }
 
@@ -329,6 +340,22 @@ class GenericWorld:
             "suicides": sum(a.statistics.get("suicides", 0) for a in self.agents),
             "agents": agent_statistics,
         }
+
+    def executed_action_sequence_digest(self, agent_name: str):
+        """Digest the ordered actions an agent actually executed this round.
+
+        Includes any WAIT substituted after a think-time overrun, because that is
+        what the environment executed. Action totals alone cannot distinguish two
+        runs that played the same moves in a different order, so a determinism
+        check needs the ordering. Returns None when no round has been started, so
+        that callers can tell "not instrumented" from "no actions executed".
+        """
+        replay = getattr(self, "replay", None)
+        if replay is None or agent_name not in replay.get("actions", {}):
+            return None
+
+        actions = replay["actions"][agent_name]
+        return hashlib.sha256("\n".join(actions).encode("utf-8")).hexdigest()
 
     def time_to_stop(self):
         # Check round stopping criteria
