@@ -1,5 +1,6 @@
 """Integration tests for the Task 1 framework callbacks."""
 
+import hashlib
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -95,7 +96,7 @@ def make_agent(*, training: bool) -> SimpleNamespace:
     callbacks.setup(agent)
 
     if training:
-        train.setup_training(agent)
+        train._initialize_training_state(agent)
 
     return agent
 
@@ -348,9 +349,7 @@ def test_ordinary_transition_updates_q_table(
 
     # The first transition is initially kept pending because the framework
     # might end the round and report the same transition as terminal.
-    assert agent.q_table.q_values(first_old_state)[
-        right_index
-    ] == pytest.approx(0.0)
+    assert agent.q_table.q_values(first_old_state)[right_index] == pytest.approx(0.0)
     assert agent.pending_transition is not None
     assert agent.absolute_td_errors == []
     assert agent.episode_reward == pytest.approx(0.0)
@@ -371,15 +370,15 @@ def test_ordinary_transition_updates_q_table(
 
     # Receiving the next callback proves that the first transition was not
     # terminal. It must now be finalized as an ordinary update.
-    assert agent.q_table.q_values(first_old_state)[
-        right_index
-    ] > 0.0
+    assert agent.q_table.q_values(first_old_state)[right_index] > 0.0
     assert len(agent.absolute_td_errors) == 1
     assert agent.episode_reward == pytest.approx(
-        reward_from_events([
-            "COIN_COLLECTED",
-            "MOVED_TOWARDS_COIN",
-            ])
+        reward_from_events(
+            [
+                "COIN_COLLECTED",
+                "MOVED_TOWARDS_COIN",
+            ]
+        )
     )
 
     # The second transition is now pending.
@@ -496,6 +495,7 @@ def test_episode_metrics_are_reset_after_round(
     assert agent.absolute_td_errors == []
     assert model_path.is_file()
 
+
 def test_surviving_final_transition_is_updated_once_as_terminal(
     model_path: Path,
 ) -> None:
@@ -524,9 +524,7 @@ def test_surviving_final_transition_is_updated_once_as_terminal(
     )
 
     # No ordinary update yet because the transition may be the final one.
-    assert agent.q_table.q_values(old_state)[
-        ACTIONS.index("RIGHT")
-    ] == pytest.approx(0.0)
+    assert agent.q_table.q_values(old_state)[ACTIONS.index("RIGHT")] == pytest.approx(0.0)
     assert agent.pending_transition is not None
 
     metrics = train.end_of_round(
@@ -536,17 +534,16 @@ def test_surviving_final_transition_is_updated_once_as_terminal(
         ["COIN_COLLECTED", "SURVIVED_ROUND"],
     )
 
-    expected_reward = reward_from_events(
-        ["COIN_COLLECTED", "SURVIVED_ROUND"]
-    )
+    expected_reward = reward_from_events(["COIN_COLLECTED", "SURVIVED_ROUND"])
     expected_value = agent.q_table.learning_rate * expected_reward
 
-    assert agent.q_table.q_values(old_state)[
-        ACTIONS.index("RIGHT")
-    ] == pytest.approx(expected_value)
+    assert agent.q_table.q_values(old_state)[ACTIONS.index("RIGHT")] == pytest.approx(
+        expected_value
+    )
     assert len(agent.absolute_td_errors) == 0
     assert agent.pending_transition is None
     assert metrics["shaped_reward"] == pytest.approx(expected_reward)
+
 
 def test_death_finalizes_pending_and_death_transitions(
     model_path: Path,
@@ -598,23 +595,38 @@ def test_death_finalizes_pending_and_death_transitions(
     assert first_features in agent.q_table.values
 
     # The separate death transition was finalized terminally.
-    expected_death_reward = reward_from_events(
-        ["WAITED", "GOT_KILLED"]
-    )
-    expected_death_value = (
-        agent.q_table.learning_rate * expected_death_reward
-    )
+    expected_death_reward = reward_from_events(["WAITED", "GOT_KILLED"])
+    expected_death_value = agent.q_table.learning_rate * expected_death_reward
 
-    assert agent.q_table.q_values(death_features)[
-        ACTIONS.index("WAIT")
-    ] == pytest.approx(expected_death_value)
+    assert agent.q_table.q_values(death_features)[ACTIONS.index("WAIT")] == pytest.approx(
+        expected_death_value
+    )
 
     assert agent.pending_transition is None
 
-    expected_movement_reward = reward_from_events(
-    ["MOVED_TOWARDS_COIN"]
-    )
+    expected_movement_reward = reward_from_events(["MOVED_TOWARDS_COIN"])
 
     assert metrics["shaped_reward"] == pytest.approx(
         expected_movement_reward + expected_death_reward
     )
+
+
+def test_frozen_baseline_rejects_training_without_modifying_model() -> None:
+    model_path = train.MODEL_PATH
+    hash_before = hashlib.sha256(model_path.read_bytes()).hexdigest()
+
+    agent = SimpleNamespace(
+        train=True,
+        logger=Mock(),
+    )
+
+    with pytest.raises(
+        RuntimeError,
+        match="frozen Task 1 baseline",
+    ):
+        train.setup_training(agent)
+
+    hash_after = hashlib.sha256(model_path.read_bytes()).hexdigest()
+
+    assert hash_after == hash_before
+    assert hash_after == ("4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307")

@@ -1,7 +1,13 @@
 # DerKleineVermoegensumverteiler
 
-> Status: Task 1 Q-learning baseline with movement-coin shaping and
-> learning rate, selected by the #35 optimization campaign.
+> Status: frozen Task 1 development-selected baseline.
+> This directory must not be retrained or modified for Task 2.
+
+These are development-selection results, not final held-out Task 1 results.
+
+Task 2 development must use a separately named successor agent. The frozen
+source, configuration, and model artifact in this directory remain unchanged
+for Task 1 regression evaluation.
 
 ## Hypothesis
 
@@ -9,8 +15,12 @@ A compact representation of local movement constraints and coarse information
 about the nearest visible coin is sufficient for a tabular Q-learning policy to
 learn coin navigation in the `coin-heaven` scenario.
 
-This hypothesis has not yet been evaluated scientifically. The completed smoke
-runs validate only implementation and pipeline integration.
+The hypothesis was evaluated through the development experiments in issues
+#35 and #36. The selected configuration achieved an aggregate development
+coin-collection fraction of `0.9812` across five independently trained models.
+
+These results are development evidence only. The final held-out Task 1
+evaluation has not been performed.
 
 ## Scope
 
@@ -94,7 +104,7 @@ with a non-zero coin direction.
 
 ## Hyperparameters
 
-The initial implementation uses:
+The frozen baseline uses:
 
 | Parameter | Value |
 | --- | ---: |
@@ -139,22 +149,17 @@ The symmetric penalty is deliberate: returning to a tile cancels the reward
 earned by leaving it, which removes the incentive to oscillate for repeated
 approach reward.
 
-## Training
+## Training and immutability
 
-Run a reproducible headless training job from the repository root:
+Training is disabled for this frozen baseline. Calling `setup_training()`
+raises an error before any training update can occur.
 
-```bash
-python -m training.run_experiment \
-  --agent DerKleineVermoegensumverteiler \
-  --mode training \
-  --scenario coin-heaven \
-  --rounds 100 \
-  --world-seed 1001 \
-  --agent-seed 2001
-```
+The committed `model.npz` must not be overwritten or replaced. Deliberate
+retraining requires a new issue, a new artifact version, and a separately
+named successor agent.
 
-Training updates the Q-table, decays epsilon once after every completed episode,
-records learning metrics, and saves the resumable model after each episode.
+The original producing configuration is preserved in
+`baseline-config.yaml`.
 
 ## Evaluation
 
@@ -202,26 +207,43 @@ The non-pickle archive contains:
 - completed episode count;
 - reward configuration.
 
-Training writes the model atomically. Evaluation requires a compatible artifact
-and leaves it byte-for-byte unchanged.
+The producing implementation wrote models atomically during the completed
+development experiment. Training is now disabled in this frozen directory.
+Evaluation loads the committed artifact without modifying it.
 
-## Smoke validation
+## Frozen artifact
 
-A five-round training smoke run and subsequent five-round evaluation smoke run
-completed successfully with recorded world and agent seeds.
+The committed evaluation artifact was produced by Run 1 of
+`2026-09-02-task1-LowerLearningRate-DerKleineVermoegensumverteiler`.
 
-The model SHA-256 before and after evaluation was identical:
+| Property | Value |
+| --- | --- |
+| Artifact | `model.npz` |
+| SHA-256 | `4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307` |
+| Size | `6845` bytes |
+| Model schema | `2` |
+| Feature schema | `1` |
+| Training world seed | `11006` |
+| Agent seed | `21006` |
+| Producing agent commit | `0df4eb1b01d1dd6cef5c4111c42544468db1fc28` |
+| Producing experiment commit | `5af393d4c2c5b46d04751b270f4d865aec41ccaf` |
+| Frozen source commit | `22c91de3c97998d5c70b0109befbdecef3d34e90` |
+| Campaign merge commit | `9d58f3260dbdc11bdbe7ec8838acc94bce8d89c3` |
+| Framework revision | `0f55c1d` |
 
-```text
-c29238f5306c83c5882816531f1b45d8d7297aebbded7591cb6ed75762563f93
-```
-
-This is pipeline evidence only. It is not scientific evidence of agent
-performance or Task 1 completion.
+The machine-readable version of this information is stored in
+`artifact.json`.
 
 ## Dependencies
 
-- NumPy
+The frozen package documents its Python dependencies in `requirements.txt`.
+
+The producing environment used:
+
+- Python `3.13.15`
+- NumPy `2.5.2`
+- one CPU thread
+- no multiprocessing
 
 ## Limitations and next steps
 
@@ -233,3 +255,28 @@ performance or Task 1 completion.
 - The shaping is not potential-based, so a small policy bias cannot be excluded.
 - Task 1 completion still requires the held-out evaluation defined in
   `docs/0007-task-1-baseline-contract.md`.
+
+## Chosen model
+
+For freezing we choos the model from run1 in the LowerLearningRate experiment.
+It has one of the highest mean_collection_fraction with the lowest
+steps_per_coin count.
+
+| Metric | Run 1 |
+| --- | ---: |
+| Collection fraction | 1.0000 |
+| Full clear rate | 1.0000 |
+| Steps per coin | 2.6065 |
+| Invalid action rate | 0.0003836562 |
+| BOMB actions | 0 |
+
+- Producing agent implementation commit:
+  0df4eb1b01d1dd6cef5c4111c42544468db1fc28
+- Producing experiment commit:
+  5af393d4c2c5b46d04751b270f4d865aec41ccaf
+- Producing agent source SHA-256:
+  a74a9efeacc8c772675666f7768a7fbf3ee5bea509d36af93834405976335600
+- Campaign merge commit:
+  9d58f3260dbdc11bdbe7ec8838acc94bce8d89c3
+- Framework revision:
+  0f55c1d
