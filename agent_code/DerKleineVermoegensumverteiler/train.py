@@ -22,14 +22,25 @@ class PendingTransition:
     next_state: StateFeatures
     reward: float
 
+
 def setup_training(self) -> None:
-    """Initialize training-only state."""
+    """Reject training of thr frozen Task 1 baseline."""
+
+    raise RuntimeError(
+        "DerKleineVermoegensumverteiler is a frozen Task 1 baseline. "
+        "Training is disabled; create a separately named successor."
+    )
+
+
+def _initialize_training_state(self) -> None:
+    """Initialize state used by unit tests of the frozen learning logic."""
 
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
     self.pending_transition: PendingTransition | None = None
 
     self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
+
 
 def game_events_occurred(
     self,
@@ -78,6 +89,7 @@ def game_events_occurred(
         reward=reward_from_events(training_events),
     )
 
+
 def end_of_round(
     self,
     last_game_state: dict | None,
@@ -105,7 +117,7 @@ def end_of_round(
             action=pending.action,
             reward=reward_from_events(events),
             next_state=None,
-            terminal=True
+            terminal=True,
         )
     else:
         _finalize_pennding_transition(self)
@@ -114,13 +126,13 @@ def end_of_round(
             last_state = state_to_features(last_game_state)
 
             if last_state is not None:
-               _apply_update(
+                _apply_update(
                     self,
                     state=last_state,
                     action=last_action,
                     reward=reward_from_events(events),
                     next_state=None,
-                    terminal=True
+                    terminal=True,
                 )
 
     completed_episode_epsilon = float(self.epsilon)
@@ -150,6 +162,7 @@ def end_of_round(
 
     return metrics
 
+
 def _finalize_pennding_transition(self) -> None:
     """Apply the pending transition if it exists."""
 
@@ -164,10 +177,11 @@ def _finalize_pennding_transition(self) -> None:
         action=pending.action,
         reward=pending.reward,
         next_state=pending.next_state,
-        terminal=False
+        terminal=False,
     )
 
     self.pending_transition = None
+
 
 def _apply_update(
     self,
@@ -181,15 +195,12 @@ def _apply_update(
     """Update the Q-table and record diagnostics."""
 
     td_error = self.q_table.update(
-        state=state,
-        action=action,
-        reward=reward,
-        next_state=next_state,
-        terminal=terminal
+        state=state, action=action, reward=reward, next_state=next_state, terminal=terminal
     )
 
     self.episode_reward += reward
     self.absolute_td_errors.append(abs(td_error))
+
 
 def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
     """Return a unique identity for the transition based on the game state."""
@@ -204,6 +215,7 @@ def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
         return None
 
     return (round_number, step_number)
+
 
 def _coin_movement_event(
     old_game_state: dict,
@@ -223,14 +235,8 @@ def _coin_movement_event(
     old_position = old_game_state["self"][3]
     new_position = new_game_state["self"][3]
 
-    old_distance = min(
-        _manhattan_distance(old_position, coin)
-        for coin in coins
-    )
-    new_distance = min(
-        _manhattan_distance(new_position, coin)
-        for coin in coins
-    )
+    old_distance = min(_manhattan_distance(old_position, coin) for coin in coins)
+    new_distance = min(_manhattan_distance(new_position, coin) for coin in coins)
 
     if new_distance < old_distance:
         return "MOVED_TOWARDS_COIN"
