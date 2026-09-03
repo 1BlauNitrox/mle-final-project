@@ -84,28 +84,23 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
-      - name: Train Task 1 agent
-        run: |
-          python -m training.run_experiment \
-            --agent DerKleineVermoegensumverteiler \
-            --mode training \
-            --scenario coin-heaven \
-            --rounds 2 \
-            --world-seed 1001 \
-            --agent-seed 2001
-
-      - name: Verify training outputs
+      - name: Verify frozen artifact
         run: |
           test -s agent_code/DerKleineVermoegensumverteiler/model.npz
-          run_directory="$(find training_outputs -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
-          test -s "$run_directory/metadata.json"
-          test -s "$run_directory/episodes.csv"
-          test -s "$run_directory/summary.json"
-          python -m training.plot_run "$run_directory"
+          test -s agent_code/DerKleineVermoegensumverteiler/artifact.json
+          test -s agent_code/DerKleineVermoegensumverteiler/baseline-config.yaml
+          test -s agent_code/DerKleineVermoegensumverteiler/reference-results.csv
+          test -s agent_code/DerKleineVermoegensumverteiler/requirements.txt
+          test "$(stat -c '%s' agent_code/DerKleineVermoegensumverteiler/model.npz)" = "6845"
+          echo "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307  agent_code/DerKleineVermoegensumverteiler/model.npz" \
+            | sha256sum --check
 
       - name: Record model checksum
         run: |
@@ -122,16 +117,32 @@ jobs:
             --world-seed 3001 \
             --agent-seed 2001
 
-      - name: Verify read-only evaluation
+      - name: Verify evaluation output and artifact immutability
         run: |
+          run_directory="$(find training_outputs -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+          test -s "$run_directory/metadata.json"
+          test -s "$run_directory/episodes.csv"
+          test -s "$run_directory/summary.json"
+          python -m training.plot_run "$run_directory"
+
           sha256sum agent_code/DerKleineVermoegensumverteiler/model.npz \
             | cut -d ' ' -f 1 > /tmp/model-after.sha256
           diff /tmp/model-before.sha256 /tmp/model-after.sha256
 
-      - name: Package agent
+      - name: Package frozen agent
         run: |
-          python scripts/package_agent.py DerKleineVermoegensumverteiler
+          python scripts/package_agent.py \
+            DerKleineVermoegensumverteiler
           test -s dist/final-project-agent-code.zip
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineVermoegensumverteiler/model.npz'
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineVermoegensumverteiler/artifact.json'
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineVermoegensumverteiler/baseline-config.yaml'
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DerKleineVermoegensumverteiler/reference-results.csv'
 
   dqn-agent-smoke:
     name: DQN agent smoke test
