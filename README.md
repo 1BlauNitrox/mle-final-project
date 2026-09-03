@@ -187,12 +187,26 @@ artifacts, limitations, and evidence.
 
 ## CI and delivery
 
-GitHub Actions runs on every pushed commit and every pull request:
+GitHub Actions runs once for every pull-request update and once after a change
+reaches `main`:
 
 - static checks for team-owned Python files;
 - repository and agent-interface contract tests;
 - compilation of all Python sources;
 - a complete headless Bomberman round.
+
+Quality checks and the framework smoke test always run. The more expensive
+agent-training and official Docker compatibility jobs use conservative changed-
+path classification: documentation and retained experiment records skip them,
+while agent, framework, training, packaging, dependency, Docker, and CI changes
+run every relevant check. This keeps required checks stable without running the
+same workflow twice for one pull-request commit. Every relevant official-Docker
+job still builds the supplied image locally and executes all compatibility,
+packaging, and clean-framework checks.
+
+Change detection fails closed through the required quality job: if affected
+components cannot be determined, `Quality checks` fails instead of allowing a
+merge that silently skipped optional compatibility coverage.
 
 The manual **Package agent** workflow validates an agent directory and produces
 the exact zip artifact for the MaMPF submission. There is no production
