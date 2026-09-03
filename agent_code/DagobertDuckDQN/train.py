@@ -27,7 +27,15 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Initialize per-episode training diagnostics."""
+    """Reject training of the frozen Task 1 baseline."""
+    raise RuntimeError(
+        "DagobertDuckDQN is a frozen Task 1 baseline. "
+        "Training is disabled; create a separately named successor."
+    )
+
+
+def _initialize_training_state(self) -> None:
+    """Initialize per-episode training diagnostics for the frozen logic's tests."""
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
     self.losses: list[float] = []

@@ -150,7 +150,7 @@ def test_shaping_matches_the_tabular_agent_exactly() -> None:
 
 def test_shaping_reward_is_added_to_the_pending_transition() -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     training.game_events_occurred(
         agent,
@@ -165,10 +165,10 @@ def test_shaping_reward_is_added_to_the_pending_transition() -> None:
     assert agent.pending_transition.reward == pytest.approx(0.1)
 
 
-def test_setup_training_initializes_episode_state() -> None:
+def test_initialize_training_state_resets_episode_state() -> None:
     agent = make_agent()
 
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     assert agent.episode_reward == 0.0
     assert agent.absolute_td_errors == []
@@ -177,9 +177,16 @@ def test_setup_training_initializes_episode_state() -> None:
     assert agent.pending_transition is None
 
 
+def test_setup_training_rejects_the_frozen_baseline() -> None:
+    agent = make_agent()
+
+    with pytest.raises(RuntimeError, match="frozen Task 1 baseline"):
+        training.setup_training(agent)
+
+
 def test_first_surviving_transition_is_kept_pending() -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     training.game_events_occurred(
         agent,
@@ -195,7 +202,7 @@ def test_first_surviving_transition_is_kept_pending() -> None:
 
 def test_next_callback_finalizes_previous_transition() -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     training.game_events_occurred(
         agent,
@@ -224,7 +231,7 @@ def test_surviving_final_transition_is_added_once_as_terminal(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
     monkeypatch.setattr(
         training,
         "CHECKPOINT_PATH",
@@ -257,7 +264,7 @@ def test_death_finalizes_previous_and_terminal_transitions(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
     monkeypatch.setattr(
         training,
         "CHECKPOINT_PATH",
@@ -289,7 +296,7 @@ def test_end_of_round_updates_model_and_returns_metrics(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
     checkpoint_path = tmp_path / "checkpoint.pt"
     monkeypatch.setattr(
         training,
@@ -333,7 +340,7 @@ def test_episode_state_is_reset_after_round(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     agent = make_agent()
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
     monkeypatch.setattr(
         training,
         "CHECKPOINT_PATH",
@@ -372,7 +379,7 @@ def test_round_without_optimizer_update_reports_unavailable_td_error(
         capacity=agent.config.replay_capacity,
         seed=456,
     )
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
     monkeypatch.setattr(
         training,
         "CHECKPOINT_PATH",

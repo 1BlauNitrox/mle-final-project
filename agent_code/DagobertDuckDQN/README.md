@@ -1,7 +1,10 @@
 # DagobertDuckDQN
 
-> Status: Task 1 development baseline evaluated in issue #41. The result is
-> mixed/negative and no candidate is frozen.
+> Status: frozen Task 1 baseline (issue #42). Selected mechanically from the
+> issue #58 series, which itself failed its own registered primary criterion.
+> This is a development-selected reference for Task 2 regression, not a
+> passing Task 1 result. Training is disabled; use a separately named
+> successor for Task 2.
 
 ## Hypothesis
 
@@ -9,8 +12,13 @@ A small Deep Q-Network using the same eight input features, five actions, and
 initial reward mapping as the tabular Task 1 agent can learn visible-coin
 navigation in `coin-heaven`.
 
-Issue #41 evaluated this hypothesis scientifically. Aggregate navigation met
-its threshold, but reproducibility and invalid-action thresholds failed.
+Issue #41 evaluated this hypothesis and found the reproducibility and
+invalid-action thresholds failing. Issue #58 tested whether porting the
+tabular agent's movement-coin reward shaping would resolve the instability; it
+did not (see "Scientific evaluation" below). Per the stopping rule registered
+in #58 ("no third Task 1 DQN tuning experiment"), a candidate was then
+selected mechanically from #58's series rather than run further, and frozen
+here under issue #42.
 
 ## Scope
 
@@ -131,15 +139,20 @@ Feature order is unchanged by normalization.
 
 ## Rewards
 
-The initial reward mapping is identical to the tabular comparison agent:
+The frozen reward mapping, including the movement-coin shaping tested in
+issue #58:
 
 | Event | Reward |
 | --- | ---: |
 | `COIN_COLLECTED` | `+10.0` |
 | `INVALID_ACTION` | `-0.5` |
 | `WAITED` | `-0.1` |
+| `MOVED_TOWARDS_COIN` | `+0.1` |
+| `MOVED_AWAY_FROM_COIN` | `-0.1` |
 
-All unlisted events contribute zero reward. No distance-based shaping is used.
+All unlisted events contribute zero reward. The movement-coin shaping is not
+potential-based; see issue #58 for the accepted deviation from policy
+invariance.
 
 ## Experience replay
 
@@ -245,28 +258,20 @@ are rejected. This permits an ignored, temporary artifact copy during a
 registered evaluation without changing the default submission artifact
 `checkpoint.pt` or relying on an absolute path.
 
-No candidate checkpoint is committed. The five development artifacts remain in
-the ignored raw experiment store and must not be mistaken for a frozen model.
+**The committed `checkpoint.pt` is the frozen artifact selected under issue
+#42.** It was produced by
+[`scripts/freeze_dagobertduckdqn_task1_baseline.py`](../../scripts/freeze_dagobertduckdqn_task1_baseline.py)
+from run-02's full resumable checkpoint (issue #58): the online and target
+network weights are preserved exactly, while the replay buffer is reset empty
+and the optimizer is reinitialized, since neither is required for evaluation.
+`agent_code/DagobertDuckDQN/artifact.json` records its checksum and lineage.
 
 ## Training
 
-A short integration run can be started with:
-
-```bash
-python -m training.run_experiment \
-  --agent DagobertDuckDQN \
-  --mode training \
-  --scenario coin-heaven \
-  --rounds 2 \
-  --world-seed 1001 \
-  --agent-seed 2001
-```
-
-Training uses no opponents in the current scope.
+Training is disabled. `setup_training` raises `RuntimeError` unconditionally;
+see `train.py`. Task 2 development must use a separately named successor.
 
 ## Evaluation
-
-After training has produced a checkpoint:
 
 ```bash
 python -m training.run_experiment \
@@ -382,22 +387,50 @@ decision time was `0.752 ms`, and maximum observed decision time was
 so its determinism gate remains unverified under the strengthened check from
 PR #59.
 
+Issue #58 then ported the tabular agent's movement-coin reward shaping
+verbatim, on the hypothesis that a dense directional signal would remove the
+run-to-run divergence that stopped #41 from freezing a candidate. It trained
+five more independent 10,000-episode models on world seeds `15001`--`15005`
+and evaluated them on the same development seeds. The result was negative:
+the primary criterion failed (aggregate invalid-action rate `0.1758`, maximum
+per-model `0.4617`, both above the `0.01` bar) and the registered paired
+non-inferiority comparison against #41 was inconclusive rather than
+supportive (mean difference `-0.018`, 95% CI `[-0.2471, +0.2414]` against a
+`-0.02` margin) -- the between-run variance is larger than any plausible
+effect of the shaping. `WAIT` selections fell from 6,505 to 2,676 and the
+worst per-model invalid rate fell from `0.61` to `0.46`, but full clears fell
+from 125 to 92: models that previously failed by waiting now fail by walking
+into walls instead. Training itself reached `0.989`--`1.000` mean collection
+fraction (epsilon `0.1` throughout), while deterministic greedy evaluation of
+the same five checkpoints gave only `0.65`--`0.92` -- forced exploration
+during training was masking a greedy action-selection failure, not a learning
+failure. Full configuration, evidence, figures, and the negative decision are
+in `experiments/2026-09-02-dqn-task1-movement-shaping/`; the record is in
+PR #66.
+
+Per the stopping rule registered in #58, no third Task 1 DQN tuning experiment
+was run. Instead, issue #42 registered a neutral, mechanical candidate-selection
+rule prospectively and applied it to #58's five models: `run-02`, the median
+performer by primary evaluation fraction (`0.8165`), which also happens to
+carry the cleanest invalid-action rate of the five (`0.000315`). That model is
+the `checkpoint.pt` committed in this directory. Selecting it does not mean it
+passed Task 1's own bar -- it did not -- only that it is the model this
+repository's process identifies as the Task 2 reference point.
+
 The frozen DQN-versus-tabular candidate comparison is tracked separately in
-issue #53. No tabular aggregate is embedded in this DQN-only result. Full
-configuration, reviewable observations, hashes, failures, figures, and the
-negative decision are in
-`experiments/2026-09-01-dqn-task1-development-baseline/`.
+issue #53.
 
 ## Known limitations and next steps
 
 - The eight-feature representation contains no pathfinding or global maze map.
-- Reward shaping is intentionally minimal.
-- Hyperparameters have not been tuned; run-to-run stability is inadequate.
-- The policy can repeatedly choose invalid moves because legal actions are not
-  masked; this caused the registered invalid-action criterion to fail.
+- Hyperparameters have not been tuned against the invalid-action and
+  reproducibility failures beyond the single shaping intervention in #58.
+- The frozen policy can repeatedly choose invalid moves under greedy
+  evaluation because legal actions are not masked; #58 traced this to a gap
+  between training's forced exploration and evaluation's pure-greedy policy,
+  not to insufficient learning.
 - The agent handles only visible-coin navigation.
-- No candidate should be frozen from issue #41.
 - Final submission compatibility must be repeated with the selected trained
   artifact in the course-provided environment.
-- The next experiment should prospectively test one controlled change aimed at
-  invalid actions and instability, such as legal-action masking.
+- Legal-action masking is deferred to Task 2, where a blocked move next to a
+  live bomb is fatal rather than merely wasteful.
