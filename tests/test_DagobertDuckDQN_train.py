@@ -78,6 +78,8 @@ def test_setup_training_initializes_episode_state() -> None:
 
     assert agent.episode_reward == 0.0
     assert agent.absolute_td_errors == []
+    assert agent.losses == []
+    assert agent.episode_target_synchronizations == 0
     assert agent.pending_transition is None
 
 
@@ -219,6 +221,11 @@ def test_end_of_round_updates_model_and_returns_metrics(
     assert metrics["shaped_reward"] == pytest.approx(10.0)
     assert metrics["epsilon"] == pytest.approx(DEFAULT_CONFIG.initial_epsilon)
     assert metrics["mean_abs_td_error"] is not None
+    assert metrics["mean_loss"] is not None
+    assert metrics["replay_size"] == 1
+    assert metrics["update_count"] == 1
+    assert metrics["target_synchronizations"] == 0
+    assert metrics["episode_target_synchronizations"] == 0
     assert agent.learner.update_steps == 1
     assert agent.completed_episodes == 1
     assert agent.epsilon == pytest.approx(
@@ -248,6 +255,8 @@ def test_episode_state_is_reset_after_round(
 
     assert agent.episode_reward == 0.0
     assert agent.absolute_td_errors == []
+    assert agent.losses == []
+    assert agent.episode_target_synchronizations == 0
     assert agent.pending_transition is None
 
 
@@ -284,3 +293,4 @@ def test_round_without_optimizer_update_reports_unavailable_td_error(
     )
 
     assert metrics["mean_abs_td_error"] is None
+    assert metrics["mean_loss"] is None

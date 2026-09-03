@@ -46,7 +46,12 @@ def make_episode_row(
         "shaped_reward": None,
         "epsilon": None,
         "q_table_size": None,
+        "replay_size": None,
+        "update_count": None,
+        "mean_loss": None,
         "mean_abs_td_error": None,
+        "target_synchronizations": None,
+        "episode_target_synchronizations": None,
     }
     row.update(overrides)
     return row
@@ -307,6 +312,10 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertIsNone(
             overall["learning_metrics"]["mean_abs_td_error"]
         )
+        # Zero is a valid measurement and must not stand in for missing data.
+        self.assertIsNone(
+            overall["learning_metrics"]["total_episode_target_synchronizations"]
+        )
 
     def test_aggregates_available_learning_metrics(self) -> None:
         rows = [
@@ -314,14 +323,24 @@ class ExperimentAggregationTests(unittest.TestCase):
                 shaped_reward=2.0,
                 epsilon=0.5,
                 q_table_size=10,
+                replay_size=100,
+                update_count=20,
+                mean_loss=0.8,
                 mean_abs_td_error=0.4,
+                target_synchronizations=1,
+                episode_target_synchronizations=1,
             ),
             make_episode_row(
                 round=2,
                 shaped_reward=4.0,
                 epsilon=0.3,
                 q_table_size=25,
+                replay_size=200,
+                update_count=40,
+                mean_loss=0.4,
                 mean_abs_td_error=0.2,
+                target_synchronizations=2,
+                episode_target_synchronizations=1,
             ),
         ]
 
@@ -331,9 +350,17 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertEqual(3.0, learning["mean_shaped_reward"])
         self.assertEqual(0.4, learning["mean_epsilon"])
         self.assertEqual(25, learning["maximum_q_table_size"])
+        self.assertEqual(200, learning["maximum_replay_size"])
+        self.assertEqual(40, learning["maximum_update_count"])
+        self.assertAlmostEqual(0.6, learning["mean_loss"])
         self.assertAlmostEqual(
             0.3,
             learning["mean_abs_td_error"],
+        )
+        self.assertEqual(2, learning["maximum_target_synchronizations"])
+        self.assertEqual(
+            2,
+            learning["total_episode_target_synchronizations"],
         )
 
     def test_coin_efficiency_uses_ratios_of_totals(self) -> None:

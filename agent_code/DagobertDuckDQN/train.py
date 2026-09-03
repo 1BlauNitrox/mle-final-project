@@ -30,6 +30,8 @@ def setup_training(self) -> None:
     """Initialize per-episode training diagnostics."""
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
+    self.losses: list[float] = []
+    self.episode_target_synchronizations = 0
     self.pending_transition: PendingTransition | None = None
 
     self.logger.info(
@@ -114,11 +116,22 @@ def end_of_round(
 
     completed_episode_epsilon = float(self.epsilon)
     mean_abs_td_error = float(fmean(self.absolute_td_errors)) if self.absolute_td_errors else None
+    mean_loss = float(fmean(self.losses)) if self.losses else None
 
     metrics: dict[str, float | None] = {
         "shaped_reward": float(self.episode_reward),
         "epsilon": completed_episode_epsilon,
+        "replay_size": len(self.replay_buffer),
+        "update_count": self.learner.update_steps,
+        "mean_loss": mean_loss,
         "mean_abs_td_error": mean_abs_td_error,
+        "target_synchronizations": (
+            self.learner.update_steps
+            // self.config.target_update_interval
+        ),
+        "episode_target_synchronizations": (
+            self.episode_target_synchronizations
+        ),
     }
 
     self.epsilon = max(
@@ -139,6 +152,8 @@ def end_of_round(
 
     self.episode_reward = 0.0
     self.absolute_td_errors = []
+    self.losses = []
+    self.episode_target_synchronizations = 0
     self.pending_transition = None
 
     return metrics
@@ -187,7 +202,10 @@ def _record_transition(
     batch = self.replay_buffer.sample(self.config.batch_size)
     result = self.learner.train_batch(batch)
 
+    self.losses.append(result.loss)
     self.absolute_td_errors.append(result.mean_abs_td_error)
+    if result.target_synchronized:
+        self.episode_target_synchronizations += 1
 
 
 def _transition_identity(
