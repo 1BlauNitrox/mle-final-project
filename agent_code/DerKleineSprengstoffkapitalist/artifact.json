@@ -1,0 +1,39 @@
+{
+    "manifest_schema_version": 1,
+    "status": "task2_successor_scaffold",
+    "agent": "DerKleineSprengstoffkapitalist",
+    "capability": "task1_behavior_only",
+    "artifact": {
+      "path": "model.npz",
+      "sha256": "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307",
+      "size_bytes": 6845
+    },
+    "model_contract": {
+      "model_schema_version": 2,
+      "feature_schema_version": 1,
+      "action_order": [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT"
+      ],
+      "forbidden_actions": [
+        "BOMB"
+      ]
+    },
+    "parent": {
+      "agent": "DerKleineVermoegensumverteiler",
+      "artifact_sha256": "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307",
+      "frozen_source_commit": "22c91de3c97998d5c70b0109befbdecef3d34e90",
+      "freeze_merge_commit": "04f9dab8f6d160984a036a4c846756a12d1a0fb5",
+      "producing_agent_commit": "0df4eb1b01d1dd6cef5c4111c42544468db1fc28",
+      "producing_experiment_commit": "5af393d4c2c5b46d04751b270f4d865aec41ccaf",
+      "framework_revision": "0f55c1d"
+    },
+    "policy": {
+      "task2_features_present": false,
+      "bomb_action_present": false,
+      "scientific_training_authorized": false
+    }
+  }
