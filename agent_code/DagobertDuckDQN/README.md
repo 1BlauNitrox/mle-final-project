@@ -1,8 +1,7 @@
 # DagobertDuckDQN
 
-> Status: DQN implementation for visible-coin navigation; unit, framework,
-> packaging, isolation, determinism, decision-time, and official-Docker smoke
-> checks pass. Scientific comparison remains pending.
+> Status: Task 1 development baseline evaluated in issue #41. The result is
+> mixed/negative and no candidate is frozen.
 
 ## Hypothesis
 
@@ -10,9 +9,8 @@ A small Deep Q-Network using the same eight input features, five actions, and
 initial reward mapping as the tabular Task 1 agent can learn visible-coin
 navigation in `coin-heaven`.
 
-This hypothesis has not yet been evaluated scientifically. The implementation
-tests establish correctness and reproducibility properties, not navigation
-performance.
+Issue #41 evaluated this hypothesis scientifically. Aggregate navigation met
+its threshold, but reproducibility and invalid-action thresholds failed.
 
 ## Scope
 
@@ -241,8 +239,14 @@ atomic replacement. A failed write leaves an existing checkpoint unchanged.
 Evaluation loads only a frozen online policy, disables gradients and
 exploration, and does not write the checkpoint.
 
-No candidate checkpoint is currently committed. A smoke-test checkpoint must
-not be treated as a trained artifact.
+Repository evaluation tooling may set `BOMBERMAN_EVALUATION_CHECKPOINT` to one
+file name. The agent resolves that name inside this directory; path components
+are rejected. This permits an ignored, temporary artifact copy during a
+registered evaluation without changing the default submission artifact
+`checkpoint.pt` or relying on an absolute path.
+
+No candidate checkpoint is committed. The five development artifacts remain in
+the ignored raw experiment store and must not be mistaken for a frozen model.
 
 ## Training
 
@@ -285,7 +289,11 @@ experiment pipeline:
 
 - cumulative shaped reward;
 - epsilon used during the completed episode; and
-- mean absolute TD error when at least one optimizer update occurred.
+- replay-buffer size;
+- cumulative optimizer-update count;
+- mean Huber loss and mean absolute TD error when at least one optimizer update
+  occurred; and
+- per-episode and cumulative target-network synchronization counts.
 
 An episode without an optimizer update reports the TD-error metric as
 unavailable rather than zero.
@@ -361,22 +369,34 @@ the selected trained artifact in the course-provided environment.
 
 ## Scientific evaluation
 
-No scientific performance evaluation has been performed, and this agent does
-not claim completion under `docs/0007-task-1-baseline-contract.md`, which is
-normative for the tabular baseline.
+Issue #41 trained five independent 10,000-episode models and evaluated each on
+development seeds `31001`--`31040`. The aggregate coin-collection fraction was
+`0.8334`, but only three models reached the individual `0.75` threshold.
+Aggregate invalid-action rate was `0.1642`, dominated by run 4 (`0.6085`). Run
+3 collected only `0.4830` of available coins on average and selected `WAIT`
+6,487 times. Across all models, `BOMB` was never selected. Repeated outcomes and
+action totals matched, artifacts stayed byte-identical, maximum model p95
+decision time was `0.752 ms`, and maximum observed decision time was
+`27.601 ms`. Ordered action sequences were not recorded in this original run,
+so its determinism gate remains unverified under the strengthened check from
+PR #59.
 
-A separate prospective experiment must define the DQN-versus-tabular
-hypothesis, equal compute budget, seed populations, metrics, and success
-criterion before performance training begins.
+The frozen DQN-versus-tabular candidate comparison is tracked separately in
+issue #53. No tabular aggregate is embedded in this DQN-only result. Full
+configuration, reviewable observations, hashes, failures, figures, and the
+negative decision are in
+`experiments/2026-09-01-dqn-task1-development-baseline/`.
 
 ## Known limitations and next steps
 
 - The eight-feature representation contains no pathfinding or global maze map.
 - Reward shaping is intentionally minimal.
-- Hyperparameters have not been tuned.
+- Hyperparameters have not been tuned; run-to-run stability is inadequate.
+- The policy can repeatedly choose invalid moves because legal actions are not
+  masked; this caused the registered invalid-action criterion to fail.
 - The agent handles only visible-coin navigation.
-- No candidate model artifact exists yet.
+- No candidate should be frozen from issue #41.
 - Final submission compatibility must be repeated with the selected trained
   artifact in the course-provided environment.
-- Scientific comparison with the tabular model requires a separate
-  preregistered experiment.
+- The next experiment should prospectively test one controlled change aimed at
+  invalid actions and instability, such as legal-action masking.

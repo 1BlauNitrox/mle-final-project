@@ -130,6 +130,39 @@ def test_evaluation_without_checkpoint_is_rejected(
         callbacks.setup(agent)
 
 
+def test_evaluation_checkpoint_override_stays_in_agent_directory(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    default_path = tmp_path / "checkpoint.pt"
+    staged_path = tmp_path / ".evaluation-checkpoint.pt"
+    create_checkpoint(staged_path)
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", default_path)
+    monkeypatch.setenv(
+        callbacks.EVALUATION_CHECKPOINT_ENV,
+        staged_path.name,
+    )
+    agent = make_agent(training=False)
+
+    callbacks.setup(agent)
+
+    assert not default_path.exists()
+    assert agent.completed_episodes == 3
+
+
+@pytest.mark.parametrize("file_name", ["", "../checkpoint.pt", "sub/checkpoint.pt"])
+def test_evaluation_checkpoint_override_rejects_non_file_name(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    file_name: str,
+) -> None:
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", tmp_path / "checkpoint.pt")
+    monkeypatch.setenv(callbacks.EVALUATION_CHECKPOINT_ENV, file_name)
+
+    with pytest.raises(ValueError, match="must contain one file name"):
+        callbacks._evaluation_checkpoint_path()
+
+
 def test_evaluation_loads_only_frozen_policy_state(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

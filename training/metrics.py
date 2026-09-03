@@ -25,6 +25,7 @@ CSV_COLUMNS = (
     "invalid_action_rate",
     "survived",
     "termination_reason",
+    "executed_action_sequence_sha256",
     "action_up",
     "action_right",
     "action_down",
@@ -38,7 +39,12 @@ CSV_COLUMNS = (
     "shaped_reward",
     "epsilon",
     "q_table_size",
+    "replay_size",
+    "update_count",
+    "mean_loss",
     "mean_abs_td_error",
+    "target_synchronizations",
+    "episode_target_synchronizations",
 )
 
 REQUIRED_AGENT_FIELDS = (
@@ -303,6 +309,14 @@ def _normalize_agent_episode(
             round_number=round_number,
             agent_name=agent_name,
         ),
+        # Optional so that statistics recorded before this field existed remain
+        # readable; an empty value means the sequence was not instrumented.
+        "executed_action_sequence_sha256": _optional_string(
+            statistics.get("executed_action_sequence_sha256"),
+            field="executed_action_sequence_sha256",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
         **action_counts,
         "action_unknown": unknown_actions,
         "decision_time_median_ms": _optional_number(
@@ -341,9 +355,39 @@ def _normalize_agent_episode(
             round_number=round_number,
             agent_name=agent_name,
         ),
+        "replay_size": _optional_non_negative_int(
+            learning_metrics.get("replay_size"),
+            field="replay_size",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "update_count": _optional_non_negative_int(
+            learning_metrics.get("update_count"),
+            field="update_count",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "mean_loss": _optional_number(
+            learning_metrics.get("mean_loss"),
+            field="mean_loss",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
         "mean_abs_td_error": _optional_number(
             learning_metrics.get("mean_abs_td_error"),
             field="mean_abs_td_error",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "target_synchronizations": _optional_non_negative_int(
+            learning_metrics.get("target_synchronizations"),
+            field="target_synchronizations",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "episode_target_synchronizations": _optional_non_negative_int(
+            learning_metrics.get("episode_target_synchronizations"),
+            field="episode_target_synchronizations",
             round_number=round_number,
             agent_name=agent_name,
         ),
@@ -482,6 +526,25 @@ def _boolean(
             expected="a boolean",
         )
     return value
+
+
+def _optional_string(
+    value: object,
+    *,
+    field: str,
+    round_number: int,
+    agent_name: str,
+) -> str | None:
+    "Validate an optional non-empty string field."
+    if value is None:
+        return None
+
+    return _string(
+        value,
+        field=field,
+        round_number=round_number,
+        agent_name=agent_name,
+    )
 
 
 def _string(
