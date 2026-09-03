@@ -354,11 +354,16 @@ class GenericWorld:
         if replay is None or agent_name not in replay.get("actions", {}):
             return None
 
-        # An agent may return None, which the framework counts as an
-        # unknown action rather than rejecting. Encode it explicitly so the
-        # digest stays order-sensitive instead of raising on a legal state.
+        # An agent's act() can return any value; agents.py (see
+        # wait_for_act) already tolerates this and buckets anything outside
+        # the six real actions into "action_unknown" rather than rejecting
+        # it. Mirror that same set here so every non-conforming return value
+        # normalizes to one distinguishable token instead of only None, and
+        # the digest never raises on a legal game state.
+        valid_actions = {"UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"}
         actions = [
-            "<none>" if action is None else action
+            action if isinstance(action, str) and action in valid_actions
+            else "<unknown>"
             for action in replay["actions"][agent_name]
         ]
         return hashlib.sha256("\n".join(actions).encode("utf-8")).hexdigest()
