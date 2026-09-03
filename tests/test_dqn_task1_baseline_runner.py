@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -82,7 +83,10 @@ def test_series_runs_serially_and_moves_each_final_checkpoint(
 
     source_hash = "a" * 64
     monkeypatch.setattr(baseline, "CHECKPOINT_PATH", checkpoint_path)
-    monkeypatch.setattr(baseline, "EXPECTED_AGENT_SOURCE_SHA256", source_hash)
+    profile = replace(
+        baseline.DEFAULT_PROFILE,
+        expected_agent_source_sha256=source_hash,
+    )
     monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
     monkeypatch.setattr(baseline, "_git_commit", lambda: "b" * 40)
     monkeypatch.setattr(
@@ -97,7 +101,7 @@ def test_series_runs_serially_and_moves_each_final_checkpoint(
     monkeypatch.setattr(baseline, "run_experiment", fake_run_experiment)
     monkeypatch.setattr(baseline, "plot_run", lambda _path: [])
 
-    series_directory = baseline.run_registered_series(output_root)
+    series_directory = baseline.run_registered_series(output_root, profile)
     manifest = json.loads(
         (series_directory / "series.json").read_text(encoding="utf-8")
     )
@@ -141,7 +145,10 @@ def test_failed_run_is_retained_and_later_runs_continue(
 
     source_hash = "c" * 64
     monkeypatch.setattr(baseline, "CHECKPOINT_PATH", checkpoint_path)
-    monkeypatch.setattr(baseline, "EXPECTED_AGENT_SOURCE_SHA256", source_hash)
+    profile = replace(
+        baseline.DEFAULT_PROFILE,
+        expected_agent_source_sha256=source_hash,
+    )
     monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
     monkeypatch.setattr(baseline, "_git_commit", lambda: "d" * 40)
     monkeypatch.setattr(
@@ -157,7 +164,7 @@ def test_failed_run_is_retained_and_later_runs_continue(
     monkeypatch.setattr(baseline, "plot_run", lambda _path: [])
 
     with pytest.raises(RuntimeError, match="1 of 5 training runs failed"):
-        baseline.run_registered_series(output_root)
+        baseline.run_registered_series(output_root, profile)
 
     series_directory = next(output_root.iterdir())
     manifest = json.loads(
@@ -168,3 +175,115 @@ def test_failed_run_is_retained_and_later_runs_continue(
     assert failed["status"] == "failed"
     assert "interrupted" in failed["error"]
     assert failed["artifact"]["path"].endswith("failed-checkpoint.pt")
+
+
+def _series_with_failed_run(tmp_path: Path, source_hash: str) -> Path:
+    """Build a series directory whose run 5 failed, as issue #58 produced."""
+    series = tmp_path / "series"
+    (series / "runs").mkdir(parents=True)
+    (series / "artifacts").mkdir(parents=True)
+    runs = []
+    for run in baseline.PROFILES[58].registered_runs:
+        record = {
+            "run": run.run,
+            "world_seed": run.world_seed,
+            "agent_seed": run.agent_seed,
+            "status": "completed" if run.run < 5 else "failed",
+            "run_directory": None,
+            "artifact": None,
+            "error": None if run.run < 5 else "RuntimeError: boom",
+        }
+        runs.append(record)
+    (series / "series.json").write_text(
+        json.dumps(
+            {
+                "issue": 58,
+                "status": "failed",
+                "agent_configuration": {"sha256": source_hash},
+                "runs": runs,
+            }
+        ),
+        encoding="utf-8",
+    )
+    return series
+
+
+def test_retry_refuses_when_agent_source_changed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A retry must use the same agent code as the completed runs."""
+    series = _series_with_failed_run(tmp_path, "a" * 64)
+    monkeypatch.setattr(baseline, "CHECKPOINT_PATH", tmp_path / "absent.pt")
+    monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
+    monkeypatch.setattr(
+        baseline,
+        "_agent_configuration_reference",
+        lambda _agent: {"sha256": "b" * 64},
+    )
+
+    with pytest.raises(RuntimeError, match="Agent source differs"):
+        baseline.retry_failed_run(series, 5, baseline.PROFILES[58])
+
+
+def test_retry_refuses_to_overwrite_a_completed_run(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    series = _series_with_failed_run(tmp_path, "a" * 64)
+    monkeypatch.setattr(baseline, "CHECKPOINT_PATH", tmp_path / "absent.pt")
+    monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
+
+    with pytest.raises(ValueError, match="already completed"):
+        baseline.retry_failed_run(series, 1, baseline.PROFILES[58])
+
+
+def test_retry_rejects_a_series_from_another_issue(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    series = _series_with_failed_run(tmp_path, "a" * 64)
+    monkeypatch.setattr(baseline, "CHECKPOINT_PATH", tmp_path / "absent.pt")
+
+    with pytest.raises(ValueError, match="belongs to issue 58"):
+        baseline.retry_failed_run(series, 5, baseline.PROFILES[41])
+
+
+def test_retry_reruns_only_the_failed_run_and_completes_the_series(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    source_hash = "a" * 64
+    series = _series_with_failed_run(tmp_path, source_hash)
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    calls: list[tuple[int, int]] = []
+
+    def fake_run_experiment(**kwargs):
+        calls.append((kwargs["world_seed"], kwargs["agent_seed"]))
+        run_directory = Path(kwargs["output_root"]) / "retry"
+        run_directory.mkdir(parents=True)
+        checkpoint_path.write_bytes(b"retried-model")
+        return run_directory
+
+    monkeypatch.setattr(baseline, "CHECKPOINT_PATH", checkpoint_path)
+    monkeypatch.setattr(baseline, "_git_is_dirty", lambda: False)
+    monkeypatch.setattr(
+        baseline,
+        "_agent_configuration_reference",
+        lambda _agent: {"sha256": source_hash},
+    )
+    monkeypatch.setattr(baseline, "run_experiment", fake_run_experiment)
+    monkeypatch.setattr(baseline, "plot_run", lambda _path: [])
+
+    baseline.retry_failed_run(series, 5, baseline.PROFILES[58])
+
+    # Only run 5's registered seeds are replayed; runs 1-4 are untouched.
+    assert calls == [(15005, 25005)]
+
+    manifest = json.loads((series / "series.json").read_text(encoding="utf-8"))
+    assert manifest["status"] == "completed"
+    run_five = next(r for r in manifest["runs"] if r["run"] == 5)
+    assert run_five["status"] == "completed"
+    assert run_five["attempts"] == 2
+    assert run_five["error"] is None
+    assert (series / "artifacts" / "run-05-final-checkpoint.pt").is_file()

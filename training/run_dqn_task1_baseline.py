@@ -39,35 +39,81 @@ DEFAULT_SERIES_ROOT = DEFAULT_OUTPUT_ROOT / "issue-41-dqn-task1-baseline"
 
 @dataclass(frozen=True)
 class RegisteredRun:
-    """One immutable training seed pair from Issue #41."""
+    """One immutable training seed pair from a registered experiment."""
 
     run: int
     world_seed: int
     agent_seed: int
 
 
-REGISTERED_RUNS = tuple(
-    RegisteredRun(
-        run=index,
-        world_seed=12_000 + index,
-        agent_seed=22_000 + index,
-    )
-    for index in range(1, 6)
-)
+@dataclass(frozen=True)
+class ExperimentProfile:
+    """The preregistered identity of one five-run training series.
+
+    The source fingerprint is part of the registration: a series must refuse to
+    start if the agent code no longer matches what its experiment record
+    describes.
+    """
+
+    issue: int
+    world_seed_base: int
+    agent_seed_base: int
+    expected_agent_source_sha256: str
+    series_directory_name: str
+
+    @property
+    def registered_runs(self) -> tuple[RegisteredRun, ...]:
+        return tuple(
+            RegisteredRun(
+                run=index,
+                world_seed=self.world_seed_base + index,
+                agent_seed=self.agent_seed_base + index,
+            )
+            for index in range(1, 6)
+        )
 
 
-def run_registered_series(output_root: Path) -> Path:
+PROFILES: dict[int, ExperimentProfile] = {
+    41: ExperimentProfile(
+        issue=41,
+        world_seed_base=12_000,
+        agent_seed_base=22_000,
+        expected_agent_source_sha256=(
+            "56938f004403b056aef6df07079e0f6d94f0e0c7093ae693a3cad5c131e2da4e"
+        ),
+        series_directory_name="issue-41-dqn-task1-baseline",
+    ),
+    58: ExperimentProfile(
+        issue=58,
+        world_seed_base=15_000,
+        agent_seed_base=25_000,
+        expected_agent_source_sha256=(
+            "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
+        ),
+        series_directory_name="issue-58-dqn-task1-movement-shaping",
+    ),
+}
+
+DEFAULT_PROFILE = PROFILES[41]
+REGISTERED_RUNS = DEFAULT_PROFILE.registered_runs
+
+
+def run_registered_series(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> Path:
     """Train all registered models and preserve every final checkpoint."""
-    source_reference = _preflight(output_root)
+    source_reference = _preflight(output_root, profile)
     series_directory = _create_series_directory(output_root)
     runs_directory = series_directory / "runs"
     artifacts_directory = series_directory / "artifacts"
     runs_directory.mkdir()
     artifacts_directory.mkdir()
 
+    registered_runs = profile.registered_runs
     manifest_path = series_directory / "series.json"
     manifest: dict[str, Any] = {
-        "issue": ISSUE_NUMBER,
+        "issue": profile.issue,
         "status": "running",
         "agent": AGENT,
         "scenario": SCENARIO,
@@ -80,12 +126,12 @@ def run_registered_series(output_root: Path) -> Path:
         "started_at": _utc_now(),
         "finished_at": None,
         "runtime": _runtime_metadata(),
-        "registered_runs": [asdict(run) for run in REGISTERED_RUNS],
+        "registered_runs": [asdict(run) for run in registered_runs],
         "runs": [],
     }
     _write_json(manifest_path, manifest)
 
-    for registered_run in REGISTERED_RUNS:
+    for registered_run in registered_runs:
         run_record: dict[str, Any] = {
             **asdict(registered_run),
             "status": "running",
@@ -165,7 +211,10 @@ def run_registered_series(output_root: Path) -> Path:
     return series_directory
 
 
-def _preflight(output_root: Path) -> dict[str, str | None]:
+def _preflight(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> dict[str, str | None]:
     """Reject state that could resume, overwrite, or contaminate a run."""
     if _git_is_dirty():
         raise RuntimeError(
@@ -179,13 +228,13 @@ def _preflight(output_root: Path) -> dict[str, str | None]:
 
     source_reference = _agent_configuration_reference(AGENT)
     source_hash = source_reference["sha256"]
-    if source_hash != EXPECTED_AGENT_SOURCE_SHA256:
+    if source_hash != profile.expected_agent_source_sha256:
         raise RuntimeError(
-            "Agent source fingerprint differs from the preregistered value: "
-            f"{source_hash}"
+            f"Agent source fingerprint differs from the value preregistered "
+            f"for issue #{profile.issue}: {source_hash}"
         )
 
-    collisions = _find_seed_collisions(output_root)
+    collisions = _find_seed_collisions(output_root, profile)
     if collisions:
         rendered = ", ".join(str(path) for path in collisions)
         raise RuntimeError(
@@ -196,10 +245,14 @@ def _preflight(output_root: Path) -> dict[str, str | None]:
     return source_reference
 
 
-def _find_seed_collisions(output_root: Path) -> list[Path]:
+def _find_seed_collisions(
+    output_root: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> list[Path]:
     """Find prior runner metadata using a registered world or agent seed."""
-    registered_world_seeds = {run.world_seed for run in REGISTERED_RUNS}
-    registered_agent_seeds = {run.agent_seed for run in REGISTERED_RUNS}
+    registered_runs = profile.registered_runs
+    registered_world_seeds = {run.world_seed for run in registered_runs}
+    registered_agent_seeds = {run.agent_seed for run in registered_runs}
     search_root = output_root.resolve().parent
     collisions: list[Path] = []
 
@@ -285,21 +338,188 @@ def _write_json(path: Path, data: dict[str, Any]) -> None:
     )
 
 
+def retry_failed_run(
+    series_directory: Path,
+    run_number: int,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> Path:
+    """Repeat one failed run of an existing series with unchanged agent source.
+
+    Follows the issue #41 precedent that a retry uses the same agent code as the
+    runs that already succeeded, so the trained models stay comparable. The
+    recorded fingerprint is therefore verified against the working tree rather
+    than recomputed, and the failed attempt's checkpoint is preserved beside the
+    retry instead of being replaced.
+    """
+    series_directory = series_directory.resolve()
+    manifest_path = series_directory / "series.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    if manifest.get("issue") != profile.issue:
+        raise ValueError(
+            f"Series belongs to issue {manifest.get('issue')}, "
+            f"not {profile.issue}"
+        )
+
+    matching = [
+        record for record in manifest["runs"] if record["run"] == run_number
+    ]
+    if len(matching) != 1:
+        raise ValueError(f"Series has no unique record for run {run_number}")
+
+    run_record = matching[0]
+    if run_record["status"] == "completed":
+        raise ValueError(
+            f"Run {run_number} already completed; refusing to overwrite it"
+        )
+
+    if _git_is_dirty():
+        raise RuntimeError(
+            "Scientific training requires a clean committed worktree."
+        )
+    if CHECKPOINT_PATH.exists():
+        raise FileExistsError(
+            f"Refusing to resume or overwrite existing checkpoint: "
+            f"{CHECKPOINT_PATH}"
+        )
+
+    recorded_hash = manifest["agent_configuration"]["sha256"]
+    current_hash = _agent_configuration_reference(AGENT)["sha256"]
+    if current_hash != recorded_hash:
+        raise RuntimeError(
+            "Agent source differs from the source that produced the completed "
+            f"runs of this series: recorded {recorded_hash}, current "
+            f"{current_hash}. A retry must not change the agent."
+        )
+
+    registered_run = {
+        run.run: run for run in profile.registered_runs
+    }[run_number]
+    runs_directory = series_directory / "runs"
+    artifacts_directory = series_directory / "artifacts"
+
+    attempt = int(run_record.get("attempts", 1)) + 1
+    run_record["attempts"] = attempt
+    run_record["status"] = "running"
+    run_record["error"] = None
+    manifest["status"] = "running"
+    manifest["finished_at"] = None
+    _write_json(manifest_path, manifest)
+
+    try:
+        run_directory = run_experiment(
+            agent=AGENT,
+            mode="training",
+            scenario=SCENARIO,
+            rounds=EPISODES_PER_RUN,
+            world_seed=registered_run.world_seed,
+            agent_seed=registered_run.agent_seed,
+            opponents=[],
+            output_root=runs_directory,
+        )
+        run_record["run_directory"] = _relative_to_series(
+            run_directory,
+            series_directory,
+        )
+        if not CHECKPOINT_PATH.is_file():
+            raise FileNotFoundError(
+                "Training completed without producing checkpoint.pt"
+            )
+
+        artifact_path = artifacts_directory / (
+            f"run-{run_number:02d}-final-checkpoint.pt"
+        )
+        shutil.move(CHECKPOINT_PATH, artifact_path)
+        run_record["artifact"] = _artifact_record(
+            artifact_path,
+            series_directory,
+        )
+        plot_run(run_directory)
+        run_record["status"] = "completed"
+    except Exception as error:
+        run_record["status"] = "failed"
+        run_record["error"] = f"{type(error).__name__}: {error}"
+        if CHECKPOINT_PATH.is_file():
+            failed_path = artifacts_directory / (
+                f"run-{run_number:02d}-failed-checkpoint-attempt-"
+                f"{attempt}.pt"
+            )
+            shutil.move(CHECKPOINT_PATH, failed_path)
+            run_record["failed_artifact"] = _artifact_record(
+                failed_path,
+                series_directory,
+            )
+        raise
+    finally:
+        failures = [
+            record
+            for record in manifest["runs"]
+            if record["status"] != "completed"
+        ]
+        manifest["status"] = "failed" if failures else "completed"
+        manifest["finished_at"] = _utc_now()
+        _write_json(manifest_path, manifest)
+
+    return series_directory
+
+
 def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
+        "--issue",
+        type=int,
+        default=DEFAULT_PROFILE.issue,
+        choices=sorted(PROFILES),
+        help="Preregistered experiment profile to run",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
-        default=DEFAULT_SERIES_ROOT,
-        help="Root for the ignored series directory and model artifacts",
+        default=None,
+        help=(
+            "Root for the ignored series directory and model artifacts. "
+            "Defaults to the selected profile's series directory."
+        ),
+    )
+    parser.add_argument(
+        "--retry-run",
+        type=int,
+        metavar="N",
+        help=(
+            "Repeat only run N of an existing series instead of starting a new "
+            "one. Requires --series and unchanged agent source."
+        ),
+    )
+    parser.add_argument(
+        "--series",
+        type=Path,
+        help="Existing series directory to retry a run in",
     )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
+    profile = PROFILES[arguments.issue]
+    output_root = arguments.output_root or (
+        DEFAULT_OUTPUT_ROOT / profile.series_directory_name
+    )
+    if (arguments.retry_run is None) != (arguments.series is None):
+        print(
+            "--retry-run and --series must be used together",
+            file=sys.stderr,
+        )
+        return 2
+
     try:
-        series_directory = run_registered_series(arguments.output_root)
+        if arguments.retry_run is not None:
+            series_directory = retry_failed_run(
+                arguments.series,
+                arguments.retry_run,
+                profile,
+            )
+        else:
+            series_directory = run_registered_series(output_root, profile)
     except Exception as error:
         print(f"Training series failed: {error}", file=sys.stderr)
         return 1

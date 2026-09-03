@@ -71,6 +71,100 @@ def make_game_state(
     }
 
 
+def test_moving_closer_to_a_coin_emits_the_towards_event() -> None:
+    # The only coin sits at (5, 3); moving from x=3 to x=4 closes the distance.
+    event = training._coin_movement_event(
+        make_game_state(step=1, position=(3, 3)),
+        make_game_state(step=2, position=(4, 3)),
+        "RIGHT",
+    )
+
+    assert event == "MOVED_TOWARDS_COIN"
+
+
+def test_moving_away_from_a_coin_emits_the_away_event() -> None:
+    event = training._coin_movement_event(
+        make_game_state(step=1, position=(3, 3)),
+        make_game_state(step=2, position=(2, 3)),
+        "LEFT",
+    )
+
+    assert event == "MOVED_AWAY_FROM_COIN"
+
+
+def test_unchanged_distance_emits_no_movement_event() -> None:
+    # With a single coin the distance always changes by one, so an unchanged
+    # minimum needs two coins that swap which one is nearest.
+    old_state = make_game_state(step=1, position=(3, 3))
+    new_state = make_game_state(step=2, position=(3, 4))
+    old_state["coins"] = [(5, 3), (5, 4)]
+    new_state["coins"] = [(5, 3), (5, 4)]
+
+    assert training._coin_movement_event(old_state, new_state, "DOWN") is None
+
+
+@pytest.mark.parametrize("action", ["WAIT", "BOMB"])
+def test_non_movement_actions_emit_no_movement_event(action: str) -> None:
+    event = training._coin_movement_event(
+        make_game_state(step=1, position=(3, 3)),
+        make_game_state(step=2, position=(4, 3)),
+        action,
+    )
+
+    assert event is None
+
+
+def test_no_visible_coin_emits_no_movement_event() -> None:
+    old_state = make_game_state(step=1, position=(3, 3))
+    new_state = make_game_state(step=2, position=(4, 3))
+    old_state["coins"] = []
+    new_state["coins"] = []
+
+    assert training._coin_movement_event(old_state, new_state, "RIGHT") is None
+
+
+def test_shaping_matches_the_tabular_agent_exactly() -> None:
+    """#53 compares the two families, so their shaping must be identical.
+
+    Activates once PR #37 lands the tabular shaping; until then the tabular
+    agent has no shaping to compare against.
+    """
+    from agent_code.DerKleineVermoegensumverteiler import train as tabular
+
+    if not hasattr(tabular, "_coin_movement_event"):
+        pytest.skip("tabular shaping arrives with PR #37")
+
+    old_state = make_game_state(step=1, position=(3, 3))
+
+    for action, new_position in (
+        ("RIGHT", (4, 3)),
+        ("LEFT", (2, 3)),
+        ("DOWN", (3, 4)),
+        ("WAIT", (3, 3)),
+    ):
+        new_state = make_game_state(step=2, position=new_position)
+        assert training._coin_movement_event(
+            old_state, new_state, action
+        ) == tabular._coin_movement_event(old_state, new_state, action)
+
+
+def test_shaping_reward_is_added_to_the_pending_transition() -> None:
+    agent = make_agent()
+    training.setup_training(agent)
+
+    training.game_events_occurred(
+        agent,
+        make_game_state(step=1, position=(3, 3)),
+        "RIGHT",
+        make_game_state(step=2, position=(4, 3)),
+        [],
+    )
+
+    # No framework events, so the reward is the shaping term alone.
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.reward == pytest.approx(0.1)
+
+
 def test_setup_training_initializes_episode_state() -> None:
     agent = make_agent()
 

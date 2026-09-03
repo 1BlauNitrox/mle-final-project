@@ -1,0 +1,67 @@
+{
+  "criteria": {
+    "aggregate_fraction": {
+      "passed": true,
+      "threshold": ">= 0.80",
+      "value": 0.8153999999999999
+    },
+    "bomb_actions": {
+      "passed": true,
+      "threshold": "= 0",
+      "value": 0
+    },
+    "deterministic": {
+      "passed": true,
+      "value": true
+    },
+    "immutable": {
+      "passed": true,
+      "value": true
+    },
+    "individual_models": {
+      "passed": true,
+      "threshold": ">= 4 models at >= 0.75",
+      "value": 4
+    },
+    "invalid_actions": {
+      "passed": false,
+      "threshold": "< 0.01",
+      "value_aggregate": 0.1758040205567763,
+      "value_maximum_model": 0.46168336330165255
+    },
+    "latency": {
+      "passed": true,
+      "threshold": "p95 < 50 ms and max < 100 ms",
+      "value_max_ms": 68.99023056030273,
+      "value_p95_ms": 0.46374797821044933
+    },
+    "paired_non_inferiority": {
+      "ci95": [
+        -0.24710000000000001,
+        0.24140249999999996
+      ],
+      "passed": false,
+      "resampler_seed": 58,
+      "resamples": 10000,
+      "threshold": "95% CI lower bound > -0.02",
+      "value": -0.018
+    }
+  },
+  "evaluation_commits": [
+    "8f6fc1dc6761f535d49afeb6764c1ff95e48efad"
+  ],
+  "evaluation_duration_seconds_primary": 927.3878141999885,
+  "evaluation_manifest_sha256": "dfa5973df82ef5a351a6cfa9c86ffd16aa34740d1c34b888ca91b801b4422b85",
+  "evaluation_repeat_episodes": 200,
+  "paired_comparison": {
+    "ci_lower": -0.24710000000000001,
+    "ci_upper": 0.24140249999999996,
+    "mean_difference": -0.018,
+    "paired_models": 5,
+    "paired_seeds_per_model": 40,
+    "resampler_seed": 58,
+    "resamples": 10000
+  },
+  "schema_version": 1,
+  "series_directory": "20260902T213535561904Z"
+}

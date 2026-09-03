@@ -23,6 +23,11 @@ REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
     "WAITED": -0.1,
+    # Custom shaping events emitted by train.py, matching the definition and
+    # magnitudes validated on the tabular agent. Not potential-based, so policy
+    # invariance is not guaranteed; see the issue #58 experiment record.
+    "MOVED_TOWARDS_COIN": 0.1,
+    "MOVED_AWAY_FROM_COIN": -0.1,
 }
 
 @dataclass(frozen=True)

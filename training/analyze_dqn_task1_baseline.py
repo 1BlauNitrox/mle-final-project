@@ -19,11 +19,27 @@ import matplotlib.pyplot as plt  # noqa: E402
 from training.aggregate import read_episodes_csv
 from training.evaluate_dqn_task1_baseline import (
     AGENT,
+    DEFAULT_PROFILE,
     DEVELOPMENT_SEEDS,
     MODELS,
+    PROFILES,
+    ExperimentProfile,
+    models_for,
 )
+from training.paired_bootstrap import (
+    BOOTSTRAP_RESAMPLES,
+    paired_bootstrap,
+    read_primary_fractions,
+)
+from training.run_experiment import REPOSITORY_ROOT
 
 COIN_HEAVEN_INITIAL_COINS = 50
+# Registered in the issue #58 experiment record before evaluation ran.
+PAIRED_BASELINE_EVIDENCE = Path(
+    "experiments/2026-09-01-dqn-task1-development-baseline/evidence/evaluation-episodes.csv"
+)
+PAIRED_RESAMPLER_SEED = 58
+PAIRED_NON_INFERIORITY_MARGIN = -0.02
 ROLLING_WINDOW = 250
 SUMMARY_FIELDS = (
     "model",
@@ -58,8 +74,13 @@ SUMMARY_FIELDS = (
 )
 
 
-def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any]:
+def analyze(
+    series_directory: Path,
+    experiment_directory: Path,
+    profile: ExperimentProfile = DEFAULT_PROFILE,
+) -> dict[str, Any]:
     """Analyze retained outputs and write compact tables and figures."""
+    models = models_for(profile)
     series_directory = series_directory.resolve()
     experiment_directory = experiment_directory.resolve()
     figures_directory = experiment_directory / "figures"
@@ -69,12 +90,13 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     if manifest.get("status") != "completed":
         raise ValueError("Evaluation manifest is not completed")
 
-    training_runs = _completed_training_runs(series_directory)
+    training_runs = _completed_training_runs(series_directory, models)
     model_summaries: list[dict[str, Any]] = []
+    fractions_by_model: dict[str, dict[int, float]] = {}
     evaluation_commits: set[str] = set()
     evaluation_duration_seconds = 0.0
 
-    for model in MODELS:
+    for model in models:
         model_name = f"run-{model.run:02d}"
         training = training_runs[model.agent_seed]
         rows: list[dict[str, Any]] = []
@@ -94,6 +116,9 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
             available = statistics["initially_available_coins"]
             row["initially_available_coins"] = available
             rows.append(row)
+            fractions_by_model.setdefault(model_name, {})[seed] = (
+                row["coins_collected"] / available
+            )
             decision_times.extend(statistics["decision_times_ms"])
 
             metadata = _read_json(run_directory / "metadata.json")
@@ -120,9 +145,10 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
     )
     _plot_evaluation(model_summaries, figures_directory)
     _plot_failures(model_summaries, figures_directory)
-    _plot_learning_curves(training_runs, figures_directory)
+    _plot_learning_curves(training_runs, figures_directory, models)
 
-    criteria = _evaluate_criteria(model_summaries, aggregate, manifest)
+    paired = _paired_against_baseline(fractions_by_model)
+    criteria = _evaluate_criteria(model_summaries, aggregate, manifest, paired)
     result = {
         "schema_version": 1,
         "series_directory": series_directory.name,
@@ -131,21 +157,25 @@ def analyze(series_directory: Path, experiment_directory: Path) -> dict[str, Any
         ),
         "evaluation_commits": sorted(evaluation_commits),
         "evaluation_duration_seconds_primary": evaluation_duration_seconds,
-        "evaluation_repeat_episodes": _completed_repeat_episodes(manifest),
+        "evaluation_repeat_episodes": _completed_repeat_episodes(manifest, models),
         "criteria": criteria,
+        "paired_comparison": paired,
     }
     _write_json(experiment_directory / "result.json", result)
     return result
 
 
-def _completed_repeat_episodes(manifest: dict[str, Any]) -> int:
+def _completed_repeat_episodes(
+    manifest: dict[str, Any],
+    models: tuple[Any, ...] = MODELS,
+) -> int:
     """Count completed determinism-repeat jobs recorded in the manifest."""
     completed = sum(
         1
         for job in manifest["jobs"].values()
         if job.get("pass") == "repeat" and job.get("status") == "completed"
     )
-    expected = len(MODELS) * len(DEVELOPMENT_SEEDS)
+    expected = len(models) * len(DEVELOPMENT_SEEDS)
     if completed != expected:
         raise ValueError(
             f"Expected {expected} completed repeat evaluations, found {completed}"
@@ -291,10 +321,49 @@ def _aggregate_summaries(summaries: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _paired_criterion(paired: dict[str, Any] | None) -> dict[str, Any]:
+    """Score the registered non-inferiority margin against the paired interval."""
+    threshold = f"95% CI lower bound > {PAIRED_NON_INFERIORITY_MARGIN}"
+
+    if paired is None:
+        return {
+            "value": None,
+            "threshold": threshold,
+            "passed": None,
+            "reason": "baseline per-seed evidence unavailable",
+        }
+
+    return {
+        "value": paired["mean_difference"],
+        "ci95": [paired["ci_lower"], paired["ci_upper"]],
+        "threshold": threshold,
+        "passed": paired["ci_lower"] > PAIRED_NON_INFERIORITY_MARGIN,
+        "resamples": paired["resamples"],
+        "resampler_seed": paired["resampler_seed"],
+    }
+
+
+def _paired_against_baseline(
+    fractions_by_model: dict[str, dict[int, float]],
+) -> dict[str, Any] | None:
+    """Compare this series with the registered baseline when it is available."""
+    baseline_path = REPOSITORY_ROOT / PAIRED_BASELINE_EVIDENCE
+    if not baseline_path.is_file():
+        return None
+
+    return paired_bootstrap(
+        fractions_by_model,
+        read_primary_fractions(baseline_path),
+        resampler_seed=PAIRED_RESAMPLER_SEED,
+        resamples=BOOTSTRAP_RESAMPLES,
+    ).as_dict()
+
+
 def _evaluate_criteria(
     summaries: list[dict[str, Any]],
     aggregate: dict[str, Any],
     manifest: dict[str, Any],
+    paired: dict[str, Any] | None = None,
 ) -> dict[str, dict[str, Any]]:
     models_above_threshold = sum(
         row["mean_collection_fraction"] >= 0.75 for row in summaries
@@ -313,12 +382,7 @@ def _evaluate_criteria(
             "threshold": ">= 4 models at >= 0.75",
             "passed": models_above_threshold >= 4,
         },
-        "paired_non_inferiority": {
-            "value": None,
-            "threshold": "95% CI lower bound > -0.02",
-            "passed": None,
-            "reason": "tabular per-seed rows and original artifacts unavailable",
-        },
+        "paired_non_inferiority": _paired_criterion(paired),
         "invalid_actions": {
             "value_aggregate": aggregate["invalid_action_rate"],
             "value_maximum_model": maximum_model_invalid,
@@ -343,7 +407,10 @@ def _evaluate_criteria(
     }
 
 
-def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]]:
+def _completed_training_runs(
+    series_directory: Path,
+    models: tuple[Any, ...] = MODELS,
+) -> dict[int, dict[str, Any]]:
     records: dict[int, dict[str, Any]] = {}
     for metadata_path in sorted(series_directory.glob("**/metadata.json")):
         if "evaluations" in metadata_path.parts:
@@ -356,7 +423,7 @@ def _completed_training_runs(series_directory: Path) -> dict[int, dict[str, Any]
         ):
             metadata["directory"] = metadata_path.parent
             records[metadata["agent_seed"]] = metadata
-    expected = {model.agent_seed for model in MODELS}
+    expected = {model.agent_seed for model in models}
     if set(records) != expected:
         raise ValueError(f"Completed training seeds differ: {sorted(records)}")
     return records
@@ -413,11 +480,13 @@ def _plot_failures(
 
 
 def _plot_learning_curves(
-    training_runs: dict[int, dict[str, Any]], figures_directory: Path
+    training_runs: dict[int, dict[str, Any]],
+    figures_directory: Path,
+    models: tuple[Any, ...] = MODELS,
 ) -> None:
     figure, axis = plt.subplots(figsize=(9, 5))
     kernel = np.ones(ROLLING_WINDOW) / ROLLING_WINDOW
-    for model in MODELS:
+    for model in models:
         metadata = training_runs[model.agent_seed]
         rows = read_episodes_csv(metadata["directory"] / "episodes.csv")
         coins = np.asarray(
@@ -444,8 +513,21 @@ def _plot_learning_curves(
 def _write_summary_csv(path: Path, rows: Iterable[dict[str, Any]]) -> None:
     # total_steps is an aggregation input rather than a reported metric, so it is
     # carried on the summary rows but excluded from the committed CSV schema.
+    #
+    # lineterminator is pinned to "\n": csv's default is "\r\n", and
+    # verify_evidence regenerates this file and compares it byte-for-byte
+    # against the committed copy. Git normalizes committed text to LF, so an
+    # unpinned CRLF writer only happens to match on a machine whose local
+    # checkout round-trips back to CRLF; it silently mismatches everywhere
+    # else (e.g. the Linux CI runner, or a teammate with a different
+    # core.autocrlf setting).
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=SUMMARY_FIELDS, extrasaction="ignore")
+        writer = csv.DictWriter(
+            file,
+            fieldnames=SUMMARY_FIELDS,
+            extrasaction="ignore",
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -455,9 +537,14 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
+    # newline="" disables write_text's platform-newline translation, which
+    # otherwise turns every "\n" from json.dumps into "\r\n" on Windows. Same
+    # reproducibility hazard as the CSV writer above: result.json is
+    # regenerated and byte-compared by verify_evidence.
     path.write_text(
         json.dumps(value, allow_nan=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="",
     )
 
 
@@ -471,12 +558,23 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("series_directory", type=Path)
     parser.add_argument("experiment_directory", type=Path)
+    parser.add_argument(
+        "--issue",
+        type=int,
+        default=DEFAULT_PROFILE.issue,
+        choices=sorted(PROFILES),
+        help="Preregistered experiment profile the series belongs to",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
-    analyze(arguments.series_directory, arguments.experiment_directory)
+    analyze(
+        arguments.series_directory,
+        arguments.experiment_directory,
+        PROFILES[arguments.issue],
+    )
     return 0
 
 

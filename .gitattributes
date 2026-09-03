@@ -6,5 +6,12 @@
 *.txt text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
+# Committed experiment evidence (summary.csv, result.json, manifest.json,
+# per-episode CSVs) is regenerated and byte-compared by
+# training.dqn_task1_evidence.verify_evidence. Without a forced checkout
+# encoding, core.autocrlf=true silently reintroduces CRLF and breaks that
+# comparison on Windows regardless of how the writer encodes the file.
+*.csv text eol=lf
+*.json text eol=lf
 *.png binary
 *.ttf binary
