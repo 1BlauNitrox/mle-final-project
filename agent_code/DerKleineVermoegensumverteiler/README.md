@@ -1,7 +1,7 @@
 # DerKleineVermoegensumverteiler
 
-> Status: implemented Task 1 Q-learning baseline; scientific performance
-> evaluation remains follow-up work.
+> Status: Task 1 Q-learning baseline with movement-coin shaping and
+> learning rate, selected by the #35 optimization campaign.
 
 ## Hypothesis
 
@@ -98,7 +98,7 @@ The initial implementation uses:
 
 | Parameter | Value |
 | --- | ---: |
-| Learning rate (`alpha`) | `0.1` |
+| Learning rate (`alpha`) | `0.05` |
 | Discount factor (`gamma`) | `0.9` |
 | Initial epsilon | `1.0` |
 | Epsilon decay per episode | `0.99` |
@@ -109,23 +109,35 @@ Training uses epsilon-greedy exploration. Random exploration and greedy
 tie-breaking use a NumPy random generator initialized from
 `BOMBERMAN_AGENT_SEED`. Evaluation always uses epsilon `0`.
 
-These values are implementation defaults and have not been optimized.
+The learning rate was reduced from `0.1` in the LowerLearningRate experiment,
+which cut the between-model standard deviation of the coin collection fraction
+from `0.1507` to `0.0420`.
 
 ## Rewards
 
-The initial Task 1 reward mapping is intentionally minimal:
+The Task 1 reward mapping is:
 
 | Event | Reward | Rationale |
 | --- | ---: | --- |
 | `COIN_COLLECTED` | `+10.0` | Provides the primary task signal. |
 | `INVALID_ACTION` | `-0.5` | Discourages attempts to enter blocked tiles. |
 | `WAITED` | `-0.1` | Discourages unproductive waiting. |
+| `MOVED_TOWARDS_COIN`| `+0.1`| Dense signal toward the nearest visible coin. |
+| `MOVED_AWAY_FROM_COIN` | `-0.1`| Symmetric penalty; prevemts oscillation. |
 
 All other framework events currently have reward zero.
 
-The agent does not use distance- or movement-based reward shaping. Such shaping
-is reserved for a controlled follow-up experiment against this minimal
-baseline.
+`MOVED_TOWARDS_COIN` and `MOVED_AWAY_FROM_COIN` are custom events emitted by
+`train.py`. For a movement action, the minimum Manhattan distance from the old
+position to any coin visible in the old state is compared against the same
+distance from the new position. A decrease emits `MOVED_TOWARDS_COIN`, an
+increase emits `MOVED_AWAY_FROM_COIN`, and an unchanged distance, an absent coin
+list, or a non-movement action emits nothing. Measuring both distances against
+the old coin list keeps the event defined on the step a coin is collected.
+
+The symmetric penalty is deliberate: returning to a tile cancels the reward
+earned by leaving it, which removes the incentive to oscillate for repeated
+approach reward.
 
 ## Training
 
@@ -213,11 +225,11 @@ performance or Task 1 completion.
 
 ## Limitations and next steps
 
-- No scientific multi-seed performance evaluation has been performed.
-- The initial rewards and hyperparameters have not been optimized.
+- Rewards and the learning rate were optimized by the #35 campaign; epsilon
+  decay and the remaining hyperparameters were not.
 - The feature representation contains no bomb-danger or opponent-strategy
   information.
 - The agent is limited to `coin-heaven` and is not tournament-ready.
-- Reward shaping must be evaluated through a prospective controlled experiment.
+- The shaping is not potential-based, so a small policy bias cannot be excluded.
 - Task 1 completion still requires the held-out evaluation defined in
   `docs/0007-task-1-baseline-contract.md`.
