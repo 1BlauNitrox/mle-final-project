@@ -513,8 +513,21 @@ def _plot_learning_curves(
 def _write_summary_csv(path: Path, rows: Iterable[dict[str, Any]]) -> None:
     # total_steps is an aggregation input rather than a reported metric, so it is
     # carried on the summary rows but excluded from the committed CSV schema.
+    #
+    # lineterminator is pinned to "\n": csv's default is "\r\n", and
+    # verify_evidence regenerates this file and compares it byte-for-byte
+    # against the committed copy. Git normalizes committed text to LF, so an
+    # unpinned CRLF writer only happens to match on a machine whose local
+    # checkout round-trips back to CRLF; it silently mismatches everywhere
+    # else (e.g. the Linux CI runner, or a teammate with a different
+    # core.autocrlf setting).
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=SUMMARY_FIELDS, extrasaction="ignore")
+        writer = csv.DictWriter(
+            file,
+            fieldnames=SUMMARY_FIELDS,
+            extrasaction="ignore",
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 
@@ -524,9 +537,14 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
+    # newline="" disables write_text's platform-newline translation, which
+    # otherwise turns every "\n" from json.dumps into "\r\n" on Windows. Same
+    # reproducibility hazard as the CSV writer above: result.json is
+    # regenerated and byte-compared by verify_evidence.
     path.write_text(
         json.dumps(value, allow_nan=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
+        newline="",
     )
 
 

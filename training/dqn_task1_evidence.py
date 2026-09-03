@@ -1,4 +1,4 @@
-"""Export and verify the compact, reviewable evidence for Issue #41."""
+"""Export and verify the compact, reviewable evidence for a registered series."""
 
 from __future__ import annotations
 
@@ -122,7 +122,7 @@ def export_evidence(
     training_series_path = series_directory / "series.json"
     manifest = {
         "schema_version": EVIDENCE_SCHEMA_VERSION,
-        "issue": 41,
+        "issue": profile.issue,
         "source_series_directory": series_directory.name,
         "source_evaluation_manifest_sha256": _sha256(evaluation_manifest_path),
         "source_training_series_sha256": _sha256(training_series_path),
@@ -158,6 +158,11 @@ def verify_evidence(
     experiment_directory = experiment_directory.resolve()
     evidence_directory = experiment_directory / "evidence"
     manifest = _read_json(evidence_directory / MANIFEST_FILE)
+    if manifest["issue"] != profile.issue:
+        raise ValueError(
+            f"Evidence belongs to issue {manifest['issue']}, "
+            f"not the requested issue {profile.issue}"
+        )
     _validate_evidence_files(evidence_directory, manifest)
 
     evaluation_rows = read_episodes_csv(
@@ -369,7 +374,12 @@ def _write_csv(
     excluded_fields = excluded_fields or set()
     fieldnames = [field for field in rows[0] if field not in excluded_fields]
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction="ignore")
+        writer = csv.DictWriter(
+            file,
+            fieldnames=fieldnames,
+            extrasaction="ignore",
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 

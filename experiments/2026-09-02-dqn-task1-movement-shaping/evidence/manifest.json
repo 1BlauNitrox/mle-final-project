@@ -97,15 +97,15 @@
       "size_bytes": 747246
     },
     "evaluation-episodes.csv": {
-      "sha256": "292212e3d128d367808681f628b861b33e1e5a97a0f4ca6d59039c5df27373a0",
-      "size_bytes": 122711
+      "sha256": "63fe0e0bc716b1fe9fdce548ac079229ffdff11a05086a3af0260533d67fdcab",
+      "size_bytes": 122310
     },
     "training-episodes.csv.gz": {
       "sha256": "a44617f03e466ffc90c0e31c133c556a96f38f9f91d0e705f4e4f6dfd5359240",
       "size_bytes": 6189514
     }
   },
-  "issue": 41,
+  "issue": 58,
   "jobs": {
     "run-01:primary:31001": {
       "agent_seed": 25001,
