@@ -1,0 +1,200 @@
+schema_version: 1
+
+experiment:
+  issue: 58
+  name: dqn-task1-movement-shaping
+  status: completed_negative
+  owner: 1BlauNitrox
+  reviewer: Waffelmanufaktur
+  experiment_commit: "31d8029b92f13dcdc4b8d482eb157dd19acd16c9"
+
+freeze:
+  issue: 42
+  selected_run: run-02
+  selection_rule: >-
+    Sort the five #58 models by primary evaluation mean_collection_fraction;
+    select the median position (3rd of 5); ties break by minimum
+    invalid_action_rate, then minimum run number. Registered at
+    https://github.com/1BlauNitrox/mle-final-project/issues/42#issuecomment-5531984547
+  primary_criterion_passed: false
+
+revisions:
+  agent_source_sha256_at_training: "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092"
+  imported_framework_revision: "0f55c1d"
+
+agent:
+  name: DagobertDuckDQN
+  algorithm: deep_q_network
+
+  actions:
+    - UP
+    - RIGHT
+    - DOWN
+    - LEFT
+    - WAIT
+
+  forbidden_actions:
+    - BOMB
+
+  architecture:
+    input_dim: 8
+    hidden_sizes: [64, 64]
+    output_dim: 5
+
+  hyperparameters:
+    learning_rate: 0.001
+    discount_factor: 0.9
+    gradient_clip_norm: 10.0
+    batch_size: 64
+    replay_capacity: 10000
+    replay_warmup: 256
+    target_update_interval: 250
+    initial_epsilon: 1.0
+    epsilon_decay: 0.99
+    minimum_epsilon: 0.1
+    evaluation_epsilon: 0.0
+
+  rewards:
+    COIN_COLLECTED: 10.0
+    INVALID_ACTION: -0.5
+    WAITED: -0.1
+    MOVED_TOWARDS_COIN: 0.1
+    MOVED_AWAY_FROM_COIN: -0.1
+    all_other_events: 0.0
+
+environment:
+  scenario: coin-heaven
+  available_coins_per_episode: 50
+  opponents: []
+  episode_step_limit: 400
+
+training:
+  runs: 5
+  episodes_per_run: 10000
+  fresh_model_per_run: true
+  checkpoint_selection: final_checkpoint
+  evaluation_based_selection: false
+
+  seeds:
+    - run: 1
+      world_seed: 15001
+      agent_seed: 25001
+    - run: 2
+      world_seed: 15002
+      agent_seed: 25002
+    - run: 3
+      world_seed: 15003
+      agent_seed: 25003
+    - run: 4
+      world_seed: 15004
+      agent_seed: 25004
+    - run: 5
+      world_seed: 15005
+      agent_seed: 25005
+
+evaluation:
+  training_enabled: false
+  episodes_per_model_per_seed: 1
+
+  development_world_seeds:
+    start: 31001
+    end: 31040
+
+  reserved_confirmation_seeds:
+    start: 31041
+    end: 31050
+    use_in_this_experiment: false
+
+  final_held_out_seeds:
+    required_size: 100
+    use_in_this_experiment: false
+
+  runtime:
+    cpu_threads: 1
+    multiprocessing: false
+    maximum_memory_gb: 8
+
+  artifact_integrity:
+    hash_algorithm: sha256
+    hash_before_and_after_evaluation: true
+    model_must_remain_unchanged: true
+
+metrics:
+  primary: invalid_action_rate
+
+  required:
+    - available_coins
+    - coins_collected
+    - coin_collection_fraction
+    - full_clear
+    - zero_coin
+    - survival_steps
+    - episode_steps
+    - invalid_actions
+    - attempted_actions
+    - invalid_action_rate
+    - action_counts
+    - decision_time_median_ms
+    - decision_time_p95_ms
+    - decision_time_max_ms
+    - steps_per_coin
+
+  stability:
+    - between_model_std_collection_fraction
+    - minimum_model_collection_fraction
+    - maximum_model_collection_fraction
+    - model_collection_fraction_range
+
+  training_diagnostics:
+    - shaped_reward
+    - epsilon
+    - replay_size
+    - update_count
+    - mean_loss
+    - mean_abs_td_error
+    - target_synchronizations
+
+success_criteria:
+  completed_models: 5
+  completed_evaluation_episodes: 200
+  aggregate_mean_coin_collection_fraction_min: 0.80
+  individual_mean_coin_collection_fraction_min: 0.75
+  minimum_models_reaching_individual_threshold: 4
+  invalid_action_rate_max_exclusive: 0.01
+  bomb_action_count: 0
+  deterministic_evaluation_required: true
+  immutable_model_required: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+  paired_non_inferiority_margin: -0.02
+
+observed_result:
+  individual_models_at_threshold: 4
+  aggregate_mean_coin_collection_fraction: 0.8154
+  invalid_action_rate_aggregate: 0.1758040205567763
+  invalid_action_rate_maximum_model: 0.46168336330165255
+  paired_mean_difference: -0.018
+  paired_ci95: [-0.2471, 0.2414025]
+  primary_criterion_passed: false
+
+compute_budget:
+  maximum_training_episodes: 50000
+  evaluation_episodes: 200
+  paid_resources: false
+
+outputs:
+  commit:
+    - README.md
+    - artifact.json
+    - baseline-config.yaml
+    - reference-results.csv
+    - checkpoint.pt
+
+  keep_outside_git:
+    - raw_logs
+    - replays
+    - temporary_checkpoints
+    - raw_training_outputs
+
+output_directories:
+  artifact_directory: issue-58-dqn-task1-movement-shaping

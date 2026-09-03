@@ -1,0 +1,42 @@
+{
+    "manifest_schema_version": 1,
+    "status": "task2_successor_scaffold",
+    "agent": "DagobertDuckDQNTask2",
+    "capability": "task1_behavior_only",
+    "artifact": {
+      "path": "checkpoint.pt",
+      "sha256": "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649",
+      "size_bytes": 47280
+    },
+    "model_contract": {
+      "algorithm": "deep_q_network",
+      "checkpoint_schema_version": 1,
+      "model_schema_version": 1,
+      "feature_schema_version": 1,
+      "action_order": [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT"
+      ],
+      "forbidden_actions": [
+        "BOMB"
+      ]
+    },
+    "parent": {
+      "agent": "DagobertDuckDQN",
+      "artifact_sha256": "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649",
+      "frozen_source_commit": "d81eee00ffa4b095edbcf3be6510594dda9a9733",
+      "freeze_merge_commit": "7a1d302da78862f4fd1fc6bf6a43522d20979a87",
+      "freeze_merge_commit_note": "This is the tip commit of PR #72 (issue #42's freeze), not yet a main-branch merge commit since #72 had not merged when this successor was rebuilt. Update this field in a trivial follow-up once #72 merges.",
+      "producing_agent_commit": "84396eb771a7eb3e3daa028a415e9b00570b20c8",
+      "producing_experiment_commit": "dbe259721409092448e8594cbeaaca469c4f9835",
+      "framework_revision": "0f55c1d"
+    },
+    "policy": {
+      "task2_features_present": false,
+      "bomb_action_present": false,
+      "scientific_training_authorized": false
+    }
+  }

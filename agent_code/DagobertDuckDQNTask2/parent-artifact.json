@@ -1,0 +1,75 @@
+{
+    "manifest_schema_version": 1,
+    "status": "frozen",
+    "task": "task1_visible_coin_navigation",
+    "agent": "DagobertDuckDQN",
+    "artifact": {
+      "path": "checkpoint.pt",
+      "sha256": "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649",
+      "size_bytes": 47280
+    },
+    "model_contract": {
+      "algorithm": "deep_q_network",
+      "checkpoint_schema_version": 1,
+      "model_schema_version": 1,
+      "feature_schema_version": 1,
+      "network_architecture": "8 -> Linear(8,64) -> ReLU -> Linear(64,64) -> ReLU -> Linear(64,5)",
+      "action_order": [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT"
+      ],
+      "forbidden_actions": [
+        "BOMB"
+      ]
+    },
+    "provenance": {
+      "producing_experiment": "2026-09-02-dqn-task1-movement-shaping",
+      "producing_issue": 58,
+      "producing_run": 2,
+      "producing_experiment_commit": "dbe259721409092448e8594cbeaaca469c4f9835",
+      "producing_agent_commit": "84396eb771a7eb3e3daa028a415e9b00570b20c8",
+      "producing_agent_source_sha256": "b40b4b091c65a27541849ed4dc4838cf3274071afb666f3db35f92f9a7fa2092",
+      "campaign_commit": "b29ade894c614c0e3564c92213e2a0d81f18269d",
+      "frozen_source_commit": "d81eee00ffa4b095edbcf3be6510594dda9a9733",
+      "framework_revision": "0f55c1d",
+      "training_world_seed": 15002,
+      "agent_seed": 25002,
+      "training_episodes": 10000
+    },
+    "development_reference": {
+      "scenario": "coin-heaven",
+      "world_seed_start": 31001,
+      "world_seed_end": 31040,
+      "episodes": 40,
+      "mean_collection_fraction": 0.8165,
+      "full_clear_rate": 0.3,
+      "steps_per_coin": 7.785058175137784,
+      "invalid_action_rate": 0.0003146385589554,
+      "bomb_action_count": 0,
+      "mean_episode_p95_ms": 0.3848075866699219,
+      "maximum_decision_time_ms": 35.9652042388916
+    },
+    "selection": {
+      "population": "five models from the issue #58 movement-shaping series",
+      "rule": [
+        "sort by primary evaluation mean_collection_fraction",
+        "select the median position (3rd of 5)",
+        "ties break by minimum invalid_action_rate, then minimum run number"
+      ],
+      "rule_registered_at": "https://github.com/1BlauNitrox/mle-final-project/issues/42#issuecomment-5531984547",
+      "selected_run": "run-02"
+    },
+    "series_outcome": {
+      "primary_criterion_passed": false,
+      "note": "Issue #58's own registered primary criterion failed (aggregate invalid-action rate 0.1758 and per-model maximum 0.4617, both above the 0.01 bar), and its paired non-inferiority comparison against issue #41 also failed. This freeze records the mechanically-selected candidate from a stopping-rule-terminated search, not a passing Task 1 result. See issue #58 and PR #66 for the full record."
+    },
+    "policy": {
+      "training_allowed": false,
+      "mutable": false,
+      "retraining_requires_new_issue": true,
+      "task2_requires_separately_named_successor": true
+    }
+  }
