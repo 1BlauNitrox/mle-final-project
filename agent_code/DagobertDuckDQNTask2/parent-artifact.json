@@ -5,12 +5,12 @@
     "agent": "DagobertDuckDQN",
     "artifact": {
       "path": "checkpoint.pt",
-      "sha256": "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649",
-      "size_bytes": 47280
+      "sha256": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e",
+      "size_bytes": 23829
     },
     "model_contract": {
       "algorithm": "deep_q_network",
-      "checkpoint_schema_version": 1,
+      "artifact_schema_version": 1,
       "model_schema_version": 1,
       "feature_schema_version": 1,
       "network_architecture": "8 -> Linear(8,64) -> ReLU -> Linear(64,64) -> ReLU -> Linear(64,5)",
@@ -37,7 +37,10 @@
       "framework_revision": "0f55c1d",
       "training_world_seed": 15002,
       "agent_seed": 25002,
-      "training_episodes": 10000
+      "training_episodes": 10000,
+      "source_checkpoint_path": "training_outputs/issue-58-dqn-task1-movement-shaping/20260902T213535561904Z/artifacts/run-02-final-checkpoint.pt",
+      "source_checkpoint_sha256": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
+      "source_checkpoint_size_bytes": 862842
     },
     "development_reference": {
       "scenario": "coin-heaven",

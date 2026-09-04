@@ -1,4 +1,4 @@
-"""Framework training callbacks for the DQN Task 2 successor."""
+"""Protected training callbacks for the Task 2 successor scaffold."""
 
 from __future__ import annotations
 
@@ -10,7 +10,6 @@ import numpy as np
 
 from .config import ACTION_TO_INDEX
 from .features import normalize_features, state_to_features
-from .persistence import CHECKPOINT_PATH, save_checkpoint
 from .rewards import reward_from_events
 
 
@@ -27,16 +26,15 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Reject training while the behavior-preserving successor is protected."""
+    """Reject training until the separately reviewed Task 2 capability."""
     raise RuntimeError(
         "Training is disabled for the behavior-preserving Task 2 successor "
-        "created by issue #43. Enable training only through a separate "
-        "reviewed Task 2 issue."
+        "created by issue #43. Enable it only through reviewed Task 2 work."
     )
 
 
 def _initialize_training_state(self) -> None:
-    """Initialize per-episode training diagnostics for the protected logic's tests."""
+    """Initialize per-episode training diagnostics for the frozen logic's tests."""
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
     self.losses: list[float] = []
@@ -160,16 +158,10 @@ def end_of_round(
     )
     self.completed_episodes += 1
 
-    save_checkpoint(
-        learner=self.learner,
-        replay_buffer=self.replay_buffer,
-        action_rng=self.action_rng,
-        epsilon=self.epsilon,
-        completed_episodes=self.completed_episodes,
-        agent_seed=self.agent_seed,
-        path=CHECKPOINT_PATH,
-    )
-
+    # No checkpoint write here: setup_training rejects training before this
+    # can ever run, and persistence.py defines only the frozen agent's
+    # evaluation-only artifact -- there is no resumable schema left for
+    # this unreachable path to write.
     self.episode_reward = 0.0
     self.absolute_td_errors = []
     self.losses = []

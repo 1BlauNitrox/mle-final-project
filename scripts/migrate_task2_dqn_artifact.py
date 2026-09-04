@@ -17,10 +17,10 @@ TARGET_CHECKPOINT = (
 )
 
 EXPECTED_SHA256 = (
-    "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649"
+    "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
 )
 
-EXPECTED_SIZE_BYTES = 47280
+EXPECTED_SIZE_BYTES = 23829
 
 
 def sha256_file(path: Path) -> str:

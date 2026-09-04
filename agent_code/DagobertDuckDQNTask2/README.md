@@ -40,15 +40,15 @@ The successor starts from the parent's selected Task 1 model artifact:
 | --- | --- |
 | Parent agent | `DagobertDuckDQN` |
 | Artifact | `checkpoint.pt` |
-| SHA-256 | `45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649` |
-| Size | `47280` bytes |
-| Checkpoint schema | `1` |
+| SHA-256 | `eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e` |
+| Size | `23829` bytes |
+| Evaluation-artifact schema | `1` |
 | Model schema | `1` |
 | Feature schema | `1` |
 | Producing agent commit | `84396eb771a7eb3e3daa028a415e9b00570b20c8` |
 | Producing experiment commit | `dbe259721409092448e8594cbeaaca469c4f9835` |
 | Frozen parent source commit | `d81eee00ffa4b095edbcf3be6510594dda9a9733` |
-| Parent freeze PR tip (PR #72, pending merge) | `7a1d302da78862f4fd1fc6bf6a43522d20979a87` |
+| Parent freeze source commit (PR #72) | `9d184efec3e47cf014b5203023fd50b9de62feb5` |
 | Framework revision | `0f55c1d` |
 
 The successor artifact is copied and verified by:
@@ -198,7 +198,7 @@ not performance evidence.
 The checksum before and after evaluation must remain:
 
 ```text
-45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649
+eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e
 ```
 
 ## Validation
@@ -206,7 +206,7 @@ The checksum before and after evaluation must remain:
 Behavior preservation is checked by tests that compare parent and successor:
 
 - artifact bytes and SHA-256 checksum;
-- checkpoint, model, and feature schema;
+- evaluation-artifact, model, and feature schema;
 - action order;
 - hyperparameters and rewards;
 - feature tuples for representative game states;

@@ -49,7 +49,7 @@ PARENT_CHECKPOINT = PARENT_ROOT / "checkpoint.pt"
 SUCCESSOR_CHECKPOINT = SUCCESSOR_ROOT / "checkpoint.pt"
 SUCCESSOR_MANIFEST = SUCCESSOR_ROOT / "artifact.json"
 
-EXPECTED_SHA256 = "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649"
+EXPECTED_SHA256 = "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
 
 
 def sha256_file(path: Path) -> str:
@@ -101,7 +101,7 @@ def test_successor_artifact_is_byte_identical_to_parent() -> None:
     assert PARENT_CHECKPOINT.read_bytes() == SUCCESSOR_CHECKPOINT.read_bytes()
     assert sha256_file(PARENT_CHECKPOINT) == EXPECTED_SHA256
     assert sha256_file(SUCCESSOR_CHECKPOINT) == EXPECTED_SHA256
-    assert SUCCESSOR_CHECKPOINT.stat().st_size == 47280
+    assert SUCCESSOR_CHECKPOINT.stat().st_size == 23829
 
 
 def test_successor_manifest_records_parent_lineage() -> None:
@@ -111,7 +111,7 @@ def test_successor_manifest_records_parent_lineage() -> None:
     assert manifest["status"] == "task2_successor_scaffold"
     assert manifest["capability"] == "task1_behavior_only"
     assert manifest["artifact"]["sha256"] == EXPECTED_SHA256
-    assert manifest["artifact"]["size_bytes"] == 47280
+    assert manifest["artifact"]["size_bytes"] == 23829
     assert manifest["parent"]["agent"] == "DagobertDuckDQN"
     assert manifest["parent"]["artifact_sha256"] == EXPECTED_SHA256
     assert manifest["policy"]["task2_features_present"] is False
