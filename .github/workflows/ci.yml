@@ -73,6 +73,18 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
+      - name: Verify CPU-only PyTorch installation
+        run: |
+          python - <<'PY'
+          import torch
+
+          if torch.version.cuda is not None:
+              raise SystemExit(
+                  f"Expected CPU-only PyTorch, found CUDA {torch.version.cuda}"
+              )
+          print(f"Validated CPU-only PyTorch {torch.__version__}")
+          PY
+
       - name: Lint team-owned Python
         run: >
           ruff check
@@ -392,14 +404,19 @@ jobs:
           from importlib.metadata import version
 
           from packaging.requirements import Requirement
+          import torch
 
-          requirement = Requirement("torch>=2.13,<2.14")
+          requirement = Requirement("torch==2.13.0+cpu")
           installed = version("torch")
           if installed not in requirement.specifier:
               raise SystemExit(
                   f"installed torch {installed} does not satisfy {requirement.specifier}"
               )
-          print(f"Validated agent requirement with torch {installed}")
+          if torch.version.cuda is not None:
+              raise SystemExit(
+                  f"Expected CPU-only PyTorch, found CUDA {torch.version.cuda}"
+              )
+          print(f"Validated CPU-only agent requirement with torch {installed}")
           PY
 
       - name: Create Docker smoke checkpoint

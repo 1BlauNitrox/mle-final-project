@@ -302,10 +302,11 @@ unavailable rather than zero.
 
 - Python 3.13
 - NumPy
-- PyTorch `>=2.13,<2.14`
+- CPU-only PyTorch `2.13.0`
 
-The agent-local `requirements.txt` declares the additional evaluation
-dependency.
+The agent-local `requirements.txt` selects the official PyTorch CPU wheel index.
+Linux and Windows use the explicitly CPU-tagged `2.13.0+cpu` build; macOS uses
+the CPU-only `2.13.0` build published for that platform.
 
 ## Validation status
 
