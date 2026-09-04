@@ -9,6 +9,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "agent_code" / "_team_agent_template"
 UPSTREAM_TRAINING_EXAMPLES = {"tpl_agent"}
+CPU_TORCH_INDEX = "--extra-index-url https://download.pytorch.org/whl/cpu"
+CPU_TORCH_REQUIREMENTS = {
+    'torch==2.13.0+cpu; sys_platform != "darwin"',
+    'torch==2.13.0; sys_platform == "darwin"',
+}
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -66,6 +71,20 @@ class RepositoryContractTests(unittest.TestCase):
     def test_report_pdf_is_ignored(self) -> None:
         gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
         self.assertIn("final-report*.pdf", gitignore)
+
+    def test_pytorch_requirements_select_cpu_distributions(self) -> None:
+        requirement_files = (
+            ROOT / "requirements.txt",
+            ROOT / "agent_code" / "DagobertDuckDQN" / "requirements.txt",
+        )
+        for requirement_file in requirement_files:
+            lines = {
+                line.strip()
+                for line in requirement_file.read_text(encoding="utf-8").splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            }
+            self.assertIn(CPU_TORCH_INDEX, lines, requirement_file)
+            self.assertTrue(lines >= CPU_TORCH_REQUIREMENTS, requirement_file)
 
 
 if __name__ == "__main__":
