@@ -58,16 +58,24 @@ def state_to_features(game_state: dict | None) -> StateFeatures | None:
         for direction in DIRECTIONS
     )
 
+    # A bomb placed by the current action is decremented once by the
+    # framework before the next observable state.
+    bombs_with_hypothetical = [*game_state.get("bombs", []), (position, BOMB_TIMER - 1)]
+
     danger_map_with_hypothetical_bomb = build_danger_map(
         field,
-        # A bomb placed by the current action is decremented once by the
-        # framework before the next observable state.
-        [*game_state.get("bombs", []), (position, BOMB_TIMER - 1)],
+        bombs_with_hypothetical,
         game_state["explosion_map"],
     )
 
     escape_after_bomb = int(
-        safe_escape_exists(field, danger_map_with_hypothetical_bomb, blocked_positions, position)
+        safe_escape_exists(
+            field,
+            danger_map_with_hypothetical_bomb,
+            blocked_positions,
+            bombs_with_hypothetical,
+            position,
+        )
     )
 
     crate_features = nearest_crate_features(

@@ -142,15 +142,22 @@ def safe_escape_exists(
     field: np.ndarray,
     danger_map: DangerMap,
     blocked_positions: set[Position],
+    bombs: list[tuple[Position, int]],
     start: Position,
 ) -> bool:
     """Return whether a genuinely safe tile is reachable without ever stepping
-    onto a tile that is lethal at the time of arrival.
+    onto a tile that is lethal at the time of arrival, or entering a tile
+    still occupied by an undetonated bomb.
 
     `blocked_positions` (current bombs and opponents) is only applied to the
-    first step: it reflects a snapshot that itself changes as bombs tick down
-    and, unlike blast danger, is not modeled forward in time.
+    first step for opponents, which are not modeled forward in time (the
+    Task 2 curriculum has none, see the module docstring). Bomb occupancy is
+    instead modeled for every step from `bombs` directly, matching whichever
+    bomb list built `danger_map` (including a hypothetical bomb the caller
+    added): a bomb tile stays non-enterable until the framework actually
+    removes it, including after waits and detours, not just for one step.
     """
+    bomb_occupied_until = _bomb_occupied_until(bombs)
     moves = (*DIRECTIONS, (0, 0))
     visited = {(start, 0)}
     queue = deque([(start, 0)])
@@ -166,14 +173,20 @@ def safe_escape_exists(
 
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
+            is_wait = (dx, dy) == (0, 0)
 
-            if elapsed == 0 and (dx, dy) != (0, 0):
+            if elapsed == 0 and not is_wait:
                 if not _is_free_tile(field, nx, ny, blocked_positions):
                     continue
             elif not _is_open_tile(field, nx, ny):
                 continue
 
             next_time = elapsed + 1
+
+            # Waiting never "enters" a new tile, so it is exempt: an agent
+            # is not evicted from the tile it just placed its own bomb on.
+            if not is_wait and next_time < bomb_occupied_until.get((nx, ny), 0):
+                continue
 
             if not is_safe_at_arrival(danger_map, (nx, ny), next_time):
                 continue
@@ -269,6 +282,25 @@ def _add_danger_interval(
             merged.append((interval_start, interval_end))
 
     danger_map[position] = tuple(merged)
+
+
+def _bomb_occupied_until(bombs: list[tuple[Position, int]]) -> dict[Position, int]:
+    """Map each bomb's tile to the first arrival time it is no longer occupied.
+
+    Mirrors `build_danger_map`'s detonation-time formula (a bomb with
+    observed timer ``t`` is removed, starting its blast, after ``t + 1``
+    arrivals): a tile is only enterable from that arrival time onward, not
+    merely once its blast becomes safe.
+    """
+    occupied_until: dict[Position, int] = {}
+
+    for position, timer in bombs:
+        detonation_time = max(int(timer), 0) + 1
+        occupied_until[position] = max(
+            occupied_until.get(position, 0), detonation_time
+        )
+
+    return occupied_until
 
 
 def _in_bounds(field: np.ndarray, x: int, y: int) -> bool:
