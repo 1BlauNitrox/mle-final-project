@@ -181,3 +181,35 @@ def test_blast_footprint_bounded_by_bomb_power() -> None:
 
     assert (7, 7 + BOMB_POWER) in footprint
     assert (7, 7 + BOMB_POWER + 1) not in footprint
+
+
+def test_escape_after_bomb_feature_simulates_a_hypothetical_bomb() -> None:
+    """Regression test: `escape_after_bomb` must add a bomb at the agent's own
+    position before checking escape, not just reuse the current danger map.
+
+    A dead-end corridor exactly BOMB_POWER tiles long is entirely safe with no
+    bomb on the board (so a buggy "reuse the current danger map" computation
+    would report an escape exists), but placing a bomb at the closed end
+    covers the whole corridor and traps the agent.
+    """
+    from agent_code.DagobertDuckDQNTask2.features import state_to_features
+
+    field = np.full((6, 3), -1, dtype=int)
+    field[1:5, 1] = 0  # a 1-wide corridor from x=1 (dead end) to x=4
+
+    game_state = {
+        "round": 1,
+        "step": 1,
+        "field": field,
+        "self": ("test-agent", 0, True, (1, 1)),
+        "coins": [],
+        "bombs": [],
+        "others": [],
+        "explosion_map": np.zeros_like(field),
+    }
+
+    features = state_to_features(game_state)
+    assert features is not None
+
+    escape_after_bomb = features[14]
+    assert escape_after_bomb == 0

@@ -163,8 +163,6 @@ comparing them is future work.
 | `COIN_COLLECTED` | `+10.0` | inherited |
 | `INVALID_ACTION` | `-0.5` | inherited |
 | `WAITED` | `-0.1` | inherited |
-| `MOVED_TOWARDS_COIN` | `+0.1` | inherited (issue #58) |
-| `MOVED_AWAY_FROM_COIN` | `-0.1` | inherited (issue #58) |
 | `CRATE_DESTROYED` | `+1.0` | new |
 | `COIN_FOUND` | `+2.0` | new |
 | `KILLED_SELF` | `-10.0` | new |
@@ -172,19 +170,68 @@ comparing them is future work.
 | `SURVIVED_ROUND` | `+5.0` | new |
 | `USEFUL_BOMB_PLACED` | `+0.5` | new, custom shaping |
 | `WASTEFUL_BOMB_PLACED` | `-0.5` | new, custom shaping |
+| `SAFE_BOMB_PLACED` | `+0.2` | new, custom shaping |
+| `UNSAFE_BOMB_PLACED` | `-1.0` | new, custom shaping |
 
 `CRATE_DESTROYED`, `COIN_FOUND`, `KILLED_SELF`, `GOT_KILLED`, and
 `SURVIVED_ROUND` are native framework events (`events.py`); no custom
-derivation is needed for them. `USEFUL_BOMB_PLACED`/`WASTEFUL_BOMB_PLACED`
-are custom shaping computed in `train.py` from the pre-action state, firing
-only when the framework confirms `BOMB_DROPPED` actually happened (an
-attempted-but-invalid `BOMB` gets `INVALID_ACTION` only). `BOMB_DROPPED` and
-`BOMB_EXPLODED` are deliberately left unrewarded on their own, so bomb
-placement is learned from its consequences rather than a flat per-placement
-bonus that would encourage spamming bombs regardless of target.
+derivation is needed for them. The four `*_BOMB_PLACED` events are custom
+shaping computed in `train.py` from the pre-action feature tuple (not
+recomputed separately, so the reward always agrees with what the network was
+shown), firing only when the framework confirms `BOMB_DROPPED` actually
+happened (an attempted-but-invalid `BOMB` gets `INVALID_ACTION` only).
+`BOMB_DROPPED` and `BOMB_EXPLODED` are deliberately left unrewarded on their
+own, so bomb placement is learned from its consequences rather than a flat
+per-placement bonus.
+
+A single bomb placement rates on two independent axes and can fire one event
+from each: `USEFUL_BOMB_PLACED`/`WASTEFUL_BOMB_PLACED` (does it hit a crate)
+and `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` (can the agent still get away).
+The safety pair is deliberately a larger, immediate, undiscounted signal
+than the delayed `KILLED_SELF` penalty several steps later: at
+`discount_factor=0.9`, a death 5 steps after a bad placement is only worth
+`0.9**5 ~= 0.59` of that penalty by the time it propagates back through the
+Bellman update, which is weak credit assignment for the actual mistake.
+
+There was no earlier `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN` in this
+list, but there used to be -- see "Development history" below.
 
 All values are implementation defaults, not tested in a prospective
 experiment.
+
+## Development history
+
+**2026-09-03/04, unregistered overnight run.** Before the redesign above, an
+exploratory training run on `loot-crate` reached 129,091 episodes. A
+snapshot evaluation at that point showed real problems, not a clean learning
+curve:
+
+- 18/20 episodes ended in self-inflicted death;
+- mean coins collected fell to 3.65/50 despite ~77 mean steps per episode;
+- a Task 1 regression check on `coin-heaven` (no bombs, no crates) showed
+  the invalid-action rate had risen from ~0% at migration to 59%, and `BOMB`
+  was now selected 224 times in 10 rounds versus 0 at migration -- training
+  on Task 2 was visibly eroding Task 1 behavior, not just leaving it alone.
+
+Investigating this surfaced two real problems, not just "needs more
+training":
+
+1. **A bug**, not a design gap: `escape_after_bomb` never actually added a
+   hypothetical bomb to the danger map before checking for an escape route,
+   so it silently measured "can I escape right now" instead of "would this
+   bomb trap me." Fixed in `features/assemble.py`; pinned by
+   `test_escape_after_bomb_feature_simulates_a_hypothetical_bomb`.
+2. **An unexamined inheritance**: `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN`
+   carried over from the frozen parent's config without being reconsidered
+   for Task 2. Issue #58's own result for that shaping was inconclusive (a
+   95% CI of roughly `+-0.24` on the paired comparison) -- there was never
+   evidence it helps, and no Task-2-specific justification was given for
+   keeping it either. Removed, and replaced the crate-only bomb shaping with
+   the two-axis usefulness/safety design described above.
+
+This run was not re-executed after the fix -- the numbers above describe the
+pre-fix agent, kept here as the reason the reward design looks the way it
+does now, not as a benchmark to compare future runs against.
 
 ## Training status
 

@@ -94,33 +94,58 @@ def test_setup_training_initializes_episode_state() -> None:
     assert agent.pending_transition is None
 
 
-def test_bomb_placement_on_a_crate_is_useful() -> None:
+def test_bomb_placement_on_a_crate_with_an_escape_is_useful_and_safe() -> None:
     field = np.zeros((7, 7), dtype=int)
     field[0, :] = -1
     field[-1, :] = -1
     field[:, 0] = -1
     field[:, -1] = -1
-    field[4, 3] = 1  # a crate one tile right of the agent
+    field[4, 3] = 1  # a crate one tile right of the agent, plenty of open space
 
     old_state = make_game_state(step=1, position=(3, 3), field=field)
+    old_features = training.state_to_features(old_state)
 
-    assert training._bomb_usefulness_event(old_state, ["BOMB_DROPPED"]) == "USEFUL_BOMB_PLACED"
+    assert training._bomb_quality_events(old_features, ["BOMB_DROPPED"]) == [
+        "USEFUL_BOMB_PLACED",
+        "SAFE_BOMB_PLACED",
+    ]
 
 
-def test_bomb_placement_with_no_crate_target_is_wasteful() -> None:
+def test_bomb_placement_with_no_crate_target_is_wasteful_but_safe() -> None:
     old_state = make_game_state(step=1, position=(3, 3))
+    old_features = training.state_to_features(old_state)
 
-    assert training._bomb_usefulness_event(old_state, ["BOMB_DROPPED"]) == "WASTEFUL_BOMB_PLACED"
+    assert training._bomb_quality_events(old_features, ["BOMB_DROPPED"]) == [
+        "WASTEFUL_BOMB_PLACED",
+        "SAFE_BOMB_PLACED",
+    ]
 
 
-def test_bomb_usefulness_event_requires_bomb_dropped() -> None:
+def test_bomb_placement_in_a_dead_end_is_unsafe() -> None:
+    """A corridor exactly BOMB_POWER tiles long with a crate at the far end:
+    useful (destroys the crate) but leaves no escape."""
+    field = np.full((6, 3), -1, dtype=int)
+    field[1:5, 1] = 0
+    field[4, 1] = 1  # crate at the open end, within blast range of position (1, 1)
+
+    old_state = make_game_state(step=1, position=(1, 1), field=field)
+    old_features = training.state_to_features(old_state)
+
+    assert training._bomb_quality_events(old_features, ["BOMB_DROPPED"]) == [
+        "USEFUL_BOMB_PLACED",
+        "UNSAFE_BOMB_PLACED",
+    ]
+
+
+def test_bomb_quality_events_requires_bomb_dropped() -> None:
     old_state = make_game_state(step=1, position=(3, 3))
+    old_features = training.state_to_features(old_state)
 
-    assert training._bomb_usefulness_event(old_state, []) is None
-    assert training._bomb_usefulness_event(old_state, ["INVALID_ACTION"]) is None
+    assert training._bomb_quality_events(old_features, []) == []
+    assert training._bomb_quality_events(old_features, ["INVALID_ACTION"]) == []
 
 
-def test_bomb_transition_carries_the_usefulness_reward() -> None:
+def test_bomb_transition_carries_the_combined_quality_reward() -> None:
     agent = make_agent()
     training.setup_training(agent)
 
@@ -138,8 +163,9 @@ def test_bomb_transition_carries_the_usefulness_reward() -> None:
 
     assert agent.pending_transition is not None
     assert agent.pending_transition.action == "BOMB"
-    assert agent.pending_transition.reward == pytest.approx(0.5)
+    assert agent.pending_transition.reward == pytest.approx(0.7)  # useful (+0.5) + safe (+0.2)
     assert agent.episode_event_counts["USEFUL_BOMB_PLACED"] == 1
+    assert agent.episode_event_counts["SAFE_BOMB_PLACED"] == 1
 
 
 def test_invalid_bomb_attempt_gets_no_usefulness_shaping() -> None:

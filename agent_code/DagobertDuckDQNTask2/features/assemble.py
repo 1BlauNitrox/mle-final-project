@@ -15,6 +15,7 @@ import numpy as np
 
 from ..config import FEATURE_COUNT
 from .bombs_and_crates import (
+    BOMB_TIMER,
     build_danger_map,
     crates_destroyed_by_bomb_at,
     danger_countdown_bin,
@@ -57,8 +58,14 @@ def state_to_features(game_state: dict | None) -> StateFeatures | None:
         for direction in DIRECTIONS
     )
 
+    danger_map_with_hypothetical_bomb = build_danger_map(
+        field,
+        [*game_state.get("bombs", []), (position, BOMB_TIMER)],
+        game_state["explosion_map"],
+    )
+
     escape_after_bomb = int(
-        safe_escape_exists(field, danger_map, blocked_positions, position)
+        safe_escape_exists(field, danger_map_with_hypothetical_bomb, blocked_positions, position)
     )
 
     crate_features = nearest_crate_features(position=position, field=field)

@@ -672,7 +672,7 @@ jobs:
           )" = "54704"
 
           echo \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            "e62946fc870202a120fececf1e0674c470bef34ffd1ebe430b6a7a700ddbc0d1  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
             | sha256sum --check
 
           echo \
@@ -758,7 +758,7 @@ jobs:
           test "$before" = "$after"
 
           test "$after" = \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e"
+            "e62946fc870202a120fececf1e0674c470bef34ffd1ebe430b6a7a700ddbc0d1"
 
       - name: Seeded Task 2 training smoke
         run: |
