@@ -97,6 +97,118 @@ framework and the runner adds:
 
 Only this first agent is trained.
 
+### Staged run plans
+
+Use a version-one YAML run plan when an experiment needs curricula, independent
+replicas, protected seed populations, regression suites, or resumable execution.
+Always inspect the complete matrix and compute budget before starting it:
+
+```bash
+python -m training.run_plan training/run_plans/task3-example.yaml --dry-run
+```
+
+Execute a validated plan, or resume only its unfinished and failed jobs:
+
+```bash
+python -m training.run_plan training/run_plans/task3-example.yaml
+python -m training.run_plan training/run_plans/task3-example.yaml --resume
+```
+
+`--resume` rejects any change to the configuration, repository training source,
+framework, observed-agent directory, dependency versions, or parent artifacts.
+Failed and interrupted attempts remain under their job directory; a retry starts
+from the last completed stage rather than a partial checkpoint.
+
+The bounded integration plan exercises the Task 1, Task 2, and Task 3 shapes
+without training or making a performance claim:
+
+```bash
+python -m training.run_plan training/run_plans/tasks1-3-smoke.yaml
+```
+
+#### YAML schema version 1
+
+Unknown mapping fields are tolerated for compatible metadata extensions. The
+following fields control execution:
+
+| Field | Type | Default | Rules |
+| --- | --- | --- | --- |
+| `schema_version` | integer | none | Required and exactly `1`. |
+| `plan_id` | string | none | Required filesystem-safe identifier; selects the immutable plan output directory. |
+| `agent` | string | none | Required existing directory below `agent_code/`. |
+| `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
+| `max_parallel_training` | positive integer | `1` | Bounds independent replica workers. Evaluation remains serial and single-process. |
+| `replicas` | list | none | At least one independent replica with a unique `id`, non-negative `world_seed`, non-negative `agent_seed`, and optional `parent_artifact`. |
+| `training_stages` | list | `[]` | Ordered stages with unique `id`, supported `scenario`, positive `rounds`, and zero to three ordered `opponents`. |
+| `evaluation_suites` | list | `[]` | Suites with unique `id`, protected `population`, scenario, rounds per seed pair, equal-length seed lists, and ordered opponents. |
+
+Nested records use these fields:
+
+| Record | Field | Type/default | Validation and meaning |
+| --- | --- | --- | --- |
+| replica | `id` | required string | Unique safe identifier and output-directory component. |
+| replica | `world_seed` | required integer | Non-negative environment seed used for every ordered training stage. |
+| replica | `agent_seed` | required integer | Non-negative observed-agent seed used for every ordered training stage. |
+| replica | `parent_artifact` | path or `null` | Defaults to `null`; plan-file-relative or absolute existing file whose checksum is protected on resume. |
+| stage | `id` | required string | Unique safe stage identifier. |
+| stage | `scenario` | required string | One of the scenarios defined by the current framework. |
+| stage | `rounds` | required integer | Positive exact episode budget for this stage and replica. |
+| stage | `opponents` | list, default `[]` | Zero to three explicitly ordered supported agents. |
+| suite | `id` | required string | Unique safe suite identifier. |
+| suite | `population` | required string | `development`, `confirmation`, or `final`. |
+| suite | `scenario` | required string | One current framework scenario. |
+| suite | `rounds` | required integer | Positive episodes per paired seed measurement. |
+| suite | `world_seeds` | required integer list | Non-empty, unique, non-negative environment seeds. |
+| suite | `agent_seeds` | required integer list | Non-empty, unique, non-negative observed-agent seeds; same length as `world_seeds`. |
+| suite | `opponents` | list, default `[]` | Zero to three explicitly ordered supported agents. |
+
+`population` is one of `development`, `confirmation`, or `final`; replica seeds
+form the protected `training` population. No numeric seed may occur in two
+populations. World and observed-agent seed lists are explicit and paired by
+position. Duplicate IDs or seeds, unsupported framework scenarios, unknown
+opponents, non-positive budgets, and ambiguous artifact paths fail validation
+before the output directory or first episode is created. Supplied opponents and
+existing team-agent directories are supported; list order is preserved in
+metadata and the framework command.
+
+Stage order is YAML list order. Exact `rounds` values determine both the episode
+budget and curriculum proportions, so expansion is deterministic for fixed
+configuration and seeds. The selected checkpoint is mechanically the artifact
+present after the exact final episode of each stage.
+
+Example plans are in `training/run_plans/`:
+
+- `task1-example.yaml`: `coin-heaven` without opponents;
+- `task2-example.yaml`: visible coins, `loot-crate`, then `classic`, without opponents;
+- `task3-example.yaml`: `classic` with peaceful and coin-collector opponents plus Task 1/2 regressions;
+- `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
+- `tasks1-3-smoke.yaml`: three one-round integration checks.
+
+#### Plan output and resume records
+
+Before execution, the runner writes `resolved_plan.json` once and never mutates
+it. `status.json` records plan/job state, timestamps, errors, and every attempt.
+Each replica has its own staged agent workspace, each job has its own directory,
+and each completed training stage has a checksum-labelled artifact copy:
+
+```text
+training_outputs/run-plans/<plan-id>/
+|-- resolved_plan.json
+|-- status.json
+|-- replicas/<replica-id>/agent/
+|-- artifacts/<replica-id>/<stage-id>/<artifact>
+`-- jobs/<run-id>/
+    |-- attempt-001/
+    |-- attempt-001-input-agent/
+    `-- attempt-001-failed-agent/  # only after failure/interruption
+```
+
+Every attempt delegates to `training.run_experiment`, so `framework_stats.json`,
+`episodes.csv`, `summary.json`, and the existing plotting/aggregation interfaces
+remain unchanged. Evaluation metadata explicitly records training off, one
+process, and an immutable artifact; the runner verifies the artifact checksum
+after every evaluation job.
+
 ### Issue #41 registered DQN series
 
 The five `DagobertDuckDQN` development-baseline runs are controlled by their

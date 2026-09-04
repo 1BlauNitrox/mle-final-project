@@ -103,6 +103,12 @@ jobs:
       - name: Check whitespace
         run: git diff --check origin/main...HEAD
 
+      - name: Expand staged smoke matrix without training
+        run: >
+          python -m training.run_plan
+          training/run_plans/tasks1-3-smoke.yaml
+          --dry-run
+
       - name: Run tests
         run: python -m pytest
 
