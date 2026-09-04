@@ -39,6 +39,26 @@ whether the agent could actually get away from it -- plausibly relevant to
 that run's 90% self-kill rate on `loot-crate`, though this has not been
 re-run to confirm. Like every other value in this file, these are
 implementation defaults, not a validated fix.
+
+Second reward revision (2026-09-04, same day): a follow-up development run
+with the fixes above showed Task 1 retention fully recovered (coin-heaven
+invalid-action rate back to ~0%), but Task 2 itself settling into a passive
+local optimum instead of improving -- across three snapshots the loot-crate
+death rate rose (40% -> 65% -> 70%) and the action mix became lopsided
+(43% WAIT, next to no LEFT/RIGHT, consistent across different evaluation
+seeds). Two contributing factors, not mutually exclusive: (1) that run used
+`--rounds 500000` against an epsilon schedule computed for a 10,000-episode
+budget, so epsilon hit its floor around episode 8,000 -- under 2% of that
+run -- leaving little further exploration to escape a bad optimum, which is
+the same shape of problem the schedule was originally built to fix, just at
+the wrong episode count; (2) `SURVIVED_ROUND` (+5.0) was large enough
+relative to `CRATE_DESTROYED`/`COIN_FOUND` (+1.0/+2.0) that passively
+surviving a round was plausibly competitive with actually engaging with it.
+`SURVIVED_ROUND` is reduced and `WAITED` strengthened below. This is a
+diagnosis from one run's observations, not a proven cause -- like every
+other value here, it is an implementation default pending a real test, and
+future runs should use an episode count that matches the epsilon schedule
+rather than an arbitrary large number picked to fill idle compute time.
 """
 
 from __future__ import annotations
@@ -64,14 +84,20 @@ FEATURE_SCHEMA_VERSION = 2
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
-    "WAITED": -0.1,
+    # Strengthened from -0.1 (second revision, 2026-09-04): the original
+    # value clearly wasn't discouraging passive play -- one development run
+    # spent 43% of its actions waiting.
+    "WAITED": -0.3,
     # Task 2 additions (issue #44). All native framework events (events.py);
     # no custom derivation is required for these five.
     "CRATE_DESTROYED": 1.0,
     "COIN_FOUND": 2.0,
     "KILLED_SELF": -10.0,
     "GOT_KILLED": -10.0,
-    "SURVIVED_ROUND": 5.0,
+    # Reduced from +5.0 (second revision, 2026-09-04): large enough relative
+    # to CRATE_DESTROYED/COIN_FOUND to make passive survival competitive
+    # with actually engaging the round.
+    "SURVIVED_ROUND": 2.0,
     # Custom shaping derived from the pre-action state (train.py), rating a
     # bomb placement on two independent axes. BOMB_DROPPED and BOMB_EXPLODED
     # are deliberately left unrewarded so bomb placement is learned from its

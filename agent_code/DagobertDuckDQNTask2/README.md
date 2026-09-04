@@ -162,12 +162,12 @@ comparing them is future work.
 | --- | ---: | --- |
 | `COIN_COLLECTED` | `+10.0` | inherited |
 | `INVALID_ACTION` | `-0.5` | inherited |
-| `WAITED` | `-0.1` | inherited |
+| `WAITED` | `-0.3` | revised (was `-0.1`) |
 | `CRATE_DESTROYED` | `+1.0` | new |
 | `COIN_FOUND` | `+2.0` | new |
 | `KILLED_SELF` | `-10.0` | new |
 | `GOT_KILLED` | `-10.0` | new (unreachable without opponents) |
-| `SURVIVED_ROUND` | `+5.0` | new |
+| `SURVIVED_ROUND` | `+2.0` | revised (was `+5.0`) |
 | `USEFUL_BOMB_PLACED` | `+0.5` | new, custom shaping |
 | `WASTEFUL_BOMB_PLACED` | `-0.5` | new, custom shaping |
 | `SAFE_BOMB_PLACED` | `+0.2` | new, custom shaping |
@@ -232,6 +232,36 @@ training":
 This run was not re-executed after the fix -- the numbers above describe the
 pre-fix agent, kept here as the reason the reward design looks the way it
 does now, not as a benchmark to compare future runs against.
+
+**2026-09-04, follow-up development run.** A second exploratory run with the
+fixes above showed Task 1 retention fully recovered (coin-heaven
+invalid-action rate back to ~0%, `BOMB` still never selected), which
+confirmed the escape-feature fix held up under real training. But Task 2
+itself settled into a passive local optimum rather than continuing to
+improve: across three snapshots (episodes ~5k, ~12k, ~24k) the `loot-crate`
+death rate rose from 40% to 65% to 70%, mean coins plateaued around 2.2-2.25,
+and the action mix became lopsided -- roughly 43% `WAIT` and next to no
+`LEFT`/`RIGHT`, consistent across different evaluation seeds.
+
+Two contributing factors, not mutually exclusive:
+
+1. That run used `--rounds 500000` against an epsilon schedule computed for
+   a 10,000-episode budget (see the hyperparameter revision above), so
+   epsilon hit its floor around episode 8,000 -- under 2% of that run's
+   target -- leaving little further exploration to escape a bad optimum for
+   the remaining 98%. The same shape of problem the schedule was built to
+   fix, recreated at the wrong episode count.
+2. `SURVIVED_ROUND` (`+5.0`) was large enough relative to
+   `CRATE_DESTROYED`/`COIN_FOUND` (`+1.0`/`+2.0`) that passively surviving a
+   round was plausibly competitive with actually engaging with it.
+
+`SURVIVED_ROUND` is reduced to `+2.0` and `WAITED` strengthened to `-0.3`
+above. This is a diagnosis from one run's observations, not a proven cause.
+Any further exploratory run should use an episode count that matches the
+epsilon schedule (order 10,000-20,000) rather than an arbitrary large number
+picked to fill idle compute time. The lopsided movement bias in particular
+was not root-caused -- worth checking again, and worth a closer look (e.g.
+inspecting Q-values on synthetic states) if it recurs.
 
 ## Training status
 
