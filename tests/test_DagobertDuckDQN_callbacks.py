@@ -11,9 +11,8 @@ from torch import nn
 
 import agent_code.DagobertDuckDQN.callbacks as callbacks
 from agent_code.DagobertDuckDQN.config import ACTIONS, DEFAULT_CONFIG
-from agent_code.DagobertDuckDQN.model import DQNLearner
-from agent_code.DagobertDuckDQN.persistence import save_checkpoint
-from agent_code.DagobertDuckDQN.replay import ReplayBuffer
+from agent_code.DagobertDuckDQN.model import QNetwork, build_q_network
+from agent_code.DagobertDuckDQN.persistence import save_evaluation_artifact
 
 
 def make_agent(*, training: bool) -> SimpleNamespace:
@@ -45,15 +44,15 @@ def make_game_state() -> dict:
 
 
 def set_fixed_outputs(
-    learner: DQNLearner,
+    network: QNetwork,
     values: list[float],
 ) -> None:
-    """Configure the online network to return fixed Q-values."""
+    """Configure the network to return fixed Q-values."""
     with torch.no_grad():
-        for parameter in learner.online_network.parameters():
+        for parameter in network.parameters():
             parameter.zero_()
 
-        output_layer = learner.online_network.layers[-1]
+        output_layer = network.layers[-1]
         assert isinstance(output_layer, nn.Linear)
         output_layer.bias.copy_(torch.tensor(values, dtype=torch.float32))
 
@@ -64,67 +63,42 @@ def create_checkpoint(
     seed: int = 123,
     tied_outputs: bool = False,
 ) -> None:
-    """Create a compact valid checkpoint for callback tests."""
-    learner = DQNLearner(
-        config=DEFAULT_CONFIG,
-        seed=seed,
-    )
+    """Create a valid evaluation-only checkpoint for callback tests."""
+    network = build_q_network(DEFAULT_CONFIG, seed=seed)
 
     if tied_outputs:
         set_fixed_outputs(
-            learner,
+            network,
             [1.0, 1.0, 1.0, 1.0, 1.0],
         )
     else:
         set_fixed_outputs(
-            learner,
+            network,
             [0.0, 1.0, 2.0, 3.0, 4.0],
         )
 
-    replay_buffer = ReplayBuffer(
-        capacity=DEFAULT_CONFIG.replay_capacity,
-        seed=456,
-    )
-
-    save_checkpoint(
-        learner=learner,
-        replay_buffer=replay_buffer,
-        action_rng=np.random.default_rng(789),
-        epsilon=0.5,
+    save_evaluation_artifact(
+        network=network,
+        config=DEFAULT_CONFIG,
         completed_episodes=3,
-        agent_seed=seed,
         path=path,
     )
 
 
-def test_training_without_checkpoint_initializes_new_state(
+@pytest.mark.parametrize("training", [True, False])
+def test_setup_without_checkpoint_is_rejected(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    training: bool,
 ) -> None:
-    path = tmp_path / "missing.pt"
-    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", path)
-    monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "123")
-    agent = make_agent(training=True)
-
-    callbacks.setup(agent)
-
-    assert agent.agent_seed == 123
-    assert agent.epsilon == DEFAULT_CONFIG.initial_epsilon
-    assert agent.completed_episodes == 0
-    assert len(agent.replay_buffer) == 0
-    assert agent.policy_network is agent.learner.online_network
-
-
-def test_evaluation_without_checkpoint_is_rejected(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+    """Setup requires the frozen evaluation checkpoint regardless of train mode."""
     monkeypatch.setattr(
         callbacks,
         "CHECKPOINT_PATH",
         tmp_path / "missing.pt",
     )
-    agent = make_agent(training=False)
+    monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "123")
+    agent = make_agent(training=training)
 
     with pytest.raises(FileNotFoundError):
         callbacks.setup(agent)
@@ -238,11 +212,9 @@ def test_actions_always_respect_task1_contract(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(
-        callbacks,
-        "CHECKPOINT_PATH",
-        tmp_path / "missing.pt",
-    )
+    path = tmp_path / "checkpoint.pt"
+    create_checkpoint(path)
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", path)
     monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "123")
     agent = make_agent(training=True)
     callbacks.setup(agent)
@@ -257,11 +229,10 @@ def test_none_game_state_falls_back_to_wait(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(
-        callbacks,
-        "CHECKPOINT_PATH",
-        tmp_path / "missing.pt",
-    )
+    path = tmp_path / "checkpoint.pt"
+    create_checkpoint(path)
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", path)
+    monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "123")
     agent = make_agent(training=True)
     callbacks.setup(agent)
 
