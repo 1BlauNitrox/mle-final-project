@@ -21,44 +21,6 @@ both reduce how much a single noisy update can move the value estimates.
 a slice of experience. None of these three carry the same specific,
 computed rationale as the epsilon schedule; they are documented, deliberate,
 and still implementation defaults pending a real experiment.
-
-Reward revision (2026-09-04, after an unregistered overnight development
-run): `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN` were inherited from the
-Task 1 lineage without being re-examined for Task 2, which was an oversight,
-not a decision -- issue #58's own result for that shaping was inconclusive
-(a 95% CI of roughly +-0.24 on the paired comparison), so there was never
-evidence it helps, and no Task-2-specific reason was given for keeping it
-either. Removed. In the same development run, the escape-after-bomb feature
-was found to have a real bug (features/assemble.py never actually added a
-hypothetical bomb before checking for an escape route, so it silently
-answered "can I escape right now" instead of "would this bomb trap me");
-fixing it is what makes `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` meaningful.
-These two are new: `USEFUL_BOMB_PLACED`/`WASTEFUL_BOMB_PLACED` only ever
-scored a bomb by its crate target, with nothing rewarding or penalizing
-whether the agent could actually get away from it -- plausibly relevant to
-that run's 90% self-kill rate on `loot-crate`, though this has not been
-re-run to confirm. Like every other value in this file, these are
-implementation defaults, not a validated fix.
-
-Second reward revision (2026-09-04, same day): a follow-up development run
-with the fixes above showed Task 1 retention fully recovered (coin-heaven
-invalid-action rate back to ~0%), but Task 2 itself settling into a passive
-local optimum instead of improving -- across three snapshots the loot-crate
-death rate rose (40% -> 65% -> 70%) and the action mix became lopsided
-(43% WAIT, next to no LEFT/RIGHT, consistent across different evaluation
-seeds). Two contributing factors, not mutually exclusive: (1) that run used
-`--rounds 500000` against an epsilon schedule computed for a 10,000-episode
-budget, so epsilon hit its floor around episode 8,000 -- under 2% of that
-run -- leaving little further exploration to escape a bad optimum, which is
-the same shape of problem the schedule was originally built to fix, just at
-the wrong episode count; (2) `SURVIVED_ROUND` (+5.0) was large enough
-relative to `CRATE_DESTROYED`/`COIN_FOUND` (+1.0/+2.0) that passively
-surviving a round was plausibly competitive with actually engaging with it.
-`SURVIVED_ROUND` is reduced and `WAITED` strengthened below. This is a
-diagnosis from one run's observations, not a proven cause -- like every
-other value here, it is an implementation default pending a real test, and
-future runs should use an episode count that matches the epsilon schedule
-rather than an arbitrary large number picked to fill idle compute time.
 """
 
 from __future__ import annotations
@@ -84,33 +46,24 @@ FEATURE_SCHEMA_VERSION = 2
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
-    # Strengthened from -0.1 (second revision, 2026-09-04): the original
-    # value clearly wasn't discouraging passive play -- one development run
-    # spent 43% of its actions waiting.
-    "WAITED": -0.3,
+    "WAITED": -0.1,
+    # Inherited from the Task 1 lineage (issue #58); not potential-based.
+    "MOVED_TOWARDS_COIN": 0.1,
+    "MOVED_AWAY_FROM_COIN": -0.1,
     # Task 2 additions (issue #44). All native framework events (events.py);
     # no custom derivation is required for these five.
     "CRATE_DESTROYED": 1.0,
     "COIN_FOUND": 2.0,
     "KILLED_SELF": -10.0,
     "GOT_KILLED": -10.0,
-    # Reduced from +5.0 (second revision, 2026-09-04): large enough relative
-    # to CRATE_DESTROYED/COIN_FOUND to make passive survival competitive
-    # with actually engaging the round.
-    "SURVIVED_ROUND": 2.0,
-    # Custom shaping derived from the pre-action state (train.py), rating a
-    # bomb placement on two independent axes. BOMB_DROPPED and BOMB_EXPLODED
-    # are deliberately left unrewarded so bomb placement is learned from its
-    # consequences, not from a flat per-placement bonus that would encourage
-    # spamming bombs regardless of target or safety.
+    "SURVIVED_ROUND": 5.0,
+    # Custom shaping derived from the pre-action state (train.py), rewarding
+    # BOMB only when it will actually destroy a crate. BOMB_DROPPED and
+    # BOMB_EXPLODED are deliberately left unrewarded so bomb placement is
+    # learned from its consequences, not from a flat per-placement bonus
+    # that would encourage spamming bombs regardless of target.
     "USEFUL_BOMB_PLACED": 0.5,
     "WASTEFUL_BOMB_PLACED": -0.5,
-    # Immediate, undiscounted safety signal at the moment of placement, not
-    # just the delayed KILLED_SELF penalty several steps later -- a death 5
-    # steps after a bad placement is worth only 0.9**5 ~= 0.59 of that
-    # penalty by the time it propagates back through the Bellman update.
-    "SAFE_BOMB_PLACED": 0.2,
-    "UNSAFE_BOMB_PLACED": -1.0,
 }
 
 

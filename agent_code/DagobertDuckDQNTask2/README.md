@@ -13,9 +13,10 @@
 Issue #43 created it as a byte-identical, behavior-preserving scaffold of the
 frozen Task 1 baseline. Issue #44 (this revision) adds the actual Task 2
 capability: bomb/crate/danger features, a six-action network, a one-way
-checkpoint migration from the frozen parent's weights, Task 2 rewards, and a
-training-only curriculum. It does not run or claim a scientific result --
-that is separate, downstream experiment work.
+checkpoint migration from the frozen parent's weights, Task 2 rewards, and
+training diagnostics. It does not run or claim a scientific result -- that is
+separate, downstream experiment work. Curriculum orchestration is explicitly
+split to issue #50.
 
 ## Parent baseline
 
@@ -114,10 +115,12 @@ Indices 8-20 are the Task 2 additions, computed in
 Normalization divides indices `7`, `9`, `18`, `19` by `3`; everything else is
 already in `[-1, 1]`.
 
-**Blast physics** (`blast_footprint`, `build_danger_map`) mirror the
-framework exactly: a bomb's blast is a cross of radius `3` that stops only at
-walls, not crates (`items.Bomb.get_blast_coords`); a tile is lethal from the
-observed bomb timer through `EXPLOSION_TIMER=2` additional lingering steps.
+**Blast physics** (`blast_footprint`, `build_danger_map`) mirror the framework:
+a bomb's blast is a cross of radius `3` that stops only at walls, not crates
+(`items.Bomb.get_blast_coords`). Each tile retains every inclusive lethal time
+interval from overlapping bombs and active explosions. Timer boundaries follow
+the framework update order: an observed positive timer `t` detonates after
+`t + 1` arrivals and remains dangerous for `EXPLOSION_TIMER=2` arrivals.
 
 **Escape and safety** (`safe_direction`, `safe_escape_exists`) use a
 time-aware breadth-first search: a candidate tile must be enterable (open,
@@ -128,10 +131,10 @@ bomb placed at the current position to answer "if I place a bomb here, can I
 still get away?"
 
 **Crate targeting** (`nearest_crate_features`, `crates_destroyed_by_bomb_at`)
-mirrors the coin-direction encoding for the nearest crate by straight-line
-Manhattan distance (not pathfound, matching the coin feature's own
-convention), plus a direct count of how many crates a bomb placed at the
-current position would destroy.
+uses deterministic BFS to the nearest reachable open tile from which a bomb
+would destroy at least one crate. It encodes the first path direction and path
+distance, or neutral values when no useful bombing tile is reachable. A
+separate feature counts crates hit by a bomb at the current position.
 
 There are no opponents in the Task 2 curriculum (`coin-heaven`, `loot-crate`,
 `classic` without opponents), so the danger model accounts only for bombs
@@ -162,42 +165,30 @@ comparing them is future work.
 | --- | ---: | --- |
 | `COIN_COLLECTED` | `+10.0` | inherited |
 | `INVALID_ACTION` | `-0.5` | inherited |
-| `WAITED` | `-0.3` | revised (was `-0.1`) |
+| `WAITED` | `-0.1` | inherited |
+| `MOVED_TOWARDS_COIN` | `+0.1` | inherited |
+| `MOVED_AWAY_FROM_COIN` | `-0.1` | inherited |
 | `CRATE_DESTROYED` | `+1.0` | new |
 | `COIN_FOUND` | `+2.0` | new |
 | `KILLED_SELF` | `-10.0` | new |
 | `GOT_KILLED` | `-10.0` | new (unreachable without opponents) |
-| `SURVIVED_ROUND` | `+2.0` | revised (was `+5.0`) |
+| `SURVIVED_ROUND` | `+5.0` | new |
 | `USEFUL_BOMB_PLACED` | `+0.5` | new, custom shaping |
 | `WASTEFUL_BOMB_PLACED` | `-0.5` | new, custom shaping |
-| `SAFE_BOMB_PLACED` | `+0.2` | new, custom shaping |
-| `UNSAFE_BOMB_PLACED` | `-1.0` | new, custom shaping |
 
 `CRATE_DESTROYED`, `COIN_FOUND`, `KILLED_SELF`, `GOT_KILLED`, and
 `SURVIVED_ROUND` are native framework events (`events.py`); no custom
-derivation is needed for them. The four `*_BOMB_PLACED` events are custom
-shaping computed in `train.py` from the pre-action feature tuple (not
-recomputed separately, so the reward always agrees with what the network was
-shown), firing only when the framework confirms `BOMB_DROPPED` actually
+derivation is needed for them. The two `*_BOMB_PLACED` events are custom
+shaping computed only when the framework confirms `BOMB_DROPPED` actually
 happened (an attempted-but-invalid `BOMB` gets `INVALID_ACTION` only).
 `BOMB_DROPPED` and `BOMB_EXPLODED` are deliberately left unrewarded on their
 own, so bomb placement is learned from its consequences rather than a flat
 per-placement bonus.
 
-A single bomb placement rates on two independent axes and can fire one event
-from each: `USEFUL_BOMB_PLACED`/`WASTEFUL_BOMB_PLACED` (does it hit a crate)
-and `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` (can the agent still get away).
-The safety pair is deliberately a larger, immediate, undiscounted signal
-than the delayed `KILLED_SELF` penalty several steps later: at
-`discount_factor=0.9`, a death 5 steps after a bad placement is only worth
-`0.9**5 ~= 0.59` of that penalty by the time it propagates back through the
-Bellman update, which is weak credit assignment for the actual mistake.
-
-There was no earlier `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN` in this
-list, but there used to be -- see "Development history" below.
-
-All values are implementation defaults, not tested in a prospective
-experiment.
+All values are the pre-exploration implementation defaults. The later reward
+variants described below were reverted because they were selected after
+observing unregistered runs. They may be tested only in a prospective,
+controlled experiment.
 
 ## Development history
 
@@ -224,17 +215,17 @@ training":
    so it silently measured "can I escape right now" instead of "would this
    bomb trap me." Fixed in `features/assemble.py`; pinned by
    `test_escape_after_bomb_feature_simulates_a_hypothetical_bomb`.
-2. **An unexamined inheritance**: `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN`
+2. **A candidate hypothesis**: `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN`
    carried over from the frozen parent's config without being reconsidered
    for Task 2. Issue #58's own result for that shaping was inconclusive (a
    95% CI of roughly `+-0.24` on the paired comparison) -- there was never
    evidence it helps, and no Task-2-specific justification was given for
-   keeping it either. Removed, and replaced the crate-only bomb shaping with
-   the two-axis usefulness/safety design described above.
+   keeping it either. The development branch temporarily removed it and added
+   safe/unsafe bomb shaping. Those outcome-driven reward changes are recorded
+   here but are not shipped by this PR.
 
-This run was not re-executed after the fix -- the numbers above describe the
-pre-fix agent, kept here as the reason the reward design looks the way it
-does now, not as a benchmark to compare future runs against.
+This run was not re-executed after the fix. Its numbers motivate future
+hypotheses; they do not select the shipped reward configuration.
 
 **2026-09-04, follow-up development run.** A second exploratory run with the
 fixes above showed Task 1 retention fully recovered (coin-heaven
@@ -258,13 +249,11 @@ Two contributing factors, not mutually exclusive:
    `CRATE_DESTROYED`/`COIN_FOUND` (`+1.0`/`+2.0`) that passively surviving a
    round was plausibly competitive with actually engaging with it.
 
-`SURVIVED_ROUND` is reduced to `+2.0` and `WAITED` strengthened to `-0.3`
-above. This is a diagnosis from one run's observations, not a proven cause.
-Any further exploratory run should use an episode count that matches the
-epsilon schedule (order 10,000-20,000) rather than an arbitrary large number
-picked to fill idle compute time. The lopsided movement bias in particular
-was not root-caused -- worth checking again, and worth a closer look (e.g.
-inspecting Q-values on synthetic states) if it recurs.
+The development branch temporarily reduced `SURVIVED_ROUND` to `+2.0` and
+strengthened `WAITED` to `-0.3`, then ran another 15,000 episodes. Because the
+observations selected those changes post hoc, both changes are reverted in
+the shipped implementation. The record remains useful for preregistering a
+controlled reward experiment, not for claiming either value is better.
 
 ## Training status
 
@@ -277,9 +266,9 @@ issue**, and none is authorized by it (see `artifact.json`'s
 separate, downstream work.
 
 A training-only curriculum mixing `coin-heaven`, `loot-crate`, and `classic`
-(without opponents) is expected to live in `training/` orchestration, per
-issue #44; this issue implements the agent-side capability the curriculum
-would drive, not the curriculum itself.
+(without opponents) is expected to live in `training/` orchestration under
+issue #50. Issue #44 implements the agent-side capability that curriculum
+will drive; the reviewed issue split records the orchestration as downstream.
 
 ## Smoke evidence (integration only, not performance evidence)
 
@@ -354,9 +343,9 @@ Parent imports are permitted only in repository-level differential tests.
 - The danger model does not account for an opponent placing a new bomb,
   matching the opponent-free Task 2 curriculum; it will need revisiting for
   Task 3.
-- Escape search is bounded to 10 steps and treats "safe" as "outside every
-  currently-placed bomb's footprint" -- it does not reason about tiles that
-  are only temporarily safe between two bombs.
+- Escape search is bounded to 10 steps and accepts a destination only outside
+  every currently represented blast footprint; intermediate steps are checked
+  against all retained lethal intervals.
 - The curriculum mixing `coin-heaven`/`loot-crate`/`classic` is not yet
   implemented in `training/` orchestration.
 - `KILLED_SELF`/`GOT_KILLED`/`SURVIVED_ROUND` reward magnitudes and the

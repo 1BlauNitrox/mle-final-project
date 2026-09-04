@@ -11,13 +11,9 @@ import numpy as np
 
 from .config import ACTION_TO_INDEX
 from .features import normalize_features, state_to_features
+from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .persistence import CHECKPOINT_PATH, save_checkpoint
 from .rewards import reward_from_events
-
-# Indices into the raw (pre-normalization) 21-element feature tuple; see
-# features/assemble.py for the full documented ordering.
-FEATURE_INDEX_ESCAPE_AFTER_BOMB = 14
-FEATURE_INDEX_BOMB_HAS_USEFUL_TARGET = 20
 
 DIAGNOSTIC_EVENTS = (
     "COIN_COLLECTED",
@@ -26,8 +22,6 @@ DIAGNOSTIC_EVENTS = (
     "BOMB_DROPPED",
     "USEFUL_BOMB_PLACED",
     "WASTEFUL_BOMB_PLACED",
-    "SAFE_BOMB_PLACED",
-    "UNSAFE_BOMB_PLACED",
     "KILLED_SELF",
     "GOT_KILLED",
     "SURVIVED_ROUND",
@@ -92,7 +86,18 @@ def game_events_occurred(
 
     training_events = list(events)
 
-    for bomb_event in _bomb_quality_events(old_features, events):
+    movement_event = _coin_movement_event(
+        old_game_state,
+        new_game_state,
+        self_action,
+    )
+
+    if movement_event is not None:
+        training_events.append(movement_event)
+
+    bomb_event = _bomb_usefulness_event(old_game_state, events)
+
+    if bomb_event is not None:
         training_events.append(bomb_event)
         self.episode_event_counts[bomb_event] += 1
 
@@ -255,37 +260,67 @@ def _record_transition(
         self.episode_target_synchronizations += 1
 
 
-def _bomb_quality_events(
-    old_features: tuple[int, ...],
+def _coin_movement_event(
+    old_game_state: dict,
+    new_game_state: dict,
+    action: str,
+) -> str | None:
+    """Return a shaping event based on distance to the nearest visible coin.
+
+    Both distances are measured against the coins visible in the old state so
+    that the event stays defined on the step where a coin is collected and
+    disappears.
+    """
+    if action not in {"UP", "RIGHT", "DOWN", "LEFT"}:
+        return None
+
+    coins = old_game_state.get("coins", [])
+
+    if not coins:
+        return None
+
+    old_position = old_game_state["self"][3]
+    new_position = new_game_state["self"][3]
+
+    old_distance = min(_manhattan_distance(old_position, coin) for coin in coins)
+    new_distance = min(_manhattan_distance(new_position, coin) for coin in coins)
+
+    if new_distance < old_distance:
+        return "MOVED_TOWARDS_COIN"
+
+    if new_distance > old_distance:
+        return "MOVED_AWAY_FROM_COIN"
+
+    return None
+
+
+def _bomb_usefulness_event(
+    old_game_state: dict,
     events: list[str],
-) -> list[str]:
-    """Return shaping events rating a bomb placement on target and safety.
+) -> str | None:
+    """Return a shaping event rewarding a bomb placement by its crate target.
 
     Only fires when the framework itself confirms the bomb was actually
     placed (`BOMB_DROPPED` in `events`); an attempted-but-invalid `BOMB`
     action already receives `INVALID_ACTION` and gets no additional shaping.
-
-    Reuses the pre-action feature tuple rather than recomputing crate and
-    escape geometry here, so the reward always agrees with what the network
-    was actually shown: `bomb_has_useful_target` (whether this position's
-    blast would destroy a crate) and `escape_after_bomb` (whether a safe
-    tile is still reachable after placing a bomb here).
     """
     if "BOMB_DROPPED" not in events:
-        return []
+        return None
 
-    target_event = (
-        "USEFUL_BOMB_PLACED"
-        if old_features[FEATURE_INDEX_BOMB_HAS_USEFUL_TARGET]
-        else "WASTEFUL_BOMB_PLACED"
-    )
-    safety_event = (
-        "SAFE_BOMB_PLACED"
-        if old_features[FEATURE_INDEX_ESCAPE_AFTER_BOMB]
-        else "UNSAFE_BOMB_PLACED"
-    )
+    position = old_game_state["self"][3]
+    field = old_game_state["field"]
 
-    return [target_event, safety_event]
+    if crates_destroyed_by_bomb_at(position, field) > 0:
+        return "USEFUL_BOMB_PLACED"
+
+    return "WASTEFUL_BOMB_PLACED"
+
+
+def _manhattan_distance(
+    first: tuple[int, int],
+    second: tuple[int, int],
+) -> int:
+    return abs(first[0] - second[0]) + abs(first[1] - second[1])
 
 
 def _transition_identity(

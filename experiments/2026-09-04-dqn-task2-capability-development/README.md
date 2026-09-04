@@ -2,18 +2,18 @@
 
 > Status: exploratory development work, not a registered experiment. No
 > hypothesis, seed set, or success criterion was fixed before any of the
-> three runs below; each run's own results directly shaped the next change.
-> This record exists to document what was tried and why the current
-> configuration looks the way it does, per `docs/0004`'s guidance that
-> failed and exploratory work should still be recorded. It deliberately
-> does not prescribe what to test next -- that is left open for whoever
-> designs the next experiment.
+> four runs below; results from the first three directly shaped the next
+> attempted change. This record exists to document what was tried, per
+> `docs/0004`'s guidance that failed and exploratory work should still be
+> recorded. None of the outcome-selected reward variants is shipped by this
+> PR. It deliberately does not prescribe what to test next -- that is left
+> open for whoever designs the next prospective experiment.
 
 ## Metadata
 
 - Issue: #44
 - Commits: `0c9f82e` (capability), `4489f9a` (escape-bug fix, first reward
-  revision), `e0b9893` (second reward revision)
+  revision), `e0b9893` (second reward revision), `2704aa1` (round-4 source)
 - Agent: `DagobertDuckDQNTask2`
 - Date: 2026-09-03 to 2026-09-04
 - Owner: 1BlauNitrox, with Claude (Anthropic) driving the runs and analysis
@@ -24,9 +24,9 @@
 Issue #44 implemented the Task 2 capability (bomb/crate/danger features, a
 six-action network migrated from the frozen Task 1 baseline, new rewards)
 but authorized no scientific training. Before registering a real experiment
-on top of it, three short development runs checked whether the
-implementation actually trains sensibly. It did not, twice, in specific and
-informative ways.
+on top of it, four development runs checked whether the
+implementation actually trains sensibly. The runs exposed specific problems,
+but did not provide controlled evidence for the attempted reward changes.
 
 ## Round 1: the escape feature was measuring the wrong thing
 
@@ -50,8 +50,11 @@ behavior.
    frozen parent without being re-examined for Task 2, despite issue #58's
    own result for that shaping being inconclusive.
 
-**Fixed in `4489f9a`.** Full detail in `agent_code/DagobertDuckDQNTask2/README.md`
-("Development history") and the linked PR #74 comment.
+**Correctness bug fixed in `4489f9a`.** The reward changes made in the same
+commit were selected after observing this run and are not shipped by the
+reviewed baseline. Full detail is in
+`agent_code/DagobertDuckDQNTask2/README.md` ("Development history") and the
+linked PR #74 comment.
 
 ## Round 2: a passive local optimum
 
@@ -76,16 +79,18 @@ across different evaluation seeds).
    `CRATE_DESTROYED`/`COIN_FOUND` (`+1.0`/`+2.0`), making passive survival
    plausibly competitive with actually engaging the round.
 
-**Fixed in `e0b9893`**: `SURVIVED_ROUND` reduced to `+2.0`, `WAITED`
-strengthened to `-0.3`. Any further run would also use an episode count
-matched to the schedule.
+**Post-hoc variant tried in `e0b9893`**: `SURVIVED_ROUND` reduced to `+2.0`,
+`WAITED` strengthened to `-0.3`. Those values were selected after observing
+this run and are therefore recorded, but not shipped as the baseline.
 
 ## Round 3: rebalanced rewards, a properly-scaled run
 
 **Setup:** `loot-crate`, world seed `44300`, agent seed `44`, `--rounds
-15000` -- matched to the epsilon schedule this time. Full per-episode
-training data retained in this directory's `summary.csv` (binned every 1,500
-episodes) and `figures/`.
+15000` -- matched to the epsilon schedule this time. `summary.csv` contains
+the retained 1,500-episode aggregates and `figures/` visualizes them. The raw
+per-episode source used to create those files was not committed and is no
+longer available, so this record is useful diagnosis but not independently
+reproducible evidence.
 
 **Result, binned across training** (epsilon-greedy, not the greedy
 evaluation snapshots below):
@@ -112,15 +117,16 @@ epsilon forced to 0, checkpoint otherwise untouched):
 | ~11,000 | 7/20 | 267 | 36% | 2.3 | 0 | 0.025% |
 | 15,000 (final) | 12/20 | 179 | 27% | 3.3 | 0 | 0.0% |
 
-**Interpretation.** The `WAITED` penalty increase worked, arguably too well
-at first (52% `RIGHT` at episode ~4,500) before the distribution rebalanced
+**Interpretation.** The run is consistent with the stronger `WAITED` penalty
+changing the action distribution, arguably too strongly at first (52%
+`RIGHT` at episode ~4,500) before the distribution rebalanced
 on its own by episode ~11,000 without further intervention. Task 1 retention
 holds throughout. Invalid-action rate improved (43% -> 27%) but stayed
 persistently high, and death rate did not converge monotonically (20% ->
 35% -> 60% across the three snapshots) -- this is not a clean success.
 
 **The most useful single observation**, visible only because per-episode
-training data was retained this time: **training-time survival is ~0%
+training data was available during analysis: **training-time survival is ~0%
 throughout the entire run** (`summary.csv`'s `survived_round_rate` column
 never exceeds 0.002), while greedy evaluation of the same checkpoints
 survives 40-65% of episodes. This is the same shape of training/evaluation
@@ -132,15 +138,34 @@ cause instant, irreversible death, so epsilon-greedy exploration makes
 *training* look far worse than the policy actually is. This is stated as an
 observed pattern with a plausible mechanism, not a fully diagnosed cause.
 
+## Round 4: repeat with a fresh world seed
+
+**Setup:** `loot-crate`, world seed `44400`, agent seed `44`, 15,000 episodes,
+source commit `2704aa12c47a1506c1c5890a07120efaabe5bed6`. The run completed in
+4,007.36 seconds. Its raw `episodes.csv` remains intentionally ignored under
+`training_outputs/`; SHA-256:
+`c149851f23b1fbf9f60bb6b33261e23cf8981eb7cdbef4f919d9fd0ef2453942`.
+The trained checkpoint is preserved in the local Git stash named
+`user's local DagobertDuckDQNTask2 training run (15000 episodes, world_seed
+44400) - do not discard`; it is not the committed migration checkpoint.
+
+**Result:** mean coins `1.0848`, zero-coin rate `51.83%`, invalid-action rate
+`22.83%`, survival `27/15,000` (`0.18%`), mean episode length `34.84`, and
+mean shaped reward `-1.6362`. These values come from the runner's retained
+`summary.json`; they are descriptive only. This was another unregistered run
+of the post-hoc reward variant and cannot validate the variant or select a
+new configuration.
+
 ## Decision
 
-The current configuration (post round 3) is adopted as the **Task 2
-development baseline**: a documented, reproducible starting point with known
-limitations, not a converged agent -- the same relationship the frozen
-Task 1 baseline (#42) has to issue #58's negative result.
+No reward configuration is adopted from these runs. The framework-correctness
+fixes remain; all outcome-selected reward changes are reverted to the initial
+Task 2 implementation defaults in the reviewed PR. The four runs are retained
+as a transparent negative/process record and as possible motivation for a
+future preregistered, controlled experiment.
 
-The persistently high invalid-action rate (~27-43% across all three rounds,
-despite two reward revisions that fixed other things) is recorded here as a
+The persistently high invalid-action rate (~23-43% across the measured
+snapshots, despite the attempted reward revisions) is recorded here as a
 known, unresolved limitation. It is not a new mystery in kind: the frozen
 `DagobertDuckDQN` baseline's own README already flagged "legal-action
 masking is deferred to Task 2, where a blocked move next to a live bomb is

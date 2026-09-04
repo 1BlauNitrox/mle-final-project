@@ -21,11 +21,13 @@ from .navigation import DIRECTIONS, _is_free_tile
 
 BOMB_POWER = 3
 BOMB_TIMER = 4
-EXPLOSION_LINGER_STEPS = 2
+EXPLOSION_DANGEROUS_STEPS = 2
 
 MAX_ESCAPE_SEARCH_STEPS = 10
 
 Position = tuple[int, int]
+DangerInterval = tuple[int, int]
+DangerMap = dict[Position, tuple[DangerInterval, ...]]
 
 
 def blast_footprint(position: Position, field: np.ndarray) -> list[Position]:
@@ -49,49 +51,60 @@ def build_danger_map(
     field: np.ndarray,
     bombs: list[tuple[Position, int]],
     explosion_map: np.ndarray,
-) -> dict[Position, int]:
-    """Map each threatened tile to the bomb timer that will detonate it.
+) -> DangerMap:
+    """Map threatened tiles to every future inclusive lethal interval.
 
-    A missing key means the tile is not threatened by any bomb currently on
-    the board. A value of `0` (or a negative reading from an active
-    explosion) means the tile is already lethal.
+    The framework exposes a bomb with timer ``t`` before the action after
+    which it is decremented. A positive timer therefore detonates after
+    ``t + 1`` arrivals; timer zero detonates after the next action. Active
+    explosion-map values encode how many future arrivals remain dangerous.
+    Multiple bombs may cover the same tile at different times, so retaining
+    only the earliest timer would make later lethal windows disappear.
     """
-    danger: dict[Position, int] = {}
+    danger: DangerMap = {}
 
     threatened_now = np.argwhere(explosion_map > 0)
     for x, y in threatened_now:
-        danger[(int(x), int(y))] = 0
+        position = (int(x), int(y))
+        _add_danger_interval(
+            danger,
+            position,
+            start=0,
+            end=int(explosion_map[position]),
+        )
 
     for position, timer in bombs:
+        detonation_time = max(int(timer), 0) + 1
+        dangerous_until = detonation_time + EXPLOSION_DANGEROUS_STEPS - 1
         for coords in blast_footprint(position, field):
-            existing = danger.get(coords)
-
-            if existing is None or timer < existing:
-                danger[coords] = timer
+            _add_danger_interval(
+                danger,
+                coords,
+                start=detonation_time,
+                end=dangerous_until,
+            )
 
     return danger
 
 
 def is_safe_at_arrival(
-    danger_map: dict[Position, int],
+    danger_map: DangerMap,
     position: Position,
     arrival_time: int,
 ) -> bool:
     """Return whether `position` is not lethal at `arrival_time` steps from now."""
-    countdown = danger_map.get(position)
-
-    if countdown is None:
-        return True
-
-    return not (countdown <= arrival_time <= countdown + EXPLOSION_LINGER_STEPS)
+    intervals = danger_map.get(position, ())
+    return not any(start <= arrival_time <= end for start, end in intervals)
 
 
-def danger_countdown_bin(danger_map: dict[Position, int], position: Position) -> int:
+def danger_countdown_bin(danger_map: DangerMap, position: Position) -> int:
     """Bin the remaining safety countdown at `position` into four categories."""
-    countdown = danger_map.get(position)
+    intervals = danger_map.get(position)
 
-    if countdown is None:
+    if not intervals:
         return 0
+
+    countdown = min(start for start, _end in intervals)
 
     if countdown <= 0:
         return 1
@@ -104,7 +117,7 @@ def danger_countdown_bin(danger_map: dict[Position, int], position: Position) ->
 
 def safe_direction(
     field: np.ndarray,
-    danger_map: dict[Position, int],
+    danger_map: DangerMap,
     blocked_positions: set[Position],
     position: Position,
     direction: tuple[int, int],
@@ -127,7 +140,7 @@ def safe_direction(
 
 def safe_escape_exists(
     field: np.ndarray,
-    danger_map: dict[Position, int],
+    danger_map: DangerMap,
     blocked_positions: set[Position],
     start: Position,
 ) -> bool:
@@ -185,28 +198,77 @@ def nearest_crate_features(
     *,
     position: Position,
     field: np.ndarray,
+    blocked_positions: set[Position] | None = None,
 ) -> tuple[int, int, int, int]:
-    """Encode visibility, direction, and distance of the nearest crate."""
-    crate_positions = list(zip(*np.where(field == 1), strict=True))
+    """Encode the first step and path distance to a reachable bombing tile.
 
-    if not crate_positions:
+    Crates themselves are not traversable. The search therefore targets the
+    closest reachable open tile from which the framework blast would destroy
+    at least one crate. Direction is the first BFS step, not the sign of a raw
+    coordinate delta through walls.
+    """
+    if not np.any(field == 1):
         return (0, 0, 0, 0)
 
-    x, y = position
-    nearest_crate = min(
-        crate_positions,
-        key=lambda crate: (_manhattan_distance(position, crate), crate[0], crate[1]),
-    )
+    blocked = set() if blocked_positions is None else blocked_positions
+    queue = deque([(position, 0, (0, 0))])
+    visited = {position}
 
-    crate_x, crate_y = nearest_crate
-    distance = _manhattan_distance(position, nearest_crate)
+    while queue:
+        current, distance, first_direction = queue.popleft()
 
-    return (
-        1,
-        _sign(crate_x - x),
-        _sign(crate_y - y),
-        _distance_bin(distance),
-    )
+        if crates_destroyed_by_bomb_at(current, field) > 0:
+            return (
+                1,
+                first_direction[0],
+                first_direction[1],
+                _distance_bin(distance),
+            )
+
+        x, y = current
+        for direction in DIRECTIONS:
+            dx, dy = direction
+            neighbor = (x + dx, y + dy)
+
+            if neighbor in visited or not _is_free_tile(
+                field,
+                neighbor[0],
+                neighbor[1],
+                blocked,
+            ):
+                continue
+
+            visited.add(neighbor)
+            queue.append(
+                (
+                    neighbor,
+                    distance + 1,
+                    direction if distance == 0 else first_direction,
+                )
+            )
+
+    return (0, 0, 0, 0)
+
+
+def _add_danger_interval(
+    danger_map: DangerMap,
+    position: Position,
+    *,
+    start: int,
+    end: int,
+) -> None:
+    """Add one interval and merge only overlapping/adjacent windows."""
+    intervals = sorted((*danger_map.get(position, ()), (start, end)))
+    merged: list[DangerInterval] = []
+
+    for interval_start, interval_end in intervals:
+        if merged and interval_start <= merged[-1][1] + 1:
+            previous_start, previous_end = merged[-1]
+            merged[-1] = (previous_start, max(previous_end, interval_end))
+        else:
+            merged.append((interval_start, interval_end))
+
+    danger_map[position] = tuple(merged)
 
 
 def _in_bounds(field: np.ndarray, x: int, y: int) -> bool:
@@ -215,20 +277,6 @@ def _in_bounds(field: np.ndarray, x: int, y: int) -> bool:
 
 def _is_open_tile(field: np.ndarray, x: int, y: int) -> bool:
     return _in_bounds(field, x, y) and bool(field[x, y] == 0)
-
-
-def _manhattan_distance(first: Position, second: Position) -> int:
-    return abs(first[0] - second[0]) + abs(first[1] - second[1])
-
-
-def _sign(value: int) -> int:
-    if value > 0:
-        return 1
-
-    if value < 0:
-        return -1
-
-    return 0
 
 
 def _distance_bin(distance: int) -> int:

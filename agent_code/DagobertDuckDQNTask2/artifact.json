@@ -5,7 +5,7 @@
     "capability": "task1_navigation_plus_task2_bombs_and_crates",
     "artifact": {
       "path": "checkpoint.pt",
-      "sha256": "2d304a67abecdd089c981eb4a2998d876f751496c78fe0b8a7bea37b15c6e133",
+      "sha256": "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e",
       "size_bytes": 54704,
       "note": "A fresh training-ready checkpoint (completed_episodes=0) built by scripts/migrate_task2_dqn_capability.py, not a trained or evaluated artifact."
     },

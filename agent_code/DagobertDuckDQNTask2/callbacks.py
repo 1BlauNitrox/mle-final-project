@@ -43,7 +43,7 @@ def setup(self) -> None:
 
 
 def act(self, game_state: dict | None) -> str:
-    """Select one seeded greedy Task 1 action."""
+    """Select one seeded greedy Task 2 action."""
     features = state_to_features(game_state)
 
     if features is None:

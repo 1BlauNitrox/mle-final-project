@@ -49,11 +49,17 @@ def test_blast_footprint_passes_through_crates() -> None:
     assert (6, 4) in footprint  # blast continues past the crate
 
 
-def test_build_danger_map_uses_the_minimum_timer() -> None:
+def test_build_danger_map_preserves_separate_overlapping_bomb_windows() -> None:
     field = make_field()
-    danger = build_danger_map(field, [((4, 4), 3), ((4, 4), 1)], np.zeros_like(field))
+    danger = build_danger_map(
+        field,
+        [((4, 2), 0), ((4, 6), 4)],
+        np.zeros_like(field),
+    )
 
-    assert danger[(4, 4)] == 1
+    assert danger[(4, 4)] == ((1, 2), (5, 6))
+    assert is_safe_at_arrival(danger, (4, 4), 4) is True
+    assert is_safe_at_arrival(danger, (4, 4), 5) is False
 
 
 def test_build_danger_map_includes_active_explosions() -> None:
@@ -63,16 +69,33 @@ def test_build_danger_map_includes_active_explosions() -> None:
 
     danger = build_danger_map(field, [], explosion_map)
 
-    assert danger[(4, 4)] == 0
+    assert danger[(4, 4)] == ((0, 1),)
+
+
+def test_active_explosion_does_not_hide_a_later_bomb_window() -> None:
+    field = make_field()
+    explosion_map = np.zeros_like(field)
+    explosion_map[4, 4] = 1
+
+    danger = build_danger_map(field, [((4, 6), 4)], explosion_map)
+
+    assert danger[(4, 4)] == ((0, 1), (5, 6))
+    assert is_safe_at_arrival(danger, (4, 4), 5) is False
 
 
 def test_is_safe_at_arrival_covers_the_explosion_and_its_linger() -> None:
-    danger_map = {(4, 4): 2}
+    field = make_field()
+    danger_map = build_danger_map(
+        field,
+        [((4, 4), 3)],
+        np.zeros_like(field),
+    )
 
     assert is_safe_at_arrival(danger_map, (4, 4), 1) is True
-    assert is_safe_at_arrival(danger_map, (4, 4), 2) is False  # detonates
-    assert is_safe_at_arrival(danger_map, (4, 4), 4) is False  # still lingering
-    assert is_safe_at_arrival(danger_map, (4, 4), 5) is True  # linger has cleared
+    assert is_safe_at_arrival(danger_map, (4, 4), 3) is True
+    assert is_safe_at_arrival(danger_map, (4, 4), 4) is False
+    assert is_safe_at_arrival(danger_map, (4, 4), 5) is False
+    assert is_safe_at_arrival(danger_map, (4, 4), 6) is True
 
 
 def test_is_safe_at_arrival_defaults_to_safe_when_untracked() -> None:
@@ -80,11 +103,11 @@ def test_is_safe_at_arrival_defaults_to_safe_when_untracked() -> None:
 
 
 @pytest.mark.parametrize(
-    ("countdown", "expected_bin"),
+    ("start", "expected_bin"),
     [(None, 0), (0, 1), (1, 2), (2, 2), (3, 3), (10, 3)],
 )
-def test_danger_countdown_bin(countdown: int | None, expected_bin: int) -> None:
-    danger_map = {} if countdown is None else {(4, 4): countdown}
+def test_danger_countdown_bin(start: int | None, expected_bin: int) -> None:
+    danger_map = {} if start is None else {(4, 4): ((start, start + 1),)}
     assert danger_countdown_bin(danger_map, (4, 4)) == expected_bin
 
 
@@ -95,7 +118,7 @@ def test_safe_direction_rejects_a_wall() -> None:
 
 def test_safe_direction_rejects_a_lethal_neighbor() -> None:
     field = make_field()
-    danger_map = {(5, 4): 0}
+    danger_map = {(5, 4): ((1, 2),)}
     assert safe_direction(field, danger_map, set(), (4, 4), (1, 0)) is False
 
 
@@ -121,7 +144,7 @@ def test_safe_escape_exists_is_false_in_a_sealed_deadly_box() -> None:
     field = np.full((5, 5), -1, dtype=int)
     field[2, 2] = 0  # the agent's only tile
 
-    danger_map = {(2, 2): 0}
+    danger_map = {(2, 2): ((0, 10),)}
 
     assert safe_escape_exists(field, danger_map, set(), (2, 2)) is False
 
@@ -164,15 +187,32 @@ def test_nearest_crate_features_absent() -> None:
 
 
 def test_nearest_crate_features_direction_and_distance() -> None:
-    field = make_field()
-    field[6, 4] = 1
-    field[2, 2] = 1  # farther away, should not be selected
+    field = make_field(size=11)
+    field[8, 4] = 1
 
     visible, dx, dy, distance_bin = nearest_crate_features(position=(4, 4), field=field)
 
     assert visible == 1
     assert (dx, dy) == (1, 0)
-    assert distance_bin == 2  # Manhattan distance 2
+    assert distance_bin == 1  # one step to the nearest useful bombing tile
+
+
+def test_nearest_crate_features_is_neutral_when_no_target_is_reachable() -> None:
+    field = np.full((7, 7), -1, dtype=int)
+    field[1, 1] = 0
+    field[3, 1] = 1
+
+    assert nearest_crate_features(position=(1, 1), field=field) == (0, 0, 0, 0)
+
+
+def test_nearest_crate_features_breaks_equal_path_ties_by_direction_order() -> None:
+    field = make_field(size=11)
+    field[5, 1] = 1  # useful after moving UP to (5, 4)
+    field[9, 5] = 1  # useful after moving RIGHT to (6, 5)
+
+    # DIRECTIONS is ordered UP, RIGHT, DOWN, LEFT, so equal-length targets
+    # have one deterministic representation.
+    assert nearest_crate_features(position=(5, 5), field=field) == (1, 0, -1, 1)
 
 
 def test_blast_footprint_bounded_by_bomb_power() -> None:
