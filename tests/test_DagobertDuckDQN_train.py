@@ -1,7 +1,6 @@
 """Tests for DagobertDuckDQN training callbacks."""
 
 from dataclasses import replace
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
@@ -226,17 +225,9 @@ def test_next_callback_finalizes_previous_transition() -> None:
     assert agent.pending_transition is not None
 
 
-def test_surviving_final_transition_is_added_once_as_terminal(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_surviving_final_transition_is_added_once_as_terminal() -> None:
     agent = make_agent()
     training._initialize_training_state(agent)
-    monkeypatch.setattr(
-        training,
-        "CHECKPOINT_PATH",
-        tmp_path / "checkpoint.pt",
-    )
     last_state = make_game_state(step=1)
 
     training.game_events_occurred(
@@ -259,17 +250,9 @@ def test_surviving_final_transition_is_added_once_as_terminal(
     assert replay_state["terminals"].tolist() == [True]
 
 
-def test_death_finalizes_previous_and_terminal_transitions(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_death_finalizes_previous_and_terminal_transitions() -> None:
     agent = make_agent()
     training._initialize_training_state(agent)
-    monkeypatch.setattr(
-        training,
-        "CHECKPOINT_PATH",
-        tmp_path / "checkpoint.pt",
-    )
 
     training.game_events_occurred(
         agent,
@@ -291,18 +274,9 @@ def test_death_finalizes_previous_and_terminal_transitions(
     assert replay_state["terminals"].tolist() == [False, True]
 
 
-def test_end_of_round_updates_model_and_returns_metrics(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_end_of_round_updates_model_and_returns_metrics() -> None:
     agent = make_agent()
     training._initialize_training_state(agent)
-    checkpoint_path = tmp_path / "checkpoint.pt"
-    monkeypatch.setattr(
-        training,
-        "CHECKPOINT_PATH",
-        checkpoint_path,
-    )
     last_state = make_game_state(step=1)
 
     training.game_events_occurred(
@@ -332,20 +306,11 @@ def test_end_of_round_updates_model_and_returns_metrics(
     assert agent.epsilon == pytest.approx(
         DEFAULT_CONFIG.initial_epsilon * DEFAULT_CONFIG.epsilon_decay
     )
-    assert checkpoint_path.is_file()
 
 
-def test_episode_state_is_reset_after_round(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_episode_state_is_reset_after_round() -> None:
     agent = make_agent()
     training._initialize_training_state(agent)
-    monkeypatch.setattr(
-        training,
-        "CHECKPOINT_PATH",
-        tmp_path / "checkpoint.pt",
-    )
 
     training.end_of_round(
         agent,
@@ -361,10 +326,7 @@ def test_episode_state_is_reset_after_round(
     assert agent.pending_transition is None
 
 
-def test_round_without_optimizer_update_reports_unavailable_td_error(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_round_without_optimizer_update_reports_unavailable_td_error() -> None:
     agent = make_agent()
     agent.config = replace(
         agent.config,
@@ -380,11 +342,6 @@ def test_round_without_optimizer_update_reports_unavailable_td_error(
         seed=456,
     )
     training._initialize_training_state(agent)
-    monkeypatch.setattr(
-        training,
-        "CHECKPOINT_PATH",
-        tmp_path / "checkpoint.pt",
-    )
 
     metrics = training.end_of_round(
         agent,

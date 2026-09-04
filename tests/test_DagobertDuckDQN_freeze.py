@@ -17,10 +17,15 @@ import yaml
 from agent_code.DagobertDuckDQN import train
 from agent_code.DagobertDuckDQN.config import ACTIONS, DEFAULT_CONFIG, REWARDS
 from agent_code.DagobertDuckDQN.persistence import (
-    CHECKPOINT_SCHEMA_VERSION,
+    ARTIFACT_SCHEMA_VERSION,
     FEATURE_SCHEMA_VERSION,
     MODEL_SCHEMA_VERSION,
     load_evaluation_checkpoint,
+)
+from scripts.freeze_dagobertduckdqn_task1_baseline import (
+    EXPECTED_SOURCE_SHA256,
+    EXPECTED_SOURCE_SIZE_BYTES,
+    verify_source_provenance,
 )
 from scripts.package_agent import package_agent
 
@@ -32,7 +37,7 @@ CONFIG_PATH = AGENT_ROOT / "baseline-config.yaml"
 REFERENCE_PATH = AGENT_ROOT / "reference-results.csv"
 
 EXPECTED_CHECKPOINT_SHA256 = (
-    "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649"
+    "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
 )
 
 
@@ -57,7 +62,7 @@ def test_frozen_model_loads_and_matches_schema(manifest: dict) -> None:
     contract = manifest["model_contract"]
 
     assert loaded.completed_episodes == 10_000
-    assert contract["checkpoint_schema_version"] == CHECKPOINT_SCHEMA_VERSION
+    assert contract["artifact_schema_version"] == ARTIFACT_SCHEMA_VERSION
     assert contract["model_schema_version"] == MODEL_SCHEMA_VERSION
     assert contract["feature_schema_version"] == FEATURE_SCHEMA_VERSION
     assert contract["action_order"] == list(ACTIONS)
@@ -143,6 +148,45 @@ def test_frozen_files_are_in_agent_package(tmp_path: Path) -> None:
     assert hashlib.sha256(archived_checkpoint).hexdigest() == (
         EXPECTED_CHECKPOINT_SHA256
     )
+
+
+def test_manifest_records_the_enforced_source_checksum(manifest: dict) -> None:
+    """The manifest's recorded provenance must match what the script enforces.
+
+    Seed and episode count alone cannot prove which file the export
+    consumed (#72 review finding 2); the checksum is what does.
+    """
+    provenance = manifest["provenance"]
+
+    assert provenance["source_checkpoint_sha256"] == EXPECTED_SOURCE_SHA256
+    assert provenance["source_checkpoint_size_bytes"] == EXPECTED_SOURCE_SIZE_BYTES
+
+
+def test_freeze_script_rejects_a_source_with_the_wrong_size(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "run-02-final-checkpoint.pt"
+    source.write_bytes(b"0" * (EXPECTED_SOURCE_SIZE_BYTES - 1))
+
+    with pytest.raises(ValueError, match="size"):
+        verify_source_provenance(source)
+
+
+def test_freeze_script_rejects_a_source_with_the_wrong_checksum(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "run-02-final-checkpoint.pt"
+    # Matches the expected size but not the content, so this exercises the
+    # checksum check specifically rather than the cheaper size check above.
+    source.write_bytes(b"0" * EXPECTED_SOURCE_SIZE_BYTES)
+
+    with pytest.raises(ValueError, match="checksum"):
+        verify_source_provenance(source)
+
+
+def test_freeze_script_rejects_a_missing_source(tmp_path: Path) -> None:
+    with pytest.raises(FileNotFoundError):
+        verify_source_provenance(tmp_path / "missing.pt")
 
 
 def test_frozen_network_is_deterministic_and_greedy() -> None:

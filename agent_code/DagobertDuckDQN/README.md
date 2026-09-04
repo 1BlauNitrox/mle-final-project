@@ -230,27 +230,32 @@ agent_code/DagobertDuckDQN/checkpoint.pt
 
 The path is resolved relative to the agent module.
 
-The schema-validated checkpoint contains:
+`persistence.py` defines a single evaluation-only artifact schema, not the
+resumable training schema a live DQN run would need. The schema-validated
+checkpoint contains only:
 
 - online-network parameters;
-- target-network parameters;
-- Adam optimizer state;
-- optimizer update count;
-- bounded replay contents;
-- replay-sampling RNG state;
-- action-selection RNG state;
-- epsilon and completed-episode count;
-- agent seed;
+- completed-episode count;
 - architecture and hyperparameters;
-- feature, model, and checkpoint schema versions;
+- feature, model, and artifact schema versions;
 - action order; and
 - reward configuration.
+
+It deliberately excludes the target network, optimizer state, replay
+contents, replay and action-selection RNG state, epsilon, and agent seed --
+everything a resumable training checkpoint would additionally carry. An
+earlier version of this artifact kept those fields reset to empty rather than
+omitting them, which left the committed file structurally a resumable
+checkpoint; issue #42 requires the committed baseline to contain only the
+evaluation state required at runtime, so this module has no code path left
+that can read or write that resumable shape at all.
 
 Writes use a temporary file in the same directory, followed by `fsync` and
 atomic replacement. A failed write leaves an existing checkpoint unchanged.
 
-Evaluation loads only a frozen online policy, disables gradients and
-exploration, and does not write the checkpoint.
+Evaluation loads only the frozen online policy, disables gradients, and does
+not write the checkpoint. `setup_training` (`train.py`) rejects training
+unconditionally, before any of this runs, regardless of `self.train`.
 
 Repository evaluation tooling may set `BOMBERMAN_EVALUATION_CHECKPOINT` to one
 file name. The agent resolves that name inside this directory; path components
@@ -261,10 +266,16 @@ registered evaluation without changing the default submission artifact
 **The committed `checkpoint.pt` is the frozen artifact selected under issue
 #42.** It was produced by
 [`scripts/freeze_dagobertduckdqn_task1_baseline.py`](../../scripts/freeze_dagobertduckdqn_task1_baseline.py)
-from run-02's full resumable checkpoint (issue #58): the online and target
-network weights are preserved exactly, while the replay buffer is reset empty
-and the optimizer is reinitialized, since neither is required for evaluation.
-`agent_code/DagobertDuckDQN/artifact.json` records its checksum and lineage.
+from run-02's full resumable checkpoint (issue #58): the script verifies that
+checkpoint's SHA-256 and byte size against values recorded before export,
+refusing to run against any other file, then extracts and exports only the
+online network's weights -- the target network, optimizer, replay buffer, and
+RNG state are not carried into the committed artifact at all, rather than
+being carried and reset. A self-check compares Q-values from the exported
+artifact against the source network before the script reports success.
+`agent_code/DagobertDuckDQN/artifact.json` records the frozen artifact's own
+checksum and lineage, plus the source checkpoint's checksum, size, and
+retained location.
 
 ## Training
 
@@ -324,8 +335,10 @@ Implemented unit and contract tests cover:
 - Bellman targets, including terminal masking;
 - optimizer updates and hard target synchronization;
 - bounded and seeded replay;
-- exact learner, optimizer, replay, and RNG round trips;
+- exact evaluation-only network and metadata round trips;
 - schema validation and atomic checkpoint failure behavior;
+- source-checkpoint checksum and size verification, including rejection of a
+  mismatched or missing source;
 - deterministic action selection and tie-breaking;
 - frozen, read-only evaluation;
 - framework callback initialization; and

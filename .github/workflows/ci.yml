@@ -274,8 +274,8 @@ jobs:
           test -s agent_code/DagobertDuckDQN/baseline-config.yaml
           test -s agent_code/DagobertDuckDQN/reference-results.csv
           test -s agent_code/DagobertDuckDQN/requirements.txt
-          test "$(stat -c '%s' agent_code/DagobertDuckDQN/checkpoint.pt)" = "47280"
-          echo "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649  agent_code/DagobertDuckDQN/checkpoint.pt" \
+          test "$(stat -c '%s' agent_code/DagobertDuckDQN/checkpoint.pt)" = "23829"
+          echo "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e  agent_code/DagobertDuckDQN/checkpoint.pt" \
             | sha256sum --check
 
       - name: Confirm training is rejected
@@ -378,7 +378,7 @@ jobs:
 
           test "$before" = "$after"
           test "$after" = \
-            "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649"
+            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
 
   dqn-official-docker:
     name: DQN official Docker compatibility
@@ -424,7 +424,7 @@ jobs:
       - name: Verify frozen checkpoint before Docker use
         run: |
           test -s agent_code/DagobertDuckDQN/checkpoint.pt
-          echo "45e38fa8900acd0783a84c339bf81d7e718de7797fbeeb147b5db94da3e96649  agent_code/DagobertDuckDQN/checkpoint.pt" \
+          echo "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e  agent_code/DagobertDuckDQN/checkpoint.pt" \
             | sha256sum --check
           sha256sum agent_code/DagobertDuckDQN/checkpoint.pt \
             | cut -d ' ' -f 1 > /tmp/docker-checkpoint-before.sha256

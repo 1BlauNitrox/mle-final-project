@@ -10,7 +10,6 @@ import numpy as np
 
 from .config import ACTION_TO_INDEX
 from .features import normalize_features, state_to_features
-from .persistence import CHECKPOINT_PATH, save_checkpoint
 from .rewards import reward_from_events
 
 
@@ -159,16 +158,10 @@ def end_of_round(
     )
     self.completed_episodes += 1
 
-    save_checkpoint(
-        learner=self.learner,
-        replay_buffer=self.replay_buffer,
-        action_rng=self.action_rng,
-        epsilon=self.epsilon,
-        completed_episodes=self.completed_episodes,
-        agent_seed=self.agent_seed,
-        path=CHECKPOINT_PATH,
-    )
-
+    # No checkpoint write here: setup_training rejects training before this
+    # can ever run, and persistence.py defines only the frozen agent's
+    # evaluation-only artifact -- there is no resumable schema left for
+    # this unreachable path to write.
     self.episode_reward = 0.0
     self.absolute_td_errors = []
     self.losses = []
