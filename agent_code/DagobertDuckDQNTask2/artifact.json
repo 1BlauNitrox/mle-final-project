@@ -1,0 +1,44 @@
+{
+    "manifest_schema_version": 1,
+    "status": "task2_successor_scaffold",
+    "agent": "DagobertDuckDQNTask2",
+    "capability": "task1_behavior_only",
+    "artifact": {
+      "path": "checkpoint.pt",
+      "sha256": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e",
+      "size_bytes": 23829
+    },
+    "model_contract": {
+      "algorithm": "deep_q_network",
+      "artifact_schema_version": 1,
+      "model_schema_version": 1,
+      "feature_schema_version": 1,
+      "action_order": [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT"
+      ],
+      "forbidden_actions": [
+        "BOMB"
+      ]
+    },
+    "parent": {
+      "agent": "DagobertDuckDQN",
+      "artifact_sha256": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e",
+      "frozen_source_commit": "d81eee00ffa4b095edbcf3be6510594dda9a9733",
+      "freeze_source_commit": "9d184efec3e47cf014b5203023fd50b9de62feb5",
+      "freeze_pull_request": 72,
+      "freeze_merge_commit": "0e34bc0e93a6ffa4746bb9987962a8f5169e71cd",
+      "freeze_integration_note": "PR #72 squash-merged into main as freeze_merge_commit. freeze_source_commit remains the exact reviewed parent tree the successor was migrated from; the two differ only because a squash merge does not preserve the source branch's own commits.",
+      "producing_agent_commit": "84396eb771a7eb3e3daa028a415e9b00570b20c8",
+      "producing_experiment_commit": "dbe259721409092448e8594cbeaaca469c4f9835",
+      "framework_revision": "0f55c1d"
+    },
+    "policy": {
+      "task2_features_present": false,
+      "bomb_action_present": false,
+      "scientific_training_authorized": false
+    }
+  }

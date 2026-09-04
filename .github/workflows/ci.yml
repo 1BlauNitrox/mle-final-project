@@ -95,6 +95,7 @@ jobs:
           agent_code/DerKleineVermoegensumverteiler
           agent_code/DagobertDuckDQN
           agent_code/DerKleineSprengstoffkapitalist
+          agent_code/DagobertDuckDQNTask2
 
       - name: Compile Python sources
         run: python -m compileall -q .
@@ -654,3 +655,121 @@ jobs:
 
           test "$after" = \
             "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"
+
+  dqn-task2-successor-smoke:
+    name: DQN Task 2 successor smoke test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Verify successor artifact and lineage
+        run: |
+          test -s agent_code/DagobertDuckDQNTask2/checkpoint.pt
+          test -s agent_code/DagobertDuckDQNTask2/artifact.json
+          test -s agent_code/DagobertDuckDQNTask2/parent-artifact.json
+          test -s agent_code/DagobertDuckDQNTask2/requirements.txt
+
+          test "$(
+            stat -c '%s' \
+              agent_code/DagobertDuckDQNTask2/checkpoint.pt
+          )" = "23829"
+
+          echo \
+            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            | sha256sum --check
+
+          cmp \
+            agent_code/DagobertDuckDQN/checkpoint.pt \
+            agent_code/DagobertDuckDQNTask2/checkpoint.pt
+
+      - name: Run successor differential tests
+        run: >
+          python -m pytest
+          tests/test_DagobertDuckDQNTask2_successor.py
+          -v
+
+      - name: Package successor
+        run: |
+          python scripts/package_agent.py \
+            DagobertDuckDQNTask2
+
+          test -s dist/final-project-agent-code.zip
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask2/checkpoint.pt'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask2/artifact.json'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask2/features/__init__.py'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask2/features/assemble.py'
+
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask2/features/navigation.py'
+
+      - name: Evaluate packaged successor in clean framework
+        run: |
+          clean_framework="$(mktemp -d)"
+
+          git archive HEAD | tar -x -C "$clean_framework"
+
+          rm -rf \
+            "$clean_framework/agent_code/DagobertDuckDQNTask2"
+
+          unzip -q \
+            dist/final-project-agent-code.zip \
+            -d "$clean_framework/agent_code"
+
+          test -s \
+            "$clean_framework/agent_code/DagobertDuckDQNTask2/checkpoint.pt"
+
+          test -s \
+            "$clean_framework/agent_code/DagobertDuckDQNTask2/requirements.txt"
+
+          python -m pip install -r \
+            "$clean_framework/agent_code/DagobertDuckDQNTask2/requirements.txt"
+
+          before="$(
+            sha256sum \
+              "$clean_framework/agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+              | cut -d ' ' -f 1
+          )"
+
+          (
+            cd "$clean_framework"
+
+            python main.py play \
+              --agents DagobertDuckDQNTask2 \
+              --scenario coin-heaven \
+              --no-gui \
+              --n-rounds 1 \
+              --seed 3001
+          )
+
+          after="$(
+            sha256sum \
+              "$clean_framework/agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+              | cut -d ' ' -f 1
+          )"
+
+          test "$before" = "$after"
+
+          test "$after" = \
+            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
