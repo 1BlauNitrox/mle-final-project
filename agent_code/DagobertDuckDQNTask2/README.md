@@ -49,6 +49,7 @@ The successor starts from the parent's selected Task 1 model artifact:
 | Producing experiment commit | `dbe259721409092448e8594cbeaaca469c4f9835` |
 | Frozen parent source commit | `d81eee00ffa4b095edbcf3be6510594dda9a9733` |
 | Parent freeze source commit (PR #72) | `9d184efec3e47cf014b5203023fd50b9de62feb5` |
+| Parent freeze merge commit (PR #72, squash-merged) | `0e34bc0e93a6ffa4746bb9987962a8f5169e71cd` |
 | Framework revision | `0f55c1d` |
 
 The successor artifact is copied and verified by:
