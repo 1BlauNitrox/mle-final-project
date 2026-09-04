@@ -23,8 +23,11 @@ from agent_code.DagobertDuckDQN.persistence import (
     load_evaluation_checkpoint,
 )
 from scripts.freeze_dagobertduckdqn_task1_baseline import (
+    EXPECTED_SOURCE_ASSET_NAME,
+    EXPECTED_SOURCE_RELEASE_TAG,
     EXPECTED_SOURCE_SHA256,
     EXPECTED_SOURCE_SIZE_BYTES,
+    EXPECTED_SOURCE_URL,
     verify_source_provenance,
 )
 from scripts.package_agent import package_agent
@@ -158,6 +161,11 @@ def test_manifest_records_the_enforced_source_checksum(manifest: dict) -> None:
     """
     provenance = manifest["provenance"]
 
+    assert provenance["source_checkpoint_release_tag"] == (
+        EXPECTED_SOURCE_RELEASE_TAG
+    )
+    assert provenance["source_checkpoint_asset_name"] == EXPECTED_SOURCE_ASSET_NAME
+    assert provenance["source_checkpoint_url"] == EXPECTED_SOURCE_URL
     assert provenance["source_checkpoint_sha256"] == EXPECTED_SOURCE_SHA256
     assert provenance["source_checkpoint_size_bytes"] == EXPECTED_SOURCE_SIZE_BYTES
 

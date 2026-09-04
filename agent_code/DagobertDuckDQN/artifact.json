@@ -39,6 +39,9 @@
       "agent_seed": 25002,
       "training_episodes": 10000,
       "source_checkpoint_path": "training_outputs/issue-58-dqn-task1-movement-shaping/20260902T213535561904Z/artifacts/run-02-final-checkpoint.pt",
+      "source_checkpoint_release_tag": "issue-58-dqn-task1-run-02-checkpoint-v1",
+      "source_checkpoint_asset_name": "run-02-final-checkpoint.pt",
+      "source_checkpoint_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue-58-dqn-task1-run-02-checkpoint-v1/run-02-final-checkpoint.pt",
       "source_checkpoint_sha256": "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924",
       "source_checkpoint_size_bytes": 862842
     },

@@ -274,8 +274,37 @@ RNG state are not carried into the committed artifact at all, rather than
 being carried and reset. A self-check compares Q-values from the exported
 artifact against the source network before the script reports success.
 `agent_code/DagobertDuckDQN/artifact.json` records the frozen artifact's own
-checksum and lineage, plus the source checkpoint's checksum, size, and
-retained location.
+checksum and lineage, plus the source checkpoint's checksum, size, original
+local path, immutable release tag, asset name, and direct download URL.
+
+### Independent freeze reproduction
+
+The exact 862,842-byte source checkpoint is retained outside Git as the
+[`run-02-final-checkpoint.pt`](https://github.com/1BlauNitrox/mle-final-project/releases/download/issue-58-dqn-task1-run-02-checkpoint-v1/run-02-final-checkpoint.pt)
+asset of release
+[`issue-58-dqn-task1-run-02-checkpoint-v1`](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue-58-dqn-task1-run-02-checkpoint-v1).
+Its SHA-256 is
+`1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924`.
+
+A reviewer can reproduce the source verification and evaluation-only export
+without access to the producing machine:
+
+```bash
+gh release download issue-58-dqn-task1-run-02-checkpoint-v1 \
+  --repo 1BlauNitrox/mle-final-project \
+  --pattern run-02-final-checkpoint.pt \
+  --dir <temporary-directory>
+python -m scripts.freeze_dagobertduckdqn_task1_baseline \
+  --source <temporary-directory>/run-02-final-checkpoint.pt \
+  --output <temporary-directory>/frozen-checkpoint.pt
+```
+
+The exporter first enforces the recorded source byte size and SHA-256, then
+loads the restricted source schema and compares the exported network's Q-values
+with the source network. A successful run reports a 23,829-byte frozen artifact
+with SHA-256
+`eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e`,
+which is the committed `checkpoint.pt`.
 
 ## Training
 

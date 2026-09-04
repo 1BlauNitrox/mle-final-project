@@ -14,9 +14,11 @@ script for producing a "compact" artifact that reset those fields to empty
 rather than omitting them -- this version omits them, matching the
 evaluation-only schema `persistence.py` now defines.
 
-Run once, locally, against the retained training output. The result is what
-gets committed; this script is kept for reviewer transparency and
-reproducibility, not for repeated execution.
+Run once, locally, against the retained training output. The exact source bytes
+are archived as the release asset identified below so a reviewer can download
+them and independently repeat the checksum and policy-preservation checks. The
+result is what gets committed; this script is kept for reviewer transparency
+and reproducibility, not for repeated execution.
 """
 
 from __future__ import annotations
@@ -48,6 +50,12 @@ from agent_code.DagobertDuckDQN.persistence import (
 # and episode count.
 EXPECTED_SOURCE_SHA256 = "1d8f2bc9c33d775b59595f0b5ae0978078e2f2fe3571a9a1299748a042857924"
 EXPECTED_SOURCE_SIZE_BYTES = 862842
+EXPECTED_SOURCE_RELEASE_TAG = "issue-58-dqn-task1-run-02-checkpoint-v1"
+EXPECTED_SOURCE_ASSET_NAME = "run-02-final-checkpoint.pt"
+EXPECTED_SOURCE_URL = (
+    "https://github.com/1BlauNitrox/mle-final-project/releases/download/"
+    f"{EXPECTED_SOURCE_RELEASE_TAG}/{EXPECTED_SOURCE_ASSET_NAME}"
+)
 EXPECTED_WORLD_SEED = 15002
 EXPECTED_AGENT_SEED = 25002
 EXPECTED_COMPLETED_EPISODES = 10_000
