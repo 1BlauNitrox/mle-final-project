@@ -201,6 +201,9 @@ experiment.
 
 ## Development history
 
+Full detail, including binned training-curve data and figures for round 3,
+is in `experiments/2026-09-04-dqn-task2-capability-development/`.
+
 **2026-09-03/04, unregistered overnight run.** Before the redesign above, an
 exploratory training run on `loot-crate` reached 129,091 episodes. A
 snapshot evaluation at that point showed real problems, not a clean learning
