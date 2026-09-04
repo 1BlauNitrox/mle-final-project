@@ -34,6 +34,8 @@ def run_experiment(
     opponents: list[str],
     output_root: Path,
     environment_overrides: dict[str, str] | None = None,
+    run_id: str | None = None,
+    metadata_extra: dict[str, Any] | None = None,
 ) -> Path:
     """Run one game job and create a self-contained experiment directory."""
     _validate_arguments(
@@ -45,11 +47,17 @@ def run_experiment(
     )
 
     started_at = datetime.now(timezone.utc)
-    run_id = _create_run_id(
-        started_at=started_at,
-        agent=agent,
-        scenario=scenario,
-    )
+    if run_id is None:
+        run_id = _create_run_id(
+            started_at=started_at,
+            agent=agent,
+            scenario=scenario,
+        )
+    elif not run_id or any(
+        not (character.isalnum() or character in "-_")
+        for character in run_id
+    ):
+        raise ValueError("Run ID must be a filesystem-safe identifier")
     run_directory = output_root.resolve() / run_id
     run_directory.mkdir(parents=True, exist_ok=False)
 
@@ -102,6 +110,14 @@ def run_experiment(
         "return_code": None,
         "error": None,
     }
+    if metadata_extra:
+        protected_keys = metadata.keys() & metadata_extra.keys()
+        if protected_keys:
+            raise ValueError(
+                "Additional metadata cannot replace runner fields: "
+                f"{sorted(protected_keys)}"
+            )
+        metadata.update(metadata_extra)
     _write_json(metadata_path, metadata)
 
     environment = os.environ.copy()

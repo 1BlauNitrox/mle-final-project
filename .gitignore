@@ -121,6 +121,7 @@ results/
 /training_artifacts/
 /checkpoints/
 /tmp/
+agent_code/_run_plan_*/
 # Registered evaluators stage immutable artifacts under this fixed local name.
 agent_code/*/.evaluation-checkpoint.pt
 experiments/**/raw/

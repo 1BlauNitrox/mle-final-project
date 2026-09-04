@@ -1,0 +1,25 @@
+schema_version: 1
+plan_id: task1-example
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+max_parallel_training: 2
+replicas:
+  - id: r1
+    world_seed: 11001
+    agent_seed: 12001
+  - id: r2
+    world_seed: 11002
+    agent_seed: 12002
+training_stages:
+  - id: visible-coins
+    scenario: coin-heaven
+    rounds: 1000
+    opponents: []
+evaluation_suites:
+  - id: task1-development
+    population: development
+    scenario: coin-heaven
+    rounds: 20
+    world_seeds: [31001, 31002]
+    agent_seeds: [32001, 32002]
+    opponents: []

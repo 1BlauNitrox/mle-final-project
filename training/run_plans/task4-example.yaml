@@ -1,0 +1,43 @@
+schema_version: 1
+plan_id: task4-example
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+max_parallel_training: 2
+replicas:
+  - id: r1
+    world_seed: 17001
+    agent_seed: 18001
+  - id: r2
+    world_seed: 17002
+    agent_seed: 18002
+training_stages:
+  - id: classic-random
+    scenario: classic
+    rounds: 2000
+    opponents: [random_agent, random_agent, random_agent]
+  - id: classic-strong
+    scenario: classic
+    rounds: 3000
+    opponents: [rule_based_agent, rule_based_agent, rule_based_agent]
+evaluation_suites:
+  - id: task1-regression
+    population: development
+    scenario: coin-heaven
+    rounds: 20
+    world_seeds: [43001]
+    agent_seeds: [44001]
+    opponents: []
+  - id: task2-regression
+    population: confirmation
+    scenario: classic
+    rounds: 20
+    world_seeds: [45001]
+    agent_seeds: [46001]
+    opponents: []
+  - id: task4-final
+    population: final
+    scenario: classic
+    rounds: 20
+    world_seeds: [47001]
+    agent_seeds: [48001]
+    opponents: [rule_based_agent, rule_based_agent, rule_based_agent]
