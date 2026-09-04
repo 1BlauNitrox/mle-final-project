@@ -18,9 +18,11 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
+import agent_code.DagobertDuckDQNTask2.callbacks as callbacks
 import agent_code.DagobertDuckDQNTask2.train as training
 from agent_code.DagobertDuckDQNTask2.config import DEFAULT_CONFIG
 from agent_code.DagobertDuckDQNTask2.model import DQNLearner
+from agent_code.DagobertDuckDQNTask2.persistence import save_checkpoint
 from agent_code.DagobertDuckDQNTask2.replay import ReplayBuffer
 
 
@@ -92,6 +94,32 @@ def test_setup_training_initializes_episode_state() -> None:
     assert agent.episode_target_synchronizations == 0
     assert dict(agent.episode_event_counts) == {}
     assert agent.pending_transition is None
+
+
+def test_callback_setup_restores_all_training_objects(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    source = make_agent()
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    save_checkpoint(
+        learner=source.learner,
+        replay_buffer=source.replay_buffer,
+        action_rng=source.action_rng,
+        epsilon=source.epsilon,
+        completed_episodes=source.completed_episodes,
+        agent_seed=source.agent_seed,
+        path=checkpoint_path,
+    )
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", checkpoint_path)
+    restored = SimpleNamespace(logger=Mock())
+
+    callbacks._setup_training_policy(restored, source.agent_seed)
+
+    assert restored.completed_episodes == 0
+    assert restored.epsilon == source.epsilon
+    assert restored.replay_buffer.capacity == source.replay_buffer.capacity
+    assert restored.policy_network is restored.learner.online_network
 
 
 def test_bomb_placement_on_a_crate_is_useful() -> None:
