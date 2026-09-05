@@ -96,6 +96,11 @@ No confirmation or final held-out population was used. Compact evidence is in `s
 `issue46-corrected-results.tar.gz`, SHA-256
 `b6f40ed8c4f8e28a7fa2e91635c6a489b75e9698f28abae219bb2eb9e9d40a9b`.
 
+The compact evaluation findings and figures are retrievable from the
+[Issue #46 evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/untagged-6f2b85f23efa3f65c0d5).
+The large raw tarball is retained locally/server-side and its upload remains
+pending; training/resource traces are not present in the available archive.
+
 ## Figures and evidence limits
 
 The `figures/` directory contains compact plots generated directly from
