@@ -227,8 +227,13 @@ def _aggregate_group(
     survived_episodes = sum(
         1 for row in rows if row["survived"]
     )
+    task2_coverage = {
+        column: sum(row.get(column) is not None for row in rows)
+        for column in TASK2_COUNT_COLUMNS
+    }
     task2_totals = {
-        column: sum(row[column] for row in rows)
+        column: sum(row[column] for row in rows if row.get(column) is not None)
+        if task2_coverage[column] == episode_count else None
         for column in TASK2_COUNT_COLUMNS
     }
 
@@ -279,7 +284,11 @@ def _aggregate_group(
         },
         "task2": {
             **task2_totals,
-            "self_kill_rate": task2_totals["self_kills"] / episode_count,
+            "self_kill_rate": (
+                task2_totals["self_kills"] / episode_count
+                if task2_totals["self_kills"] is not None else None
+            ),
+            "measurement_coverage": task2_coverage,
         },
         "score": {
             "total": sum(row["score"] for row in rows),
@@ -381,14 +390,9 @@ def _parse_csv_row(
     """Parse one CSV row into typed values."""
     parsed: dict[str, Any] = dict(raw_row)
 
-    # Task 2 columns were added compatibly to schema v1. Historical evidence
-    # files omit them and represent the corresponding counters as zero.
-    for column in TASK2_COUNT_COLUMNS:
-        if raw_row.get(column) in (None, ""):
-            parsed[column] = 0
-
     for column in INTEGER_COLUMNS:
         if column in TASK2_COUNT_COLUMNS and raw_row.get(column) in (None, ""):
+            parsed[column] = None
             continue
         parsed[column] = _parse_integer(
             raw_row.get(column),

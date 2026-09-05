@@ -1,6 +1,6 @@
 # DQN Task 2 development baseline
 
-> Status: completed negative/mixed result; corrected evaluation evidence is
+> Status: incomplete negative/mixed result; corrected evaluation evidence is
 > archived and linked to bug #82.
 
 ## Metadata
@@ -89,8 +89,9 @@ corrected evaluation reused the completed final training workspaces and ran all
   (95% CI `[+0.0233, +0.0589]`); coin-heaven trained minus Task 1 `-0.6351`
   (95% CI `[-0.7006, -0.5658]`).
 
-The registered overall decision is therefore **fail**. No confirmation or
-final held-out population was used. Compact evidence is in `summary.csv` and
+The registered overall decision is therefore **fail on the available
+evaluation evidence, but the experiment is not independently verifiable yet**.
+No confirmation or final held-out population was used. Compact evidence is in `summary.csv` and
 `result.json`; the complete corrected raw archive is
 `issue46-corrected-results.tar.gz`, SHA-256
 `b6f40ed8c4f8e28a7fa2e91635c6a489b75e9698f28abae219bb2eb9e9d40a9b`.

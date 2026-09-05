@@ -211,6 +211,7 @@ def execute_plan(
         if workspace_root is None:
             raise ValueError("Evaluation-only mode requires --workspace-root")
         workspace_root = Path(workspace_root).resolve()
+        _validate_evaluation_sources(plan, workspace_root)
     plan_directory = output_root.resolve() / plan.plan_id
     resolved_path = plan_directory / "resolved_plan.json"
     status_path = plan_directory / "status.json"
@@ -467,6 +468,47 @@ def _prepare_replica_workspace(
         _remove_tree(alias)
     _snapshot_workspace(workspace, alias)
     return alias
+
+
+def _validate_evaluation_sources(plan: ResolvedPlan, workspace_root: Path) -> None:
+    """Require a completed source plan and immutable registered artifacts."""
+    source_plan = workspace_root / plan.plan_id
+    resolved_path = source_plan / "resolved_plan.json"
+    status_path = source_plan / "status.json"
+    if not resolved_path.is_file() or not status_path.is_file():
+        raise ValueError(f"Evaluation-only source plan metadata is missing: {source_plan}")
+    source_resolved = _read_json(resolved_path)
+    source_status = _read_json(status_path)
+    if source_status.get("status") != "completed":
+        raise ValueError(f"Evaluation-only source plan is not completed: {source_plan}")
+    source_jobs = source_status.get("jobs", {})
+    for replica in plan.replicas:
+        source = _workspace_directory(source_plan, replica.replica_id)
+        artifact = source / str(plan.artifact_path) if plan.artifact_path else None
+        expected = []
+        for job in source_resolved.get("jobs", []):
+            if job.get("kind") == "training" and job.get("replica") == replica.replica_id:
+                expected.append(job)
+        if expected:
+            final_id = expected[-1]["run_id"]
+            record = source_jobs.get(final_id, {})
+            if record.get("status") != "completed" or not record.get("artifact"):
+                raise ValueError(f"Final training stage is incomplete: {final_id}")
+            expected_hash = record["artifact"].get("sha256")
+            if not artifact or not artifact.is_file() or _sha256_file(artifact) != expected_hash:
+                raise ValueError(f"Final checkpoint hash mismatch for {replica.replica_id}")
+        else:
+            if not artifact or not artifact.is_file():
+                raise ValueError(f"Evaluation-only artifact is missing: {artifact}")
+            expected_hashes = {
+                source_jobs[job["run_id"]].get("artifact", {}).get("sha256")
+                for job in source_resolved.get("jobs", [])
+                if job.get("kind") == "evaluation"
+                and job.get("replica") == replica.replica_id
+                and source_jobs.get(job["run_id"], {}).get("status") == "completed"
+            }
+            if expected_hashes and _sha256_file(artifact) not in expected_hashes:
+                raise ValueError(f"Registered artifact hash mismatch for {replica.replica_id}")
 
 
 def _snapshot_workspace(source: Path, destination: Path) -> None:

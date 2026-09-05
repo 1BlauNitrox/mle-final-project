@@ -7,7 +7,7 @@
 > latency checks, but failed the registered Task 2 feasibility and Task 1
 > retention gates. It is therefore not a submission candidate.
 
-Issue #46 completed with a negative/mixed result. Corrected development
+Issue #46 currently has an incomplete negative/mixed result. Corrected development
 evaluation passed determinism and latency checks, but failed the registered
 Task 2 feasibility and Task 1 retention gates. See
 `experiments/2026-09-05-dqn-task2-development/result.json` and Issue #82 for

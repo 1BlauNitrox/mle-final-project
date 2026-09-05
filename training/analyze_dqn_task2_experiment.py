@@ -58,6 +58,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []
     deterministic = True
+    repeat_latency_ok = True
 
     for treatment, plan_id in PLAN_IDS.items():
         plan_directory = plan_root / plan_id
@@ -72,12 +73,14 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                 primary_rows = _suite_rows(
                     plan_directory,
                     status,
+                    resolved,
                     replica,
                     suite_id,
                 )
                 repeat_rows = _suite_rows(
                     plan_directory,
                     status,
+                    resolved,
                     replica,
                     suite_id.replace("-primary", "-repeat"),
                 )
@@ -86,8 +89,27 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                         raise ValueError(
                             f"Repeat seed mismatch for {treatment}/{replica}/{scenario}"
                         )
+                    if any(
+                        primary.get(name) is None or repeat.get(name) is None
+                        for name in DETERMINISTIC_COLUMNS
+                    ):
+                        raise ValueError("Missing deterministic evidence in evaluation repeat")
                     if any(primary.get(name) != repeat.get(name) for name in DETERMINISTIC_COLUMNS):
                         deterministic = False
+                    repeat_latency_ok &= (
+                        repeat.get("decision_time_p95_ms") is not None
+                        and repeat.get("decision_time_max_ms") is not None
+                        and repeat["decision_time_p95_ms"] < 50
+                        and repeat["decision_time_max_ms"] < 100
+                    )
+                    if not isinstance(
+                        primary.get("executed_action_sequence_sha256"), str
+                    ) or not primary["executed_action_sequence_sha256"]:
+                        raise ValueError("Missing action digest in primary evaluation")
+                    if not isinstance(
+                        repeat.get("executed_action_sequence_sha256"), str
+                    ) or not repeat["executed_action_sequence_sha256"]:
+                        raise ValueError("Missing action digest in repeat evaluation")
                     available = primary.get("initially_available_coins")
                     if not isinstance(available, int) or available <= 0:
                         raise ValueError(
@@ -106,6 +128,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     summaries = _summarize(rows)
     comparisons = _comparisons(rows)
     criteria = _criteria(rows, summaries, comparisons, deterministic)
+    criteria["repeat_latency_within_limits"] = repeat_latency_ok
     result = {
         "schema_version": 1,
         "issue": 46,
@@ -129,13 +152,23 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
 def _suite_rows(
     plan_directory: Path,
     status: dict[str, Any],
+    resolved: dict[str, Any],
     replica: str,
     suite_id: str,
 ) -> list[dict[str, Any]]:
     prefix = f"eval-{replica}-{suite_id}-seed-"
     keys = sorted(key for key in status["jobs"] if key.startswith(prefix))
-    if len(keys) != 40:
-        raise ValueError(f"Expected 40 jobs for {prefix}, found {len(keys)}")
+    expected = {
+        job["run_id"]: job
+        for job in resolved["jobs"]
+        if (
+            job["kind"] == "evaluation"
+            and job["replica"] == replica
+            and job["stage_or_suite"] == suite_id
+        )
+    }
+    if set(keys) != set(expected):
+        raise ValueError(f"Evaluation matrix mismatch for {prefix}")
     result: list[dict[str, Any]] = []
     for key in keys:
         job = status["jobs"][key]
@@ -147,6 +180,15 @@ def _suite_rows(
         if len(episode_rows) != 1:
             raise ValueError(f"Expected one episode row for {key}")
         metadata = _read_json(run_directory / "metadata.json")
+        registered = expected[key]
+        for field in ("world_seed", "agent_seed", "scenario", "rounds"):
+            if metadata.get(field) != registered[field]:
+                raise ValueError(f"Metadata mismatch for {key}: {field}")
+        if (
+            metadata.get("mode") != "evaluation"
+            or metadata.get("opponents") != registered["opponents"]
+        ):
+            raise ValueError(f"Metadata mismatch for {key}: evaluation conditions")
         row = dict(episode_rows[0])
         row["world_seed"] = metadata["world_seed"]
         result.append(row)

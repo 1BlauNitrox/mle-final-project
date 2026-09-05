@@ -157,13 +157,22 @@ class ExperimentAggregationTests(unittest.TestCase):
 
         summary = aggregate_episode_rows([row])
         overall = summary["overall"]
-
-        self.assertIsNone(
-            overall["invalid_actions"]["rate"]
-        )
+        self.assertIsNone(overall["invalid_actions"]["rate"])
 
         for value in overall["actions"]["distribution"].values():
             self.assertIsNone(value)
+
+    def test_missing_task2_counters_remain_unavailable(self) -> None:
+        row = make_episode_row(
+            coins_found=None,
+            crates_destroyed=None,
+            bombs_dropped=None,
+            self_kills=None,
+        )
+        task2 = aggregate_episode_rows([row])["overall"]["task2"]
+        self.assertIsNone(task2["self_kills"])
+        self.assertIsNone(task2["self_kill_rate"])
+        self.assertEqual(0, task2["measurement_coverage"]["self_kills"])
 
     def test_aggregates_action_counts_and_distribution(self) -> None:
         row = make_episode_row(
