@@ -1,11 +1,10 @@
 """One-way checkpoint migration from the frozen Task 1 network to Task 2.
 
 Only the input and output layers change shape (8 -> 21 inputs, 5 -> 6
-outputs); the hidden layers stay (64, 64) and are copied verbatim. New
-parameters are not left at whatever a freshly seeded network happens to
-produce: the new input columns come from that seeded network's own
-initialization (documented, deterministic, reproducible), and the new BOMB
-output row is deliberately overwritten to a fixed, conservative estimate
+outputs); the hidden layers stay (64, 64) and are copied verbatim. The new
+input columns are zeroed so the inherited five Q-values remain exactly the
+parent's for every Task 2 feature suffix. The new BOMB output row is
+deliberately overwritten to a fixed, conservative estimate
 (see `BOMB_OUTPUT_BIAS` below) so a freshly migrated policy does not select
 an untested action by chance of initialization.
 """
@@ -81,8 +80,9 @@ def migrate_online_network(
 
 
 def _migrate_input_layer(parent_layer: nn.Linear, migrated_layer: nn.Linear) -> None:
-    """Copy matching input columns; leave new columns at their seeded init."""
+    """Copy matching inputs and neutralize the Task 2-only contribution."""
     migrated_layer.weight[:, :PARENT_INPUT_DIM].copy_(parent_layer.weight)
+    migrated_layer.weight[:, PARENT_INPUT_DIM:].zero_()
     migrated_layer.bias.copy_(parent_layer.bias)
 
 
