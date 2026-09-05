@@ -91,9 +91,23 @@ corrected evaluation reused the completed final training workspaces and ran all
 
 The registered overall decision is therefore **fail**. No confirmation or
 final held-out population was used. Compact evidence is in `summary.csv` and
-`result.json`; the complete raw archive is
+`result.json`; the complete corrected raw archive is
 `issue46-corrected-results.tar.gz`, SHA-256
 `b6f40ed8c4f8e28a7fa2e91635c6a489b75e9698f28abae219bb2eb9e9d40a9b`.
+
+## Figures and evidence limits
+
+The `figures/` directory contains compact plots generated directly from
+`summary.csv`: collection fraction by replica, failure-mode rates, and the
+classic action distribution. They summarize the registered evaluation rows;
+they are not additional observations.
+
+The corrected transfer contains evaluation rows, metadata, and checksums. It
+does not contain the original training `episodes.csv` files or resource-monitor
+traces, so training learning curves and measured CPU/RAM usage cannot be
+reconstructed from this archive. Those evidence items are explicitly
+unavailable rather than inferred; the corresponding acceptance criteria remain
+open for reviewer confirmation from the server-side raw training directory.
 
 ## Decision
 
