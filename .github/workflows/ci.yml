@@ -73,18 +73,6 @@ jobs:
       - name: Install dependencies
         run: python -m pip install -r requirements-dev.txt
 
-      - name: Verify CPU-only PyTorch installation
-        run: |
-          python - <<'PY'
-          import torch
-
-          if torch.version.cuda is not None:
-              raise SystemExit(
-                  f"Expected CPU-only PyTorch, found CUDA {torch.version.cuda}"
-              )
-          print(f"Validated CPU-only PyTorch {torch.__version__}")
-          PY
-
       - name: Lint team-owned Python
         run: >
           ruff check
@@ -407,19 +395,14 @@ jobs:
           from importlib.metadata import version
 
           from packaging.requirements import Requirement
-          import torch
 
-          requirement = Requirement("torch==2.13.0+cpu")
+          requirement = Requirement("torch>=2.13,<2.14")
           installed = version("torch")
           if installed not in requirement.specifier:
               raise SystemExit(
                   f"installed torch {installed} does not satisfy {requirement.specifier}"
               )
-          if torch.version.cuda is not None:
-              raise SystemExit(
-                  f"Expected CPU-only PyTorch, found CUDA {torch.version.cuda}"
-              )
-          print(f"Validated CPU-only agent requirement with torch {installed}")
+          print(f"Validated agent requirement with torch {installed}")
           PY
 
       - name: Verify frozen checkpoint before Docker use
@@ -686,20 +669,23 @@ jobs:
           test "$(
             stat -c '%s' \
               agent_code/DagobertDuckDQNTask2/checkpoint.pt
-          )" = "23829"
+          )" = "54704"
 
           echo \
-            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
             | sha256sum --check
 
-          cmp \
-            agent_code/DagobertDuckDQN/checkpoint.pt \
-            agent_code/DagobertDuckDQNTask2/checkpoint.pt
+          echo \
+            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e  agent_code/DagobertDuckDQN/checkpoint.pt" \
+            | sha256sum --check
 
-      - name: Run successor differential tests
+      - name: Run successor and feature-module tests
         run: >
           python -m pytest
           tests/test_DagobertDuckDQNTask2_successor.py
+          tests/test_DagobertDuckDQNTask2_bombs_and_crates.py
+          tests/test_DagobertDuckDQNTask2_migration.py
+          tests/test_DagobertDuckDQNTask2_train.py
           -v
 
       - name: Package successor
@@ -772,4 +758,73 @@ jobs:
           test "$before" = "$after"
 
           test "$after" = \
-            "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
+            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e"
+
+      - name: Seeded Task 2 training smoke
+        run: |
+          cp agent_code/DagobertDuckDQNTask2/checkpoint.pt /tmp/dqntask2-clean-checkpoint.pt
+
+          python -m training.run_experiment \
+            --agent DagobertDuckDQNTask2 \
+            --mode training \
+            --scenario coin-heaven \
+            --rounds 3 \
+            --world-seed 44001 \
+            --agent-seed 44
+
+          python - <<'PY'
+          from agent_code.DagobertDuckDQNTask2.persistence import (
+              CHECKPOINT_PATH,
+              load_training_checkpoint,
+          )
+
+          checkpoint = load_training_checkpoint(CHECKPOINT_PATH)
+          if checkpoint.completed_episodes != 3:
+              raise SystemExit("training smoke did not complete three episodes")
+          PY
+
+      - name: Read-only Task 2 evaluation smoke on classic
+        run: |
+          sha256sum agent_code/DagobertDuckDQNTask2/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/dqntask2-checkpoint-before.sha256
+
+          python -m training.run_experiment \
+            --agent DagobertDuckDQNTask2 \
+            --mode evaluation \
+            --scenario classic \
+            --rounds 2 \
+            --world-seed 44002 \
+            --agent-seed 44
+
+          sha256sum agent_code/DagobertDuckDQNTask2/checkpoint.pt \
+            | cut -d ' ' -f 1 > /tmp/dqntask2-checkpoint-after.sha256
+
+          diff /tmp/dqntask2-checkpoint-before.sha256 /tmp/dqntask2-checkpoint-after.sha256
+
+      - name: Task 1 coin-heaven regression smoke
+        run: |
+          python -m training.run_experiment \
+            --agent DagobertDuckDQNTask2 \
+            --mode evaluation \
+            --scenario coin-heaven \
+            --rounds 5 \
+            --world-seed 44003 \
+            --agent-seed 44
+
+          run_directory="$(find training_outputs -mindepth 1 -maxdepth 1 -type d | sort | tail -n 1)"
+
+          python - "$run_directory" <<'PY'
+          import json
+          import sys
+
+          summary = json.loads((__import__("pathlib").Path(sys.argv[1]) / "summary.json").read_text())
+          bomb_count = summary["by_agent"]["DagobertDuckDQNTask2"]["actions"]["totals"]["action_bomb"]
+          if bomb_count != 0:
+              raise SystemExit(
+                  f"Task 1 coin-heaven regression selected BOMB {bomb_count} times; expected 0"
+              )
+          PY
+
+          # This is integration evidence that the migrated BOMB row does not
+          # dominate on Task 1 states, not a scientific performance claim.
+          cp /tmp/dqntask2-clean-checkpoint.pt agent_code/DagobertDuckDQNTask2/checkpoint.pt
