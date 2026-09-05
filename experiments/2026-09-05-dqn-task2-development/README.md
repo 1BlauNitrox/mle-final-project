@@ -1,7 +1,7 @@
 # DQN Task 2 development baseline
 
-> Status: preregistered and prepared; no scientific training or evaluation has
-> started.
+> Status: completed negative/mixed result; corrected evaluation evidence is
+> archived and linked to bug #82.
 
 ## Metadata
 
@@ -11,8 +11,8 @@
 - Parent Task 1 issue: #42
 - Task 2 implementation issue: #44
 - Run-plan orchestration issue: #50
-- Experiment implementation commit:
-  `b5f2024618c772e36481c1298edcc68df62ecbc5`
+- Experiment implementation commit: `b5f2024618c772e36481c1298edcc68df62ecbc5`
+- Metric correction and evaluation-only rerun commit: `50686bc6cfd4e3d861b6612ed083ecd8ba2607f8`
 - Owner: Waffelmanufaktur
 - Non-author reviewer: 1BlauNitrox (approval required before the first run)
 
@@ -73,10 +73,31 @@ server, archive that directory and record the archive SHA-256.
 
 ## Results
 
-Pending. No values may be added here until the registered runs complete.
+The original evaluation output was invalid because hidden coins produced a zero
+denominator. It remains preserved outside Git in the server archive. The
+corrected evaluation reused the completed final training workspaces and ran all
+840 primary plus 840 repeat episodes.
+
+- Deterministic repeats: passed.
+- Decision-time p95 and maximum limits: passed.
+- Task 2 crate/coin discovery guard and four-of-five improvement guard: passed.
+- Task 2 mean classic collection fraction (`0.30`), `+0.10` improvement,
+  self-kill, and per-replica invalid-action gates: failed.
+- Task 1 retention CI, four-of-five retention, invalid-action, and zero-bomb
+  gates: failed.
+- Hierarchical paired differences: classic trained minus untrained `+0.0406`
+  (95% CI `[+0.0233, +0.0589]`); coin-heaven trained minus Task 1 `-0.6351`
+  (95% CI `[-0.7006, -0.5658]`).
+
+The registered overall decision is therefore **fail**. No confirmation or
+final held-out population was used. Compact evidence is in `summary.csv` and
+`result.json`; the complete raw archive is
+`issue46-corrected-results.tar.gz`, SHA-256
+`b6f40ed8c4f8e28a7fa2e91635c6a489b75e9698f28abae219bb2eb9e9d40a9b`.
 
 ## Decision
 
-Pending. The next step is selected only from the registered outcome: freeze and
-confirm, run an isolated legal-action-masking experiment, register another
-single-factor experiment, or stop this lineage.
+The Task 2 feasibility and Task 1 retention gates both fail. This lineage must
+not be tuned post hoc. A possible next step is a separately registered
+single-factor legal-action-masking experiment; confirmation seeds remain
+unopened.

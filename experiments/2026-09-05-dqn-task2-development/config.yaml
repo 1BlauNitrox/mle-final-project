@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 46
-status: preregistered-not-run
+status: completed_negative
 agent: DagobertDuckDQNTask2
 experiment_implementation_commit: b5f2024618c772e36481c1298edcc68df62ecbc5
 owner: Waffelmanufaktur
@@ -69,6 +69,10 @@ analysis:
   bootstrap_resamples: 10000
   task2_resampler_seed: 46
   task1_resampler_seed: 47
+results:
+  path: experiments/2026-09-05-dqn-task2-development/result.json
+  archive_sha256: b6f40ed8c4f8e28a7fa2e91635c6a489b75e9698f28abae219bb2eb9e9d40a9b
+  overall_passed: false
 resources:
   cpu_hours_max: 18
   wall_clock_hours_max: 12

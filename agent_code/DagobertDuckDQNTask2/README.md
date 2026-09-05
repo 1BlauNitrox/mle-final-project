@@ -9,6 +9,12 @@
 > Issue #46 prospectively registers the first scientific training and
 > evaluation. Its prepared configuration contains no results yet.
 
+Issue #46 completed with a negative/mixed result. Corrected development
+evaluation passed determinism and latency checks, but failed the registered
+Task 2 feasibility and Task 1 retention gates. See
+`experiments/2026-09-05-dqn-task2-development/result.json` and Issue #82 for
+the metric correction concerning initially hidden coins.
+
 ## Purpose
 
 `DagobertDuckDQNTask2` is the DQN Task 2 successor of `DagobertDuckDQN`.
