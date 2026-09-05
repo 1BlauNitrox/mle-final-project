@@ -210,6 +210,23 @@ The complete raw record, including deterministic repeats, remains below
 `training_outputs/`; the prospective protocol is in
 `experiments/2026-09-05-dqn-task2-development/`.
 
+If an instrumentation defect invalidates completed evaluations while final
+training workspaces are intact, preserve the old plan directory and execute a
+fresh evaluation-only plan into a new output root:
+
+```bash
+python -m training.run_plan \
+  training/run_plans/issue46-dqn-task2-trained.yaml \
+  --evaluation-only \
+  --workspace-root training_outputs/run-plans-invalid-denominator \
+  --output-root training_outputs/run-plans-corrected
+```
+
+Repeat the command for the untrained and frozen Task 1 plans. The workspace
+root must contain the corresponding old plan directories and their final
+workspaces; evaluation-only mode never runs training and cannot resume an
+existing output directory.
+
 #### Plan output and resume records
 
 Before execution, the runner writes `resolved_plan.json` once and never mutates

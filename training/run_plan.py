@@ -13,7 +13,7 @@ import stat
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from time import sleep
@@ -195,8 +195,22 @@ def execute_plan(
     *,
     output_root: Path,
     resume: bool = False,
+    evaluation_only: bool = False,
+    workspace_root: Path | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if evaluation_only:
+        plan = replace(
+            plan,
+            jobs=tuple(job for job in plan.jobs if job.kind == "evaluation"),
+        )
+        if not plan.jobs:
+            raise ValueError("Evaluation-only mode requires evaluation jobs")
+        if resume:
+            raise ValueError("Evaluation-only mode cannot resume an existing plan")
+        if workspace_root is None:
+            raise ValueError("Evaluation-only mode requires --workspace-root")
+        workspace_root = Path(workspace_root).resolve()
     plan_directory = output_root.resolve() / plan.plan_id
     resolved_path = plan_directory / "resolved_plan.json"
     status_path = plan_directory / "status.json"
@@ -241,6 +255,7 @@ def execute_plan(
                     status,
                     status_path,
                     lock,
+                    workspace_root,
                 )
                 for replica in plan.replicas
                 if training_by_replica[replica.replica_id]
@@ -250,7 +265,15 @@ def execute_plan(
 
         for job in plan.jobs:
             if job.kind == "evaluation":
-                _run_job(plan, job, plan_directory, status, status_path, lock)
+                _run_job(
+                    plan,
+                    job,
+                    plan_directory,
+                    status,
+                    status_path,
+                    lock,
+                    workspace_root,
+                )
     except BaseException as error:
         status["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
         status["error"] = f"{type(error).__name__}: {error}"
@@ -275,9 +298,10 @@ def _run_training_sequence(
     status: dict[str, Any],
     status_path: Path,
     lock: threading.Lock,
+    workspace_root: Path | None = None,
 ) -> None:
     for job in jobs:
-        _run_job(plan, job, plan_directory, status, status_path, lock)
+        _run_job(plan, job, plan_directory, status, status_path, lock, workspace_root)
 
 
 def _run_job(
@@ -287,13 +311,16 @@ def _run_job(
     status: dict[str, Any],
     status_path: Path,
     lock: threading.Lock,
+    workspace_root: Path | None = None,
 ) -> None:
     job_status = status["jobs"][job.run_id]
     if job_status["status"] == "completed":
         return
 
     replica = next(item for item in plan.replicas if item.replica_id == job.replica)
-    alias_directory = _prepare_replica_workspace(plan, replica, plan_directory)
+    alias_directory = _prepare_replica_workspace(
+        plan, replica, plan_directory, workspace_root
+    )
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
     artifact_before = _sha256_file(artifact) if artifact and artifact.is_file() else None
@@ -410,14 +437,27 @@ def _run_job(
 
 
 def _prepare_replica_workspace(
-    plan: ResolvedPlan, replica: Replica, plan_directory: Path
+    plan: ResolvedPlan,
+    replica: Replica,
+    plan_directory: Path,
+    workspace_root: Path | None = None,
 ) -> Path:
     workspace = _workspace_directory(plan_directory, replica.replica_id)
     alias = _alias_directory(plan, replica)
     if not workspace.is_dir():
-        source = REPOSITORY_ROOT / "agent_code" / plan.agent
+        if workspace_root is not None:
+            source = _workspace_directory(
+                workspace_root / plan.plan_id,
+                replica.replica_id,
+            )
+            if not source.is_dir():
+                raise FileNotFoundError(
+                    f"Evaluation-only source workspace does not exist: {source}"
+                )
+        else:
+            source = REPOSITORY_ROOT / "agent_code" / plan.agent
         _snapshot_workspace(source, workspace)
-        if replica.parent_artifact:
+        if workspace_root is None and replica.parent_artifact:
             target = workspace / str(plan.artifact_path)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(replica.parent_artifact, target)
@@ -839,6 +879,16 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Print the complete matrix only")
     parser.add_argument("--resume", action="store_true", help="Resume a matching recorded plan")
     parser.add_argument(
+        "--evaluation-only",
+        action="store_true",
+        help="Run only evaluation jobs using workspaces from an earlier plan",
+    )
+    parser.add_argument(
+        "--workspace-root",
+        type=Path,
+        help="Earlier run-plan output root used as the evaluation-only workspace source",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
         default=REPOSITORY_ROOT / "training_outputs" / "run-plans",
@@ -855,7 +905,11 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(plan.to_dict(), indent=2, sort_keys=True))
             return 0
         directory = execute_plan(
-            plan, output_root=arguments.output_root, resume=arguments.resume
+            plan,
+            output_root=arguments.output_root,
+            resume=arguments.resume,
+            evaluation_only=arguments.evaluation_only,
+            workspace_root=arguments.workspace_root,
         )
     except Exception as error:
         print(f"Run plan failed: {error}", file=sys.stderr)
