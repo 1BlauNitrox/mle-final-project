@@ -87,9 +87,11 @@ class GenericWorld:
 
         # Arena with wall and crate layout
         self.arena, self.coins, self.active_agents = self.build_arena()
-        self.initially_available_coins = int(
-            sum(coin.collectable for coin in self.coins)
-        )
+        # Use the total board coin count as the collection-fraction denominator.
+        # In ``classic`` and ``loot-crate`` all coins may start hidden under
+        # crates, so counting only initially collectable coins would produce a
+        # zero denominator and make the Task 2 metric undefined.
+        self.initially_available_coins = len(self.coins)
 
         for agent in self.active_agents:
             agent.start_round()

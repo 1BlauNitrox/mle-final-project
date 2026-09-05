@@ -9,6 +9,7 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 from agents import _normalize_learning_metrics
 from environment import GenericWorld
@@ -399,6 +400,29 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
 
 
 class FrameworkStepMetricTests(unittest.TestCase):
+    def test_new_round_counts_hidden_coins_in_denominator(self) -> None:
+        world = object.__new__(GenericWorld)
+        world.args = SimpleNamespace(match_name=None)
+        world.logger = Mock()
+        world.round = 0
+        world.running = False
+        world.agents = []
+        world.build_arena = lambda: (
+            [[0]],
+            [
+                SimpleNamespace(
+                    collectable=False,
+                    get_state=lambda: {"collectable": False},
+                )
+                for _ in range(7)
+            ],
+            [],
+        )
+
+        world.new_round()
+
+        self.assertEqual(7, world.initially_available_coins)
+
     def test_episode_survival_and_action_steps_remain_distinct(self) -> None:
         statistics: defaultdict[str, int] = defaultdict(int)
         statistics["attempted_actions"] = 2
