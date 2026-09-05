@@ -1,0 +1,76 @@
+schema_version: 1
+issue: 46
+status: preregistered-not-run
+agent: DagobertDuckDQNTask2
+experiment_implementation_commit: b5f2024618c772e36481c1298edcc68df62ecbc5
+owner: Waffelmanufaktur
+reviewer: 1BlauNitrox
+source_checkpoint:
+  path: agent_code/DagobertDuckDQNTask2/checkpoint.pt
+  sha256: 44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e
+retention_baseline:
+  path: agent_code/DagobertDuckDQN/checkpoint.pt
+  sha256: eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e
+plans:
+  trained: training/run_plans/issue46-dqn-task2-trained.yaml
+  untrained: training/run_plans/issue46-dqn-task2-untrained.yaml
+  task1: training/run_plans/issue46-dqn-task1-frozen.yaml
+training:
+  replicas: 5
+  world_seeds: [14001, 14002, 14003, 14004, 14005]
+  agent_seeds: [24001, 24002, 24003, 24004, 24005]
+  stages:
+    - {scenario: coin-heaven, rounds: 2000, opponents: []}
+    - {scenario: loot-crate, rounds: 2000, opponents: []}
+    - {scenario: classic, rounds: 6000, opponents: []}
+  total_episodes: 50000
+  final_checkpoint_episode: 10000
+  max_parallel_training: 2
+evaluation:
+  passes: [primary, deterministic-repeat]
+  rounds_per_seed: 1
+  suites:
+    classic:
+      world_seeds: {start: 32001, stop_inclusive: 32040}
+      agent_seeds: {start: 42001, stop_inclusive: 42040}
+    coin-heaven:
+      world_seeds: {start: 33001, stop_inclusive: 33040}
+      agent_seeds: {start: 43001, stop_inclusive: 43040}
+    loot-crate:
+      world_seeds: {start: 34001, stop_inclusive: 34040}
+      agent_seeds: {start: 45001, stop_inclusive: 45040}
+  trained_episodes: 1200
+  untrained_episodes: 240
+  task1_episodes: 240
+  total_episodes: 1680
+reserved_confirmation:
+  world_seed_ranges: [[32041, 32050], [33041, 33050], [34041, 34050]]
+  agent_seed_ranges: [[42041, 42050], [43041, 43050], [45041, 45050]]
+criteria:
+  task2:
+    mean_classic_collection_fraction_min: 0.30
+    trained_minus_untrained_mean_min: 0.10
+    trained_minus_untrained_ci_lower_strictly_above: 0.0
+    replicas_improving_min: 4
+    aggregate_self_kill_rate_max: 0.20
+    aggregate_invalid_action_rate_max: 0.10
+    per_replica_invalid_action_rate_max: 0.15
+  task1:
+    retention_ci_lower_strictly_above: -0.05
+    replicas_within_0_10_min: 4
+    aggregate_and_per_replica_invalid_action_rate_strictly_below: 0.01
+    bomb_actions: 0
+  compatibility:
+    maximum_episode_p95_decision_time_ms_strictly_below: 50
+    maximum_decision_time_ms_strictly_below: 100
+    deterministic_repeat: true
+    evaluation_artifact_immutable: true
+analysis:
+  bootstrap_resamples: 10000
+  task2_resampler_seed: 46
+  task1_resampler_seed: 47
+resources:
+  cpu_hours_max: 18
+  wall_clock_hours_max: 12
+  memory_gib_max: 8
+  paid_resources: false

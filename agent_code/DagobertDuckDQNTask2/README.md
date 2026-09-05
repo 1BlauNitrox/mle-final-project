@@ -5,6 +5,9 @@
 >
 > Current capability: Task 1 visible-coin navigation plus bomb placement,
 > crate destruction, and self-survival on a board without opponents.
+>
+> Issue #46 prospectively registers the first scientific training and
+> evaluation. Its prepared configuration contains no results yet.
 
 ## Purpose
 
