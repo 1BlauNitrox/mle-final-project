@@ -207,7 +207,9 @@ Every attempt delegates to `training.run_experiment`, so `framework_stats.json`,
 `episodes.csv`, `summary.json`, and the existing plotting/aggregation interfaces
 remain unchanged. Evaluation metadata explicitly records training off, one
 process, and an immutable artifact; the runner verifies the artifact checksum
-after every evaluation job.
+after every evaluation job. Evaluation suites use the replica workspace after
+the final ordered training stage; earlier stage checkpoints are archived for
+lineage and are not selected implicitly.
 
 ### Issue #41 registered DQN series
 

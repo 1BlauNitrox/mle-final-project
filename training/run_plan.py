@@ -256,6 +256,7 @@ def execute_plan(
         status["error"] = f"{type(error).__name__}: {error}"
         status["updated_at"] = _timestamp()
         _write_json_atomic(status_path, status)
+        _discard_staging_aliases(plan)
         raise
 
     status["status"] = "completed"
@@ -275,7 +276,6 @@ def _run_training_sequence(
     status_path: Path,
     lock: threading.Lock,
 ) -> None:
-    _prepare_replica_workspace(plan, replica, plan_directory)
     for job in jobs:
         _run_job(plan, job, plan_directory, status, status_path, lock)
 
@@ -297,6 +297,7 @@ def _run_job(
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
     artifact_before = _sha256_file(artifact) if artifact and artifact.is_file() else None
+    artifact_record: dict[str, Any] | None = None
     if job.kind == "evaluation" and artifact is not None and artifact.is_file():
         artifact.chmod(stat.S_IREAD)
 
@@ -350,7 +351,7 @@ def _run_job(
             if artifact_before != artifact_after:
                 raise RuntimeError(f"Evaluation job {job.run_id} modified its artifact")
             if artifact is not None:
-                job_status["artifact"] = {
+                artifact_record = {
                     "path": (
                         Path("replicas")
                         / job.replica
@@ -374,18 +375,21 @@ def _run_job(
             )
             checkpoint.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(artifact, checkpoint)
-            job_status["artifact"] = {
+            artifact_record = {
                 "path": checkpoint.relative_to(plan_directory).as_posix(),
                 "sha256": _sha256_file(checkpoint),
                 "selection": "final checkpoint after the exact stage budget",
             }
         _snapshot_workspace(alias_directory, _workspace_directory(plan_directory, job.replica))
-        attempt["status"] = "completed"
-        attempt["finished_at"] = _timestamp()
-        attempt["metadata"] = (
-            run_directory / "metadata.json"
-        ).relative_to(plan_directory).as_posix()
-        job_status["status"] = "completed"
+        with lock:
+            if artifact_record is not None:
+                job_status["artifact"] = artifact_record
+            attempt["status"] = "completed"
+            attempt["finished_at"] = _timestamp()
+            attempt["metadata"] = (
+                run_directory / "metadata.json"
+            ).relative_to(plan_directory).as_posix()
+            job_status["status"] = "completed"
     except BaseException as error:
         if alias_directory.is_dir():
             _snapshot_workspace(
@@ -393,11 +397,11 @@ def _run_job(
                 attempt_root / f"{attempt_id}-failed-agent",
             )
             _remove_tree(alias_directory)
-        _snapshot_workspace(attempt_input, alias_directory)
-        attempt["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
-        attempt["finished_at"] = _timestamp()
-        attempt["error"] = f"{type(error).__name__}: {error}"
-        job_status["status"] = attempt["status"]
+        with lock:
+            attempt["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
+            attempt["finished_at"] = _timestamp()
+            attempt["error"] = f"{type(error).__name__}: {error}"
+            job_status["status"] = attempt["status"]
         raise
     finally:
         with lock:
@@ -620,6 +624,14 @@ def _remove_staging_aliases(plan: ResolvedPlan, plan_directory: Path) -> None:
             _remove_tree(alias)
 
 
+def _discard_staging_aliases(plan: ResolvedPlan) -> None:
+    """Remove disposable aliases after a failed plan without touching snapshots."""
+    for replica in plan.replicas:
+        alias = _alias_directory(plan, replica)
+        if alias.is_dir():
+            _remove_tree(alias)
+
+
 def _make_tree_writable(path: Path) -> None:
     for candidate in [path, *path.rglob("*")]:
         candidate.chmod(candidate.stat().st_mode | stat.S_IWUSR)
@@ -667,10 +679,13 @@ def _fingerprint_paths(paths: tuple[str, ...]) -> str:
 
 def _fingerprint_directory(path: Path) -> str:
     digest = hashlib.sha256()
+    ignored_parts = {"__pycache__", "logs"}
+    ignored_files = {".evaluation-checkpoint.pt"}
     for candidate in sorted(path.rglob("*")):
         if (
             not candidate.is_file()
-            or "__pycache__" in candidate.parts
+            or ignored_parts.intersection(candidate.relative_to(path).parts)
+            or candidate.name in ignored_files
             or candidate.suffix == ".pyc"
         ):
             continue

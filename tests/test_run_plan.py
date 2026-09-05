@@ -82,6 +82,19 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
 
 
+def test_agent_fingerprint_ignores_runtime_logs_and_staged_checkpoint(
+    tmp_path: Path,
+) -> None:
+    agent = tmp_path / "agent"
+    agent.mkdir()
+    (agent / "callbacks.py").write_text("# policy\n", encoding="utf-8")
+    before = run_plan._fingerprint_directory(agent)
+    (agent / "logs").mkdir()
+    (agent / "logs" / "agent.log").write_text("runtime\n", encoding="utf-8")
+    (agent / ".evaluation-checkpoint.pt").write_bytes(b"staged")
+    assert run_plan._fingerprint_directory(agent) == before
+
+
 def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
     mutations = {
         "schema version": (lambda plan: plan.update(schema_version=2), "schema version"),
@@ -152,6 +165,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         assert failed_job["status"] == "failed"
         assert len(failed_job["attempts"]) == 1
         assert (plan_directory / "jobs/train-r1-coins/attempt-001-failed-agent").is_dir()
+        assert not run_plan._alias_directory(plan, plan.replicas[0]).exists()
 
         run_plan.execute_plan(plan, output_root=output_root, resume=True)
 
@@ -188,6 +202,37 @@ def test_resume_rejects_every_protected_fingerprint(tmp_path: Path) -> None:
         mismatched = replace(plan, fingerprints=changed)
         with pytest.raises(ValueError, match=key):
             run_plan.execute_plan(mismatched, output_root=output_root, resume=True)
+
+
+def test_parallel_replicas_keep_status_and_artifacts_isolated(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["evaluation_suites"] = []
+    data["training_stages"] = [data["training_stages"][0]]
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    calls: list[str] = []
+
+    def fake_runner(**kwargs: object) -> Path:
+        alias = str(kwargs["agent"])
+        calls.append(alias)
+        run_directory = Path(kwargs["output_root"]) / str(kwargs["run_id"])
+        run_directory.mkdir(parents=True)
+        (run_directory / "metadata.json").write_text("{}\n", encoding="utf-8")
+        (run_plan.REPOSITORY_ROOT / "agent_code" / alias / "model.npz").write_bytes(
+            alias.encode("utf-8")
+        )
+        return run_directory
+
+    with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
+        plan_directory = run_plan.execute_plan(plan, output_root=tmp_path / "outputs")
+
+    assert len(calls) == 2
+    assert len(set(calls)) == 2
+    assert {
+        (plan_directory / "artifacts" / replica.replica_id / "coins" / "model.npz").read_bytes()
+        for replica in plan.replicas
+    } == {alias.encode("utf-8") for alias in calls}
+    status = json.loads((plan_directory / "status.json").read_text())
+    assert {job["status"] for job in status["jobs"].values()} == {"completed"}
 
 
 def test_existing_single_run_accepts_deterministic_id_and_plan_metadata(
