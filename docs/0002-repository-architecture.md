@@ -66,6 +66,27 @@ The exact optional modules can differ by agent. The invariants are:
 - its final policy contains no multiprocessing; and
 - it loads its trained parameters relative to its own module location.
 
+## Staged experiment orchestration
+
+`training.run_plan` is the repository-level orchestration boundary for Tasks
+2-4. A versioned YAML plan separates ordered training curricula from evaluation
+suites and expands them into exact single-run jobs handled by
+`training.run_experiment`. This preserves the established metrics,
+normalization, aggregation, and plotting contracts.
+
+Independent replicas train in isolated, ignored staging copies of the selected
+agent. Their agent-relative persistence code therefore writes only to that
+replica, even when training workers run concurrently. Each successful stage is
+copied to a checksum-recorded artifact location. Evaluation jobs are always
+serial, omit framework training, measure one observed agent, and verify that the
+staged artifact did not change.
+
+The resolved plan is immutable. Mutable status is stored separately and retains
+failed and interrupted attempts. Resume requires exact configuration, source,
+framework, dependency, agent, and parent-artifact fingerprints, then restarts an
+unfinished job from its last completed-stage workspace. None of this tooling is
+imported by evaluation-time agent code or included in a submitted agent.
+
 ## Frozen agents and development successors
 
 A frozen evaluation agent is immutable. Later development must not change its

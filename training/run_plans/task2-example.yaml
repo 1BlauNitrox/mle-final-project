@@ -1,0 +1,40 @@
+schema_version: 1
+plan_id: task2-example
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+max_parallel_training: 2
+replicas:
+  - id: r1
+    world_seed: 13001
+    agent_seed: 14001
+  - id: r2
+    world_seed: 13002
+    agent_seed: 14002
+training_stages:
+  - id: visible-coins
+    scenario: coin-heaven
+    rounds: 500
+    opponents: []
+  - id: dense-crates
+    scenario: loot-crate
+    rounds: 1500
+    opponents: []
+  - id: classic-crates
+    scenario: classic
+    rounds: 2000
+    opponents: []
+evaluation_suites:
+  - id: task1-regression
+    population: development
+    scenario: coin-heaven
+    rounds: 20
+    world_seeds: [33001, 33002]
+    agent_seeds: [34001, 34002]
+    opponents: []
+  - id: task2-development
+    population: confirmation
+    scenario: classic
+    rounds: 20
+    world_seeds: [35001, 35002]
+    agent_seeds: [36001, 36002]
+    opponents: []

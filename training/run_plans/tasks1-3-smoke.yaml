@@ -1,0 +1,31 @@
+schema_version: 1
+plan_id: tasks1-3-smoke
+agent: random_agent
+artifact_path: null
+replicas:
+  - id: smoke
+    world_seed: 9001
+    agent_seed: 9101
+training_stages: []
+evaluation_suites:
+  - id: task1
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: [9201]
+    agent_seeds: [9301]
+    opponents: []
+  - id: task2
+    population: confirmation
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: [9401]
+    agent_seeds: [9501]
+    opponents: []
+  - id: task3
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: [9601]
+    agent_seeds: [9701]
+    opponents: [peaceful_agent]
