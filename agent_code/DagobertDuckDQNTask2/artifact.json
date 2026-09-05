@@ -1,28 +1,28 @@
 {
     "manifest_schema_version": 1,
-    "status": "task2_successor_scaffold",
+    "status": "task2_capability_in_development",
     "agent": "DagobertDuckDQNTask2",
-    "capability": "task1_behavior_only",
+    "capability": "task1_navigation_plus_task2_bombs_and_crates",
     "artifact": {
       "path": "checkpoint.pt",
-      "sha256": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e",
-      "size_bytes": 23829
+      "sha256": "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e",
+      "size_bytes": 54704,
+      "note": "A fresh training-ready checkpoint (completed_episodes=0) built by scripts/migrate_task2_dqn_capability.py, not a trained or evaluated artifact."
     },
     "model_contract": {
       "algorithm": "deep_q_network",
-      "artifact_schema_version": 1,
+      "checkpoint_schema_version": 1,
       "model_schema_version": 1,
-      "feature_schema_version": 1,
+      "feature_schema_version": 2,
       "action_order": [
         "UP",
         "RIGHT",
         "DOWN",
         "LEFT",
-        "WAIT"
-      ],
-      "forbidden_actions": [
+        "WAIT",
         "BOMB"
-      ]
+      ],
+      "forbidden_actions": []
     },
     "parent": {
       "agent": "DagobertDuckDQN",
@@ -36,9 +36,27 @@
       "producing_experiment_commit": "dbe259721409092448e8594cbeaaca469c4f9835",
       "framework_revision": "0f55c1d"
     },
+    "migration": {
+      "script": "scripts/migrate_task2_dqn_capability.py",
+      "parent_input_dim": 8,
+      "parent_output_dim": 5,
+      "parent_hidden_sizes": [64, 64],
+      "successor_input_dim": 21,
+      "successor_output_dim": 6,
+      "seed": 44,
+      "rule": [
+        "copy the parent's 8 input-layer columns verbatim into the successor's first 8 input columns",
+        "initialize the remaining 13 input columns from a network freshly seeded with the migration seed",
+        "copy both hidden layers (64x64) verbatim; their shape is unchanged",
+        "copy the parent's 5 output rows and biases verbatim into the successor's first 5 output rows",
+        "zero the BOMB output row's weights and set its bias to -1.0, a fixed conservative estimate",
+        "initialize the target network from the migrated online network",
+        "reset the optimizer and replay buffer to fresh/empty; neither is compatible with the parent's"
+      ]
+    },
     "policy": {
-      "task2_features_present": false,
-      "bomb_action_present": false,
+      "task2_features_present": true,
+      "bomb_action_present": true,
       "scientific_training_authorized": false
     }
   }

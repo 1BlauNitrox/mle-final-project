@@ -1,27 +1,22 @@
 # DagobertDuckDQNTask2
 
-> Status: behavior-preserving Task 2 successor scaffold.
+> Status: Task 2 capability implemented (issue #44), not yet scientifically
+> trained or evaluated.
 >
-> Current capability: Task 1 visible-coin navigation only.
+> Current capability: Task 1 visible-coin navigation plus bomb placement,
+> crate destruction, and self-survival on a board without opponents.
 
 ## Purpose
 
 `DagobertDuckDQNTask2` is the DQN Task 2 successor of `DagobertDuckDQN`.
 
-The successor was created for issue #43 so that Task 2 development can continue
-without modifying the frozen Task 1 baseline. The initial successor deliberately
-preserves the parent agent's observable behavior.
-
-This change is a structural refactor and artifact migration only. It introduces:
-
-- no Task 2 state features;
-- no bomb action;
-- no new rewards;
-- no scientific training;
-- no performance claim.
-
-Future Task 2 behavior must be introduced through separately reviewed and
-experimentally evaluated issues (starting with issue #44).
+Issue #43 created it as a byte-identical, behavior-preserving scaffold of the
+frozen Task 1 baseline. Issue #44 (this revision) adds the actual Task 2
+capability: bomb/crate/danger features, a six-action network, a one-way
+checkpoint migration from the frozen parent's weights, Task 2 rewards, and
+training diagnostics. It does not run or claim a scientific result -- that is
+separate, downstream experiment work. Curriculum orchestration is explicitly
+split to issue #50.
 
 ## Parent baseline
 
@@ -32,19 +27,14 @@ agent_code/DagobertDuckDQN/
 ```
 
 Its frozen source, configuration, documentation, and model artifact remain
-unchanged.
-
-The successor starts from the parent's selected Task 1 model artifact:
+unchanged by this issue; `test_parent_checkpoint_is_unmodified` pins its
+checksum.
 
 | Property | Value |
 | --- | --- |
 | Parent agent | `DagobertDuckDQN` |
-| Artifact | `checkpoint.pt` |
-| SHA-256 | `eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e` |
-| Size | `23829` bytes |
-| Evaluation-artifact schema | `1` |
-| Model schema | `1` |
-| Feature schema | `1` |
+| Parent artifact | `checkpoint.pt`, SHA-256 `eb08e3f6...ba8b05e`, `23829` bytes |
+| Parent action order | `UP, RIGHT, DOWN, LEFT, WAIT` (5 actions, 8 features) |
 | Producing agent commit | `84396eb771a7eb3e3daa028a415e9b00570b20c8` |
 | Producing experiment commit | `dbe259721409092448e8594cbeaaca469c4f9835` |
 | Frozen parent source commit | `d81eee00ffa4b095edbcf3be6510594dda9a9733` |
@@ -52,172 +42,266 @@ The successor starts from the parent's selected Task 1 model artifact:
 | Parent freeze merge commit (PR #72, squash-merged) | `0e34bc0e93a6ffa4746bb9987962a8f5169e71cd` |
 | Framework revision | `0f55c1d` |
 
-The successor artifact is copied and verified by:
-
-```text
-scripts/migrate_task2_dqn_artifact.py
-```
-
-Machine-readable successor lineage is recorded in `artifact.json`. The original
-parent manifest is preserved as `parent-artifact.json`.
+Full lineage is in `artifact.json`'s `parent` and `migration` blocks. The
+original frozen manifest is preserved as `parent-artifact.json`.
 
 `baseline-config.yaml` and `reference-results.csv` are inherited Task 1
-provenance records. They describe the frozen parent experiment (issue #58,
-selected under issue #42) and must not be interpreted as a Task 2 successor
-configuration or as new successor evidence.
+provenance records describing the *parent's* issue #58/#42 history. They are
+not Task 2 configuration or evidence.
 
-## Current behavior contract
+## Checkpoint migration
 
-The successor currently preserves the complete Task 1 behavior contract.
+`scripts/migrate_task2_dqn_capability.py` builds the committed `checkpoint.pt`
+from the parent's frozen network. It supersedes issue #43's byte-copy
+placeholder, since the two checkpoints are no longer the same shape.
 
-Its ordered action set is:
+The rule (`agent_code/DagobertDuckDQNTask2/migration.py`, tested in
+`tests/test_DagobertDuckDQNTask2_migration.py`):
 
-```text
-UP, RIGHT, DOWN, LEFT, WAIT
-```
+- the parent's 8 input-layer columns are copied verbatim into the successor's
+  first 8 input columns; the remaining 13 columns come from a network freshly
+  seeded with the migration seed (`44`) -- deterministic, not left to chance;
+- both hidden layers (`64x64`) are copied verbatim; their shape does not
+  change;
+- the parent's 5 output rows and biases are copied verbatim into the
+  successor's first 5 output rows;
+- the new `BOMB` output row's weights are zeroed and its bias fixed at `-1.0`
+  -- a deliberately conservative estimate so a freshly migrated policy does
+  not select an untested action by chance of initialization (verified
+  empirically: a coin-heaven regression smoke over 5 rounds selected `BOMB`
+  zero times);
+- the target network is initialized from the migrated online network;
+- the optimizer and replay buffer are reset to fresh/empty -- neither is
+  compatible with the parent's shapes, and neither has any value for a
+  network that has not yet trained under the new architecture.
 
-`BOMB` is deliberately excluded. Bomb placement is not implemented by issue #43.
+The committed checkpoint is therefore a **fresh, training-ready** artifact
+(`completed_episodes=0`), not a trained or evaluated one.
 
-Evaluation:
-
-- loads the committed `checkpoint.pt`;
-- uses epsilon `0`;
-- performs no learning;
-- does not modify the checkpoint;
-- uses one PyTorch CPU thread and no multiprocessing;
-- selects only actions from the five-action Task 1 action space.
-
-## State representation
-
-The state is encoded as the same eight-element tuple used by the parent:
-
-```text
-(
-    free_up,
-    free_right,
-    free_down,
-    free_left,
-    coin_visible,
-    coin_dx,
-    coin_dy,
-    coin_distance_bin,
-)
-```
-
-The meaning of these features is unchanged:
-
-- the first four values indicate whether adjacent tiles are traversable;
-- `coin_visible` indicates whether at least one coin is visible;
-- `coin_dx` and `coin_dy` contain the direction signs to the nearest coin;
-- `coin_distance_bin` contains the coarse Manhattan-distance category.
-
-The feature schema remains version `1` and the feature count remains `8`.
-
-The implementation has only been reorganized into:
+## Action space
 
 ```text
-features/
-├── __init__.py
-├── assemble.py
-└── navigation.py
+UP, RIGHT, DOWN, LEFT, WAIT, BOMB
 ```
 
-`assemble.py` constructs the complete feature tuple and normalizes it for the
-network. `navigation.py` contains the existing local-navigation and
-nearest-coin helpers. `features/__init__.py` provides the stable public
-feature API.
+`BOMB` is appended; the first five indices are unchanged from Task 1, so the
+migrated output rows keep their meaning exactly.
 
-This reorganization must not change the returned feature tuple or its
-normalized form.
+## Feature schema (version 2, 21 features)
 
-## Learning method
-
-The inherited model is a small feed-forward Deep Q-Network:
+Indices 0-7 are the unchanged Task 1 prefix (identical values on Task 1
+states -- pinned by `test_task1_prefix_matches_parent_on_task1_states`):
 
 ```text
-8 inputs -> Linear(8, 64) -> ReLU -> Linear(64, 64) -> ReLU -> Linear(64, 5)
+free_up, free_right, free_down, free_left,
+coin_visible, coin_dx, coin_dy, coin_distance_bin
 ```
 
-Q-values map to the fixed action order `UP, RIGHT, DOWN, LEFT, WAIT`. The
-learning rate remains `0.001` and the discount factor remains `0.9`.
+Indices 8-20 are the Task 2 additions, computed in
+`features/bombs_and_crates.py`:
 
-No network architecture, weight, action order, or hyperparameter is changed by
-issue #43.
+| # | Feature | Domain |
+| --: | --- | --- |
+| 8 | `bomb_available` | `{0, 1}` |
+| 9 | `danger_countdown_bin` (here) | `{0..3}` (0=safe, 1=lethal now/lingering, 2=soon, 3=later) |
+| 10-13 | `safe_up/right/down/left` | `{0, 1}` each |
+| 14 | `escape_exists_after_bomb` | `{0, 1}` |
+| 15 | `crate_visible` | `{0, 1}` |
+| 16-17 | `crate_dx`, `crate_dy` | `{-1, 0, 1}` |
+| 18 | `crate_distance_bin` | `{0..3}` |
+| 19 | `crates_destroyed_here_bin` | `{0..3}`, capped |
+| 20 | `bomb_has_useful_target` | `{0, 1}` |
+
+Normalization divides indices `7`, `9`, `18`, `19` by `3`; everything else is
+already in `[-1, 1]`.
+
+**Blast physics** (`blast_footprint`, `build_danger_map`) mirror the framework:
+a bomb's blast is a cross of radius `3` that stops only at walls, not crates
+(`items.Bomb.get_blast_coords`). Each tile retains every inclusive lethal time
+interval from overlapping bombs and active explosions. Timer boundaries follow
+the framework update order: an observed positive timer `t` detonates after
+`t + 1` arrivals and remains dangerous for `EXPLOSION_TIMER=2` arrivals.
+
+**Escape and safety** (`safe_direction`, `safe_escape_exists`) use a
+time-aware breadth-first search: a candidate tile must be enterable (open,
+not currently occupied by a bomb or another agent) *and* not lethal at the
+exact step the agent would arrive there, for every step of the path, not just
+the destination. `safe_escape_exists` additionally simulates a hypothetical
+bomb placed at the current position to answer "if I place a bomb here, can I
+still get away?"
+
+**Crate targeting** (`nearest_crate_features`, `crates_destroyed_by_bomb_at`)
+uses deterministic BFS to the nearest reachable open tile from which a bomb
+would destroy at least one crate. It encodes the first path direction and path
+distance, or neutral values when no useful bombing tile is reachable. A
+separate feature counts crates hit by a bomb at the current position.
+
+There are no opponents in the Task 2 curriculum (`coin-heaven`, `loot-crate`,
+`classic` without opponents), so the danger model accounts only for bombs
+already on the board; it does not simulate an opponent placing a new one.
+
+## Hyperparameter revision
+
+Task 1's defaults are not reused verbatim (`config.py` has the full,
+computed rationale). In short: `DagobertDuckDQN`'s `epsilon_decay=0.99` over
+a 10,000-episode budget reaches its exploration floor after roughly 230
+episodes -- under 3% of the run -- which issue #58 identified as consistent
+with why its greedy evaluation diverged so far from its training performance
+(0.989-1.000 training vs. 0.65-0.92 greedy evaluation). `epsilon_decay=0.9997`
+reaches the same floor around episode 8,000 instead. `learning_rate`
+(`0.001 -> 0.0005`), `target_update_interval` (`250 -> 500`), and
+`replay_warmup` (`256 -> 500`) are also revised, more conservatively, for the
+larger 21-feature/6-action problem.
+
+**These are implementation defaults, not a validated fix.** None of the four
+has been tested as a controlled variable; citing them as evidence that Task 2
+training is more stable than Task 1's would be exactly the kind of unearned
+claim this repository's process exists to prevent. A registered experiment
+comparing them is future work.
 
 ## Rewards
 
-The inherited reward mapping is unchanged:
+| Event | Reward | Source |
+| --- | ---: | --- |
+| `COIN_COLLECTED` | `+10.0` | inherited |
+| `INVALID_ACTION` | `-0.5` | inherited |
+| `WAITED` | `-0.1` | inherited |
+| `MOVED_TOWARDS_COIN` | `+0.1` | inherited |
+| `MOVED_AWAY_FROM_COIN` | `-0.1` | inherited |
+| `CRATE_DESTROYED` | `+1.0` | new |
+| `COIN_FOUND` | `+2.0` | new |
+| `KILLED_SELF` | `-10.0` | new |
+| `GOT_KILLED` | `-10.0` | new (unreachable without opponents) |
+| `SURVIVED_ROUND` | `+5.0` | new |
+| `USEFUL_BOMB_PLACED` | `+0.5` | new, custom shaping |
+| `WASTEFUL_BOMB_PLACED` | `-0.5` | new, custom shaping |
 
-| Event | Reward |
-| --- | ---: |
-| `COIN_COLLECTED` | `+10.0` |
-| `INVALID_ACTION` | `-0.5` |
-| `WAITED` | `-0.1` |
-| `MOVED_TOWARDS_COIN` | `+0.1` |
-| `MOVED_AWAY_FROM_COIN` | `-0.1` |
+`CRATE_DESTROYED`, `COIN_FOUND`, `KILLED_SELF`, `GOT_KILLED`, and
+`SURVIVED_ROUND` are native framework events (`events.py`); no custom
+derivation is needed for them. The two `*_BOMB_PLACED` events are custom
+shaping computed only when the framework confirms `BOMB_DROPPED` actually
+happened (an attempted-but-invalid `BOMB` gets `INVALID_ACTION` only).
+`BOMB_DROPPED` and `BOMB_EXPLODED` are deliberately left unrewarded on their
+own, so bomb placement is learned from its consequences rather than a flat
+per-placement bonus.
 
-These rewards document the inherited Task 1 behavior, including the movement-
-coin shaping tested in issue #58. Issue #43 does not add Task 2 reward shaping.
+All values are the pre-exploration implementation defaults. The later reward
+variants described below were reverted because they were selected after
+observing unregistered runs. They may be tested only in a prospective,
+controlled experiment.
+
+## Development history
+
+Full detail, including binned training-curve data and figures for round 3,
+is in `experiments/2026-09-04-dqn-task2-capability-development/`.
+
+**2026-09-03/04, unregistered overnight run.** Before the redesign above, an
+exploratory training run on `loot-crate` reached 129,091 episodes. A
+snapshot evaluation at that point showed real problems, not a clean learning
+curve:
+
+- 18/20 episodes ended in self-inflicted death;
+- mean coins collected fell to 3.65/50 despite ~77 mean steps per episode;
+- a Task 1 regression check on `coin-heaven` (no bombs, no crates) showed
+  the invalid-action rate had risen from ~0% at migration to 59%, and `BOMB`
+  was now selected 224 times in 10 rounds versus 0 at migration -- training
+  on Task 2 was visibly eroding Task 1 behavior, not just leaving it alone.
+
+Investigating this surfaced two real problems, not just "needs more
+training":
+
+1. **A bug**, not a design gap: `escape_after_bomb` never actually added a
+   hypothetical bomb to the danger map before checking for an escape route,
+   so it silently measured "can I escape right now" instead of "would this
+   bomb trap me." Fixed in `features/assemble.py`; pinned by
+   `test_escape_after_bomb_feature_simulates_a_hypothetical_bomb`.
+2. **A candidate hypothesis**: `MOVED_TOWARDS_COIN`/`MOVED_AWAY_FROM_COIN`
+   carried over from the frozen parent's config without being reconsidered
+   for Task 2. Issue #58's own result for that shaping was inconclusive (a
+   95% CI of roughly `+-0.24` on the paired comparison) -- there was never
+   evidence it helps, and no Task-2-specific justification was given for
+   keeping it either. The development branch temporarily removed it and added
+   safe/unsafe bomb shaping. Those outcome-driven reward changes are recorded
+   here but are not shipped by this PR.
+
+This run was not re-executed after the fix. Its numbers motivate future
+hypotheses; they do not select the shipped reward configuration.
+
+**2026-09-04, follow-up development run.** A second exploratory run with the
+fixes above showed Task 1 retention fully recovered (coin-heaven
+invalid-action rate back to ~0%, `BOMB` still never selected), which
+confirmed the escape-feature fix held up under real training. But Task 2
+itself settled into a passive local optimum rather than continuing to
+improve: across three snapshots (episodes ~5k, ~12k, ~24k) the `loot-crate`
+death rate rose from 40% to 65% to 70%, mean coins plateaued around 2.2-2.25,
+and the action mix became lopsided -- roughly 43% `WAIT` and next to no
+`LEFT`/`RIGHT`, consistent across different evaluation seeds.
+
+Two contributing factors, not mutually exclusive:
+
+1. That run used `--rounds 500000` against an epsilon schedule computed for
+   a 10,000-episode budget (see the hyperparameter revision above), so
+   epsilon hit its floor around episode 8,000 -- under 2% of that run's
+   target -- leaving little further exploration to escape a bad optimum for
+   the remaining 98%. The same shape of problem the schedule was built to
+   fix, recreated at the wrong episode count.
+2. `SURVIVED_ROUND` (`+5.0`) was large enough relative to
+   `CRATE_DESTROYED`/`COIN_FOUND` (`+1.0`/`+2.0`) that passively surviving a
+   round was plausibly competitive with actually engaging with it.
+
+The development branch temporarily reduced `SURVIVED_ROUND` to `+2.0` and
+strengthened `WAITED` to `-0.3`, then ran another 15,000 episodes. Because the
+observations selected those changes post hoc, both changes are reverted in
+the shipped implementation. The record remains useful for preregistering a
+controlled reward experiment, not for claiming either value is better.
 
 ## Training status
 
-Scientific training is not authorized as part of issue #43.
+Training is implemented and enabled (`setup_training` no longer raises).
+Running it produces real diagnostics -- per-episode event counts for every
+reward-relevant event, in addition to the inherited loss/TD-error/replay/
+target-sync metrics -- but **no scientific training has been run under this
+issue**, and none is authorized by it (see `artifact.json`'s
+`scientific_training_authorized: false`). A registered Task 2 experiment is
+separate, downstream work.
 
-Calling `setup_training()` currently raises a `RuntimeError` before optimizer
-updates or checkpoint writes can occur. This prevents the migrated parent
-artifact from being accidentally overwritten during the behavior-preserving
-scaffold change.
+A training-only curriculum mixing `coin-heaven`, `loot-crate`, and `classic`
+(without opponents) is expected to live in `training/` orchestration under
+issue #50. Issue #44 implements the agent-side capability that curriculum
+will drive; the reviewed issue split records the orchestration as downstream.
 
-A later Task 2 issue (#44) may deliberately enable training after defining:
+## Smoke evidence (integration only, not performance evidence)
 
-- a Task 2 feature contract (bomb, crate, and danger representation);
-- an extended six-action contract (`BOMB` appended, preserving the five Task 1
-  indices);
-- Task 2 rewards;
-- controlled checkpoint migration from this scaffold's weights;
-- fixed seeds and a curriculum;
-- evaluation metrics and success criteria;
-- artifact provenance.
+Run locally against the committed checkpoint:
 
-## Evaluation
+- a 3-round seeded training smoke on `coin-heaven` (world seed `44001`,
+  agent seed `44`) completed 3 episodes and selected `BOMB` during training;
+- a 2-round read-only evaluation smoke on `classic` without opponents
+  completed and left the checkpoint byte-identical;
+- a 5-round read-only evaluation smoke on `coin-heaven` (the Task 1
+  regression check) completed and selected `BOMB` **zero** times, and left
+  the checkpoint byte-identical.
 
-A local read-only smoke evaluation can be run with:
-
-```bash
-python -m training.run_experiment \
-  --agent DagobertDuckDQNTask2 \
-  --mode evaluation \
-  --scenario coin-heaven \
-  --rounds 2 \
-  --world-seed 3001 \
-  --agent-seed 2001
-```
-
-This is a compatibility and regression check, not a scientific experiment and
-not performance evidence.
-
-The checksum before and after evaluation must remain:
-
-```text
-eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e
-```
+These are the same three checks CI runs (`dqn-task2-successor-smoke`); CI
+restores the clean, untrained checkpoint afterward so the committed artifact
+stays the migration's direct output.
 
 ## Validation
 
-Behavior preservation is checked by tests that compare parent and successor:
-
-- artifact bytes and SHA-256 checksum;
-- evaluation-artifact, model, and feature schema;
-- action order;
-- hyperparameters and rewards;
-- feature tuples for representative game states;
-- Q-values for the migrated network on representative and generated states;
-- deterministic read-only actions;
-- artifact immutability during evaluation;
-- absence of `BOMB`.
-
-The successor package is additionally evaluated after being copied into a clean
-framework tree.
+- `tests/test_DagobertDuckDQNTask2_successor.py`: Task 1 prefix and neutral
+  Task 2 feature values are pinned on Task 1 states; parent lineage and
+  migration are recorded in the manifest; the migrated network continues the
+  parent's weights exactly.
+- `tests/test_DagobertDuckDQNTask2_bombs_and_crates.py`: blast propagation
+  (wall-blocking, crate pass-through), danger-map timers and lingering,
+  per-direction safety, escape existence (including a sealed no-escape case
+  and a walk-away case), and crate targeting.
+- `tests/test_DagobertDuckDQNTask2_migration.py`: preserved input/hidden/
+  output weights, the conservative `BOMB` row, deterministic repeatability,
+  and rejection of an incompatible parent or successor config.
+- `tests/test_DagobertDuckDQNTask2_train.py`: training re-enabled, the
+  bomb-usefulness shaping event (including the invalid-attempt case), event
+  counting and its per-round reset, and a full six-action optimizer update.
 
 ## Package structure
 
@@ -232,6 +316,7 @@ DagobertDuckDQNTask2/
 ├── callbacks.py
 ├── config.py
 ├── model.py
+├── migration.py
 ├── checkpoint.pt
 ├── persistence.py
 ├── replay.py
@@ -240,28 +325,33 @@ DagobertDuckDQNTask2/
 └── features/
     ├── __init__.py
     ├── assemble.py
-    └── navigation.py
+    ├── navigation.py
+    └── bombs_and_crates.py
 ```
 
 Evaluation-time code is self-contained inside this directory. It does not
-import from the parent agent, `training/`, `experiments/`, or `scripts/`.
+import from the parent agent, `training/`, `experiments/`, or `scripts/`
+(`migration.py` is imported only by the migration script and its tests, never
+by `callbacks.py`/`train.py`).
 
 Parent imports are permitted only in repository-level differential tests.
 
 ## Limitations and next steps
 
-The current successor:
+- No scientific Task 2 training or evaluation has been run; every reward,
+  hyperparameter, and feature choice here is an implementation default.
+- The danger model does not account for an opponent placing a new bomb,
+  matching the opponent-free Task 2 curriculum; it will need revisiting for
+  Task 3.
+- Escape search is bounded to 10 steps and accepts a destination only outside
+  every currently represented blast footprint; intermediate steps are checked
+  against all retained lethal intervals.
+- The curriculum mixing `coin-heaven`/`loot-crate`/`classic` is not yet
+  implemented in `training/` orchestration.
+- `KILLED_SELF`/`GOT_KILLED`/`SURVIVED_ROUND` reward magnitudes and the
+  epsilon/learning-rate/target-interval/replay-warmup revision are all
+  untested defaults pending a registered experiment.
 
-- cannot place bombs;
-- cannot destroy crates;
-- has no explosion-danger representation;
-- has no escape planning;
-- has no opponent model;
-- is not a complete Task 2 agent;
-- has not produced new experimental results;
-- inherits the frozen parent's greedy-evaluation invalid-action failure mode
-  documented in issue #58, since no feature or logic changed.
-
-Issue #43 only establishes the behavior-preserving starting point. Task 2
-capabilities and experiments follow in separate issues, beginning with the
-planned work tracked by issue #44.
+The next issue should register a prospective Task 2 experiment: fixed seeds,
+a stopping rule, and success criteria, following the pattern #41/#58
+established for Task 1.

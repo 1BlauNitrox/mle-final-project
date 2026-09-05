@@ -1,38 +1,30 @@
-"""Behavior-preservation tests for the DQN Task 2 successor."""
+"""Task 1 regression and lineage tests for the DQN Task 2 successor.
+
+Issue #43 made this successor a byte-identical, behavior-preserving copy of
+the frozen parent. Issue #44 changes that deliberately: the feature count,
+action space, and checkpoint shape all grow. What must still hold is the
+Task 1 *prefix* -- the first eight features, the five original action
+indices, and the migrated network's continuity with the parent's weights.
+"""
 
 from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict
 from pathlib import Path
-from types import SimpleNamespace
-from unittest.mock import Mock
 
 import numpy as np
 import pytest
-import torch
 
-from agent_code.DagobertDuckDQN import callbacks as parent_callbacks
-from agent_code.DagobertDuckDQN.config import ACTIONS as PARENT_ACTIONS
-from agent_code.DagobertDuckDQN.config import DEFAULT_CONFIG as PARENT_CONFIG
-from agent_code.DagobertDuckDQN.config import FEATURE_COUNT as PARENT_FEATURE_COUNT
-from agent_code.DagobertDuckDQN.config import (
-    FEATURE_SCHEMA_VERSION as PARENT_FEATURE_SCHEMA_VERSION,
-)
-from agent_code.DagobertDuckDQN.config import REWARDS as PARENT_REWARDS
 from agent_code.DagobertDuckDQN.features import state_to_features as parent_state_to_features
 from agent_code.DagobertDuckDQN.persistence import (
     load_evaluation_checkpoint as load_parent_checkpoint,
 )
-from agent_code.DagobertDuckDQNTask2 import callbacks as successor_callbacks
 from agent_code.DagobertDuckDQNTask2.config import ACTIONS as SUCCESSOR_ACTIONS
-from agent_code.DagobertDuckDQNTask2.config import DEFAULT_CONFIG as SUCCESSOR_CONFIG
 from agent_code.DagobertDuckDQNTask2.config import FEATURE_COUNT as SUCCESSOR_FEATURE_COUNT
 from agent_code.DagobertDuckDQNTask2.config import (
     FEATURE_SCHEMA_VERSION as SUCCESSOR_FEATURE_SCHEMA_VERSION,
 )
-from agent_code.DagobertDuckDQNTask2.config import REWARDS as SUCCESSOR_REWARDS
 from agent_code.DagobertDuckDQNTask2.features import (
     state_to_features as successor_state_to_features,
 )
@@ -49,7 +41,7 @@ PARENT_CHECKPOINT = PARENT_ROOT / "checkpoint.pt"
 SUCCESSOR_CHECKPOINT = SUCCESSOR_ROOT / "checkpoint.pt"
 SUCCESSOR_MANIFEST = SUCCESSOR_ROOT / "artifact.json"
 
-EXPECTED_SHA256 = "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
+PARENT_SHA256 = "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
 
 
 def sha256_file(path: Path) -> str:
@@ -88,99 +80,105 @@ def representative_states() -> list[dict]:
         make_game_state(coins=[]),
         make_game_state(coins=[(5, 3)]),
         make_game_state(coins=[(1, 3), (5, 3)]),
-        make_game_state(
-            coins=[(5, 4)],
-            bombs=[((3, 2), 3)],
-            others=[("opponent", 0, True, (4, 3))],
-        ),
         make_game_state(position=(1, 1), coins=[(5, 5)]),
     ]
 
 
-def test_successor_artifact_is_byte_identical_to_parent() -> None:
-    assert PARENT_CHECKPOINT.read_bytes() == SUCCESSOR_CHECKPOINT.read_bytes()
-    assert sha256_file(PARENT_CHECKPOINT) == EXPECTED_SHA256
-    assert sha256_file(SUCCESSOR_CHECKPOINT) == EXPECTED_SHA256
-    assert SUCCESSOR_CHECKPOINT.stat().st_size == 23829
+def test_parent_checkpoint_is_unmodified() -> None:
+    """Issue #44 must not touch the frozen Task 1 baseline."""
+    assert sha256_file(PARENT_CHECKPOINT) == PARENT_SHA256
 
 
-def test_successor_manifest_records_parent_lineage() -> None:
+def test_successor_manifest_records_migration_lineage() -> None:
     with SUCCESSOR_MANIFEST.open(encoding="utf-8") as file:
         manifest = json.load(file)
 
-    assert manifest["status"] == "task2_successor_scaffold"
-    assert manifest["capability"] == "task1_behavior_only"
-    assert manifest["artifact"]["sha256"] == EXPECTED_SHA256
-    assert manifest["artifact"]["size_bytes"] == 23829
+    assert manifest["status"] == "task2_capability_in_development"
+    assert manifest["capability"] == "task1_navigation_plus_task2_bombs_and_crates"
+    assert manifest["artifact"]["sha256"] == sha256_file(SUCCESSOR_CHECKPOINT)
     assert manifest["parent"]["agent"] == "DagobertDuckDQN"
-    assert manifest["parent"]["artifact_sha256"] == EXPECTED_SHA256
-    assert manifest["policy"]["task2_features_present"] is False
-    assert manifest["policy"]["bomb_action_present"] is False
+    assert manifest["parent"]["artifact_sha256"] == PARENT_SHA256
+    assert manifest["migration"]["parent_input_dim"] == 8
+    assert manifest["migration"]["parent_output_dim"] == 5
+    assert manifest["policy"]["task2_features_present"] is True
+    assert manifest["policy"]["bomb_action_present"] is True
     assert manifest["policy"]["scientific_training_authorized"] is False
 
 
-def test_successor_preserves_configuration() -> None:
-    assert SUCCESSOR_ACTIONS == PARENT_ACTIONS
-    assert SUCCESSOR_ACTIONS == ("UP", "RIGHT", "DOWN", "LEFT", "WAIT")
-    assert "BOMB" not in SUCCESSOR_ACTIONS
-    assert asdict(SUCCESSOR_CONFIG) == asdict(PARENT_CONFIG)
-    assert SUCCESSOR_REWARDS == PARENT_REWARDS
+def test_action_space_preserves_task1_indices() -> None:
+    assert SUCCESSOR_ACTIONS == ("UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB")
+    assert SUCCESSOR_ACTIONS[:5] == ("UP", "RIGHT", "DOWN", "LEFT", "WAIT")
 
 
-def test_successor_preserves_feature_contract() -> None:
-    assert SUCCESSOR_FEATURE_COUNT == PARENT_FEATURE_COUNT == 8
-    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == PARENT_FEATURE_SCHEMA_VERSION == 1
+def test_feature_schema_extends_task1() -> None:
+    assert SUCCESSOR_FEATURE_COUNT == 21
+    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == 2
 
 
-def test_successor_features_match_parent(
+def test_task1_prefix_matches_parent_on_task1_states(
     representative_states: list[dict],
 ) -> None:
+    """The first eight features must stay byte-for-byte what the parent computes."""
     assert successor_state_to_features(None) is None
 
     for game_state in representative_states:
-        assert successor_state_to_features(game_state) == parent_state_to_features(game_state)
+        successor_features = successor_state_to_features(game_state)
+        parent_features = parent_state_to_features(game_state)
+
+        assert successor_features is not None
+        assert successor_features[:8] == parent_features
+        assert len(successor_features) == SUCCESSOR_FEATURE_COUNT
 
 
-def test_successor_network_matches_parent(
+def test_task1_state_has_neutral_task2_features(
     representative_states: list[dict],
 ) -> None:
+    """No bombs, no crates: every Task 2 feature must read as neutral/absent."""
+    for game_state in representative_states:
+        features = successor_state_to_features(game_state)
+        assert features is not None
+
+        (
+            bomb_available,
+            danger_bin,
+            safe_up,
+            safe_right,
+            safe_down,
+            safe_left,
+            escape_after_bomb,
+            crate_visible,
+            crate_dx,
+            crate_dy,
+            crate_distance_bin,
+            crates_here,
+            useful_target,
+        ) = features[8:]
+
+        assert bomb_available == 1
+        assert danger_bin == 0
+        assert (safe_up, safe_right, safe_down, safe_left) == (
+            features[0],
+            features[1],
+            features[2],
+            features[3],
+        )
+        assert escape_after_bomb == 1
+        assert crate_visible == 0
+        assert (crate_dx, crate_dy, crate_distance_bin) == (0, 0, 0)
+        assert crates_here == 0
+        assert useful_target == 0
+
+
+def test_migrated_network_continues_the_parent_weights() -> None:
     parent = load_parent_checkpoint(PARENT_CHECKPOINT)
     successor = load_successor_checkpoint(SUCCESSOR_CHECKPOINT)
 
-    assert parent.completed_episodes == successor.completed_episodes
+    assert successor.completed_episodes == 0
 
-    probe_states = torch.randn(64, PARENT_FEATURE_COUNT)
+    parent_linear = [layer for layer in parent.network.layers if hasattr(layer, "weight")]
+    successor_linear = [layer for layer in successor.network.layers if hasattr(layer, "weight")]
 
-    with torch.no_grad():
-        parent_values = parent.network(probe_states)
-        successor_values = successor.network(probe_states)
+    import torch
 
-    assert torch.equal(parent_values, successor_values)
-
-
-def test_read_only_actions_match_parent(
-    representative_states: list[dict],
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv("BOMBERMAN_AGENT_SEED", "43001")
-
-    parent_agent = SimpleNamespace(train=False, logger=Mock())
-    successor_agent = SimpleNamespace(train=False, logger=Mock())
-
-    parent_callbacks.setup(parent_agent)
-    successor_callbacks.setup(successor_agent)
-
-    parent_hash_before = sha256_file(PARENT_CHECKPOINT)
-    successor_hash_before = sha256_file(SUCCESSOR_CHECKPOINT)
-
-    parent_actions = [parent_callbacks.act(parent_agent, state) for state in representative_states]
-    successor_actions = [
-        successor_callbacks.act(successor_agent, state) for state in representative_states
-    ]
-
-    assert successor_actions == parent_actions
-    assert all(action in SUCCESSOR_ACTIONS for action in successor_actions)
-    assert "BOMB" not in successor_actions
-
-    assert sha256_file(PARENT_CHECKPOINT) == parent_hash_before
-    assert sha256_file(SUCCESSOR_CHECKPOINT) == successor_hash_before
+    assert torch.equal(parent_linear[0].weight, successor_linear[0].weight[:, :8])
+    assert torch.equal(parent_linear[-1].weight, successor_linear[-1].weight[:5, :])

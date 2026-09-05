@@ -1,7 +1,8 @@
-"""Protected training callbacks for the Task 2 successor scaffold."""
+"""Framework training callbacks for the DQN Task 2 successor."""
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 from statistics import fmean
 from typing import Any
@@ -10,7 +11,22 @@ import numpy as np
 
 from .config import ACTION_TO_INDEX
 from .features import normalize_features, state_to_features
+from .features.bombs_and_crates import crates_destroyed_by_bomb_at
+from .persistence import CHECKPOINT_PATH, save_checkpoint
 from .rewards import reward_from_events
+
+DIAGNOSTIC_EVENTS = (
+    "COIN_COLLECTED",
+    "COIN_FOUND",
+    "CRATE_DESTROYED",
+    "BOMB_DROPPED",
+    "USEFUL_BOMB_PLACED",
+    "WASTEFUL_BOMB_PLACED",
+    "KILLED_SELF",
+    "GOT_KILLED",
+    "SURVIVED_ROUND",
+    "INVALID_ACTION",
+)
 
 
 @dataclass(frozen=True)
@@ -26,23 +42,21 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Reject training until the separately reviewed Task 2 capability."""
-    raise RuntimeError(
-        "Training is disabled for the behavior-preserving Task 2 successor "
-        "created by issue #43. Enable it only through reviewed Task 2 work."
-    )
+    """Initialize per-episode training diagnostics."""
+    _initialize_training_state(self)
 
 
 def _initialize_training_state(self) -> None:
-    """Initialize per-episode training diagnostics for the frozen logic's tests."""
+    """Initialize per-episode training diagnostics."""
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
     self.losses: list[float] = []
     self.episode_target_synchronizations = 0
+    self.episode_event_counts: Counter[str] = Counter()
     self.pending_transition: PendingTransition | None = None
 
     self.logger.info(
-        "DQN training initialized with epsilon %.4f",
+        "Task 2 DQN training initialized with epsilon %.4f",
         self.epsilon,
     )
 
@@ -56,6 +70,10 @@ def game_events_occurred(
 ) -> None:
     """Finalize the previous transition and retain the current one."""
     _finalize_pending_transition(self)
+
+    self.episode_event_counts.update(
+        event for event in events if event in DIAGNOSTIC_EVENTS
+    )
 
     if old_game_state is None or new_game_state is None or self_action not in ACTION_TO_INDEX:
         return
@@ -77,6 +95,12 @@ def game_events_occurred(
     if movement_event is not None:
         training_events.append(movement_event)
 
+    bomb_event = _bomb_usefulness_event(old_game_state, events)
+
+    if bomb_event is not None:
+        training_events.append(bomb_event)
+        self.episode_event_counts[bomb_event] += 1
+
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
         state=normalize_features(old_features),
@@ -94,6 +118,10 @@ def end_of_round(
     events: list[str],
 ) -> dict[str, float | None]:
     """Finalize the episode exactly once and save resumable state."""
+    self.episode_event_counts.update(
+        event for event in events if event in DIAGNOSTIC_EVENTS
+    )
+
     callback_identity = _transition_identity(last_game_state)
     pending = self.pending_transition
 
@@ -152,20 +180,32 @@ def end_of_round(
         ),
     }
 
+    for event_name in DIAGNOSTIC_EVENTS:
+        metrics[f"event_count_{event_name.lower()}"] = float(
+            self.episode_event_counts.get(event_name, 0)
+        )
+
     self.epsilon = max(
         self.config.minimum_epsilon,
         self.epsilon * self.config.epsilon_decay,
     )
     self.completed_episodes += 1
 
-    # No checkpoint write here: setup_training rejects training before this
-    # can ever run, and persistence.py defines only the frozen agent's
-    # evaluation-only artifact -- there is no resumable schema left for
-    # this unreachable path to write.
+    save_checkpoint(
+        learner=self.learner,
+        replay_buffer=self.replay_buffer,
+        action_rng=self.action_rng,
+        epsilon=self.epsilon,
+        completed_episodes=self.completed_episodes,
+        agent_seed=self.agent_seed,
+        path=CHECKPOINT_PATH,
+    )
+
     self.episode_reward = 0.0
     self.absolute_td_errors = []
     self.losses = []
     self.episode_target_synchronizations = 0
+    self.episode_event_counts = Counter()
     self.pending_transition = None
 
     return metrics
@@ -252,6 +292,28 @@ def _coin_movement_event(
         return "MOVED_AWAY_FROM_COIN"
 
     return None
+
+
+def _bomb_usefulness_event(
+    old_game_state: dict,
+    events: list[str],
+) -> str | None:
+    """Return a shaping event rewarding a bomb placement by its crate target.
+
+    Only fires when the framework itself confirms the bomb was actually
+    placed (`BOMB_DROPPED` in `events`); an attempted-but-invalid `BOMB`
+    action already receives `INVALID_ACTION` and gets no additional shaping.
+    """
+    if "BOMB_DROPPED" not in events:
+        return None
+
+    position = old_game_state["self"][3]
+    field = old_game_state["field"]
+
+    if crates_destroyed_by_bomb_at(position, field) > 0:
+        return "USEFUL_BOMB_PLACED"
+
+    return "WASTEFUL_BOMB_PLACED"
 
 
 def _manhattan_distance(
