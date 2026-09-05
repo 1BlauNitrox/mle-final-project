@@ -102,6 +102,10 @@ The `figures/` directory contains compact plots generated directly from
 classic action distribution. They summarize the registered evaluation rows;
 they are not additional observations.
 
+- [Collection fraction by replica](figures/collection_fraction_by_replica.png)
+- [Failure modes by replica](figures/failure_modes_by_replica.png)
+- [Classic action distribution](figures/classic_action_distribution.png)
+
 The corrected transfer contains evaluation rows, metadata, and checksums. It
 does not contain the original training `episodes.csv` files or resource-monitor
 traces, so training learning curves and measured CPU/RAM usage cannot be
