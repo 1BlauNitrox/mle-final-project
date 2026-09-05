@@ -6,12 +6,35 @@ Experiments must support a scientific claim about agent performance, not merely
 produce a trained model. Every important design change should have an explicit
 hypothesis and a controlled comparison.
 
+## Scope of a single experiment: main effects and interactions
+
+Change one main variable at a time by default. This supports the assignment's
+requirement to show how performance changes after a modification and permits a
+claim about that modification's effect. Issue #58's movement-shaping test
+against #41 is this repository's reference example.
+
+A registered experiment may vary more than one factor only when its
+prospectively stated hypothesis explicitly concerns an interaction or a
+factorial comparison. Before training, name every factor and level and define
+the ablations needed to estimate the intended main and interaction effects.
+Use the same controls, seeds, evaluation protocol, and stopping rule across all
+cells. The resulting claims must not exceed what those planned contrasts can
+support.
+
+Changing unrelated features, rewards, and hyperparameters together merely to
+save compute is not a controlled experiment. Such a build may be used for a
+bounded integration smoke or documented exploratory diagnosis, but its result
+cannot select the shipped defaults or support a causal improvement claim.
+Record observations transparently, then register an isolated or interaction
+experiment before using them to make a design decision.
+
 ## Before training
 
 Record:
 
 - hypothesis;
-- independent variable;
+- independent variable, or factors and planned ablations for an explicitly
+  stated interaction/factorial experiment;
 - controlled variables;
 - baseline or previous agent revision;
 - scenarios and opponents;
