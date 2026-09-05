@@ -47,6 +47,13 @@ ACTION_COLUMNS = (
     "action_unknown",
 )
 
+TASK2_COUNT_COLUMNS = (
+    "coins_found",
+    "crates_destroyed",
+    "bombs_dropped",
+    "self_kills",
+)
+
 INTEGER_COLUMNS = (
     "schema_version",
     "round",
@@ -57,6 +64,7 @@ INTEGER_COLUMNS = (
     "invalid_actions",
     "attempted_actions",
     *ACTION_COLUMNS,
+    *TASK2_COUNT_COLUMNS,
 )
 
 OPTIONAL_FLOAT_COLUMNS = (
@@ -71,6 +79,7 @@ OPTIONAL_FLOAT_COLUMNS = (
 )
 
 OPTIONAL_INTEGER_COLUMNS = (
+    "initially_available_coins",
     "q_table_size",
     "replay_size",
     "update_count",
@@ -85,6 +94,8 @@ NON_NEGATIVE_INTEGER_COLUMNS = (
     "invalid_actions",
     "attempted_actions",
     *ACTION_COLUMNS,
+    *TASK2_COUNT_COLUMNS,
+    "initially_available_coins",
     *OPTIONAL_INTEGER_COLUMNS,
 )
 
@@ -216,6 +227,10 @@ def _aggregate_group(
     survived_episodes = sum(
         1 for row in rows if row["survived"]
     )
+    task2_totals = {
+        column: sum(row[column] for row in rows)
+        for column in TASK2_COUNT_COLUMNS
+    }
 
     invalid_action_rate = (
         total_invalid_actions / total_attempted_actions
@@ -261,6 +276,10 @@ def _aggregate_group(
             ),
             "zero_coin_episodes": zero_coin_episodes,
             "zero_coin_rate": zero_coin_episodes / episode_count,
+        },
+        "task2": {
+            **task2_totals,
+            "self_kill_rate": task2_totals["self_kills"] / episode_count,
         },
         "score": {
             "total": sum(row["score"] for row in rows),
@@ -362,7 +381,15 @@ def _parse_csv_row(
     """Parse one CSV row into typed values."""
     parsed: dict[str, Any] = dict(raw_row)
 
+    # Task 2 columns were added compatibly to schema v1. Historical evidence
+    # files omit them and represent the corresponding counters as zero.
+    for column in TASK2_COUNT_COLUMNS:
+        if raw_row.get(column) in (None, ""):
+            parsed[column] = 0
+
     for column in INTEGER_COLUMNS:
+        if column in TASK2_COUNT_COLUMNS and raw_row.get(column) in (None, ""):
+            continue
         parsed[column] = _parse_integer(
             raw_row.get(column),
             column=column,
