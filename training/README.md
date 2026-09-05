@@ -184,6 +184,49 @@ Example plans are in `training/run_plans/`:
 - `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
 - `tasks1-3-smoke.yaml`: three one-round integration checks.
 
+### Issue #46 Task 2 DQN development baseline
+
+Issue #46 uses three immutable plans so the five trained artifacts and both
+single-artifact baselines are evaluated separately on the same seeds. Prepare
+the seed-compatible starts before loading the trained plan:
+
+```bash
+python -m training.prepare_dqn_task2_experiment
+python -m training.run_plan training/run_plans/issue46-dqn-task2-trained.yaml --dry-run
+python -m training.run_plan training/run_plans/issue46-dqn-task2-untrained.yaml --dry-run
+python -m training.run_plan training/run_plans/issue46-dqn-task1-frozen.yaml --dry-run
+```
+
+The preparation command is idempotent: it verifies and reuses a complete
+existing set, but refuses to overwrite an incomplete or changed directory.
+Execute each validated plan by omitting `--dry-run`. Resume an interrupted plan
+with `--resume`. When all three plans report `completed`, run:
+
+```bash
+python -m training.analyze_dqn_task2_experiment
+```
+
+The complete raw record, including deterministic repeats, remains below
+`training_outputs/`; the prospective protocol is in
+`experiments/2026-09-05-dqn-task2-development/`.
+
+If an instrumentation defect invalidates completed evaluations while final
+training workspaces are intact, preserve the old plan directory and execute a
+fresh evaluation-only plan into a new output root:
+
+```bash
+python -m training.run_plan \
+  training/run_plans/issue46-dqn-task2-trained.yaml \
+  --evaluation-only \
+  --workspace-root training_outputs/run-plans-invalid-denominator \
+  --output-root training_outputs/run-plans-corrected
+```
+
+Repeat the command for the untrained and frozen Task 1 plans. The workspace
+root must contain the corresponding old plan directories and their final
+workspaces; evaluation-only mode never runs training and cannot resume an
+existing output directory.
+
 #### Plan output and resume records
 
 Before execution, the runner writes `resolved_plan.json` once and never mutates

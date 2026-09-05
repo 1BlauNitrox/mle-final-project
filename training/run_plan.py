@@ -13,7 +13,7 @@ import stat
 import sys
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 from time import sleep
@@ -195,8 +195,23 @@ def execute_plan(
     *,
     output_root: Path,
     resume: bool = False,
+    evaluation_only: bool = False,
+    workspace_root: Path | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if evaluation_only:
+        plan = replace(
+            plan,
+            jobs=tuple(job for job in plan.jobs if job.kind == "evaluation"),
+        )
+        if not plan.jobs:
+            raise ValueError("Evaluation-only mode requires evaluation jobs")
+        if resume:
+            raise ValueError("Evaluation-only mode cannot resume an existing plan")
+        if workspace_root is None:
+            raise ValueError("Evaluation-only mode requires --workspace-root")
+        workspace_root = Path(workspace_root).resolve()
+        _validate_evaluation_sources(plan, workspace_root)
     plan_directory = output_root.resolve() / plan.plan_id
     resolved_path = plan_directory / "resolved_plan.json"
     status_path = plan_directory / "status.json"
@@ -241,6 +256,7 @@ def execute_plan(
                     status,
                     status_path,
                     lock,
+                    workspace_root,
                 )
                 for replica in plan.replicas
                 if training_by_replica[replica.replica_id]
@@ -250,7 +266,15 @@ def execute_plan(
 
         for job in plan.jobs:
             if job.kind == "evaluation":
-                _run_job(plan, job, plan_directory, status, status_path, lock)
+                _run_job(
+                    plan,
+                    job,
+                    plan_directory,
+                    status,
+                    status_path,
+                    lock,
+                    workspace_root,
+                )
     except BaseException as error:
         status["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
         status["error"] = f"{type(error).__name__}: {error}"
@@ -275,9 +299,10 @@ def _run_training_sequence(
     status: dict[str, Any],
     status_path: Path,
     lock: threading.Lock,
+    workspace_root: Path | None = None,
 ) -> None:
     for job in jobs:
-        _run_job(plan, job, plan_directory, status, status_path, lock)
+        _run_job(plan, job, plan_directory, status, status_path, lock, workspace_root)
 
 
 def _run_job(
@@ -287,13 +312,16 @@ def _run_job(
     status: dict[str, Any],
     status_path: Path,
     lock: threading.Lock,
+    workspace_root: Path | None = None,
 ) -> None:
     job_status = status["jobs"][job.run_id]
     if job_status["status"] == "completed":
         return
 
     replica = next(item for item in plan.replicas if item.replica_id == job.replica)
-    alias_directory = _prepare_replica_workspace(plan, replica, plan_directory)
+    alias_directory = _prepare_replica_workspace(
+        plan, replica, plan_directory, workspace_root
+    )
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
     artifact_before = _sha256_file(artifact) if artifact and artifact.is_file() else None
@@ -410,14 +438,27 @@ def _run_job(
 
 
 def _prepare_replica_workspace(
-    plan: ResolvedPlan, replica: Replica, plan_directory: Path
+    plan: ResolvedPlan,
+    replica: Replica,
+    plan_directory: Path,
+    workspace_root: Path | None = None,
 ) -> Path:
     workspace = _workspace_directory(plan_directory, replica.replica_id)
     alias = _alias_directory(plan, replica)
     if not workspace.is_dir():
-        source = REPOSITORY_ROOT / "agent_code" / plan.agent
+        if workspace_root is not None:
+            source = _workspace_directory(
+                workspace_root / plan.plan_id,
+                replica.replica_id,
+            )
+            if not source.is_dir():
+                raise FileNotFoundError(
+                    f"Evaluation-only source workspace does not exist: {source}"
+                )
+        else:
+            source = REPOSITORY_ROOT / "agent_code" / plan.agent
         _snapshot_workspace(source, workspace)
-        if replica.parent_artifact:
+        if workspace_root is None and replica.parent_artifact:
             target = workspace / str(plan.artifact_path)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(replica.parent_artifact, target)
@@ -427,6 +468,47 @@ def _prepare_replica_workspace(
         _remove_tree(alias)
     _snapshot_workspace(workspace, alias)
     return alias
+
+
+def _validate_evaluation_sources(plan: ResolvedPlan, workspace_root: Path) -> None:
+    """Require a completed source plan and immutable registered artifacts."""
+    source_plan = workspace_root / plan.plan_id
+    resolved_path = source_plan / "resolved_plan.json"
+    status_path = source_plan / "status.json"
+    if not resolved_path.is_file() or not status_path.is_file():
+        raise ValueError(f"Evaluation-only source plan metadata is missing: {source_plan}")
+    source_resolved = _read_json(resolved_path)
+    source_status = _read_json(status_path)
+    if source_status.get("status") != "completed":
+        raise ValueError(f"Evaluation-only source plan is not completed: {source_plan}")
+    source_jobs = source_status.get("jobs", {})
+    for replica in plan.replicas:
+        source = _workspace_directory(source_plan, replica.replica_id)
+        artifact = source / str(plan.artifact_path) if plan.artifact_path else None
+        expected = []
+        for job in source_resolved.get("jobs", []):
+            if job.get("kind") == "training" and job.get("replica") == replica.replica_id:
+                expected.append(job)
+        if expected:
+            final_id = expected[-1]["run_id"]
+            record = source_jobs.get(final_id, {})
+            if record.get("status") != "completed" or not record.get("artifact"):
+                raise ValueError(f"Final training stage is incomplete: {final_id}")
+            expected_hash = record["artifact"].get("sha256")
+            if not artifact or not artifact.is_file() or _sha256_file(artifact) != expected_hash:
+                raise ValueError(f"Final checkpoint hash mismatch for {replica.replica_id}")
+        else:
+            if not artifact or not artifact.is_file():
+                raise ValueError(f"Evaluation-only artifact is missing: {artifact}")
+            expected_hashes = {
+                source_jobs[job["run_id"]].get("artifact", {}).get("sha256")
+                for job in source_resolved.get("jobs", [])
+                if job.get("kind") == "evaluation"
+                and job.get("replica") == replica.replica_id
+                and source_jobs.get(job["run_id"], {}).get("status") == "completed"
+            }
+            if expected_hashes and _sha256_file(artifact) not in expected_hashes:
+                raise ValueError(f"Registered artifact hash mismatch for {replica.replica_id}")
 
 
 def _snapshot_workspace(source: Path, destination: Path) -> None:
@@ -839,6 +921,16 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--dry-run", action="store_true", help="Print the complete matrix only")
     parser.add_argument("--resume", action="store_true", help="Resume a matching recorded plan")
     parser.add_argument(
+        "--evaluation-only",
+        action="store_true",
+        help="Run only evaluation jobs using workspaces from an earlier plan",
+    )
+    parser.add_argument(
+        "--workspace-root",
+        type=Path,
+        help="Earlier run-plan output root used as the evaluation-only workspace source",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
         default=REPOSITORY_ROOT / "training_outputs" / "run-plans",
@@ -855,7 +947,11 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(plan.to_dict(), indent=2, sort_keys=True))
             return 0
         directory = execute_plan(
-            plan, output_root=arguments.output_root, resume=arguments.resume
+            plan,
+            output_root=arguments.output_root,
+            resume=arguments.resume,
+            evaluation_only=arguments.evaluation_only,
+            workspace_root=arguments.workspace_root,
         )
     except Exception as error:
         print(f"Run plan failed: {error}", file=sys.stderr)

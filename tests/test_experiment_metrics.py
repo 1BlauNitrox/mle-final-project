@@ -9,6 +9,7 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import Mock
 
 from agents import _normalize_learning_metrics
 from environment import GenericWorld
@@ -26,6 +27,11 @@ def make_agent_statistics(
     statistics: dict[str, object] = {
         "score": 2,
         "coins": 2,
+        "initially_available_coins": 9,
+        "coins_found": 1,
+        "crates_destroyed": 3,
+        "bombs_dropped": 2,
+        "self_kills": 0,
         "episode_steps": 8,
         "survival_steps": 6,
         "invalid": 1,
@@ -87,6 +93,11 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(6, row["survival_steps"])
         self.assertEqual(2, row["score"])
         self.assertEqual(2, row["coins_collected"])
+        self.assertEqual(9, row["initially_available_coins"])
+        self.assertEqual(1, row["coins_found"])
+        self.assertEqual(3, row["crates_destroyed"])
+        self.assertEqual(2, row["bombs_dropped"])
+        self.assertEqual(0, row["self_kills"])
         self.assertEqual(1, row["invalid_actions"])
         self.assertEqual(6, row["attempted_actions"])
         self.assertEqual(0, row["action_unknown"])
@@ -389,6 +400,29 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
 
 
 class FrameworkStepMetricTests(unittest.TestCase):
+    def test_new_round_counts_hidden_coins_in_denominator(self) -> None:
+        world = object.__new__(GenericWorld)
+        world.args = SimpleNamespace(match_name=None)
+        world.logger = Mock()
+        world.round = 0
+        world.running = False
+        world.agents = []
+        world.build_arena = lambda: (
+            [[0]],
+            [
+                SimpleNamespace(
+                    collectable=False,
+                    get_state=lambda: {"collectable": False},
+                )
+                for _ in range(7)
+            ],
+            [],
+        )
+
+        world.new_round()
+
+        self.assertEqual(7, world.initially_available_coins)
+
     def test_episode_survival_and_action_steps_remain_distinct(self) -> None:
         statistics: defaultdict[str, int] = defaultdict(int)
         statistics["attempted_actions"] = 2
@@ -424,6 +458,10 @@ class FrameworkStepMetricTests(unittest.TestCase):
         self.assertEqual(2, recorded["attempted_actions"])
         self.assertEqual([1.0, 3.0], recorded["decision_times_ms"])
         self.assertEqual(50, recorded["initially_available_coins"])
+        self.assertEqual(0, recorded["coins_found"])
+        self.assertEqual(0, recorded["crates_destroyed"])
+        self.assertEqual(0, recorded["bombs_dropped"])
+        self.assertEqual(0, recorded["self_kills"])
         self.assertIsInstance(recorded["initially_available_coins"], int)
 
 

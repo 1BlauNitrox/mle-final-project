@@ -34,6 +34,7 @@ EVENT_STAT_MAP = {
     e.KILLED_OPPONENT: 'kills',
     e.KILLED_SELF: 'suicides',
     e.COIN_COLLECTED: 'coins',
+    e.COIN_FOUND: 'coins_found',
     e.CRATE_DESTROYED: 'crates',
     e.BOMB_DROPPED: 'bombs',
     e.MOVED_LEFT: 'moves',

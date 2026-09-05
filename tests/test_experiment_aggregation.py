@@ -28,6 +28,11 @@ def make_episode_row(
         "survival_steps": 10,
         "score": 2,
         "coins_collected": 2,
+        "initially_available_coins": 9,
+        "coins_found": 1,
+        "crates_destroyed": 2,
+        "bombs_dropped": 1,
+        "self_kills": 0,
         "invalid_actions": 1,
         "attempted_actions": 10,
         "invalid_action_rate": 0.1,
@@ -95,6 +100,10 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertEqual(2, overall["episode_count"])
         self.assertEqual(6, overall["coins"]["total"])
         self.assertEqual(3.0, overall["coins"]["mean"])
+        self.assertEqual(2, overall["task2"]["coins_found"])
+        self.assertEqual(4, overall["task2"]["crates_destroyed"])
+        self.assertEqual(2, overall["task2"]["bombs_dropped"])
+        self.assertEqual(0.0, overall["task2"]["self_kill_rate"])
         self.assertEqual(6, overall["score"]["total"])
         self.assertEqual(3.0, overall["score"]["mean"])
         self.assertEqual(30, overall["episode_steps"]["total"])
@@ -148,13 +157,22 @@ class ExperimentAggregationTests(unittest.TestCase):
 
         summary = aggregate_episode_rows([row])
         overall = summary["overall"]
-
-        self.assertIsNone(
-            overall["invalid_actions"]["rate"]
-        )
+        self.assertIsNone(overall["invalid_actions"]["rate"])
 
         for value in overall["actions"]["distribution"].values():
             self.assertIsNone(value)
+
+    def test_missing_task2_counters_remain_unavailable(self) -> None:
+        row = make_episode_row(
+            coins_found=None,
+            crates_destroyed=None,
+            bombs_dropped=None,
+            self_kills=None,
+        )
+        task2 = aggregate_episode_rows([row])["overall"]["task2"]
+        self.assertIsNone(task2["self_kills"])
+        self.assertIsNone(task2["self_kill_rate"])
+        self.assertEqual(0, task2["measurement_coverage"]["self_kills"])
 
     def test_aggregates_action_counts_and_distribution(self) -> None:
         row = make_episode_row(
