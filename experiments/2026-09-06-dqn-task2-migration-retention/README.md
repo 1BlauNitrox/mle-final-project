@@ -12,10 +12,11 @@
 ## Hypothesis
 
 Zeroing the 13 Task 2-only input-layer columns preserves the frozen parent
-policy's first five Q-values on Task 1 states and removes the old migration's
-pre-learning function perturbation. This protocol measures only the associated
-coin-collection behavior; it does not attribute the full Issue #46 retention
-deficit to this defect.
+policy's first five Q-values on Task 1 states within an absolute `1e-5`
+float32 tolerance and removes the old migration's pre-learning function
+perturbation. This protocol measures only the associated coin-collection
+behavior; it does not attribute the full Issue #46 retention deficit to this
+defect.
 
 ## Controlled comparison
 

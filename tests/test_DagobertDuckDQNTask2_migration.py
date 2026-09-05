@@ -23,13 +23,12 @@ from agent_code.DagobertDuckDQNTask2.features import (
 )
 from agent_code.DagobertDuckDQNTask2.migration import (
     BOMB_OUTPUT_BIAS,
+    INHERITED_Q_VALUE_TOLERANCE,
     PARENT_INPUT_DIM,
     PARENT_OUTPUT_DIM,
     migrate_online_network,
 )
 from agent_code.DagobertDuckDQNTask2.model import build_q_network, select_action
-
-Q_VALUE_TOLERANCE = 1e-6
 
 
 def task1_probe_state(*, crate: bool = False) -> dict:
@@ -150,13 +149,13 @@ def test_nonzero_task2_suffix_previously_changed_inherited_q_values() -> None:
             corrected_q_values,
             parent_q_values,
             rtol=0.0,
-            atol=Q_VALUE_TOLERANCE,
+            atol=INHERITED_Q_VALUE_TOLERANCE,
         )
         assert not torch.allclose(
             old_style_q_values,
             parent_q_values,
             rtol=0.0,
-            atol=Q_VALUE_TOLERANCE,
+            atol=INHERITED_Q_VALUE_TOLERANCE,
         )
 
 

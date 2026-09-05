@@ -33,6 +33,7 @@ from agent_code.DagobertDuckDQNTask2.features import (
 from agent_code.DagobertDuckDQNTask2.features import (
     state_to_features as successor_state_to_features,
 )
+from agent_code.DagobertDuckDQNTask2.migration import INHERITED_Q_VALUE_TOLERANCE
 from agent_code.DagobertDuckDQNTask2.persistence import (
     load_evaluation_checkpoint as load_successor_checkpoint,
 )
@@ -223,5 +224,5 @@ def test_corrected_artifact_preserves_parent_q_values(
             corrected_q_values,
             parent_q_values,
             rtol=0.0,
-            atol=1e-6,
+            atol=INHERITED_Q_VALUE_TOLERANCE,
         )

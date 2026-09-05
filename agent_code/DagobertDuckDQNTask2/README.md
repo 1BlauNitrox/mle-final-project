@@ -66,8 +66,9 @@ The rule (`agent_code/DagobertDuckDQNTask2/migration.py`, tested in
 `tests/test_DagobertDuckDQNTask2_migration.py`):
 
 - the parent's 8 input-layer columns are copied verbatim into the successor's
-  first 8 input columns; Issue #85 zeroes the remaining 13 columns. This makes
-  the inherited five Q-values identical for any valid Task 2 suffix until
+  first 8 input columns; Issue #85 zeroes the remaining 13 columns. This
+  preserves the inherited five Q-values for any valid Task 2 suffix within
+  `1e-5` absolute tolerance (the cross-platform float32 contract) until
   learning updates those trainable weights;
 - both hidden layers (`64x64`) are copied verbatim; their shape does not
   change;

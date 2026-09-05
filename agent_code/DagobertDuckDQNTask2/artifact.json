@@ -13,7 +13,7 @@
       "path": "checkpoint-issue85-zero-suffix.pt",
       "sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
       "size_bytes": 54704,
-      "note": "Issue #85 versioned fresh migration artifact. Its Task 2-only input columns are zero, preserving the inherited five Q-values for every suffix. It has no training or evaluation evidence."
+      "note": "Issue #85 versioned fresh migration artifact. Its Task 2-only input columns are zero, preserving the inherited five Q-values for every suffix within the documented 1e-5 float32 tolerance. It has no training or evaluation evidence."
     },
     "model_contract": {
       "algorithm": "deep_q_network",
