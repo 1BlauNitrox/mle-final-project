@@ -305,6 +305,10 @@ class GenericWorld:
             agent_statistics[a.name] = {
                 "score": a.score,
                 "coins": a.statistics.get("coins", 0),
+                "coins_found": a.statistics.get("coins_found", 0),
+                "crates_destroyed": a.statistics.get("crates", 0),
+                "bombs_dropped": a.statistics.get("bombs", 0),
+                "self_kills": a.statistics.get("suicides", 0),
                 "kills": a.statistics.get("kills", 0),
                 "suicides": a.statistics.get("suicides", 0),
                 "episode_steps": self.step,
