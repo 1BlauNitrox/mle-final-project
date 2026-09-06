@@ -204,6 +204,29 @@ def test_bomb_does_not_displace_parent_action_on_task1_probes() -> None:
         )
 
 
+def test_task2_tie_handling_is_deterministic() -> None:
+    network = build_q_network(DEFAULT_CONFIG, seed=44)
+    with torch.no_grad():
+        for parameter in network.parameters():
+            parameter.zero_()
+    state = np.zeros(DEFAULT_CONFIG.input_dim, dtype=np.float32)
+
+    first = select_action(
+        network=network,
+        state=state,
+        epsilon=0.0,
+        rng=np.random.default_rng(8501),
+    )
+    second = select_action(
+        network=network,
+        state=state,
+        epsilon=0.0,
+        rng=np.random.default_rng(8501),
+    )
+
+    assert first == second
+
+
 def test_migration_is_deterministically_repeatable() -> None:
     parent = build_parent_network(ParentConfig(), seed=5)
 
