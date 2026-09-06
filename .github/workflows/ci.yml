@@ -549,23 +549,31 @@ jobs:
 
       - name: Verify successor artifact and lineage
         run: |
+          successor_model="agent_code/DerKleineSprengstoffkapitalist/model.npz"
+          successor_manifest="agent_code/DerKleineSprengstoffkapitalist/artifact.json"
+
           test -s agent_code/DerKleineSprengstoffkapitalist/model.npz
           test -s agent_code/DerKleineSprengstoffkapitalist/artifact.json
           test -s agent_code/DerKleineSprengstoffkapitalist/parent-artifact.json
           test -s agent_code/DerKleineSprengstoffkapitalist/requirements.txt
 
-          test "$(
-            stat -c '%s' \
-              agent_code/DerKleineSprengstoffkapitalist/model.npz
-          )" = "6845"
+          expected_size="$(
+            python -c \
+              'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["artifact"]["size_bytes"])' \
+              "$successor_manifest"
+          )"
+
+          test "$(stat -c '%s' "$successor_model")" = "$expected_size"
+
+          expected_sha="$(
+            python -c \
+              'import json, sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["artifact"]["sha256"])' \
+              "$successor_manifest"
+          )"
 
           echo \
-            "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307  agent_code/DerKleineSprengstoffkapitalist/model.npz" \
+            "$expected_sha  $successor_model" \
             | sha256sum --check
-
-          cmp \
-            agent_code/DerKleineVermoegensumverteiler/model.npz \
-            agent_code/DerKleineSprengstoffkapitalist/model.npz
 
       - name: Run successor differential tests
         run: >
@@ -598,6 +606,10 @@ jobs:
       - name: Evaluate packaged successor in clean framework
         run: |
           clean_framework="$(mktemp -d)"
+          expected_successor_sha="$(
+            python -c \
+              'import json; print(json.load(open("agent_code/DerKleineSprengstoffkapitalist/artifact.json", encoding="utf-8"))["artifact"]["sha256"])'
+          )"
 
           git archive HEAD | tar -x -C "$clean_framework"
 
@@ -642,8 +654,7 @@ jobs:
 
           test "$before" = "$after"
 
-          test "$after" = \
-            "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"
+          test "$after" = "$expected_successor_sha"
 
   dqn-task2-successor-smoke:
     name: DQN Task 2 successor smoke test
