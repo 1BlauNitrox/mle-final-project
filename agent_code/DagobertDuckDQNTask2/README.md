@@ -89,8 +89,10 @@ separate `checkpoint-issue85-zero-suffix.pt` is the corrected, fresh,
 training-ready artifact (`completed_episodes=0`), with parent and artifact
 checksums recorded in `artifact.json`. Neither is trained or evaluated evidence.
 The bounded Issue #85 paired evaluation protocol is registered in
-`experiments/2026-09-06-dqn-task2-migration-retention/`; no run is authorized
-until its review is complete.
+`experiments/2026-09-06-dqn-task2-migration-retention/`. Its first execution
+was rejected by the provenance analyzer because the runner and run plan used
+different rules for a disposable staged checkpoint. It supplies no valid
+performance result; a clean repeat after the runner correction is required.
 
 ## Action space
 

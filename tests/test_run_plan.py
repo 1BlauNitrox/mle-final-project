@@ -91,7 +91,7 @@ def test_agent_fingerprint_ignores_runtime_logs_and_staged_checkpoint(
     before = run_plan._fingerprint_directory(agent)
     (agent / "logs").mkdir()
     (agent / "logs" / "agent.log").write_text("runtime\n", encoding="utf-8")
-    (agent / ".evaluation-checkpoint.pt").write_bytes(b"staged")
+    (agent / run_plan.STAGED_EVALUATION_CHECKPOINT_NAME).write_bytes(b"staged")
     assert run_plan._fingerprint_directory(agent) == before
 
 
