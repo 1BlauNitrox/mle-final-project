@@ -1,26 +1,25 @@
 {
     "manifest_schema_version": 1,
-    "status": "task2_successor_scaffold",
+    "status": "task2_tabular_successor",
     "agent": "DerKleineSprengstoffkapitalist",
-    "capability": "task1_behavior_only",
+    "capability": "task2_tabular_successor",
     "artifact": {
       "path": "model.npz",
       "sha256": "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307",
       "size_bytes": 6845
     },
     "model_contract": {
-      "model_schema_version": 2,
-      "feature_schema_version": 1,
+      "model_schema_version": 3,
+      "feature_schema_version": 2,
       "action_order": [
         "UP",
         "RIGHT",
         "DOWN",
         "LEFT",
-        "WAIT"
-      ],
-      "forbidden_actions": [
+        "WAIT",
         "BOMB"
-      ]
+      ],
+      "forbidden_actions": []
     },
     "parent": {
       "agent": "DerKleineVermoegensumverteiler",
@@ -32,8 +31,8 @@
       "framework_revision": "0f55c1d"
     },
     "policy": {
-      "task2_features_present": false,
-      "bomb_action_present": false,
+      "task2_features_present": true,
+      "bomb_action_present": true,
       "scientific_training_authorized": false
     }
   }
