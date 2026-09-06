@@ -227,6 +227,22 @@ root must contain the corresponding old plan directories and their final
 workspaces; evaluation-only mode never runs training and cannot resume an
 existing output directory.
 
+### Issue #97 staged-curriculum comparison for Task 2 DQN
+
+**Backlog, blocked on Issue #86.** Two direct-classic plans are prepared —
+`issue97-dqn-task2-direct-classic-unmasked.yaml` and
+`issue97-dqn-task2-direct-classic-masked.yaml` — but only one will actually be
+executed, whichever masking mode #86 adopts. Both dry-run cleanly on current
+`main`; the `*-masked` plan's `action_masking` field is silently ignored until
+PR #95 (Issue #86) merges, so it must not be executed for real before then. See
+`experiments/2026-09-06-dqn-task2-curriculum/README.md` for the full protocol
+and blocking dependencies.
+
+```bash
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml --dry-run
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-masked.yaml --dry-run
+```
+
 #### Plan output and resume records
 
 Before execution, the runner writes `resolved_plan.json` once and never mutates
