@@ -1,0 +1,13 @@
+schema_version: 1
+issue: 98
+owner: null
+reviewer: null
+status: backlog_underspecified
+open_questions:
+  - "Exact definition of 'immediately safe' for exploration-time restriction."
+  - "Fallback behavior when the legal-and-safe action set is empty."
+  - "Replicas, seeds, and curriculum to use."
+  - "Primary effect and non-regression decision thresholds."
+blocking_dependencies:
+  - "Issue #86's masking decision (fixes arm A's masking mode)."
+  - "Issue #97's curriculum decision (fixes arm A's curriculum)."
