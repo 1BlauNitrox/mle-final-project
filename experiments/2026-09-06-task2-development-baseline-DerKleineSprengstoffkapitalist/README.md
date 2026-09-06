@@ -100,8 +100,49 @@ Training starts only after non-author approval of this protocol.
 
 ## Results
 
-Not available. No scientific run has started.
+All three run plans completed successfully:
+
+- 50,000 training episodes;
+- 720 primary evaluation episodes;
+- 720 deterministic-repeat episodes.
+
+Task 1 retention passed completely. Every trained replica retained a
+coin-heaven collection fraction of `1.0`, selected no bombs, and remained below
+the registered invalid-action and latency limits.
+
+Task 2 feasibility failed:
+
+- mean trained-minus-untrained `classic` collection-fraction difference:
+  `+0.00167`;
+- paired 95% confidence interval: `[0.0, 0.005]`;
+- required improvement: at least `+0.10`;
+- only two of five replicas improved over the untrained control;
+- the required mean `classic` collection fraction of `0.30` was not reached.
+
+The self-kill, invalid-action, deterministic-repeat, and decision-time gates
+passed.
+
+## Interpretation
+
+The experiment establishes a reproducible negative Task 2 development
+baseline. Training preserved Task 1 navigation and reduced invalid actions
+relative to the untrained successor, but it produced almost no meaningful
+hidden-coin collection on `classic`.
+
+Future experiments should compare exactly one changed factor against this
+baseline while keeping its training budget, seeds, evaluation suites, metrics,
+and checkpoint-selection rule fixed.
 
 ## Decision
 
-Pending.
+The unchanged Task 2 defaults are retained as the measured development
+baseline for subsequent controlled experiments.
+
+The registered Task 2 capability hypothesis is rejected because the agent did
+not reach the required collection-fraction and improvement thresholds. The
+baseline nevertheless provides a reproducible control against which future
+single-factor changes can be evaluated.
+
+The inherited Task 1 capability, deterministic evaluation, and runtime
+requirements were retained successfully. Confirmation seeds remain unused
+because this development baseline did not pass the Task 2 feasibility gate.
