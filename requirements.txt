@@ -10,5 +10,5 @@ pygame>=2.6.1; python_version < "3.14"
 
 # Neural-network runtime for DagobertDuckDQN (CPU-only).
 --extra-index-url https://download.pytorch.org/whl/cpu
-torch==2.13.0+cpu; sys_platform != "darwin"
+torch==2.14.0+cpu; sys_platform != "darwin"
 torch==2.13.0; sys_platform == "darwin"
