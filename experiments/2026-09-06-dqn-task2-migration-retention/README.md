@@ -6,7 +6,7 @@
 - Branch: `fix/85-preserve-task1-q-values`
 - Owner: Waffelmanufaktur
 - Reviewer: 1BlauNitrox
-- Status: prospective; review required before execution
+- Status: first execution rejected by provenance validation; repeat required
 - Agent: `DagobertDuckDQNTask2`
 
 ## Hypothesis
@@ -74,6 +74,19 @@ staged agent. The analyzer rejects missing, repeated, mismatched, or
 checksum-incompatible jobs before producing `summary.csv` and `result.json`.
 It also rejects dirty runs and per-run agent, source, or framework fingerprints
 that do not match the reviewed, committed run plan.
+
+## Execution status
+
+An initial 60-episode execution at commit `6c500c1` is retained outside Git,
+but it is not valid Issue #85 result evidence. Its per-run
+`agent_configuration.sha256` does not match the registered run-plan agent
+fingerprint, so the required analyzer rejects it before publishing a result.
+The mismatch is caused by the runner including its disposable staged evaluation
+checkpoint in the per-run fingerprint while the run plan excludes that file.
+After the runner correction is reviewed and merged, repeat the complete
+registered matrix from a clean checkout and retain the invalid first execution
+alongside the valid repeat. Do not use the initial aggregate metrics to support
+the migration conclusion.
 
 ## Metrics and decision rule
 

@@ -297,6 +297,7 @@ def _agent_configuration_reference(
 
     digest = hashlib.sha256()
     ignored_parts = {"__pycache__", "logs"}
+    ignored_files = {".evaluation-checkpoint.pt"}
 
     if snapshot_directory is not None:
         shutil.copytree(
@@ -311,6 +312,7 @@ def _agent_configuration_reference(
             not path.is_file()
             or ignored_parts.intersection(relative_path.parts)
             or path.suffix == ".pyc"
+            or path.name in ignored_files
         ):
             continue
 
