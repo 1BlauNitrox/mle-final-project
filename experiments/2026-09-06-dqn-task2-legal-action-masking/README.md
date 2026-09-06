@@ -46,6 +46,18 @@ The retained raw server archive has SHA-256
 `841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f` and is
 not committed. Compact numeric evidence is in `result.json`.
 
+After extracting that archive so its `training_outputs/run-plans` directory is
+available locally, reproduce the compact evidence with:
+
+```bash
+python -m training.analyze_issue86_legal_action_masking \
+  --plan-root training_outputs/run-plans \
+  --output training_outputs/issue86-analysis
+```
+
+The generated `summary.csv` reproduces this record's numeric metrics; the
+generated `result.json` additionally reports the registered decision gates.
+
 ```bash
 tmux new -s issue86
 python -m training.run_plan training/run_plans/issue86-dqn-task2-unmasked.yaml 2>&1 | tee logs/issue86-unmasked.log

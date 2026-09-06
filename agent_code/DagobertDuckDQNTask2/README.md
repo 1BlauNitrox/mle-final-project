@@ -32,6 +32,13 @@ high Q-value for an impossible next action must not affect learning. The run
 plan passes and records the mode through `BOMBERMAN_DQN_ACTION_MASKING`; a
 resumed checkpoint rejects a different mode.
 
+The preregistered five-replica Issue #86 experiment completed on 2026-09-06.
+`framework_legal` reduced the primary-suite invalid-action rate to `0.0` in
+every scenario, but it failed the registered collection and all-scenario
+survival non-regression gates. It is therefore rejected for this configuration,
+not adopted as the agent default. The compact evidence and raw-archive checksum
+are recorded in `experiments/2026-09-06-dqn-task2-legal-action-masking/`.
+
 Issue #43 created it as a byte-identical, behavior-preserving scaffold of the
 frozen Task 1 baseline. Issue #44 (this revision) adds the actual Task 2
 capability: bomb/crate/danger features, a six-action network, a one-way
