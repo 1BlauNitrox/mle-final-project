@@ -1,0 +1,18 @@
+schema_version: 1
+issue: 86
+owner: Waffelmanufaktur
+reviewer: 1BlauNitrox
+status: registered_pending_review
+baseline_plan: training/run_plans/issue86-dqn-task2-unmasked.yaml
+treatment_plan: training/run_plans/issue86-dqn-task2-masked.yaml
+starting_artifact:
+  path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
+  sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
+replicas: 5
+training_episodes_per_arm: 50000
+evaluation_episodes_per_arm: 1200
+resource_ceiling:
+  cpu_hours: 48
+  wall_hours: 30
+  memory_gib: 8
+  max_parallel_training: 2

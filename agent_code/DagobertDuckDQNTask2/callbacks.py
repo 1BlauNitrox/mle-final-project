@@ -62,9 +62,22 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     """Restore resumable training state or initialize a new one."""
     if CHECKPOINT_PATH.is_file():
         loaded = load_training_checkpoint(CHECKPOINT_PATH)
-
-        if loaded.config.action_masking != _configured_training_config().action_masking:
-            raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
+        configured = _configured_training_config()
+        if loaded.config.action_masking != configured.action_masking:
+            if loaded.completed_episodes != 0 or len(loaded.replay_buffer) != 0:
+                raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
+            loaded.learner.config = configured
+            loaded.learner.online_network.config = configured
+            loaded.learner.target_network.config = configured
+            loaded = loaded.__class__(
+                config=configured,
+                learner=loaded.learner,
+                replay_buffer=loaded.replay_buffer,
+                action_rng=loaded.action_rng,
+                epsilon=loaded.epsilon,
+                completed_episodes=loaded.completed_episodes,
+                agent_seed=loaded.agent_seed,
+            )
 
         if loaded.agent_seed != agent_seed:
             raise ValueError(

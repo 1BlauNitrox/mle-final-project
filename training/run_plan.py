@@ -22,7 +22,11 @@ from typing import Any
 import yaml
 
 import settings
-from training.run_experiment import REPOSITORY_ROOT, run_experiment
+from training.run_experiment import (
+    REPOSITORY_ROOT,
+    STAGED_EVALUATION_CHECKPOINT_NAME,
+    run_experiment,
+)
 
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
@@ -356,6 +360,9 @@ def _run_job(
         _write_json_atomic(status_path, status)
 
     try:
+        environment_overrides = {"BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking}
+        if job.kind == "evaluation" and artifact is not None:
+            environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
             agent=alias,
             mode=job.kind,
@@ -364,7 +371,7 @@ def _run_job(
             world_seed=job.world_seed,
             agent_seed=job.agent_seed,
             opponents=list(job.opponents),
-            environment_overrides={"BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking},
+            environment_overrides=environment_overrides,
             output_root=plan_directory / "jobs" / job.run_id,
             run_id=attempt_id,
             metadata_extra={
@@ -377,6 +384,9 @@ def _run_job(
                     "population": job.population,
                     "processes": 1,
                     "artifact_writable": job.kind == "training",
+                    "evaluation_checkpoint": (
+                        artifact.name if job.kind == "evaluation" and artifact is not None else None
+                    ),
                     "action_masking": plan.action_masking,
                     "fingerprints": plan.fingerprints,
                 }
@@ -770,7 +780,7 @@ def _fingerprint_paths(paths: tuple[str, ...]) -> str:
 def _fingerprint_directory(path: Path) -> str:
     digest = hashlib.sha256()
     ignored_parts = {"__pycache__", "logs"}
-    ignored_files = {".evaluation-checkpoint.pt"}
+    ignored_files = {STAGED_EVALUATION_CHECKPOINT_NAME}
     for candidate in sorted(path.rglob("*")):
         if (
             not candidate.is_file()
