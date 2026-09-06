@@ -3,7 +3,7 @@ issue: 102
 status: completed_negative_baseline
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
-reviewer: 
+reviewer: ""
 
 revisions:
   registration_base: "8ec66d760e6601f8b82091f572d12a33c044b1bf"
