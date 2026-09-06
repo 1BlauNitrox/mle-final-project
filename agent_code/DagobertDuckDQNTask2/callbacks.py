@@ -63,33 +63,33 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     if CHECKPOINT_PATH.is_file():
         loaded = load_training_checkpoint(CHECKPOINT_PATH)
         configured = _configured_training_config()
+        is_fresh_migration = (
+            loaded.completed_episodes == 0 and len(loaded.replay_buffer) == 0
+        )
+        config = loaded.config
+        replay_buffer = loaded.replay_buffer
+        action_rng = loaded.action_rng
         if loaded.config.action_masking != configured.action_masking:
-            if loaded.completed_episodes != 0 or len(loaded.replay_buffer) != 0:
+            if not is_fresh_migration:
                 raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
             loaded.learner.config = configured
             loaded.learner.online_network.config = configured
             loaded.learner.target_network.config = configured
-            loaded = loaded.__class__(
-                config=configured,
-                learner=loaded.learner,
-                replay_buffer=loaded.replay_buffer,
-                action_rng=loaded.action_rng,
-                epsilon=loaded.epsilon,
-                completed_episodes=loaded.completed_episodes,
-                agent_seed=loaded.agent_seed,
-            )
+            config = configured
 
         if loaded.agent_seed != agent_seed:
-            raise ValueError(
-                "BOMBERMAN_AGENT_SEED does not match checkpoint seed."
-            )
+            if not is_fresh_migration:
+                raise ValueError("BOMBERMAN_AGENT_SEED does not match checkpoint seed.")
+            action_rng, replay_seed = _initial_random_streams(agent_seed)
+            replay_buffer = ReplayBuffer(capacity=config.replay_capacity, seed=replay_seed)
 
-        self.config = loaded.config
+        self.config = config
         self.learner = loaded.learner
-        self.replay_buffer = loaded.replay_buffer
-        self.action_rng = loaded.action_rng
+        self.replay_buffer = replay_buffer
+        self.action_rng = action_rng
         self.epsilon = loaded.epsilon
         self.completed_episodes = loaded.completed_episodes
+        self.agent_seed = agent_seed
         self.policy_network = self.learner.online_network
 
         self.logger.info(
