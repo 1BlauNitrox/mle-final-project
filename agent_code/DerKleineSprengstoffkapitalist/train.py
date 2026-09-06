@@ -34,6 +34,7 @@ class PendingTransition:
     action: str
     next_state: StateFeatures
     reward: float
+    diagnostic_events: tuple[str, ...]
 
 
 def setup_training(self) -> None:
@@ -106,6 +107,7 @@ def game_events_occurred(
         action=self_action,
         next_state=new_state,
         reward=reward_from_events(training_events),
+        diagnostic_events=tuple(events),
     )
 
 
@@ -116,8 +118,6 @@ def end_of_round(
     events: list[str],
 ) -> dict[str, float]:
     """Apply the terminal update and return episode diagnostics."""
-
-    _count_diagnostic_events(self, events)
 
     callback_identity = _transition_identity(last_game_state)
     pending = self.pending_transition
@@ -132,6 +132,10 @@ def end_of_round(
     if callback_matches_pending:
         assert pending is not None
 
+        already_counted = Counter(pending.diagnostic_events)
+        terminal_events = list((Counter(events) - already_counted).elements())
+        _count_diagnostic_events(self, terminal_events)
+
         _apply_update(
             self,
             state=pending.state,
@@ -141,6 +145,7 @@ def end_of_round(
             terminal=True,
         )
     else:
+        _count_diagnostic_events(self, events)
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTIONS:

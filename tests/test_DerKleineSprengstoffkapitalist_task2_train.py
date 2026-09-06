@@ -593,3 +593,41 @@ def test_invalid_actions_are_counted(
     assert metrics["invalid_actions"] == pytest.approx(1.0)
     assert metrics["bombs_dropped"] == pytest.approx(0.0)
     assert metrics["useful_bombs"] == pytest.approx(0.0)
+
+def test_matching_survivor_callback_counts_final_step_events_once(
+    model_path: Path,
+) -> None:
+    agent = make_agent()
+
+    old_game_state = make_game_state(step=1)
+    new_game_state = make_game_state(step=2)
+
+    final_step_events = [
+        "COIN_COLLECTED",
+        "COIN_FOUND",
+        "CRATE_DESTROYED",
+        "BOMB_DROPPED",
+        "INVALID_ACTION",
+    ]
+
+    training.game_events_occurred(
+        agent,
+        old_game_state,
+        "WAIT",
+        new_game_state,
+        final_step_events,
+    )
+
+    metrics = training.end_of_round(
+        agent,
+        old_game_state,
+        "WAIT",
+        [*final_step_events, "SURVIVED_ROUND"],
+    )
+
+    assert metrics["coins_collected"] == pytest.approx(1.0)
+    assert metrics["coins_found"] == pytest.approx(1.0)
+    assert metrics["crates_destroyed"] == pytest.approx(1.0)
+    assert metrics["bombs_dropped"] == pytest.approx(1.0)
+    assert metrics["invalid_actions"] == pytest.approx(1.0)
+    assert metrics["survived_round"] == pytest.approx(1.0)
