@@ -52,6 +52,25 @@
       "seed": 44,
       "rule": [
         "copy the parent's 8 input-layer columns verbatim into the successor's first 8 input columns",
+        "initialize the remaining 13 input columns from a network freshly seeded with the migration seed",
+        "copy both hidden layers (64x64) verbatim; their shape is unchanged",
+        "copy the parent's 5 output rows and biases verbatim into the successor's first 5 output rows",
+        "zero the BOMB output row's weights and set its bias to -1.0, a fixed conservative estimate",
+        "initialize the target network from the migrated online network",
+        "reset the optimizer and replay buffer to fresh/empty; neither is compatible with the parent's"
+      ]
+    },
+    "corrected_migration": {
+      "script": "scripts/migrate_task2_dqn_capability.py",
+      "artifact_path": "checkpoint-issue85-zero-suffix.pt",
+      "parent_input_dim": 8,
+      "parent_output_dim": 5,
+      "parent_hidden_sizes": [64, 64],
+      "successor_input_dim": 21,
+      "successor_output_dim": 6,
+      "seed": 44,
+      "rule": [
+        "copy the parent's 8 input-layer columns verbatim into the successor's first 8 input columns",
         "zero the remaining 13 input columns so Task 2-only features do not change inherited Q-values before learning",
         "copy both hidden layers (64x64) verbatim; their shape is unchanged",
         "copy the parent's 5 output rows and biases verbatim into the successor's first 5 output rows",
