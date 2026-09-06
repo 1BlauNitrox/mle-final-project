@@ -7,7 +7,13 @@
       "path": "checkpoint.pt",
       "sha256": "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e",
       "size_bytes": 54704,
-      "note": "A fresh training-ready checkpoint (completed_episodes=0) built by scripts/migrate_task2_dqn_capability.py, not a trained or evaluated artifact."
+      "note": "The preserved Issue #44 fresh training-ready checkpoint (completed_episodes=0). It uses seeded Task 2 input columns and remains the exact Issue #46 untrained starting artifact."
+    },
+    "corrected_migration_artifact": {
+      "path": "checkpoint-issue85-zero-suffix.pt",
+      "sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
+      "size_bytes": 54704,
+      "note": "Issue #85 versioned fresh migration artifact. Its Task 2-only input columns are zero, preserving the inherited five Q-values for every suffix within the documented 1e-5 float32 tolerance. It has no training or evaluation evidence."
     },
     "model_contract": {
       "algorithm": "deep_q_network",
@@ -47,6 +53,25 @@
       "rule": [
         "copy the parent's 8 input-layer columns verbatim into the successor's first 8 input columns",
         "initialize the remaining 13 input columns from a network freshly seeded with the migration seed",
+        "copy both hidden layers (64x64) verbatim; their shape is unchanged",
+        "copy the parent's 5 output rows and biases verbatim into the successor's first 5 output rows",
+        "zero the BOMB output row's weights and set its bias to -1.0, a fixed conservative estimate",
+        "initialize the target network from the migrated online network",
+        "reset the optimizer and replay buffer to fresh/empty; neither is compatible with the parent's"
+      ]
+    },
+    "corrected_migration": {
+      "script": "scripts/migrate_task2_dqn_capability.py",
+      "artifact_path": "checkpoint-issue85-zero-suffix.pt",
+      "parent_input_dim": 8,
+      "parent_output_dim": 5,
+      "parent_hidden_sizes": [64, 64],
+      "successor_input_dim": 21,
+      "successor_output_dim": 6,
+      "seed": 44,
+      "rule": [
+        "copy the parent's 8 input-layer columns verbatim into the successor's first 8 input columns",
+        "zero the remaining 13 input columns so Task 2-only features do not change inherited Q-values before learning",
         "copy both hidden layers (64x64) verbatim; their shape is unchanged",
         "copy the parent's 5 output rows and biases verbatim into the successor's first 5 output rows",
         "zero the BOMB output row's weights and set its bias to -1.0, a fixed conservative estimate",

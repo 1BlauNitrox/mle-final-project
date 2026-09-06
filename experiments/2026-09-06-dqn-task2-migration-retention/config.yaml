@@ -1,0 +1,42 @@
+schema_version: 1
+issue: 85
+status: prospective_review_required
+owner: Waffelmanufaktur
+reviewer: 1BlauNitrox
+mode: evaluation_only
+scenario: coin-heaven
+opponents: []
+training_allowed: false
+checkpoint_selection_allowed: false
+development_seed_pairs:
+  world: [36001, 36002, 36003, 36004, 36005, 36006, 36007, 36008, 36009, 36010]
+  agent: [46001, 46002, 46003, 46004, 46005, 46006, 46007, 46008, 46009, 46010]
+passes: [primary, deterministic-repeat]
+run_plans:
+  frozen_parent: training/run_plans/issue85-dqn-frozen-parent.yaml
+  old_migration: training/run_plans/issue85-dqn-old-migration.yaml
+  corrected_migration: training/run_plans/issue85-dqn-corrected-migration.yaml
+analysis_command: python -m training.analyze_issue85_migration_retention
+q_value_contract:
+  probe_manifest: experiments/2026-09-06-dqn-task2-migration-retention/probes.json
+  command: python -m training.dqn_task2_migration_contract --output training_outputs/issue85/probe-report.json
+  required_fields: [parent_q_values, corrected_q_values, bomb_q_value, parent_action, corrected_action]
+  q_value_tolerance: 0.00001
+arms:
+  frozen_parent:
+    agent: DagobertDuckDQN
+    artifact: checkpoint.pt
+    sha256: eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e
+  old_migration:
+    agent: DagobertDuckDQNTask2
+    artifact: checkpoint.pt
+    sha256: 44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e
+  corrected_migration:
+    agent: DagobertDuckDQNTask2
+    artifact: checkpoint-issue85-zero-suffix.pt
+    sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
+compute_budget:
+  total_episodes: 60
+  cpu_threads: 1
+  wall_clock_minutes_max: 30
+  memory_gib_max: 8
