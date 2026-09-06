@@ -113,6 +113,11 @@ def test_successor_manifest_records_migration_lineage() -> None:
     assert manifest["corrected_migration_artifact"]["path"] == (
         CORRECTED_SUCCESSOR_CHECKPOINT.name
     )
+    assert "seeded" in manifest["migration"]["rule"][1]
+    assert "zero" in manifest["corrected_migration"]["rule"][1]
+    assert manifest["corrected_migration"]["artifact_path"] == (
+        CORRECTED_SUCCESSOR_CHECKPOINT.name
+    )
     assert manifest["parent"]["agent"] == "DagobertDuckDQN"
     assert manifest["parent"]["artifact_sha256"] == PARENT_SHA256
     assert manifest["migration"]["parent_input_dim"] == 8
