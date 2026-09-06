@@ -2,14 +2,27 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 from statistics import fmean
 from typing import Any
 
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
 from .features import StateFeatures, state_to_features
+from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .persistence import MODEL_PATH, save_model
 from .rewards import reward_from_events
+
+DIAGNOSTIC_EVENT_METRICS = {
+    "COIN_COLLECTED": "coins_collected",
+    "COIN_FOUND": "coins_found",
+    "CRATE_DESTROYED": "crates_destroyed",
+    "BOMB_DROPPED": "bombs_dropped",
+    "USEFUL_BOMB_PLACED": "useful_bombs",
+    "KILLED_SELF": "self_kills",
+    "SURVIVED_ROUND": "survived_round",
+    "INVALID_ACTION": "invalid_actions",
+}
 
 
 @dataclass(frozen=True)
@@ -21,16 +34,12 @@ class PendingTransition:
     action: str
     next_state: StateFeatures
     reward: float
+    diagnostic_events: tuple[str, ...]
 
 
 def setup_training(self) -> None:
-    """Reject training while the behavior-preserving successor is protected."""
-
-    raise RuntimeError(
-        "Training is disabled for the behavior-preserving Task 2 successor "
-        "created by issue #65. Enable training only through a separate "
-        "reviewed Task 2 issue."
-    )
+    """Initialize the Task 2 training state."""
+    _initialize_training_state(self)
 
 
 def _initialize_training_state(self) -> None:
@@ -38,6 +47,7 @@ def _initialize_training_state(self) -> None:
 
     self.episode_reward = 0.0
     self.absolute_td_errors: list[float] = []
+    self.episode_event_counts: Counter[str] = Counter()
     self.pending_transition: PendingTransition | None = None
 
     self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
@@ -52,7 +62,16 @@ def game_events_occurred(
 ) -> None:
     """store current transition and finalice previous."""
 
-    _finalize_pennding_transition(self)
+    _finalize_pending_transition(self)
+
+    _count_diagnostic_events(self, events)
+
+    if _is_useful_bomb(
+        old_game_state,
+        self_action,
+        events,
+    ):
+        self.episode_event_counts["USEFUL_BOMB_PLACED"] += 1
 
     if old_game_state is None or self_action is None:
         return
@@ -88,6 +107,7 @@ def game_events_occurred(
         action=self_action,
         next_state=new_state,
         reward=reward_from_events(training_events),
+        diagnostic_events=tuple(events),
     )
 
 
@@ -112,6 +132,10 @@ def end_of_round(
     if callback_matches_pending:
         assert pending is not None
 
+        already_counted = Counter(pending.diagnostic_events)
+        terminal_events = list((Counter(events) - already_counted).elements())
+        _count_diagnostic_events(self, terminal_events)
+
         _apply_update(
             self,
             state=pending.state,
@@ -121,7 +145,8 @@ def end_of_round(
             terminal=True,
         )
     else:
-        _finalize_pennding_transition(self)
+        _count_diagnostic_events(self, events)
+        _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTIONS:
             last_state = state_to_features(last_game_state)
@@ -147,6 +172,9 @@ def end_of_round(
         "mean_abs_td_error": float(mean_abs_td_error),
     }
 
+    for event_name, metric_name in DIAGNOSTIC_EVENT_METRICS.items():
+        metrics[metric_name] = float(self.episode_event_counts.get(event_name, 0))
+
     self.epsilon = max(MINIMUM_EPSILON, self.epsilon * EPSILON_DECAY)
     self.completed_episodes += 1
 
@@ -159,12 +187,13 @@ def end_of_round(
 
     self.episode_reward = 0.0
     self.absolute_td_errors = []
+    self.episode_event_counts = Counter()
     self.pending_transition = None
 
     return metrics
 
 
-def _finalize_pennding_transition(self) -> None:
+def _finalize_pending_transition(self) -> None:
     """Apply the pending transition if it exists."""
 
     pending = self.pending_transition
@@ -253,3 +282,34 @@ def _manhattan_distance(
     second: tuple[int, int],
 ) -> int:
     return abs(first[0] - second[0]) + abs(first[1] - second[1])
+
+
+def _count_diagnostic_events(
+    self,
+    events: list[str],
+) -> None:
+    """Count relevant framework events for the current episode."""
+
+    self.episode_event_counts.update(event for event in events if event in DIAGNOSTIC_EVENT_METRICS)
+
+
+def _is_useful_bomb(
+    old_game_state: dict | None,
+    action: str | None,
+    events: list[str],
+) -> bool:
+    """Return whether a successfully placed bomb can destroy a crate."""
+
+    if old_game_state is None:
+        return False
+
+    if action != "BOMB":
+        return False
+
+    if "BOMB_DROPPED" not in events:
+        return False
+
+    position = old_game_state["self"][3]
+    field = old_game_state["field"]
+
+    return crates_destroyed_by_bomb_at(position, field) > 0

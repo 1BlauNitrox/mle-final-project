@@ -8,6 +8,7 @@ import numpy as np
 
 from .config import DEFAULT_SEED, INITIAL_EPSILON
 from .features import state_to_features
+from .migration import load_parent_prior
 from .model import QTable
 from .persistence import MODEL_PATH, load_model
 
@@ -40,7 +41,8 @@ def setup(self) -> None:
     if not self.train:
         raise FileNotFoundError(f"Evaluation model does not exist: {MODEL_PATH}")
 
-    self.q_table = QTable()
+    parent_prior = load_parent_prior()
+    self.q_table = QTable(parent_values=parent_prior.values)
     self.completed_episodes = 0
     self.epsilon = INITIAL_EPSILON
 

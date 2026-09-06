@@ -121,72 +121,122 @@ def representative_states() -> list[dict]:
     ]
 
 
-def test_successor_artifact_is_byte_identical_to_parent() -> None:
-    assert PARENT_MODEL.read_bytes() == SUCCESSOR_MODEL.read_bytes()
+def test_successor_artifact_keeps_parent_lineage() -> None:
+    successor = load_successor_model(SUCCESSOR_MODEL)
+
+    assert successor.parent_model_sha256 == EXPECTED_SHA256
     assert sha256_file(PARENT_MODEL) == EXPECTED_SHA256
-    assert sha256_file(SUCCESSOR_MODEL) == EXPECTED_SHA256
-    assert SUCCESSOR_MODEL.stat().st_size == 6845
+    assert SUCCESSOR_MODEL.is_file()
 
 
 def test_successor_manifest_records_parent_lineage() -> None:
     with SUCCESSOR_MANIFEST.open(encoding="utf-8") as file:
         manifest = json.load(file)
 
-    assert manifest["status"] == "task2_successor_scaffold"
-    assert manifest["capability"] == "task1_behavior_only"
-    assert manifest["artifact"]["sha256"] == EXPECTED_SHA256
-    assert manifest["artifact"]["size_bytes"] == 6845
+    assert manifest["status"] == "task2_tabular_successor"
+    assert manifest["capability"] == "task2_tabular_successor"
+
     assert manifest["parent"]["agent"] == "DerKleineVermoegensumverteiler"
     assert manifest["parent"]["artifact_sha256"] == EXPECTED_SHA256
-    assert manifest["policy"]["task2_features_present"] is False
-    assert manifest["policy"]["bomb_action_present"] is False
+
+    assert manifest["model_contract"]["model_schema_version"] == 3
+    assert manifest["model_contract"]["feature_schema_version"] == 2
+    assert manifest["model_contract"]["action_order"] == [
+        "UP",
+        "RIGHT",
+        "DOWN",
+        "LEFT",
+        "WAIT",
+        "BOMB",
+    ]
+    assert manifest["model_contract"]["forbidden_actions"] == []
+
+    assert manifest["policy"]["task2_features_present"] is True
+    assert manifest["policy"]["bomb_action_present"] is True
     assert manifest["policy"]["scientific_training_authorized"] is False
+    assert manifest["artifact"]["sha256"] == sha256_file(
+    SUCCESSOR_MODEL
+    )
+    assert manifest["artifact"]["size_bytes"] == (
+        SUCCESSOR_MODEL.stat().st_size
+    )
 
 
-def test_successor_preserves_configuration() -> None:
-    assert SUCCESSOR_ACTIONS == PARENT_ACTIONS
+def test_successor_extends_parent_configuration() -> None:
     assert SUCCESSOR_ACTIONS == (
         "UP",
         "RIGHT",
         "DOWN",
         "LEFT",
         "WAIT",
+        "BOMB",
     )
-    assert "BOMB" not in SUCCESSOR_ACTIONS
+
     assert SUCCESSOR_LEARNING_RATE == PARENT_LEARNING_RATE
     assert SUCCESSOR_DISCOUNT_FACTOR == PARENT_DISCOUNT_FACTOR
-    assert SUCCESSOR_REWARDS == PARENT_REWARDS
+
+    for event, value in PARENT_REWARDS.items():
+        assert SUCCESSOR_REWARDS[event] == value
+
+    assert "CRATE_DESTROYED" in SUCCESSOR_REWARDS
+    assert "COIN_FOUND" in SUCCESSOR_REWARDS
+    assert "SURVIVED_ROUND" in SUCCESSOR_REWARDS
 
 
-def test_successor_preserves_feature_contract() -> None:
-    assert SUCCESSOR_FEATURE_COUNT == PARENT_FEATURE_COUNT == 8
-    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == PARENT_FEATURE_SCHEMA_VERSION == 1
+def test_successor_extends_parent_feature_contract() -> None:
+    assert SUCCESSOR_FEATURE_COUNT == 17
+    assert PARENT_FEATURE_COUNT == 8
+    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == 2
+    assert PARENT_FEATURE_SCHEMA_VERSION == 1
 
 
-def test_successor_features_match_parent(
+def test_successor_features_preserve_parent_prefix(
     representative_states: list[dict],
 ) -> None:
     assert successor_state_to_features(None) is None
 
     for game_state in representative_states:
-        assert successor_state_to_features(game_state) == parent_state_to_features(game_state)
+        parent_features = parent_state_to_features(game_state)
+        successor_features = successor_state_to_features(game_state)
+
+        assert parent_features is not None
+        assert successor_features is not None
+
+        assert len(parent_features) == 8
+        assert len(successor_features) == 17
+        assert successor_features[:8] == parent_features
 
 
-def test_successor_q_table_matches_parent() -> None:
+def test_successor_q_table_uses_parent_prior() -> None:
     parent = load_parent_model(PARENT_MODEL)
     successor = load_successor_model(SUCCESSOR_MODEL)
 
-    assert parent.epsilon == successor.epsilon
-    assert parent.completed_episodes == successor.completed_episodes
-    assert parent.q_table.learning_rate == successor.q_table.learning_rate
-    assert parent.q_table.discount_factor == successor.q_table.discount_factor
-    assert parent.q_table.values.keys() == successor.q_table.values.keys()
+    assert successor.q_table.learning_rate == pytest.approx(parent.q_table.learning_rate)
+    assert successor.q_table.discount_factor == pytest.approx(parent.q_table.discount_factor)
 
-    for state in parent.q_table.values:
-        np.testing.assert_array_equal(
-            parent.q_table.q_values(state),
-            successor.q_table.q_values(state),
-        )
+    parent_state = next(iter(parent.q_table.values))
+    parent_values = parent.q_table.q_values(parent_state)
+
+    task2_state = (
+        *parent_state,
+        1,
+        0,
+        15,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+    )
+
+    successor_values = successor.q_table.q_values(task2_state)
+
+    assert successor_values.shape == (len(SUCCESSOR_ACTIONS),)
+    np.testing.assert_array_equal(
+        successor_values[:5],
+        parent_values,
+    )
 
 
 def test_read_only_actions_match_parent(
@@ -215,9 +265,8 @@ def test_read_only_actions_match_parent(
         successor_callbacks.act(successor_agent, state) for state in representative_states
     ]
 
-    assert successor_actions == parent_actions
     assert all(action in SUCCESSOR_ACTIONS for action in successor_actions)
-    assert "BOMB" not in successor_actions
+    assert all(action in PARENT_ACTIONS for action in parent_actions)
 
     assert sha256_file(PARENT_MODEL) == parent_hash_before
     assert sha256_file(SUCCESSOR_MODEL) == successor_hash_before
