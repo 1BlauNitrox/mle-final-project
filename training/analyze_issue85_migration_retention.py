@@ -89,8 +89,14 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     rows_by_arm: dict[str, list[dict[str, Any]]] = {}
     artifacts: dict[str, dict[str, str]] = {}
     deterministic = True
+    registered_pairs: tuple[tuple[int, int], ...] | None = None
     for arm, expected in ARMS.items():
         primary, repeated, artifact = _load_arm(Path(plan_root), arm, expected)
+        pairs = tuple((row["world_seed"], row["agent_seed"]) for row in primary)
+        if registered_pairs is None:
+            registered_pairs = pairs
+        elif pairs != registered_pairs:
+            raise ValueError(f"Cross-arm seed-pair mismatch for {arm}")
         rows_by_arm[arm] = primary
         artifacts[arm] = artifact
         for left, right in zip(primary, repeated, strict=True):

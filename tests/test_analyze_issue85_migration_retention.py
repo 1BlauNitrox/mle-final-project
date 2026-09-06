@@ -131,16 +131,39 @@ def test_analyzer_allows_timing_variation_but_rejects_changed_action_digest(
     assert not (tmp_path / "changed-action").exists()
 
 
-def test_analyzer_rejects_unregistered_seed_matrix(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("world_seed", 999),
+        ("scenario", "classic"),
+        ("population", "confirmation"),
+        ("stage_or_suite", "unregistered-suite"),
+    ),
+)
+def test_analyzer_rejects_unregistered_job_matrix(
+    field: str, value: object, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     _write_registered_evidence(tmp_path)
     monkeypatch.setattr(issue85, "read_episodes_csv", lambda _: [_episode_row()])
     directory = tmp_path / issue85.ARMS["old_migration"]["plan_id"]
     resolved_path = directory / "resolved_plan.json"
     resolved = json.loads(resolved_path.read_text(encoding="utf-8"))
-    resolved["jobs"][0]["world_seed"] = 999
+    resolved["jobs"][0][field] = value
     resolved_path.write_text(json.dumps(resolved), encoding="utf-8")
 
     with pytest.raises(ValueError, match="Registered job matrix mismatch"):
-        issue85.analyze(tmp_path, tmp_path / "unregistered-seed")
+        issue85.analyze(tmp_path, tmp_path / "unregistered-job")
+
+
+def test_analyzer_rejects_changed_configuration_fingerprint(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_registered_evidence(tmp_path)
+    monkeypatch.setattr(issue85, "read_episodes_csv", lambda _: [_episode_row()])
+    path = tmp_path / issue85.ARMS["old_migration"]["plan_id"] / "resolved_plan.json"
+    resolved = json.loads(path.read_text(encoding="utf-8"))
+    resolved["fingerprints"]["configuration"] = "changed"
+    path.write_text(json.dumps(resolved), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="configuration fingerprint mismatch"):
+        issue85.analyze(tmp_path, tmp_path / "changed-configuration")
