@@ -54,11 +54,9 @@ The successor starts from the parent's selected Task 1 model artifact:
 | Parent freeze merge commit | `04f9dab8f6d160984a036a4c846756a12d1a0fb5` |
 | Framework revision | `0f55c1d` |
 
-The successor artifact is copied and verified by:
-
-```text
-scripts/migrate_task2_tabular_artifact.py
-```
+The frozen Task 1 artifact is preserved as `parent-model.npz`. Its checksum and
+schema are validated by `migration.py` whenever it is loaded as the Task 2
+prior. The separate `model.npz` uses the Task 2 model schema.
 
 Machine-readable successor lineage is recorded in `artifact.json`. The original
 parent manifest is preserved as `parent-artifact.json`.
@@ -122,17 +120,20 @@ Many combinations are inconsistent or unreachable.
 
 ## Learning method
 
-The inherited model is a tabular Q-learning policy. Each encoded state maps to
-five Q-values in the fixed action order:
+The successor uses tabular Q-learning. Each encoded Task 2 state maps to six
+Q-values in the fixed action order:
 
 ```text
-UP, RIGHT, DOWN, LEFT, WAIT
+UP, RIGHT, DOWN, LEFT, WAIT, BOMB
 ```
 
-The learning rate remains `0.05` and the discount factor remains `0.9`.
+For unseen Task 2 states, the first five Q-values are initialized from the
+corresponding frozen Task 1 state. The BOMB value is initialized below the
+minimum parent value by the configured bomb-prior margin.
 
-No learning rule, Q-value, action order, or hyperparameter is changed by issue
-#65.
+The learning rate remains 0.05 and the discount factor remains 0.9.
+Issue #45 extends the state and action contracts without changing the
+Q-learning update rule or these hyperparameters.
 
 ## Learning metrics
 
@@ -213,7 +214,7 @@ not performance evidence.
 The checksum before and after evaluation must remain:
 
 ```text
-4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307
+8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb
 ```
 
 ## Validation

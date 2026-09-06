@@ -5,8 +5,8 @@
     "capability": "task2_tabular_successor",
     "artifact": {
       "path": "model.npz",
-      "sha256": "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307",
-      "size_bytes": 6845
+      "sha256": "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb",
+      "size_bytes": 1150
     },
     "model_contract": {
       "model_schema_version": 3,

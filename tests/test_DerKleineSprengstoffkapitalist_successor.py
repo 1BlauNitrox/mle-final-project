@@ -154,6 +154,12 @@ def test_successor_manifest_records_parent_lineage() -> None:
     assert manifest["policy"]["task2_features_present"] is True
     assert manifest["policy"]["bomb_action_present"] is True
     assert manifest["policy"]["scientific_training_authorized"] is False
+    assert manifest["artifact"]["sha256"] == sha256_file(
+    SUCCESSOR_MODEL
+    )
+    assert manifest["artifact"]["size_bytes"] == (
+        SUCCESSOR_MODEL.stat().st_size
+    )
 
 
 def test_successor_extends_parent_configuration() -> None:
