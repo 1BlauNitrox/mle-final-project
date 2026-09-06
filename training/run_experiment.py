@@ -21,6 +21,9 @@ from training.metrics import SCHEMA_VERSION, normalize_framework_statistics
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_ROOT = REPOSITORY_ROOT / "training_outputs"
 VALID_MODES = ("training", "evaluation")
+# This is the sole disposable in-agent staging name.  A plan-selected artifact
+# (for example, ``checkpoint-issue85-zero-suffix.pt``) remains fingerprinted.
+STAGED_EVALUATION_CHECKPOINT_NAME = ".evaluation-checkpoint.pt"
 
 
 def run_experiment(
@@ -297,7 +300,7 @@ def _agent_configuration_reference(
 
     digest = hashlib.sha256()
     ignored_parts = {"__pycache__", "logs"}
-    ignored_files = {".evaluation-checkpoint.pt"}
+    ignored_files = {STAGED_EVALUATION_CHECKPOINT_NAME}
 
     if snapshot_directory is not None:
         shutil.copytree(

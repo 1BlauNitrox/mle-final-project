@@ -22,7 +22,7 @@ from training.run_dqn_task1_baseline import (
     SCENARIO,
     ExperimentProfile,
 )
-from training.run_experiment import run_experiment
+from training.run_experiment import STAGED_EVALUATION_CHECKPOINT_NAME, run_experiment
 
 DEVELOPMENT_SEEDS = tuple(range(31_001, 31_041))
 EVALUATION_PASSES = ("primary", "repeat")
@@ -30,7 +30,7 @@ MANIFEST_REPLACE_ATTEMPTS = 10
 MANIFEST_REPLACE_RETRY_SECONDS = 0.1
 ACTION_SEQUENCE_COLUMN = "executed_action_sequence_sha256"
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
-STAGED_CHECKPOINT_PATH = CHECKPOINT_PATH.with_name(".evaluation-checkpoint.pt")
+STAGED_CHECKPOINT_PATH = CHECKPOINT_PATH.with_name(STAGED_EVALUATION_CHECKPOINT_NAME)
 DETERMINISTIC_COLUMNS = (
     ACTION_SEQUENCE_COLUMN,
     "episode_steps",

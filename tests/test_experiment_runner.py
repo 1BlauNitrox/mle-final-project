@@ -108,9 +108,14 @@ class AgentConfigurationReferenceTests(unittest.TestCase):
                     encoding="utf-8",
                 )
                 second = runner._agent_configuration_reference("test_agent")
-                staged_checkpoint = agent_directory / ".evaluation-checkpoint.pt"
+                staged_checkpoint = (
+                    agent_directory / runner.STAGED_EVALUATION_CHECKPOINT_NAME
+                )
                 staged_checkpoint.write_bytes(b"temporary evaluation artifact")
                 third = runner._agent_configuration_reference("test_agent")
+                selected_checkpoint = agent_directory / "checkpoint-candidate.pt"
+                selected_checkpoint.write_bytes(b"selected evaluation artifact")
+                fourth = runner._agent_configuration_reference("test_agent")
                 snapshot_content = (
                     snapshot_directory / "config.py"
                 ).read_text(encoding="utf-8")
@@ -124,6 +129,7 @@ class AgentConfigurationReferenceTests(unittest.TestCase):
         )
         self.assertNotEqual(first["sha256"], second["sha256"])
         self.assertEqual(second["sha256"], third["sha256"])
+        self.assertNotEqual(third["sha256"], fourth["sha256"])
 
 
 class ExperimentRunnerTests(unittest.TestCase):
