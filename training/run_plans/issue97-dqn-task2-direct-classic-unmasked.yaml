@@ -1,0 +1,21 @@
+schema_version: 1
+plan_id: issue97-dqn-task2-direct-classic-unmasked
+agent: DagobertDuckDQNTask2
+artifact_path: checkpoint.pt
+action_masking: none
+max_parallel_training: 2
+replicas:
+  - {id: r1, world_seed: 51001, agent_seed: 61001, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+  - {id: r2, world_seed: 51002, agent_seed: 61002, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+  - {id: r3, world_seed: 51003, agent_seed: 61003, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+  - {id: r4, world_seed: 51004, agent_seed: 61004, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+  - {id: r5, world_seed: 51005, agent_seed: 61005, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+training_stages:
+  - {id: classic-direct, scenario: classic, rounds: 10000, opponents: []}
+evaluation_suites:
+  - {id: classic-primary, population: development, scenario: classic, rounds: 1, world_seeds: &classic_worlds [71001, 71002, 71003, 71004, 71005, 71006, 71007, 71008, 71009, 71010], agent_seeds: &classic_agents [81001, 81002, 81003, 81004, 81005, 81006, 81007, 81008, 81009, 81010], opponents: []}
+  - {id: classic-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *classic_worlds, agent_seeds: *classic_agents, opponents: []}
+  - {id: coin-heaven-primary, population: development, scenario: coin-heaven, rounds: 1, world_seeds: &coin_worlds [72001, 72002, 72003, 72004, 72005, 72006, 72007, 72008, 72009, 72010], agent_seeds: &coin_agents [82001, 82002, 82003, 82004, 82005, 82006, 82007, 82008, 82009, 82010], opponents: []}
+  - {id: coin-heaven-repeat, population: development, scenario: coin-heaven, rounds: 1, world_seeds: *coin_worlds, agent_seeds: *coin_agents, opponents: []}
+  - {id: loot-crate-primary, population: development, scenario: loot-crate, rounds: 1, world_seeds: &loot_worlds [73001, 73002, 73003, 73004, 73005, 73006, 73007, 73008, 73009, 73010], agent_seeds: &loot_agents [83001, 83002, 83003, 83004, 83005, 83006, 83007, 83008, 83009, 83010], opponents: []}
+  - {id: loot-crate-repeat, population: development, scenario: loot-crate, rounds: 1, world_seeds: *loot_worlds, agent_seeds: *loot_agents, opponents: []}
