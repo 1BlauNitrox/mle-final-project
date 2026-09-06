@@ -35,14 +35,14 @@ Allowed branch types are `feature`, `experiment`, `fix`, `docs`, `test`, and
 ## Pull requests
 
 Open a draft pull request early for work that takes more than one session. Use
-the pull-request template and write `Closes #<issue>` in the linked-issue
-section.
+the pull-request template. Write `Closes #<issue>` only when the PR completes
+the entire issue; use `Refs #<issue>` when parent-issue work remains.
 
 A pull request is ready for review when:
 
 - its acceptance criteria are met;
 - local checks pass;
-- experiment evidence is attached when relevant;
+- the applicable evidence scope is declared and its requirements are met;
 - documentation is current;
 - the author has completed the Definition of Done self-review.
 
@@ -63,6 +63,15 @@ python main.py play --no-gui --n-rounds 1
 Follow [`docs/0004-experimentation-protocol.md`](docs/0004-experimentation-protocol.md).
 A result is not reproducible unless the agent revision, configuration, seeds,
 opponents, scenarios, number of rounds, and metrics are recorded.
+
+A prospective protocol PR registers those decisions and validates the execution
+path before compute is spent; it does not require results. A completed result
+PR retains compact evidence sufficient to recompute its claims. Large required
+artifacts may remain outside Git only with a durable retrieval location,
+SHA-256 checksum, byte size, contents/schema, retrieval instructions, and a
+verification command. Local paths are not reviewable evidence. Incomplete
+results use `Refs`, disclose the missing evidence, and leave the parent issue
+open.
 
 ## Documentation changes
 
