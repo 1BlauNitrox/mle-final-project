@@ -163,9 +163,12 @@ def _load_arm(
                 raise ValueError(f"Metadata mismatch for {job_id}: {field}")
         if metadata.get("mode") != "evaluation" or metadata.get("opponents") != job["opponents"]:
             raise ValueError(f"Evaluation conditions mismatch for {job_id}")
+        if metadata.get("git_dirty") is not False:
+            raise ValueError(f"Dirty execution is not accepted for {job_id}")
         run_plan = metadata.get("run_plan", {})
         if run_plan.get("evaluation_checkpoint") != expected["artifact"]:
             raise ValueError(f"Checkpoint selection mismatch for {job_id}")
+        _require_run_metadata_provenance(metadata, resolved["fingerprints"], job_id)
         episode_rows = read_episodes_csv(run_directory / "episodes.csv")
         if len(episode_rows) != 1:
             raise ValueError(f"Expected one retained episode row for {job_id}")
@@ -204,10 +207,31 @@ def _require_registered_plan(
         raise ValueError(f"Registered job matrix mismatch for {arm}")
     resolved_fingerprints = resolved.get("fingerprints")
     registered_fingerprints = registered["fingerprints"]
-    if not isinstance(resolved_fingerprints, dict) or (
-        resolved_fingerprints.get("configuration") != registered_fingerprints["configuration"]
+    for fingerprint in ("configuration", "agent", "source", "framework"):
+        if not isinstance(resolved_fingerprints, dict) or (
+            resolved_fingerprints.get(fingerprint) != registered_fingerprints[fingerprint]
+        ):
+            raise ValueError(f"Registered {fingerprint} fingerprint mismatch for {arm}")
+
+
+def _require_run_metadata_provenance(
+    metadata: dict[str, Any], resolved_fingerprints: dict[str, Any], job_id: str
+) -> None:
+    """Require each retained run to identify the reviewed execution code."""
+    recorded_plan = metadata.get("run_plan")
+    if not isinstance(recorded_plan, dict):
+        raise ValueError(f"Run-plan metadata is missing for {job_id}")
+    recorded_fingerprints = recorded_plan.get("fingerprints")
+    if not isinstance(recorded_fingerprints, dict):
+        raise ValueError(f"Run-plan fingerprints are missing for {job_id}")
+    for fingerprint in ("configuration", "agent", "source", "framework"):
+        if recorded_fingerprints.get(fingerprint) != resolved_fingerprints[fingerprint]:
+            raise ValueError(f"Run metadata {fingerprint} fingerprint mismatch for {job_id}")
+    agent_configuration = metadata.get("agent_configuration")
+    if not isinstance(agent_configuration, dict) or (
+        agent_configuration.get("sha256") != resolved_fingerprints["agent"]
     ):
-        raise ValueError(f"Registered configuration fingerprint mismatch for {arm}")
+        raise ValueError(f"Agent-configuration digest mismatch for {job_id}")
 
 
 def _require_deterministic_repeat(

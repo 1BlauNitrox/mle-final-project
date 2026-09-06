@@ -67,7 +67,12 @@ def _write_registered_evidence(root: Path) -> None:
                         "rounds": job["rounds"],
                         "mode": "evaluation",
                         "opponents": job["opponents"],
-                        "run_plan": {"evaluation_checkpoint": expected["artifact"]},
+                        "git_dirty": False,
+                        "agent_configuration": {"sha256": registered["fingerprints"]["agent"]},
+                        "run_plan": {
+                            "evaluation_checkpoint": expected["artifact"],
+                            "fingerprints": registered["fingerprints"],
+                        },
                     }
                 ),
                 encoding="utf-8",
@@ -155,15 +160,55 @@ def test_analyzer_rejects_unregistered_job_matrix(
         issue85.analyze(tmp_path, tmp_path / "unregistered-job")
 
 
-def test_analyzer_rejects_changed_configuration_fingerprint(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+@pytest.mark.parametrize("fingerprint", ("configuration", "agent", "source", "framework"))
+def test_analyzer_rejects_changed_execution_fingerprint(
+    fingerprint: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     _write_registered_evidence(tmp_path)
     monkeypatch.setattr(issue85, "read_episodes_csv", lambda _: [_episode_row()])
     path = tmp_path / issue85.ARMS["old_migration"]["plan_id"] / "resolved_plan.json"
     resolved = json.loads(path.read_text(encoding="utf-8"))
-    resolved["fingerprints"]["configuration"] = "changed"
+    resolved["fingerprints"][fingerprint] = "changed"
     path.write_text(json.dumps(resolved), encoding="utf-8")
 
-    with pytest.raises(ValueError, match="configuration fingerprint mismatch"):
-        issue85.analyze(tmp_path, tmp_path / "changed-configuration")
+    output = tmp_path / f"changed-{fingerprint}"
+    with pytest.raises(ValueError, match=f"{fingerprint} fingerprint mismatch"):
+        issue85.analyze(tmp_path, output)
+    assert not output.exists()
+
+
+@pytest.mark.parametrize("field", ("agent", "source", "framework"))
+def test_analyzer_rejects_metadata_code_provenance_mismatch(
+    field: str, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_registered_evidence(tmp_path)
+    monkeypatch.setattr(issue85, "read_episodes_csv", lambda _: [_episode_row()])
+    directory = tmp_path / issue85.ARMS["old_migration"]["plan_id"]
+    metadata_path = next(directory.glob("jobs/*/attempt-001/metadata.json"))
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["run_plan"]["fingerprints"][field] = "changed"
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ValueError, match=f"metadata {field} fingerprint mismatch"):
+        issue85.analyze(tmp_path, tmp_path / f"metadata-{field}")
+
+
+def test_analyzer_rejects_dirty_or_changed_agent_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _write_registered_evidence(tmp_path)
+    monkeypatch.setattr(issue85, "read_episodes_csv", lambda _: [_episode_row()])
+    directory = tmp_path / issue85.ARMS["old_migration"]["plan_id"]
+    metadata_path = next(directory.glob("jobs/*/attempt-001/metadata.json"))
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    metadata["git_dirty"] = True
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Dirty execution"):
+        issue85.analyze(tmp_path, tmp_path / "dirty")
+
+    metadata["git_dirty"] = False
+    metadata["agent_configuration"]["sha256"] = "changed"
+    metadata_path.write_text(json.dumps(metadata), encoding="utf-8")
+    with pytest.raises(ValueError, match="Agent-configuration digest mismatch"):
+        issue85.analyze(tmp_path, tmp_path / "changed-agent-configuration")
