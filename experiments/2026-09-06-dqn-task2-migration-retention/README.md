@@ -49,6 +49,30 @@ python -m training.dqn_task2_migration_contract \
 changed artifacts, records each probe's inherited five Q-values, BOMB Q-value,
 and both selected actions, then rejects incomplete or altered evidence.
 
+The episode comparison is executed by three checksum-pinned, serial run plans.
+First validate the full 60-episode matrix without starting an episode:
+
+```bash
+python -m training.run_plan training/run_plans/issue85-dqn-frozen-parent.yaml --dry-run
+python -m training.run_plan training/run_plans/issue85-dqn-old-migration.yaml --dry-run
+python -m training.run_plan training/run_plans/issue85-dqn-corrected-migration.yaml --dry-run
+```
+
+After approval, execute the same commands without `--dry-run`, then analyze the
+retained per-episode rows and deterministic action digests:
+
+```bash
+python -m training.run_plan training/run_plans/issue85-dqn-frozen-parent.yaml
+python -m training.run_plan training/run_plans/issue85-dqn-old-migration.yaml
+python -m training.run_plan training/run_plans/issue85-dqn-corrected-migration.yaml
+python -m training.analyze_issue85_migration_retention
+```
+
+The corrected run plan explicitly supplies
+`BOMBERMAN_EVALUATION_CHECKPOINT=checkpoint-issue85-zero-suffix.pt` to its
+staged agent. The analyzer rejects missing, repeated, mismatched, or
+checksum-incompatible jobs before producing `summary.csv` and `result.json`.
+
 ## Metrics and decision rule
 
 Report Q-value/action agreement separately from measured collection fraction,
