@@ -41,6 +41,27 @@ class RepositoryContractTests(unittest.TestCase):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         self.assertIn("docs/0007-task-1-baseline-contract.md", readme)
 
+    def test_pull_request_template_exposes_conditional_evidence_scopes(self) -> None:
+        template = (ROOT / ".github" / "pull_request_template.md").read_text(
+            encoding="utf-8"
+        )
+        expected_scopes = (
+            "Prospective experiment protocol",
+            "Completed experiment or training result",
+            "Frozen or released model",
+            "Partial or incomplete result record",
+            "Refs #...",
+        )
+        for scope in expected_scopes:
+            self.assertIn(scope, template)
+
+        dod = (ROOT / "docs" / "0005-definition-of-ready-and-done.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Results are not required", dod)
+        self.assertIn("checksum without", dod)
+        self.assertIn("retrievable bytes is not reviewable evidence", dod)
+
     def test_template_exposes_framework_callbacks(self) -> None:
         expected = {
             "callbacks.py": {"setup", "act"},
