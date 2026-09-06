@@ -23,8 +23,28 @@ the negative result. Deterministic repeats must match their action digests.
 
 ## Server execution
 
-This registers 102,400 episodes: 100,000 training and 2,400 paired evaluation
-episodes. Run both plans in one tmux session after the PR is approved:
+This registered 100,600 episodes: 100,000 training and 600 paired evaluation
+episodes.
+
+## Result and decision
+
+Both plans completed with five replicas, 50 primary episodes per arm/scenario,
+and matching deterministic-repeat action digests. The mask achieved its
+structural objective: its framework invalid-action rate was exactly zero in all
+three primary suites. The unmasked rates were 14.99% (classic), 40.54%
+(coin-heaven), and 37.61% (loot-crate).
+
+The treatment is rejected for this configuration. Its paired collection
+fraction intervals were negative or crossed the -0.05 non-regression margin:
+classic -0.0267 [-0.0511, -0.0089], coin-heaven -0.0144 [-0.0584, 0.0224],
+and loot-crate -0.0052 [-0.0156, 0.0040]. Survival also failed the all-scenario
+non-regression rule, notably coin-heaven -0.10 [-0.26, 0.02]. This does not
+establish that masking is universally harmful; it rejects this exact treatment,
+curriculum, starting artifact, and development seed population.
+
+The retained raw server archive has SHA-256
+`841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f` and is
+not committed. Compact numeric evidence is in `result.json`.
 
 ```bash
 tmux new -s issue86
