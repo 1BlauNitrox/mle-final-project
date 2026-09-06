@@ -29,6 +29,13 @@ StateFeatures: TypeAlias = tuple[int, ...]
 
 MAX_CRATES_DESTROYED_BIN = 3
 
+# Index of `escape_after_bomb` in the tuple `state_to_features` returns: 4
+# free_directions + 4 coin_features + 1 bomb_available + 1
+# danger_countdown_bin + 4 safe_directions = 14. Exposed so callers (e.g.
+# train.py's bomb-safety reward shaping, issue #103) can read the
+# already-computed hypothetical-bomb escape check without recomputing it.
+ESCAPE_AFTER_BOMB_INDEX = 14
+
 
 def state_to_features(game_state: dict | None) -> StateFeatures | None:
     """Encode a framework game state as the 21-element Task 2 feature tuple."""

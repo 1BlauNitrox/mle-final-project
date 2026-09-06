@@ -31,6 +31,7 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
+VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 SUPPORTED_OPPONENTS = {
     "peaceful_agent",
     "coin_collector_agent",
@@ -96,6 +97,7 @@ class ResolvedPlan:
     agent: str
     artifact_path: str | None
     action_masking: str
+    reward_variant: str
     max_parallel_training: int
     replicas: tuple[Replica, ...]
     jobs: tuple[Job, ...]
@@ -139,6 +141,9 @@ def load_plan(path: Path) -> ResolvedPlan:
     action_masking = raw.get("action_masking", "none")
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
+    reward_variant = raw.get("reward_variant", "control")
+    if reward_variant not in VALID_REWARD_VARIANTS:
+        raise ValueError(f"reward_variant must be one of {list(VALID_REWARD_VARIANTS)}")
 
     max_parallel = raw.get("max_parallel_training", 1)
     if not isinstance(max_parallel, int) or isinstance(max_parallel, bool) or max_parallel < 1:
@@ -193,6 +198,7 @@ def load_plan(path: Path) -> ResolvedPlan:
         agent=agent,
         artifact_path=artifact_path,
         action_masking=action_masking,
+        reward_variant=reward_variant,
         max_parallel_training=max_parallel,
         replicas=replicas,
         jobs=jobs,
@@ -360,7 +366,10 @@ def _run_job(
         _write_json_atomic(status_path, status)
 
     try:
-        environment_overrides = {"BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking}
+        environment_overrides = {
+            "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
+            "BOMBERMAN_DQN_REWARD_VARIANT": plan.reward_variant,
+        }
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
@@ -388,6 +397,7 @@ def _run_job(
                         artifact.name if job.kind == "evaluation" and artifact is not None else None
                     ),
                     "action_masking": plan.action_masking,
+                    "reward_variant": plan.reward_variant,
                     "fingerprints": plan.fingerprints,
                 }
             },

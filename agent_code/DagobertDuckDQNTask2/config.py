@@ -25,6 +25,7 @@ and still implementation defaults pending a real experiment.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 
 ACTIONS: tuple[str, ...] = (
@@ -43,7 +44,7 @@ ACTION_TO_INDEX: dict[str, int] = {
 FEATURE_COUNT = 21
 FEATURE_SCHEMA_VERSION = 2
 
-REWARDS: dict[str, float] = {
+BASE_REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
     "WAITED": -0.1,
@@ -65,6 +66,49 @@ REWARDS: dict[str, float] = {
     "USEFUL_BOMB_PLACED": 0.5,
     "WASTEFUL_BOMB_PLACED": -0.5,
 }
+
+# Issue #103: three reward configurations compared against the same starting
+# artifact and seeds. "control" is BASE_REWARDS verbatim (main's values before
+# issue #103). The other two each isolate one mechanism, and both values were
+# first tried (together, uncontrolled) in the 2026-09-04 development branch
+# recorded in this agent's README under "Development history", then reverted
+# because they were selected after observing unregistered runs -- issue #103
+# is that controlled test, run with the same numeric values so the earlier
+# exploratory record is not discarded, just finally given a real comparison:
+# - survival_rebalance targets the passive-survival-over-engagement balance
+#   (SURVIVED_ROUND, WAITED);
+# - safety_bomb targets self-inflicted deaths from bombing into a position
+#   with no escape (SAFE_BOMB_PLACED, UNSAFE_BOMB_PLACED). Both are
+#   deliberately absent from BASE_REWARDS: train.py always emits one of the
+#   two events on every confirmed bomb placement (so they are always counted
+#   as diagnostics), but reward_from_events' REWARDS.get(event, 0.0) makes
+#   them worth exactly 0.0 under every variant except safety_bomb.
+REWARD_VARIANT_OVERRIDES: dict[str, dict[str, float]] = {
+    "control": {},
+    "survival_rebalance": {
+        "SURVIVED_ROUND": 2.0,
+        "WAITED": -0.3,
+    },
+    "safety_bomb": {
+        "SAFE_BOMB_PLACED": 0.2,
+        "UNSAFE_BOMB_PLACED": -1.0,
+    },
+}
+
+REWARD_VARIANT_ENV = "BOMBERMAN_DQN_REWARD_VARIANT"
+
+
+def _resolve_rewards() -> dict[str, float]:
+    """Select this process's reward configuration from the run plan's env var."""
+    variant = os.environ.get(REWARD_VARIANT_ENV, "control")
+    if variant not in REWARD_VARIANT_OVERRIDES:
+        raise ValueError(
+            f"{REWARD_VARIANT_ENV} must be one of {list(REWARD_VARIANT_OVERRIDES)}"
+        )
+    return {**BASE_REWARDS, **REWARD_VARIANT_OVERRIDES[variant]}
+
+
+REWARDS: dict[str, float] = _resolve_rewards()
 
 
 @dataclass(frozen=True)

@@ -223,10 +223,17 @@ happened (an attempted-but-invalid `BOMB` gets `INVALID_ACTION` only).
 own, so bomb placement is learned from its consequences rather than a flat
 per-placement bonus.
 
-All values are the pre-exploration implementation defaults. The later reward
-variants described below were reverted because they were selected after
-observing unregistered runs. They may be tested only in a prospective,
-controlled experiment.
+All values above are `control`, the pre-exploration implementation default
+and this table's baseline. The later reward variants described below were
+reverted because they were selected after observing unregistered runs, and
+may only be tested in a prospective, controlled experiment. Issue #103 is
+that experiment: `training/run_plan.py`'s `reward_variant` field selects
+`control`, `survival_rebalance` (`SURVIVED_ROUND: 2.0`, `WAITED: -0.3`), or
+`safety_bomb` (new `SAFE_BOMB_PLACED: 0.2`/`UNSAFE_BOMB_PLACED: -1.0`, rating
+a confirmed bomb placement by `escape_after_bomb` -- see `train.py`'s
+`_bomb_safety_event`) per process, via the `BOMBERMAN_DQN_REWARD_VARIANT`
+environment variable. `config.py`'s `BASE_REWARDS` holds exactly the table
+above; `REWARD_VARIANT_OVERRIDES` holds the two treatments.
 
 ## Development history
 
@@ -288,10 +295,18 @@ Two contributing factors, not mutually exclusive:
    round was plausibly competitive with actually engaging with it.
 
 The development branch temporarily reduced `SURVIVED_ROUND` to `+2.0` and
-strengthened `WAITED` to `-0.3`, then ran another 15,000 episodes. Because the
-observations selected those changes post hoc, both changes are reverted in
-the shipped implementation. The record remains useful for preregistering a
-controlled reward experiment, not for claiming either value is better.
+strengthened `WAITED` to `-0.3`, then ran another 15,000 episodes. It also
+added `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` (`+0.2`/`-1.0`), rating a bomb
+placement by whether the now-fixed `escape_after_bomb` feature found a safe
+tile afterward -- `USEFUL_BOMB_PLACED`/`WASTEFUL_BOMB_PLACED` only ever
+scored a bomb by its crate target, with nothing rewarding or penalizing
+escape safety. Because the observations selected those changes post hoc,
+all of them are reverted in the shipped implementation. The record remains
+useful for preregistering a controlled reward experiment, not for claiming
+any of the values are better: issue #103 is that controlled experiment,
+testing the survival rebalance and the bomb-safety pair as two independent
+treatments (not bundled) against the values in the table above, using these
+same numbers so this exploratory record is not wasted.
 
 ## Training status
 

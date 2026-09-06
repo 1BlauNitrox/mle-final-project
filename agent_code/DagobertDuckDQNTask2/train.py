@@ -10,7 +10,12 @@ from typing import Any
 import numpy as np
 
 from .config import ACTION_TO_INDEX
-from .features import normalize_features, state_to_features
+from .features import (
+    ESCAPE_AFTER_BOMB_INDEX,
+    StateFeatures,
+    normalize_features,
+    state_to_features,
+)
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
 from .persistence import CHECKPOINT_PATH, save_checkpoint
@@ -23,6 +28,8 @@ DIAGNOSTIC_EVENTS = (
     "BOMB_DROPPED",
     "USEFUL_BOMB_PLACED",
     "WASTEFUL_BOMB_PLACED",
+    "SAFE_BOMB_PLACED",
+    "UNSAFE_BOMB_PLACED",
     "KILLED_SELF",
     "GOT_KILLED",
     "SURVIVED_ROUND",
@@ -102,6 +109,12 @@ def game_events_occurred(
     if bomb_event is not None:
         training_events.append(bomb_event)
         self.episode_event_counts[bomb_event] += 1
+
+    safety_event = _bomb_safety_event(old_features, events)
+
+    if safety_event is not None:
+        training_events.append(safety_event)
+        self.episode_event_counts[safety_event] += 1
 
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
@@ -324,6 +337,28 @@ def _bomb_usefulness_event(
         return "USEFUL_BOMB_PLACED"
 
     return "WASTEFUL_BOMB_PLACED"
+
+
+def _bomb_safety_event(
+    old_features: StateFeatures,
+    events: list[str],
+) -> str | None:
+    """Rate a placed bomb "SAFE_BOMB_PLACED" or "UNSAFE_BOMB_PLACED" by escape.
+
+    Reuses `old_features[ESCAPE_AFTER_BOMB_INDEX]` rather than recomputing
+    the escape search: `state_to_features` already evaluated the identical
+    hypothetical (a bomb placed at the agent's pre-action position) to build
+    that feature for every state, whether or not BOMB was actually chosen.
+    Only fires when the framework confirms the bomb was actually placed,
+    matching `_bomb_usefulness_event`'s own `BOMB_DROPPED` gate.
+    """
+    if "BOMB_DROPPED" not in events:
+        return None
+
+    if old_features[ESCAPE_AFTER_BOMB_INDEX]:
+        return "SAFE_BOMB_PLACED"
+
+    return "UNSAFE_BOMB_PLACED"
 
 
 def _manhattan_distance(

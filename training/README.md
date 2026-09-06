@@ -138,6 +138,7 @@ following fields control execution:
 | `agent` | string | none | Required existing directory below `agent_code/`. |
 | `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
 | `action_masking` | string | `none` | Task-2 DQN treatment selector: `none` or `framework_legal`; recorded in every job and protected by the plan fingerprint. |
+| `reward_variant` | string | `control` | Task-2 DQN reward-configuration selector: `control`, `survival_rebalance`, or `safety_bomb` (issue #103); recorded in every job and protected by the plan fingerprint. |
 | `max_parallel_training` | positive integer | `1` | Bounds independent replica workers. Evaluation remains serial and single-process. |
 | `replicas` | list | none | At least one independent replica with a unique `id`, non-negative `world_seed`, non-negative `agent_seed`, and optional `parent_artifact`. |
 | `training_stages` | list | `[]` | Ordered stages with unique `id`, supported `scenario`, positive `rounds`, and zero to three ordered `opponents`. |
@@ -254,6 +255,20 @@ process, and an immutable artifact; the runner verifies the artifact checksum
 after every evaluation job. Evaluation suites use the replica workspace after
 the final ordered training stage; earlier stage checkpoints are archived for
 lineage and are not selected implicitly.
+
+### Issue #103 reward-shaping treatments for Task 2 DQN
+
+**Registered, ready to execute.** Three independent plans compare
+`control`, `survival_rebalance`, and `safety_bomb` reward configurations,
+each direct-classic training from the same starting artifact and seeds. See
+`experiments/2026-09-07-dqn-task2-reward-shaping/README.md` for the full
+protocol.
+
+```bash
+python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-control.yaml --dry-run
+python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-survival-rebalance.yaml --dry-run
+python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-safety-bomb.yaml --dry-run
+```
 
 ### Issue #41 registered DQN series
 
