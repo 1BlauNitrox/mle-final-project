@@ -8,8 +8,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .config import DEFAULT_CONFIG
+from .config import DEFAULT_CONFIG, DQNConfig
 from .features import normalize_features, state_to_features
+from .legality import framework_legal_action_mask
 from .model import DQNLearner, select_action
 from .persistence import (
     CHECKPOINT_PATH,
@@ -19,6 +20,7 @@ from .persistence import (
 from .replay import ReplayBuffer
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
+ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 
 
 def setup(self) -> None:
@@ -50,6 +52,9 @@ def act(self, game_state: dict | None) -> str:
         state=state,
         epsilon=epsilon,
         rng=self.action_rng,
+        action_mask=(
+            framework_legal_action_mask(game_state) if self.config.action_masking else None
+        ),
     )
 
 
@@ -57,18 +62,34 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     """Restore resumable training state or initialize a new one."""
     if CHECKPOINT_PATH.is_file():
         loaded = load_training_checkpoint(CHECKPOINT_PATH)
+        configured = _configured_training_config()
+        is_fresh_migration = (
+            loaded.completed_episodes == 0 and len(loaded.replay_buffer) == 0
+        )
+        config = loaded.config
+        replay_buffer = loaded.replay_buffer
+        action_rng = loaded.action_rng
+        if loaded.config.action_masking != configured.action_masking:
+            if not is_fresh_migration:
+                raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
+            loaded.learner.config = configured
+            loaded.learner.online_network.config = configured
+            loaded.learner.target_network.config = configured
+            config = configured
 
         if loaded.agent_seed != agent_seed:
-            raise ValueError(
-                "BOMBERMAN_AGENT_SEED does not match checkpoint seed."
-            )
+            if not is_fresh_migration:
+                raise ValueError("BOMBERMAN_AGENT_SEED does not match checkpoint seed.")
+            action_rng, replay_seed = _initial_random_streams(agent_seed)
+            replay_buffer = ReplayBuffer(capacity=config.replay_capacity, seed=replay_seed)
 
-        self.config = loaded.config
+        self.config = config
         self.learner = loaded.learner
-        self.replay_buffer = loaded.replay_buffer
-        self.action_rng = loaded.action_rng
+        self.replay_buffer = replay_buffer
+        self.action_rng = action_rng
         self.epsilon = loaded.epsilon
         self.completed_episodes = loaded.completed_episodes
+        self.agent_seed = agent_seed
         self.policy_network = self.learner.online_network
 
         self.logger.info(
@@ -78,7 +99,7 @@ def _setup_training_policy(self, agent_seed: int) -> None:
         )
         return
 
-    self.config = DEFAULT_CONFIG
+    self.config = _configured_training_config()
     action_rng, replay_seed = _initial_random_streams(agent_seed)
 
     self.learner = DQNLearner(
@@ -165,3 +186,13 @@ def _read_agent_seed() -> int:
         raise ValueError("BOMBERMAN_AGENT_SEED must be non-negative.")
 
     return seed
+
+
+def _configured_training_config() -> DQNConfig:
+    """Read the run-plan's explicit treatment selector for a fresh run."""
+    mode = os.environ.get(ACTION_MASKING_ENV, "none")
+    if mode == "none":
+        return DEFAULT_CONFIG
+    if mode == "framework_legal":
+        return DQNConfig(action_masking=True)
+    raise ValueError(f"{ACTION_MASKING_ENV} must be 'none' or 'framework_legal'.")

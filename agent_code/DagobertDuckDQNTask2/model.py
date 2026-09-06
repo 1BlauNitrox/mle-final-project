@@ -88,6 +88,7 @@ def select_action(
     state: np.ndarray,
     epsilon: float,
     rng: np.random.Generator,
+    action_mask: np.ndarray | None = None,
 ) -> str:
     """Select an action using seeded epsilon-greedy exploration"""
     if not 0.0 <= epsilon <= 1.0:
@@ -101,8 +102,10 @@ def select_action(
     if state_values.dtype != np.float32:
         raise ValueError("state must use float32.")
 
+    legal = _validate_action_mask(action_mask)
+
     if rng.random() < epsilon:
-        action_index = int(rng.integers(len(ACTIONS)))
+        action_index = int(rng.choice(np.flatnonzero(legal)))
         return ACTIONS[action_index]
 
     state_tensor = torch.from_numpy(state_values).to(CPU_DEVICE)
@@ -115,11 +118,24 @@ def select_action(
     if not np.all(np.isfinite(q_values_array)):
         raise ValueError("Network produced non-finite Q-Values")
 
-    maximum = np.max(q_values_array)
-    best_indices = np.flatnonzero(q_values_array == maximum)
+    masked_q_values = np.where(legal, q_values_array, -np.inf)
+    maximum = np.max(masked_q_values)
+    best_indices = np.flatnonzero(masked_q_values == maximum)
     selected_index = int(rng.choice(best_indices))
 
     return ACTIONS[selected_index]
+
+
+def _validate_action_mask(action_mask: np.ndarray | None) -> np.ndarray:
+    """Return a validated eligibility mask, defaulting to all actions."""
+    if action_mask is None:
+        return np.ones(len(ACTIONS), dtype=np.bool_)
+    mask = np.asarray(action_mask)
+    if mask.shape != (len(ACTIONS),) or mask.dtype != np.bool_:
+        raise ValueError("action_mask must be a boolean vector in action order.")
+    if not np.any(mask):
+        raise ValueError("action_mask must retain at least one legal action.")
+    return mask
 
 def compute_bellman_targets(
     *,
@@ -127,6 +143,7 @@ def compute_bellman_targets(
     next_q_values: torch.Tensor,
     terminals: torch.Tensor,
     discount_factor: float,
+    next_action_masks: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Calculate fixed DQN targets for one transition batch"""
     if not 0.0 <= discount_factor <= 1.0:
@@ -152,8 +169,17 @@ def compute_bellman_targets(
     if terminals.dtype != torch.bool:
         raise ValueError("terminals must use bool")
 
+    if next_action_masks is None:
+        next_action_masks = torch.ones_like(next_q_values, dtype=torch.bool)
+    if next_action_masks.shape != next_q_values.shape or next_action_masks.dtype != torch.bool:
+        raise ValueError("next_action_masks have an incompatible shape or dtype")
+    if not bool(next_action_masks.any(dim=1).all()):
+        raise ValueError("Every Bellman target must retain a legal action")
+
     with torch.no_grad():
-        maximum_next_q_values = next_q_values.max(dim=1).values
+        maximum_next_q_values = (
+            next_q_values.masked_fill(~next_action_masks, -torch.inf).max(dim=1).values
+        )
         bootstrap_mask = (~terminals).to(dtype=torch.float32)
 
         return(
@@ -208,6 +234,7 @@ class DQNLearner:
         rewards = torch.from_numpy(batch.rewards).to(CPU_DEVICE)
         next_states = torch.from_numpy(batch.next_states).to(CPU_DEVICE)
         terminals = torch.from_numpy(batch.terminals).to(CPU_DEVICE)
+        next_action_masks = torch.from_numpy(batch.next_action_masks).to(CPU_DEVICE)
 
         self.online_network.train()
 
@@ -225,6 +252,7 @@ class DQNLearner:
             next_q_values=next_q_values,
             terminals=terminals,
             discount_factor=self.config.discount_factor,
+            next_action_masks=next_action_masks,
         )
 
         td_errors = targets - current_q_values

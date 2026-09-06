@@ -90,6 +90,7 @@ class DQNConfig:
 
     default_seed: int = 0
     torch_num_threads: int = 1
+    action_masking: bool = False
 
     def __post_init__(self) -> None:
         """Reject internally inconsistent configurations."""
@@ -133,6 +134,9 @@ class DQNConfig:
 
         if self.torch_num_threads != 1:
             raise ValueError("torch_num_threads must be exactly one.")
+
+        if type(self.action_masking) is not bool:
+            raise ValueError("action_masking must be a bool.")
 
 
 DEFAULT_CONFIG = DQNConfig()

@@ -318,6 +318,9 @@ def _restore_config(value: Any) -> DQNConfig:
         raise ValueError("Stored configuration must be a dictionary.")
 
     expected_defaults = asdict(DQNConfig())
+    # Evaluation artifacts predating Issue #86 are unmasked by definition.
+    if "action_masking" not in value:
+        value = {**value, "action_masking": False}
 
     if set(value) != set(expected_defaults):
         raise ValueError("Stored configuration has unexpected fields.")
@@ -365,6 +368,9 @@ def _serialize_replay(
         "terminals": torch.from_numpy(
             state["terminals"]
         ).clone(),
+        "next_action_masks": torch.from_numpy(
+            state["next_action_masks"]
+        ).clone(),
         "rng_state": deepcopy(state["rng_state"]),
     }
 
@@ -386,10 +392,11 @@ def _restore_replay(
         "rewards",
         "next_states",
         "terminals",
+        "next_action_masks",
         "rng_state",
     }
-
-    if set(value) != required_fields:
+    legacy_fields = required_fields - {"next_action_masks"}
+    if set(value) not in (required_fields, legacy_fields):
         raise ValueError("Stored replay state has unexpected fields.")
 
     replay_state = {
@@ -418,6 +425,13 @@ def _restore_replay(
             value["terminals"],
             dtype=torch.bool,
             name="terminals",
+        ),
+        "next_action_masks": (
+            _tensor_to_numpy(
+                value["next_action_masks"], dtype=torch.bool, name="next_action_masks"
+            )
+            if "next_action_masks" in value
+            else np.ones((len(value["terminals"]), len(ACTIONS)), dtype=np.bool_)
         ),
         "rng_state": deepcopy(value["rng_state"]),
     }
