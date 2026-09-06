@@ -91,7 +91,7 @@ def test_agent_fingerprint_ignores_runtime_logs_and_staged_checkpoint(
     before = run_plan._fingerprint_directory(agent)
     (agent / "logs").mkdir()
     (agent / "logs" / "agent.log").write_text("runtime\n", encoding="utf-8")
-    (agent / ".evaluation-checkpoint.pt").write_bytes(b"staged")
+    (agent / run_plan.STAGED_EVALUATION_CHECKPOINT_NAME).write_bytes(b"staged")
     assert run_plan._fingerprint_directory(agent) == before
 
 
@@ -177,6 +177,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["mode"] == "evaluation"
     assert calls[-1]["metadata_extra"]["run_plan"]["processes"] == 1
     assert calls[-1]["metadata_extra"]["run_plan"]["artifact_writable"] is False
+    assert calls[-1]["environment_overrides"] == {"BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz"}
 
 
 def test_resume_rejects_every_protected_fingerprint(tmp_path: Path) -> None:

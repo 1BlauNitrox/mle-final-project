@@ -58,7 +58,7 @@ not Task 2 configuration or evidence.
 
 ## Checkpoint migration
 
-`scripts/migrate_task2_dqn_capability.py` builds the committed `checkpoint.pt`
+`scripts/migrate_task2_dqn_capability.py` builds versioned migration artifacts
 from the parent's frozen network. It supersedes issue #43's byte-copy
 placeholder, since the two checkpoints are no longer the same shape.
 
@@ -66,8 +66,10 @@ The rule (`agent_code/DagobertDuckDQNTask2/migration.py`, tested in
 `tests/test_DagobertDuckDQNTask2_migration.py`):
 
 - the parent's 8 input-layer columns are copied verbatim into the successor's
-  first 8 input columns; the remaining 13 columns come from a network freshly
-  seeded with the migration seed (`44`) -- deterministic, not left to chance;
+  first 8 input columns; Issue #85 zeroes the remaining 13 columns. This
+  preserves the inherited five Q-values for any valid Task 2 suffix within
+  `1e-5` absolute tolerance (the cross-platform float32 contract) until
+  learning updates those trainable weights;
 - both hidden layers (`64x64`) are copied verbatim; their shape does not
   change;
 - the parent's 5 output rows and biases are copied verbatim into the
@@ -82,8 +84,15 @@ The rule (`agent_code/DagobertDuckDQNTask2/migration.py`, tested in
   compatible with the parent's shapes, and neither has any value for a
   network that has not yet trained under the new architecture.
 
-The committed checkpoint is therefore a **fresh, training-ready** artifact
-(`completed_episodes=0`), not a trained or evaluated one.
+`checkpoint.pt` is preserved as the exact Issue #44 / #46 migration start. The
+separate `checkpoint-issue85-zero-suffix.pt` is the corrected, fresh,
+training-ready artifact (`completed_episodes=0`), with parent and artifact
+checksums recorded in `artifact.json`. Neither is trained or evaluated evidence.
+The bounded Issue #85 paired evaluation protocol is registered in
+`experiments/2026-09-06-dqn-task2-migration-retention/`. Its first execution
+was rejected by the provenance analyzer because the runner and run plan used
+different rules for a disposable staged checkpoint. It supplies no valid
+performance result; a clean repeat after the runner correction is required.
 
 ## Action space
 

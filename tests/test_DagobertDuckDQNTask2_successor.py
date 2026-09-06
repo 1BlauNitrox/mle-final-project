@@ -15,8 +15,11 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+import torch
 
+from agent_code.DagobertDuckDQN.features import normalize_features as normalize_parent_features
 from agent_code.DagobertDuckDQN.features import state_to_features as parent_state_to_features
+from agent_code.DagobertDuckDQN.model import select_action as select_parent_action
 from agent_code.DagobertDuckDQN.persistence import (
     load_evaluation_checkpoint as load_parent_checkpoint,
 )
@@ -26,8 +29,13 @@ from agent_code.DagobertDuckDQNTask2.config import (
     FEATURE_SCHEMA_VERSION as SUCCESSOR_FEATURE_SCHEMA_VERSION,
 )
 from agent_code.DagobertDuckDQNTask2.features import (
+    normalize_features as normalize_successor_features,
+)
+from agent_code.DagobertDuckDQNTask2.features import (
     state_to_features as successor_state_to_features,
 )
+from agent_code.DagobertDuckDQNTask2.migration import INHERITED_Q_VALUE_TOLERANCE
+from agent_code.DagobertDuckDQNTask2.model import select_action as select_successor_action
 from agent_code.DagobertDuckDQNTask2.persistence import (
     load_evaluation_checkpoint as load_successor_checkpoint,
 )
@@ -39,6 +47,9 @@ SUCCESSOR_ROOT = REPOSITORY_ROOT / "agent_code" / "DagobertDuckDQNTask2"
 
 PARENT_CHECKPOINT = PARENT_ROOT / "checkpoint.pt"
 SUCCESSOR_CHECKPOINT = SUCCESSOR_ROOT / "checkpoint.pt"
+CORRECTED_SUCCESSOR_CHECKPOINT = (
+    SUCCESSOR_ROOT / "checkpoint-issue85-zero-suffix.pt"
+)
 SUCCESSOR_MANIFEST = SUCCESSOR_ROOT / "artifact.json"
 
 PARENT_SHA256 = "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
@@ -96,6 +107,17 @@ def test_successor_manifest_records_migration_lineage() -> None:
     assert manifest["status"] == "task2_capability_in_development"
     assert manifest["capability"] == "task1_navigation_plus_task2_bombs_and_crates"
     assert manifest["artifact"]["sha256"] == sha256_file(SUCCESSOR_CHECKPOINT)
+    assert manifest["corrected_migration_artifact"]["sha256"] == sha256_file(
+        CORRECTED_SUCCESSOR_CHECKPOINT
+    )
+    assert manifest["corrected_migration_artifact"]["path"] == (
+        CORRECTED_SUCCESSOR_CHECKPOINT.name
+    )
+    assert "seeded" in manifest["migration"]["rule"][1]
+    assert "zero" in manifest["corrected_migration"]["rule"][1]
+    assert manifest["corrected_migration"]["artifact_path"] == (
+        CORRECTED_SUCCESSOR_CHECKPOINT.name
+    )
     assert manifest["parent"]["agent"] == "DagobertDuckDQN"
     assert manifest["parent"]["artifact_sha256"] == PARENT_SHA256
     assert manifest["migration"]["parent_input_dim"] == 8
@@ -182,3 +204,48 @@ def test_migrated_network_continues_the_parent_weights() -> None:
 
     assert torch.equal(parent_linear[0].weight, successor_linear[0].weight[:, :8])
     assert torch.equal(parent_linear[-1].weight, successor_linear[-1].weight[:5, :])
+
+
+def test_corrected_artifact_preserves_parent_q_values(
+    representative_states: list[dict],
+) -> None:
+    """The Issue #85 artifact, unlike the preserved #46 start, is function-safe."""
+    parent = load_parent_checkpoint(PARENT_CHECKPOINT)
+    corrected = load_successor_checkpoint(CORRECTED_SUCCESSOR_CHECKPOINT)
+
+    for game_state in representative_states:
+        parent_features = parent_state_to_features(game_state)
+        successor_features = successor_state_to_features(game_state)
+        assert parent_features is not None
+        assert successor_features is not None
+
+        with torch.no_grad():
+            parent_q_values = parent.network(
+                torch.from_numpy(normalize_parent_features(parent_features))
+            )
+            corrected_q_values = corrected.network(
+                torch.from_numpy(normalize_successor_features(successor_features))
+            )[:5]
+
+        torch.testing.assert_close(
+            corrected_q_values,
+            parent_q_values,
+            rtol=0.0,
+            atol=INHERITED_Q_VALUE_TOLERANCE,
+        )
+        with torch.no_grad():
+            bomb_q_value = corrected.network(
+                torch.from_numpy(normalize_successor_features(successor_features))
+            )[5]
+        assert bomb_q_value < parent_q_values.max()
+        assert select_parent_action(
+            network=parent.network,
+            state=normalize_parent_features(parent_features),
+            epsilon=0.0,
+            rng=np.random.default_rng(8501),
+        ) == select_successor_action(
+            network=corrected.network,
+            state=normalize_successor_features(successor_features),
+            epsilon=0.0,
+            rng=np.random.default_rng(8501),
+        )

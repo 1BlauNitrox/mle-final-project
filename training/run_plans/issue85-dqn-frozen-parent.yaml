@@ -1,0 +1,25 @@
+schema_version: 1
+plan_id: issue85-dqn-frozen-parent
+agent: DagobertDuckDQN
+artifact_path: checkpoint.pt
+max_parallel_training: 1
+replicas:
+  - id: frozen-parent
+    world_seed: 1
+    agent_seed: 1
+training_stages: []
+evaluation_suites:
+  - id: primary
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: &world_seeds [36001, 36002, 36003, 36004, 36005, 36006, 36007, 36008, 36009, 36010]
+    agent_seeds: &agent_seeds [46001, 46002, 46003, 46004, 46005, 46006, 46007, 46008, 46009, 46010]
+    opponents: []
+  - id: deterministic-repeat
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: *world_seeds
+    agent_seeds: *agent_seeds
+    opponents: []

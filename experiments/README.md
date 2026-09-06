@@ -10,9 +10,10 @@ experiments/
 └── YYYY-MM-DD-short-name/
     ├── README.md
     ├── config.yaml
-    ├── episodes.csv (only local)
+    ├── episodes.csv (local unless the claim requires these rows)
     ├── summary.csv
     ├── artifacts.json (only local)
+    ├── evidence-manifest.json (when required external evidence exists)
     └── figures/
         ├── coin_fraction.png
         ├── learning_curve.png
@@ -61,6 +62,11 @@ State primary metric, guardrails, thresholds and confidence interval.
 ## Results
 Show per-model and aggregate tables and figures.
 
+## Evidence
+List committed per-run/per-seed observations and the exact analysis command.
+For required external evidence, record its durable location, SHA-256 checksum,
+byte size, contents/schema, retrieval instructions and verification command.
+
 ## Interpretation
 Explain what the evidence supports and what it does not support.
 
@@ -73,7 +79,10 @@ Link the next issue created from the result.
 
 
 Do not commit raw logs, replay collections, temporary checkpoints, or large
-training outputs. Record external artifact locations and checksums when those
-artifacts are needed to reproduce a result.
+training outputs merely because they were produced. Commit the smallest
+per-run/per-seed evidence that reproduces the reported claims. When a large
+artifact is required, record its durable location, SHA-256 checksum, byte size,
+contents/schema, retrieval instructions, and verification command. A local path
+or checksum without retrievable bytes is not evidence.
 
 See [`docs/0004-experimentation-protocol.md`](../docs/0004-experimentation-protocol.md).

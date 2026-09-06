@@ -79,6 +79,12 @@ These rules apply to every change:
 - **All experiment claims MUST have evidence.** Never claim that an agent is
   better, safer, faster, or converged based on anecdotal play or one favorable
   seed.
+- **Evidence MUST match the PR scope and its claims.** A prospective protocol
+  needs a complete, executable plan but no results. A completed experiment,
+  training result, or model freeze needs the applicable durable evidence
+  defined in `docs/0005-definition-of-ready-and-done.md`.
+- **Machine-local evidence is not reviewable evidence.** A local path or a
+  checksum without retrievable bytes cannot support a result or artifact claim.
 - **Experiments MUST be defined before training.** Do not choose hypotheses,
   metrics, success thresholds, or evaluation seeds after seeing the outcome.
 - **Training and evaluation seeds MUST remain separate.** Report results across
@@ -148,9 +154,11 @@ Before starting work:
 Before requesting review:
 
 1. Re-read the linked issue.
-2. Verify every acceptance criterion.
+2. Verify every acceptance criterion claimed by the PR and identify any
+   remaining parent-issue work.
 3. Inspect CI results.
-4. Ensure the PR contains `Closes #<issue-number>`.
+4. Use `Closes #<issue-number>` only if the PR completes the entire issue;
+   otherwise use `Refs #<issue-number>` and leave the issue open.
 5. Complete the Definition of Done checklist honestly.
 
 Do not merge your own pull request without the required approval from another
@@ -231,7 +239,8 @@ perf(agent): reduce action-selection latency
 ### Pull Requests and Merge
 
 - Open a draft PR early for multi-session work.
-- Link the issue with `Closes #<issue-number>`.
+- Link the issue with `Closes #<issue-number>` when the PR completes it. Use
+  `Refs #<issue-number>` for a partial result or one stage of a larger issue.
 - Explain experiment relevance; write `Not applicable` with a reason when the
   change is not experimental.
 - Request at least one review from a teammate who is not the author.
@@ -326,7 +335,10 @@ experiments/YYYY-MM-DD-short-name/
 ```
 
 Store raw logs and large intermediate artifacts outside Git. Record the external
-location and checksum when they are needed for reproduction.
+location and checksum when they are needed for reproduction. Required external
+evidence must also record byte size, contents/schema, retrieval instructions,
+and an exact verification command. Do not cite a machine-local path or a hash
+whose bytes a reviewer cannot retrieve.
 
 ---
 
@@ -399,6 +411,27 @@ training:
 Change one main variable at a time unless the experiment explicitly studies an
 interaction. Use ablations to separate feature, reward, algorithm, and training
 effects.
+
+### Evidence and Completion
+
+- A protocol-only PR must state that no scientific run or result is in scope.
+  Validate its configuration and execution path, but do not demand results or
+  make a performance claim.
+- A completed experiment or training PR must retain compact per-run/per-seed
+  observations sufficient to recompute its metrics and uncertainty, plus the
+  exact analysis command. Aggregate tables alone are insufficient when they
+  cannot reproduce the claimed statistic.
+- A frozen-model PR must identify the selected evaluation artifact, checksum,
+  size, provenance, prospective selection rule, evaluation evidence, and exact
+  export or verification command.
+- A partial or incomplete record must preserve available evidence, identify
+  missing or invalid data, narrow its claims, use `Refs #<issue>`, and leave the
+  parent issue open.
+- Large required evidence may stay outside Git only at a durable retrievable
+  location with a committed SHA-256 checksum, byte size, contents/schema,
+  retrieval instructions, and verification command. Do not publish every
+  checkpoint or episode when a smaller lossless evidence set supports the
+  claim.
 
 ### Required Comparisons
 
@@ -513,7 +546,8 @@ The AI disclosure log in `docs/0006-ai-usage.md` is intentionally chronological.
 - **Update agent cards with agent changes** and experiment records with
   experimental evidence.
 - **Keep claims traceable.** Link the implementing issue, commit, configuration,
-  results, and external artifact checksum where applicable.
+  results, and, where applicable, the external artifact's durable locator,
+  checksum, size, retrieval instructions, and verification command.
 - **Keep the report outside this repository.** Repository documentation may
   organize evidence, but the report PDF must not be committed.
 

@@ -138,12 +138,12 @@ flowchart LR
     B -- "No" --> A
     B -- "Yes" --> C["Assign issue and create branch"]
     C --> D["Implement, test, and document"]
-    D --> E["Open draft PR with Closes #issue"]
+    D --> E["Open draft PR linked to issue"]
     E --> F["CI: quality + smoke tests"]
     F --> G{"Peer approval and DoD met?"}
     G -- "Changes requested" --> D
     G -- "Yes" --> H["Squash merge into main"]
-    H --> I["Linked issue closes automatically"]
+    H --> I["Complete issue closes via Closes"]
 ```
 
 1. Select an issue that meets the
@@ -151,12 +151,15 @@ flowchart LR
 2. Branch from current `main` using
    `<type>/<issue-number>-<short-description>`, for example
    `experiment/12-q-learning-reward-sweep`.
-3. Open a draft pull request early and include `Closes #12`.
-4. Record the hypothesis, setup, seeds, baselines, metrics, and result for
-   experiment changes.
+3. Open a draft pull request early. Use `Closes #12` only when it completes the
+   issue; otherwise use `Refs #12` and leave the issue open.
+4. Declare the applicable evidence scope. A prospective experiment PR records
+   and validates the protocol without needing results; a completed experiment
+   PR records the results, retained evidence, and conclusion.
 5. Mark the PR ready only after local tests and documentation are complete.
 6. Obtain at least one approval from another team member and pass required CI.
-7. Squash merge. GitHub closes the linked issue automatically.
+7. Squash merge. GitHub closes a completed issue automatically when the PR uses
+   `Closes`; issues linked with `Refs` remain open.
 
 Direct pushes to `main` are not part of the workflow. Full details are in
 [`CONTRIBUTING.md`](CONTRIBUTING.md) and

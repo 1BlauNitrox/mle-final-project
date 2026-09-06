@@ -22,7 +22,11 @@ from typing import Any
 import yaml
 
 import settings
-from training.run_experiment import REPOSITORY_ROOT, run_experiment
+from training.run_experiment import (
+    REPOSITORY_ROOT,
+    STAGED_EVALUATION_CHECKPOINT_NAME,
+    run_experiment,
+)
 
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
@@ -360,6 +364,13 @@ def _run_job(
             opponents=list(job.opponents),
             output_root=plan_directory / "jobs" / job.run_id,
             run_id=attempt_id,
+            environment_overrides=(
+                {"BOMBERMAN_EVALUATION_CHECKPOINT": artifact.name}
+                if job.kind == "evaluation"
+                and artifact is not None
+                and artifact.name != "checkpoint.pt"
+                else None
+            ),
             metadata_extra={
                 "run_plan": {
                     "plan_id": plan.plan_id,
@@ -370,6 +381,11 @@ def _run_job(
                     "population": job.population,
                     "processes": 1,
                     "artifact_writable": job.kind == "training",
+                    "evaluation_checkpoint": (
+                        artifact.name
+                        if job.kind == "evaluation" and artifact is not None
+                        else None
+                    ),
                     "fingerprints": plan.fingerprints,
                 }
             },
@@ -762,7 +778,7 @@ def _fingerprint_paths(paths: tuple[str, ...]) -> str:
 def _fingerprint_directory(path: Path) -> str:
     digest = hashlib.sha256()
     ignored_parts = {"__pycache__", "logs"}
-    ignored_files = {".evaluation-checkpoint.pt"}
+    ignored_files = {STAGED_EVALUATION_CHECKPOINT_NAME}
     for candidate in sorted(path.rglob("*")):
         if (
             not candidate.is_file()

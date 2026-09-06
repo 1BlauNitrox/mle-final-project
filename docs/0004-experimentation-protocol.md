@@ -47,6 +47,29 @@ Record:
 
 Do not choose the success criterion after seeing the result.
 
+## Protocol and result changes
+
+The protocol and its results are different reviewable outcomes:
+
+1. A **prospective protocol PR** registers the items above, adds or configures
+   the execution and analysis paths, and demonstrates that they parse, expand,
+   or dry-run successfully. It does not need training or evaluation results.
+   It must explicitly state that no scientific run or performance conclusion
+   is part of the PR.
+2. A **completed experiment PR** records the executed immutable revisions and
+   artifacts, retained observations, aggregate results, uncertainty,
+   interpretation, and decision. It may close the experiment issue only when
+   all of that issue's acceptance criteria are satisfied.
+3. A **partial or incomplete result PR** preserves useful evidence without
+   pretending the experiment is complete. It documents failed or missing runs,
+   invalid data, and unsupported claims, uses `Refs #<issue>`, and leaves the
+   remaining acceptance criteria open.
+
+Separating the protocol and result into two PRs is recommended when review or
+long-running compute would otherwise overlap. The experiment issue remains open
+between them unless a separate protocol issue was intentionally scoped to end
+before execution.
+
 ## Minimum evaluation metrics
 
 Use more than one metric because tournament score alone can hide failure modes:
@@ -131,8 +154,54 @@ Create `experiments/YYYY-MM-DD-short-name/README.md` with:
 ## Decision and follow-up
 ```
 
-Small CSV/JSON summaries and final plots may be committed. Raw replay data,
-temporary logs, and large intermediate checkpoints remain outside Git.
+### Minimum evidence package
+
+Commit the smallest evidence package that lets a reviewer check the reported
+claim without access to the author's machine. It normally contains:
+
+- the prospective protocol and exact executed configuration;
+- immutable agent, framework, and analysis revisions;
+- model and input-artifact identifiers and checksums;
+- compact per-run or per-seed observations sufficient to recompute the reported
+  aggregates and uncertainty;
+- aggregate CSV or JSON tables and final plots used for the decision;
+- the conclusion, limitations, and follow-up decision; and
+- an exact analysis or verification command.
+
+The necessary granularity depends on the claim. Seed-level observations are
+usually sufficient for means and across-seed variation. Per-episode rows are
+required only when the reported statistic or resampling method cannot be
+reconstructed from a smaller lossless summary. Every intermediate checkpoint,
+replay transition, and verbose log is not evidence by default.
+
+### Large and external evidence
+
+Raw replay data, verbose logs, temporary checkpoints, and large training
+artifacts remain outside Git. If any such object is required to verify a claim,
+the experiment record or a committed manifest must provide:
+
+- a durable downloadable location or immutable release identifier;
+- its SHA-256 checksum and byte size;
+- a description of its contents and schema;
+- exact retrieval instructions; and
+- an exact verification or reproduction command.
+
+A machine-local path or checksum without access to the referenced bytes is not
+sufficient. If required evidence has been lost or cannot be shared, preserve
+the available record, label the result incomplete or unverified, narrow the
+conclusion, and keep the experiment issue open.
+
+### Frozen-model evidence
+
+Freezing a candidate records a selection decision, not a new performance
+experiment. Retain the selected evaluation artifact in its submission-ready
+agent directory and document its SHA-256 checksum, byte size, producing
+configuration and code revision, source-checkpoint provenance, prospective
+selection rule, and the evaluation evidence used for selection. If reproducing
+the export requires a large source checkpoint, publish that source through the
+external-evidence contract above and provide an exact export and verification
+command. Unselected and intermediate checkpoints need not be published unless
+they are required to audit the stated selection rule.
 
 ## Performance and compatibility
 
