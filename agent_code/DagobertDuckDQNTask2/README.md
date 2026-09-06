@@ -17,6 +17,28 @@ the metric correction concerning initially hidden coins.
 
 `DagobertDuckDQNTask2` is the DQN Task 2 successor of `DagobertDuckDQN`.
 
+## Legal-action masking (Issue #86)
+
+The checkpoint configuration records whether the policy uses the `none`
+control or the `framework_legal` treatment. The treatment masks only actions
+that `environment.py` would reject: movement into a wall, crate, bomb, or
+other agent, and `BOMB` without inventory. `WAIT` always remains eligible.
+It intentionally does not hide blast-danger or tactically poor actions.
+
+For a masked checkpoint, the same state-derived mask controls epsilon
+exploration, greedy tie selection, and the next-state maximum in the Bellman
+target. Replay retains the exact next-state mask. This is required because a
+high Q-value for an impossible next action must not affect learning. The run
+plan passes and records the mode through `BOMBERMAN_DQN_ACTION_MASKING`; a
+resumed checkpoint rejects a different mode.
+
+The preregistered five-replica Issue #86 experiment completed on 2026-09-06.
+`framework_legal` reduced the primary-suite invalid-action rate to `0.0` in
+every scenario, but it failed the registered collection and all-scenario
+survival non-regression gates. It is therefore rejected for this configuration,
+not adopted as the agent default. The compact evidence and raw-archive checksum
+are recorded in `experiments/2026-09-06-dqn-task2-legal-action-masking/`.
+
 Issue #43 created it as a byte-identical, behavior-preserving scaffold of the
 frozen Task 1 baseline. Issue #44 (this revision) adds the actual Task 2
 capability: bomb/crate/danger features, a six-action network, a one-way

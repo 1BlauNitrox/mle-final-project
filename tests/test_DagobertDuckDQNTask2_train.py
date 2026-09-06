@@ -122,6 +122,31 @@ def test_callback_setup_restores_all_training_objects(
     assert restored.policy_network is restored.learner.online_network
 
 
+def test_fresh_migration_checkpoint_is_reseeded_for_an_independent_replica(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    source = make_agent()
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    save_checkpoint(
+        learner=source.learner,
+        replay_buffer=source.replay_buffer,
+        action_rng=source.action_rng,
+        epsilon=source.epsilon,
+        completed_episodes=0,
+        agent_seed=source.agent_seed,
+        path=checkpoint_path,
+    )
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", checkpoint_path)
+    restored = SimpleNamespace(logger=Mock())
+
+    callbacks._setup_training_policy(restored, 999)
+
+    assert restored.agent_seed == 999
+    assert len(restored.replay_buffer) == 0
+    assert restored.action_rng.random() != source.action_rng.random()
+
+
 def test_bomb_placement_on_a_crate_is_useful() -> None:
     field = np.zeros((7, 7), dtype=int)
     field[0, :] = -1

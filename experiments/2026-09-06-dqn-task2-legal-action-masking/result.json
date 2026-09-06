@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "issue": 86,
+  "status": "completed_rejected",
+  "raw_archive": {"path": "external server archive; local copy tmp/issue86-run-plans.tar.gz", "sha256": "841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f"},
+  "deterministic_repeats": true,
+  "decision": "reject_framework_legal_masking_for_this_training_configuration",
+  "reason": "The structural zero-invalid-action requirement passed, but collection and survival non-regression gates did not pass across all three scenarios.",
+  "paired_collection_fraction_masked_minus_unmasked": {
+    "classic": {"mean": -0.026666666666666665, "ci_lower": -0.05111111111111111, "ci_upper": -0.008888888888888889},
+    "coin-heaven": {"mean": -0.014400000000000007, "ci_lower": -0.05840000000000001, "ci_upper": 0.022400000000000003},
+    "loot-crate": {"mean": -0.0052000000000000015, "ci_lower": -0.015600000000000003, "ci_upper": 0.004}
+  },
+  "paired_survival_rate_masked_minus_unmasked": {
+    "classic": {"mean": 0.18, "ci_lower": -0.02, "ci_upper": 0.38},
+    "coin-heaven": {"mean": -0.1, "ci_lower": -0.26, "ci_upper": 0.02},
+    "loot-crate": {"mean": 0.06, "ci_lower": -0.14, "ci_upper": 0.26}
+  }
+}
