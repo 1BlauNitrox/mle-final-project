@@ -392,6 +392,7 @@ def _restore_replay(
         "rewards",
         "next_states",
         "terminals",
+        "next_action_masks",
         "rng_state",
     }
     legacy_fields = required_fields - {"next_action_masks"}
