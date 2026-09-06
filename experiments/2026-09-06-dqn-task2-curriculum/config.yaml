@@ -1,24 +1,18 @@
 schema_version: 1
 issue: 97
-owner: null
+owner: 1BlauNitrox
 reviewer: null
-status: backlog_blocked_on_issue_86
+status: registered_pending_review
 starting_artifact:
   path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
   sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
-direct_classic_plans:
-  unmasked: training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml
-  masked: training/run_plans/issue97-dqn-task2-direct-classic-masked.yaml
-staged_curriculum_arm_source: "reused from Issue #86's winning arm; not retrained by this experiment"
+direct_classic_plan: training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml
+staged_curriculum_arm_source: "Issue #86's retained arm (masking was rejected in #86, so the retained arm is the unmasked one); reused as-is, not retrained by this experiment"
 replicas: 5
 training_episodes_per_arm: 50000
 evaluation_episodes_per_arm: 1200
 resource_ceiling:
-  cpu_hours: 48
-  wall_hours: 30
+  cpu_hours: 24
+  wall_hours: 15
   memory_gib: 8
   max_parallel_training: 2
-blocking_dependencies:
-  - "Issue #86 / PR #95 must be merged before either plan here is executed."
-  - "action_masking is not yet recognized by run_plan.py on main; the *-masked plan silently trains unmasked until PR #95 merges."
-  - "Issue #86's adopt/reject decision selects which single direct-classic plan (masked or unmasked) is actually run; the other is not executed."
