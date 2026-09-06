@@ -42,6 +42,11 @@ non-regression rule, notably coin-heaven -0.10 [-0.26, 0.02]. This does not
 establish that masking is universally harmful; it rejects this exact treatment,
 curriculum, starting artifact, and development seed population.
 
+All primary-suite timing observations remained below the registered limits; the
+largest recorded decision time was 3.59 ms. `summary.csv` reports the complete
+action counts, survival efficiency, and per-suite latency aggregates alongside
+the outcome metrics.
+
 The retained raw server archive has SHA-256
 `841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f` and is
 not committed. Compact numeric evidence is in `result.json`.

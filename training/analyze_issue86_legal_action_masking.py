@@ -7,7 +7,7 @@ import csv
 import json
 from collections import defaultdict
 from pathlib import Path
-from statistics import fmean
+from statistics import fmean, median
 from typing import Any
 
 from training.aggregate import read_episodes_csv
@@ -158,6 +158,23 @@ def _summaries(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
             group = groups[(scenario, treatment)]
             episodes = len(group)
             attempted = sum(row["attempted_actions"] for row in group)
+            coins = sum(row["coins_collected"] for row in group)
+            survival_steps = sum(row["survival_steps"] for row in group)
+            decision_medians = [
+                row["decision_time_median_ms"]
+                for row in group
+                if row["decision_time_median_ms"] is not None
+            ]
+            decision_p95 = [
+                row["decision_time_p95_ms"]
+                for row in group
+                if row["decision_time_p95_ms"] is not None
+            ]
+            decision_max = [
+                row["decision_time_max_ms"]
+                for row in group
+                if row["decision_time_max_ms"] is not None
+            ]
             result.append(
                 {
                     "scenario": scenario,
@@ -167,8 +184,22 @@ def _summaries(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     "survival_rate": sum(row["survived"] for row in group) / episodes,
                     "self_kill_rate": sum(row["self_kills"] for row in group) / episodes,
                     "invalid_action_rate": sum(row["invalid_actions"] for row in group) / attempted,
-                    "mean_coins": fmean(row["coins_collected"] for row in group),
+                    "mean_coins": coins / episodes,
                     "mean_crates_destroyed": fmean(row["crates_destroyed"] for row in group),
+                    "mean_survival_steps": survival_steps / episodes,
+                    "steps_per_coin": survival_steps / coins if coins else None,
+                    "action_up": sum(row["action_up"] for row in group),
+                    "action_right": sum(row["action_right"] for row in group),
+                    "action_down": sum(row["action_down"] for row in group),
+                    "action_left": sum(row["action_left"] for row in group),
+                    "action_wait": sum(row["action_wait"] for row in group),
+                    "action_bomb": sum(row["action_bomb"] for row in group),
+                    "action_unknown": sum(row["action_unknown"] for row in group),
+                    "decision_time_median_ms": median(decision_medians)
+                    if decision_medians
+                    else None,
+                    "decision_time_p95_ms": max(decision_p95) if decision_p95 else None,
+                    "decision_time_max_ms": max(decision_max) if decision_max else None,
                 }
             )
     return result
