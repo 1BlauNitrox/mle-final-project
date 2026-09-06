@@ -1,0 +1,45 @@
+schema_version: 1
+plan_id: issue102-tabular-task2-untrained
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+max_parallel_training: 1
+
+replicas:
+  - id: untrained
+    world_seed: 101001
+    agent_seed: 201001
+    parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz
+    parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"
+
+training_stages: []
+
+evaluation_suites:
+  - id: classic-primary
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: &classic_worlds [102001, 102002, 102003, 102004, 102005, 102006, 102007, 102008, 102009, 102010, 102011, 102012, 102013, 102014, 102015, 102016, 102017, 102018, 102019, 102020, 102021, 102022, 102023, 102024, 102025, 102026, 102027, 102028, 102029, 102030, 102031, 102032, 102033, 102034, 102035, 102036, 102037, 102038, 102039, 102040]
+    agent_seeds: &classic_agents [202001, 202002, 202003, 202004, 202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012, 202013, 202014, 202015, 202016, 202017, 202018, 202019, 202020, 202021, 202022, 202023, 202024, 202025, 202026, 202027, 202028, 202029, 202030, 202031, 202032, 202033, 202034, 202035, 202036, 202037, 202038, 202039, 202040]
+    opponents: []
+  - id: classic-repeat
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: *classic_worlds
+    agent_seeds: *classic_agents
+    opponents: []
+
+  - id: loot-crate-primary
+    population: development
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: &loot_worlds [104001, 104002, 104003, 104004, 104005, 104006, 104007, 104008, 104009, 104010, 104011, 104012, 104013, 104014, 104015, 104016, 104017, 104018, 104019, 104020, 104021, 104022, 104023, 104024, 104025, 104026, 104027, 104028, 104029, 104030, 104031, 104032, 104033, 104034, 104035, 104036, 104037, 104038, 104039, 104040]
+    agent_seeds: &loot_agents [204001, 204002, 204003, 204004, 204005, 204006, 204007, 204008, 204009, 204010, 204011, 204012, 204013, 204014, 204015, 204016, 204017, 204018, 204019, 204020, 204021, 204022, 204023, 204024, 204025, 204026, 204027, 204028, 204029, 204030, 204031, 204032, 204033, 204034, 204035, 204036, 204037, 204038, 204039, 204040]
+    opponents: []
+  - id: loot-crate-repeat
+    population: development
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: *loot_worlds
+    agent_seeds: *loot_agents
+    opponents: []
