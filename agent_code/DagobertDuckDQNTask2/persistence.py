@@ -47,6 +47,7 @@ class LoadedTrainingCheckpoint:
     epsilon: float
     completed_episodes: int
     agent_seed: int
+    rewards: dict[str, float]
 
 
 @dataclass(frozen=True)
@@ -176,6 +177,7 @@ def load_training_checkpoint(
         epsilon=float(payload["epsilon"]),
         completed_episodes=int(payload["completed_episodes"]),
         agent_seed=agent_seed,
+        rewards=dict(payload["rewards"]),
     )
 
 
@@ -281,8 +283,17 @@ def _load_payload(
     if payload["actions"] != list(ACTIONS):
         raise ValueError("Checkpoint action order mismatch.")
 
-    if payload["rewards"] != REWARDS:
-        raise ValueError("Checkpoint reward mapping mismatch.")
+    if not isinstance(payload["rewards"], dict):
+        raise ValueError("Checkpoint reward mapping must be a dictionary.")
+
+    # Unlike actions/schema versions, a rewards mismatch is not rejected
+    # here: issue #103's reward_variant intentionally starts fresh replicas
+    # from a shared parent artifact under a different reward configuration
+    # than the parent was created with (mirroring how action_masking already
+    # treats a fresh migration in callbacks.py). A mismatch against an
+    # already-trained checkpoint is still an error -- just one only
+    # `callbacks.py`'s `_setup_training_policy` can tell apart from a fresh
+    # migration, since only it knows completed_episodes and replay size.
 
     config = _restore_config(payload["config"])
 

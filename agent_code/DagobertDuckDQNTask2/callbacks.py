@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .config import DEFAULT_CONFIG, DQNConfig
+from .config import DEFAULT_CONFIG, REWARDS, DQNConfig
 from .features import normalize_features, state_to_features
 from .legality import framework_legal_action_mask
 from .model import DQNLearner, select_action
@@ -76,6 +76,9 @@ def _setup_training_policy(self, agent_seed: int) -> None:
             loaded.learner.online_network.config = configured
             loaded.learner.target_network.config = configured
             config = configured
+
+        if loaded.rewards != REWARDS and not is_fresh_migration:
+            raise ValueError("BOMBERMAN_DQN_REWARD_VARIANT does not match checkpoint rewards.")
 
         if loaded.agent_seed != agent_seed:
             if not is_fresh_migration:

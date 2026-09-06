@@ -19,6 +19,7 @@ import numpy as np
 import pytest
 
 import agent_code.DagobertDuckDQNTask2.callbacks as callbacks
+import agent_code.DagobertDuckDQNTask2.persistence as persistence
 import agent_code.DagobertDuckDQNTask2.train as training
 from agent_code.DagobertDuckDQNTask2.config import DEFAULT_CONFIG
 from agent_code.DagobertDuckDQNTask2.model import DQNLearner
@@ -193,6 +194,131 @@ def test_bomb_transition_carries_the_usefulness_reward() -> None:
     assert agent.pending_transition.action == "BOMB"
     assert agent.pending_transition.reward == pytest.approx(0.5)
     assert agent.episode_event_counts["USEFUL_BOMB_PLACED"] == 1
+
+
+def test_fresh_migration_checkpoint_accepts_a_different_reward_variant(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Issue #103: a fresh (untrained) parent artifact may start any arm.
+
+    Mirrors action_masking's own fresh-migration leniency in
+    _setup_training_policy: only an already-trained checkpoint enforces a
+    reward-configuration match (see the next test).
+    """
+    source = make_agent()
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    monkeypatch.setattr(persistence, "REWARDS", {"OLD_VARIANT_REWARD": 1.0})
+    save_checkpoint(
+        learner=source.learner,
+        replay_buffer=source.replay_buffer,
+        action_rng=source.action_rng,
+        epsilon=source.epsilon,
+        completed_episodes=0,
+        agent_seed=source.agent_seed,
+        path=checkpoint_path,
+    )
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", checkpoint_path)
+    monkeypatch.setattr(callbacks, "REWARDS", {"NEW_VARIANT_REWARD": 2.0})
+    restored = SimpleNamespace(logger=Mock())
+
+    callbacks._setup_training_policy(restored, source.agent_seed)
+
+    assert restored.completed_episodes == 0
+
+
+def test_trained_checkpoint_rejects_a_different_reward_variant(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Once a replica has actually trained, its reward configuration is fixed."""
+    source = make_agent()
+    checkpoint_path = tmp_path / "checkpoint.pt"
+    monkeypatch.setattr(persistence, "REWARDS", {"OLD_VARIANT_REWARD": 1.0})
+    save_checkpoint(
+        learner=source.learner,
+        replay_buffer=source.replay_buffer,
+        action_rng=source.action_rng,
+        epsilon=source.epsilon,
+        completed_episodes=5,
+        agent_seed=source.agent_seed,
+        path=checkpoint_path,
+    )
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", checkpoint_path)
+    monkeypatch.setattr(callbacks, "REWARDS", {"NEW_VARIANT_REWARD": 2.0})
+    restored = SimpleNamespace(logger=Mock())
+
+    with pytest.raises(ValueError, match="BOMBERMAN_DQN_REWARD_VARIANT"):
+        callbacks._setup_training_policy(restored, source.agent_seed)
+
+
+def test_bomb_placement_with_no_escape_is_unsafe() -> None:
+    field = np.zeros((7, 7), dtype=int)
+    field[0, :] = -1
+    field[-1, :] = -1
+    field[:, 0] = -1
+    field[:, -1] = -1
+    # Box (1, 1) in on its two non-border sides so every direction is a wall.
+    field[2, 1] = -1
+    field[1, 2] = -1
+
+    old_state = make_game_state(step=1, position=(1, 1), field=field)
+
+    assert training._bomb_safety_event(
+        training.state_to_features(old_state), ["BOMB_DROPPED"]
+    ) == "UNSAFE_BOMB_PLACED"
+
+
+def test_bomb_placement_with_an_escape_is_safe() -> None:
+    old_state = make_game_state(step=1, position=(3, 3))
+
+    assert (
+        training._bomb_safety_event(
+            training.state_to_features(old_state), ["BOMB_DROPPED"]
+        )
+        == "SAFE_BOMB_PLACED"
+    )
+
+
+def test_bomb_safety_event_requires_bomb_dropped() -> None:
+    field = np.zeros((7, 7), dtype=int)
+    field[0, :] = -1
+    field[-1, :] = -1
+    field[:, 0] = -1
+    field[:, -1] = -1
+    field[2, 1] = -1
+    field[1, 2] = -1
+    old_state = make_game_state(step=1, position=(1, 1), field=field)
+    features = training.state_to_features(old_state)
+
+    assert training._bomb_safety_event(features, []) is None
+    assert training._bomb_safety_event(features, ["INVALID_ACTION"]) is None
+
+
+def test_unsafe_bomb_is_diagnostically_counted_even_under_the_control_variant() -> None:
+    """UNSAFE_BOMB_PLACED is always tallied; only its reward is variant-gated."""
+    agent = make_agent()
+    training.setup_training(agent)
+
+    field = np.zeros((7, 7), dtype=int)
+    field[0, :] = -1
+    field[-1, :] = -1
+    field[:, 0] = -1
+    field[:, -1] = -1
+    field[2, 1] = -1
+    field[1, 2] = -1
+
+    old_state = make_game_state(step=1, position=(1, 1), field=field)
+    new_state = make_game_state(step=2, position=(1, 1), field=field, bomb_possible=False)
+
+    training.game_events_occurred(agent, old_state, "BOMB", new_state, ["BOMB_DROPPED"])
+
+    assert agent.episode_event_counts["UNSAFE_BOMB_PLACED"] == 1
+    # DEFAULT_CONFIG's process has no BOMBERMAN_DQN_REWARD_VARIANT override,
+    # so REWARDS.get("UNSAFE_BOMB_PLACED", 0.0) contributes nothing here --
+    # the bundled reward-value check belongs to config.py's own tests.
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.reward == pytest.approx(-0.5)  # WASTEFUL_BOMB_PLACED only
 
 
 def test_invalid_bomb_attempt_gets_no_usefulness_shaping() -> None:
