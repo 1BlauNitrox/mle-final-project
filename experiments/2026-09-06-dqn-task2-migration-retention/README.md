@@ -72,6 +72,8 @@ The corrected run plan explicitly supplies
 `BOMBERMAN_EVALUATION_CHECKPOINT=checkpoint-issue85-zero-suffix.pt` to its
 staged agent. The analyzer rejects missing, repeated, mismatched, or
 checksum-incompatible jobs before producing `summary.csv` and `result.json`.
+It also rejects dirty runs and per-run agent, source, or framework fingerprints
+that do not match the reviewed, committed run plan.
 
 ## Metrics and decision rule
 
