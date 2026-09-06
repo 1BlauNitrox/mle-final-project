@@ -12,6 +12,7 @@ from typing import Any
 
 from training.aggregate import read_episodes_csv
 from training.run_experiment import REPOSITORY_ROOT
+from training.run_plan import load_plan
 
 PLAN_ROOT = REPOSITORY_ROOT / "training_outputs" / "run-plans"
 DEFAULT_OUTPUT = REPOSITORY_ROOT / "training_outputs" / "issue85-analysis"
@@ -35,6 +36,14 @@ ARMS = {
         "sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
     },
 }
+RUN_PLAN_PATHS = {
+    arm: REPOSITORY_ROOT / "training" / "run_plans" / f"issue85-dqn-{suffix}.yaml"
+    for arm, suffix in (
+        ("frozen_parent", "frozen-parent"),
+        ("old_migration", "old-migration"),
+        ("corrected_migration", "corrected-migration"),
+    )
+}
 PRIMARY = "primary"
 REPEAT = "deterministic-repeat"
 DETERMINISTIC_COLUMNS = (
@@ -43,14 +52,22 @@ DETERMINISTIC_COLUMNS = (
     "survival_steps",
     "score",
     "coins_collected",
+    "initially_available_coins",
+    "coins_found",
+    "crates_destroyed",
     "invalid_actions",
     "attempted_actions",
     "bombs_dropped",
+    "self_kills",
     "survived",
     "termination_reason",
-    "decision_time_median_ms",
-    "decision_time_p95_ms",
-    "decision_time_max_ms",
+    "action_up",
+    "action_right",
+    "action_down",
+    "action_left",
+    "action_wait",
+    "action_bomb",
+    "action_unknown",
 )
 SUMMARY_COLUMNS = (
     "arm",
@@ -77,8 +94,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
         rows_by_arm[arm] = primary
         artifacts[arm] = artifact
         for left, right in zip(primary, repeated, strict=True):
-            if any(left[field] != right[field] for field in DETERMINISTIC_COLUMNS):
-                deterministic = False
+            _require_deterministic_repeat(arm, left, right)
 
     summaries = [_summary(arm, rows) for arm, rows in rows_by_arm.items()]
     result = {
@@ -105,15 +121,12 @@ def _load_arm(
     directory = plan_root / expected["plan_id"]
     status = _read_json(directory / "status.json")
     resolved = _read_json(directory / "resolved_plan.json")
+    registered = load_plan(RUN_PLAN_PATHS[arm]).to_dict()
     if status.get("status") != "completed":
         raise ValueError(f"Run plan is not completed: {expected['plan_id']}")
-    if (
-        resolved.get("agent") != expected["agent"]
-        or resolved.get("artifact_path") != expected["artifact"]
-    ):
-        raise ValueError(f"Registered agent/artifact mismatch for {arm}")
+    _require_registered_plan(resolved, registered, arm)
 
-    expected_jobs = [job for job in resolved.get("jobs", []) if job.get("kind") == "evaluation"]
+    expected_jobs = [job for job in registered["jobs"] if job["kind"] == "evaluation"]
     if len(expected_jobs) != 20:
         raise ValueError(f"Expected 20 registered evaluation jobs for {arm}")
     rows: dict[str, dict[str, Any]] = {}
@@ -128,6 +141,11 @@ def _load_arm(
         if not isinstance(artifact, dict) or artifact.get("sha256") != expected["sha256"]:
             raise ValueError(f"Artifact checksum mismatch for {job_id}")
         selected = {"path": artifact.get("path"), "sha256": artifact.get("sha256")}
+        expected_path = (
+            Path("replicas") / str(job["replica"]) / "agent" / expected["artifact"]
+        ).as_posix()
+        if selected["path"] != expected_path:
+            raise ValueError(f"Artifact path mismatch for {job_id}")
         if artifact_record is None:
             artifact_record = selected
         elif artifact_record != selected:
@@ -160,6 +178,42 @@ def _load_arm(
     if artifact_record is None:
         raise ValueError(f"No artifact record for {arm}")
     return primary, repeated, artifact_record
+
+
+def _require_registered_plan(
+    resolved: dict[str, Any], registered: dict[str, Any], arm: str
+) -> None:
+    """Bind retained evidence to versioned inputs rather than its own metadata."""
+    for field in (
+        "schema_version",
+        "plan_id",
+        "agent",
+        "artifact_path",
+        "max_parallel_training",
+        "replicas",
+    ):
+        if resolved.get(field) != registered[field]:
+            raise ValueError(f"Registered plan mismatch for {arm}: {field}")
+    if resolved.get("jobs") != registered["jobs"]:
+        raise ValueError(f"Registered job matrix mismatch for {arm}")
+    resolved_fingerprints = resolved.get("fingerprints")
+    registered_fingerprints = registered["fingerprints"]
+    if not isinstance(resolved_fingerprints, dict) or (
+        resolved_fingerprints.get("configuration") != registered_fingerprints["configuration"]
+    ):
+        raise ValueError(f"Registered configuration fingerprint mismatch for {arm}")
+
+
+def _require_deterministic_repeat(
+    arm: str, primary: dict[str, Any], repeated: dict[str, Any]
+) -> None:
+    """Reject changed policy/game outputs while allowing normal timing variation."""
+    for field in DETERMINISTIC_COLUMNS:
+        if primary[field] != repeated[field]:
+            raise ValueError(
+                "Deterministic repeat mismatch for "
+                f"{arm} seed {primary['world_seed']}/{primary['agent_seed']}: {field}"
+            )
 
 
 def _suite_rows(
