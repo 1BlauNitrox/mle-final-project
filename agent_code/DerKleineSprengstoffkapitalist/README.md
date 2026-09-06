@@ -1,8 +1,9 @@
 # DerKleineSprengstoffkapitalist
 
-> Status: behavior-preserving Task 2 successor scaffold.
+> Status: implemented tabular Task 2 successor.
 >
-> Current capability: Task 1 visible-coin navigation only.
+> Current capability: coin collection, bomb placement, crate destruction,
+> explosion-danger representation and escape-aware movement.
 
 ## Purpose
 
@@ -13,16 +14,18 @@ The successor was created for issue #65 so that Task 2 development can continue
 without modifying the frozen Task 1 baseline. The initial successor deliberately
 preserves the parent agent's observable behavior.
 
-This change is a structural refactor and artifact migration only. It introduces:
+Issue #45 extends the behavior-preserving successor created by issue #65 with:
 
-- no Task 2 state features;
-- no bomb action;
-- no new rewards;
-- no scientific training;
-- no performance claim.
+- a six-action space including `BOMB`;
+- a 17-value Task 2 feature representation;
+- bomb, crate, danger and escape features;
+- sparse Task 2 Q-values initialized from the frozen Task 1 prior;
+- native Task 2 event rewards;
+- resumable Task 2 training;
+- per-episode Task 2 training diagnostics.
 
-Future Task 2 behavior must be introduced through separately reviewed and
-experimentally evaluated issues.
+No scientific training or performance claim is introduced by this
+implementation change.
 
 ## Parent baseline
 
@@ -66,66 +69,56 @@ interpreted as a Task 2 successor configuration or as new successor evidence.
 
 ## Current behavior contract
 
-The successor currently preserves the complete Task 1 behavior contract.
-
-Its ordered action set is:
+Each Task 2 state maps to six Q-values in the fixed action order:
 
 ```text
-UP, RIGHT, DOWN, LEFT, WAIT
+UP, RIGHT, DOWN, LEFT, WAIT, BOMB
 ```
 
-`BOMB` is deliberately excluded. Bomb placement is not implemented by issue
-#65.
-
-Evaluation:
-
-- loads the committed `model.npz`;
-- uses epsilon `0`;
-- performs no learning;
-- does not modify the model artifact;
-- uses no multiprocessing;
-- selects only actions from the five-action Task 1 action space.
+For a previously unseen Task 2 state, the first five action values are
+initialized from the corresponding frozen eight-feature Task 1 state. The
+initial BOMB value is set below the minimum parent value by the configured
+bomb-prior margin.
+The Task 2 Q-table remains sparse and materializes states only when they are
+updated during training.
 
 ## State representation
 
-The state is encoded as the same eight-element tuple used by the parent:
+Feature schema version `2` contains 17 categorical values. Indices `0-7`
+remain the exact Task 1 projection:
+
+| Index | Feature | Domain |
+| ---: | --- | --- |
+| 0-3 | `free_up/right/down/left` | `{0, 1}` |
+| 4 | `coin_visible` | `{0, 1}` |
+| 5-6 | `coin_dx`, `coin_dy` | `{-1, 0, 1}` |
+| 7 | `coin_distance_bin` | `{0, 1, 2, 3}` |
+| 8 | `bomb_available` | `{0, 1}` |
+| 9 | `current_danger_bin` | `{0, 1, 2, 3}` |
+| 10 | `safe_direction_mask` | `{0, ..., 15}` |
+| 11 | `escape_after_bomb` | `{0, 1}` |
+| 12 | `crate_visible` | `{0, 1}` |
+| 13-14 | `crate_dx`, `crate_dy` | `{-1, 0, 1}` |
+| 15 | `crate_distance_bin` | `{0, 1, 2, 3}` |
+| 16 | `crates_in_current_blast_bin` | `{0, 1, 2, 3}` |
+
+The safe-direction mask uses bit 0 for `UP`, bit 1 for `RIGHT`, bit 2 for
+`DOWN`, and bit 3 for `LEFT`.
+
+Together with the unchanged `free_*` features, it distinguishes blocked,
+traversable-but-dangerous, and traversable-and-safe directions.
+
+A useful bomb target is derived as:
 
 ```text
-(
-    free_up,
-    free_right,
-    free_down,
-    free_left,
-    coin_visible,
-    coin_dx,
-    coin_dy,
-    coin_distance_bin,
-)
+crates_in_current_blast_bin > 0
 ```
 
-The meaning of these features is unchanged:
+It is not stored as a redundant additional feature.
 
-- the first four values indicate whether adjacent tiles are traversable;
-- `coin_visible` indicates whether at least one coin is visible;
-- `coin_dx` and `coin_dy` contain the direction signs to the nearest coin;
-- `coin_distance_bin` contains the coarse Manhattan-distance category.
-
-The feature schema remains version `1` and the feature count remains `8`.
-
-The implementation has only been reorganized into:
-
-```text
-features/
-├── __init__.py
-├── assemble.py
-└── navigation.py
-```
-
-`assemble.py` constructs the complete feature tuple. `navigation.py` contains
-the existing local-navigation and nearest-coin helpers. `features/__init__.py`
-provides the stable public feature API.
-
-This reorganization must not change the returned feature tuple.
+The theoretical Cartesian upper bound is 84,934,656 states. The Q-table
+remains sparse and creates entries only for states encountered during training.
+Many combinations are inconsistent or unreachable.
 
 ## Learning method
 
@@ -141,9 +134,31 @@ The learning rate remains `0.05` and the discount factor remains `0.9`.
 No learning rule, Q-value, action order, or hyperparameter is changed by issue
 #65.
 
-## Rewards
+## Learning metrics
 
-The inherited reward mapping is unchanged:
+At the end of every training episode, `end_of_round()` returns the following
+diagnostics:
+
+| Metric | Meaning |
+| --- | --- |
+| `coins_collected` | Number of `COIN_COLLECTED` events |
+| `coins_found` | Number of `COIN_FOUND` events |
+| `crates_destroyed` | Number of `CRATE_DESTROYED` events |
+| `bombs_dropped` | Number of confirmed `BOMB_DROPPED` events |
+| `useful_bombs` | Bombs placed where at least one crate is in the blast range |
+| `self_kills` | Number of `KILLED_SELF` events |
+| `survived_round` | Number of `SURVIVED_ROUND` events |
+| `invalid_actions` | Number of `INVALID_ACTION` events |
+| `shaped_reward` | Sum of all rewards used for Q-learning during the episode |
+| `q_table_size` | Number of materialized Task 2 states |
+| `mean_abs_td_error` | Mean absolute temporal-difference error |
+| `epsilon` | Exploration rate used during the completed episode |
+
+`useful_bombs` is a diagnostic count only. It does not introduce an
+additional reward. Potential-based reward shaping remains outside the scope
+of issue #45.
+
+## Rewards
 
 | Event | Reward |
 | --- | ---: |
@@ -152,29 +167,31 @@ The inherited reward mapping is unchanged:
 | `WAITED` | `-0.1` |
 | `MOVED_TOWARDS_COIN` | `+0.1` |
 | `MOVED_AWAY_FROM_COIN` | `-0.1` |
+| `CRATE_DESTROYED` | `+1.0`|
+| `COIN_FOUND` | `+2.0`|
+| `KILLED_SELF` | `-10.0` |
+| `GOT_KILLED` | `-10.0` |
+| `SURVIVED_ROUND` | `+5.0` |
 
-These rewards document the inherited Task 1 behavior. Issue #65 does not add
-Task 2 reward shaping.
+The Task 1 reward mapping, including the existing movement-distance shaping,
+is inherited unchanged. Issue #45 adds only native Task 2 framework-event
+rewards for destroyed crates, revealed coins, death, and survival.
+
+No direct reward is assigned to `BOMB_DROPPED` or `BOMB_EXPLODED`. Bomb
+placement must receive value through its later consequences.
+
+Potential-based reward shaping is deliberately out of scope for issue #45.
+Changing the inherited shaping formulation would be a separate controlled
+variable and requires a prospectively registered experiment.
 
 ## Training status
 
-Scientific training is not authorized as part of issue #65.
+Task 2 training is implemented and enabled. A newly initialized agent starts
+from the frozen Task 1 parent prior and extends it with the `BOMB` action.
 
-Calling `setup_training()` currently raises a `RuntimeError` before model
-updates or artifact writes can occur. This prevents the migrated parent artifact
-from being accidentally overwritten during the behavior-preserving scaffold
-change.
-
-A later Task 2 issue may deliberately enable training after defining:
-
-- a Task 2 feature contract;
-- an extended action contract;
-- rewards;
-- controlled variables;
-- fixed seeds;
-- evaluation metrics;
-- success criteria;
-- artifact provenance.
+The implementation may be exercised with short deterministic smoke tests.
+Scientific training runs and hyperparameter changes must be performed as
+separately preregistered experiments.
 
 ## Evaluation
 
@@ -201,20 +218,22 @@ The checksum before and after evaluation must remain:
 
 ## Validation
 
-Behavior preservation is checked by tests that compare parent and successor:
+The Task 2 implementation is validated by tests covering:
 
-- artifact bytes and SHA-256 checksum;
-- model and feature schema;
-- action order;
-- hyperparameters and rewards;
-- feature tuples for representative game states;
-- all stored Q-table values;
-- deterministic read-only actions;
-- artifact immutability during evaluation;
-- absence of `BOMB`.
-
-The successor package is additionally evaluated after being copied into a clean
-framework tree.
+- preservation of the first eight Task 1 feature values;
+- the complete 17-value Task 2 feature schema;
+- bomb, crate, danger and escape geometry;
+- the six-action contract including `BOMB`;
+- initialization from the frozen Task 1 prior;
+- conservative initialization of unseen `BOMB` values;
+- sparse schema-validated model persistence;
+- ordinary and terminal Q-learning updates;
+- prevention of terminal bootstrapping;
+- prevention of duplicate final-transition updates;
+- epsilon decay and resumable model persistence;
+- native Task 2 rewards;
+- complete per-episode training diagnostics;
+- read-only evaluation behavior and artifact integrity.
 
 ## Package structure
 
@@ -224,18 +243,21 @@ DerKleineSprengstoffkapitalist/
 ├── artifact.json
 ├── parent-artifact.json
 ├── baseline-config.yaml
-├── reference-results.cvs
+├── reference-results.csv
 ├── requirements.txt
 ├── callbacks.py
 ├── config.py
+├── migration.py
 ├── model.py
 ├── model.npz
+├── parent-model.npz
 ├── persistence.py
 ├── rewards.py
 ├── train.py
 └── features/
     ├── __init__.py
     ├── assemble.py
+    ├── bombs_and_crates.py
     └── navigation.py
 ```
 
@@ -248,14 +270,13 @@ Parent imports are permitted only in repository-level differential tests.
 
 The current successor:
 
-- cannot place bombs;
-- cannot destroy crates;
-- has no explosion-danger representation;
-- has no escape planning;
-- has no opponent model;
-- is not a complete Task 2 agent;
-- has not produced new experimental results.
+- has not yet been scientifically trained for Task 2;
+- has not yet produced Task 2 performance evidence;
+- uses a categorical sparse state representation;
+- does not contain a full opponent strategy;
+- retains the inherited non-potential-based coin movement shaping;
+- requires separately preregistered experiments for reward or
+  hyperparameter changes.
 
-Issue #65 only establishes the behavior-preserving starting point. Task 2
-capabilities and experiments follow in separate issues, beginning with the
-planned work tracked by issue #45.
+Potential-based reward shaping and further reward tuning must be evaluated as
+separate controlled experiments.
