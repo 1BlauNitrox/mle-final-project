@@ -19,6 +19,7 @@ import torch
 
 from agent_code.DagobertDuckDQN.features import normalize_features as normalize_parent_features
 from agent_code.DagobertDuckDQN.features import state_to_features as parent_state_to_features
+from agent_code.DagobertDuckDQN.model import select_action as select_parent_action
 from agent_code.DagobertDuckDQN.persistence import (
     load_evaluation_checkpoint as load_parent_checkpoint,
 )
@@ -34,6 +35,7 @@ from agent_code.DagobertDuckDQNTask2.features import (
     state_to_features as successor_state_to_features,
 )
 from agent_code.DagobertDuckDQNTask2.migration import INHERITED_Q_VALUE_TOLERANCE
+from agent_code.DagobertDuckDQNTask2.model import select_action as select_successor_action
 from agent_code.DagobertDuckDQNTask2.persistence import (
     load_evaluation_checkpoint as load_successor_checkpoint,
 )
@@ -225,4 +227,20 @@ def test_corrected_artifact_preserves_parent_q_values(
             parent_q_values,
             rtol=0.0,
             atol=INHERITED_Q_VALUE_TOLERANCE,
+        )
+        with torch.no_grad():
+            bomb_q_value = corrected.network(
+                torch.from_numpy(normalize_successor_features(successor_features))
+            )[5]
+        assert bomb_q_value < parent_q_values.max()
+        assert select_parent_action(
+            network=parent.network,
+            state=normalize_parent_features(parent_features),
+            epsilon=0.0,
+            rng=np.random.default_rng(8501),
+        ) == select_successor_action(
+            network=corrected.network,
+            state=normalize_successor_features(successor_features),
+            epsilon=0.0,
+            rng=np.random.default_rng(8501),
         )

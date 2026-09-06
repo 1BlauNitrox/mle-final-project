@@ -12,6 +12,11 @@ development_seed_pairs:
   world: [36001, 36002, 36003, 36004, 36005, 36006, 36007, 36008, 36009, 36010]
   agent: [46001, 46002, 46003, 46004, 46005, 46006, 46007, 46008, 46009, 46010]
 passes: [primary, deterministic-repeat]
+q_value_contract:
+  probe_manifest: experiments/2026-09-06-dqn-task2-migration-retention/probes.json
+  command: python -m training.dqn_task2_migration_contract --output training_outputs/issue85/probe-report.json
+  required_fields: [parent_q_values, corrected_q_values, bomb_q_value, parent_action, corrected_action]
+  q_value_tolerance: 0.00001
 arms:
   frozen_parent:
     agent: DagobertDuckDQN

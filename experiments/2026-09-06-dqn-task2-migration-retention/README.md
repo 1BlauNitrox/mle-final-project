@@ -36,6 +36,19 @@ through `46010`, respectively. They are new development seeds, distinct from
 Issue #46 training, development-evaluation, and reserved confirmation seeds.
 The repeat reuses each exact pair and must reproduce its action digest.
 
+Before those episodes, generate the separate, deterministic Q-value/action
+evidence from the committed probe population and checksum-pinned parent and
+corrected artifacts:
+
+```bash
+python -m training.dqn_task2_migration_contract \
+  --output training_outputs/issue85/probe-report.json
+```
+
+`probes.json` is the version-one registered probe manifest. The command refuses
+changed artifacts, records each probe's inherited five Q-values, BOMB Q-value,
+and both selected actions, then rejects incomplete or altered evidence.
+
 ## Metrics and decision rule
 
 Report Q-value/action agreement separately from measured collection fraction,
