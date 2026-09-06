@@ -734,14 +734,27 @@ Commit compact and useful scientific evidence:
 
 - experiment plans;
 - configuration files;
-- small CSV or JSON summaries;
+- compact per-run or per-seed observations needed to recompute reported
+  aggregates and uncertainty;
+- small CSV or JSON aggregate summaries;
 - final plots used for decisions;
 - conclusions; and
-- links to the implementing commit.
+- links to the implementing commit and exact analysis command.
 
 Do not commit raw logs, replay collections, temporary checkpoints, or very large
-training artifacts. Store those externally and record their location and
-checksum where appropriate.
+training artifacts. They are not required merely because they were produced.
+When a large object is necessary to verify a claim, store it outside Git and
+commit a manifest containing a durable retrievable location, SHA-256 checksum,
+byte size, contents/schema description, retrieval instructions, and an exact
+verification command. A machine-local path or checksum without retrievable
+bytes does not satisfy the evidence requirement.
+
+The retained granularity follows the claim: seed-level rows commonly suffice
+for means and across-seed variation, while statistics that depend on episode
+resampling require per-episode data or a smaller lossless representation.
+Unnecessary intermediate checkpoints, replay contents, and verbose logs remain
+excluded. See `docs/0004-experimentation-protocol.md` for protocol, result, and
+frozen-model evidence requirements.
 
 Recommended naming:
 

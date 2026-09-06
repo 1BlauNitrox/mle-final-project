@@ -52,8 +52,13 @@ Keep branches short-lived and scoped to one issue.
 Open a draft PR early for visibility. The PR must:
 
 - explain what changed and why;
-- contain `Closes #<issue-number>`;
-- include experiment results or explicitly state that experiments do not apply;
+- contain `Closes #<issue-number>` when it completes the entire issue, or
+  `Refs #<issue-number>` when parent-issue work remains;
+- declare the applicable evidence scope from the Definition of Done;
+- for a prospective experiment protocol, include the complete executable plan
+  and explicitly state that results are not yet in scope;
+- for completed or partial experiments, include the applicable retained
+  evidence, results, limitations, and conclusion;
 - list validation performed;
 - identify documentation and dependency changes;
 - complete the Definition of Done checklist.
@@ -86,8 +91,10 @@ conversation before merge.
 - Use squash merge to keep one focused commit per issue.
 - Delete the remote branch after merge.
 
-Because the PR body contains `Closes #<issue>`, merging into `main`
-automatically closes the linked issue.
+When a PR completes every acceptance criterion, `Closes #<issue>` in its body
+causes merging into `main` to close the linked issue automatically. A partial
+result or separately reviewed protocol uses `Refs #<issue>` so the parent issue
+stays open for the remaining work.
 
 ## Continuous integration policy
 
