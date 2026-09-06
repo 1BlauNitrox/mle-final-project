@@ -12,6 +12,7 @@ import numpy as np
 from .config import ACTION_TO_INDEX
 from .features import normalize_features, state_to_features
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
+from .legality import framework_legal_action_mask
 from .persistence import CHECKPOINT_PATH, save_checkpoint
 from .rewards import reward_from_events
 
@@ -39,6 +40,7 @@ class PendingTransition:
     action_index: int
     reward: float
     next_state: np.ndarray
+    next_action_mask: np.ndarray | None
 
 
 def setup_training(self) -> None:
@@ -108,6 +110,11 @@ def game_events_occurred(
         action_index=ACTION_TO_INDEX[self_action],
         reward=reward_from_events(training_events),
         next_state=normalize_features(new_features),
+        next_action_mask=(
+            framework_legal_action_mask(new_game_state)
+            if self.config.action_masking
+            else None
+        ),
     )
 
 
@@ -224,6 +231,7 @@ def _finalize_pending_transition(self) -> None:
         action_index=pending.action_index,
         reward=pending.reward,
         next_state=pending.next_state,
+        next_action_mask=pending.next_action_mask,
         terminal=False,
     )
     self.pending_transition = None
@@ -236,6 +244,7 @@ def _record_transition(
     action_index: int,
     reward: float,
     next_state: np.ndarray | None,
+    next_action_mask: np.ndarray | None = None,
     terminal: bool,
 ) -> None:
     """Store one transition and perform at most one DQN update."""
@@ -245,6 +254,7 @@ def _record_transition(
         reward=reward,
         next_state=next_state,
         terminal=terminal,
+        next_action_mask=next_action_mask,
     )
     self.episode_reward += reward
 

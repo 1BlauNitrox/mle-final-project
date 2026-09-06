@@ -22,6 +22,7 @@ class Transition:
     reward: float
     next_state: np.ndarray | None
     terminal: bool
+    next_action_mask: np.ndarray | None
 
 @dataclass(frozen=True)
 class ReplayBatch:
@@ -32,6 +33,7 @@ class ReplayBatch:
     rewards: np.ndarray
     next_states: np.ndarray
     terminals: np.ndarray
+    next_action_masks: np.ndarray
 
 class ReplayBuffer:
     """Fixed-Capacity replay buffer with seeded random sampling"""
@@ -55,7 +57,8 @@ class ReplayBuffer:
         action_index: int,
         reward: float,
         next_state: np.ndarray | None,
-        terminal: bool
+        terminal: bool,
+        next_action_mask: np.ndarray | None = None,
     ) -> None:
         """Validate, copy and append one transition"""
         checked_state = _copy_state(state, name="state")
@@ -81,10 +84,12 @@ class ReplayBuffer:
             if next_state is not None:
                 raise ValueError("A terminal must not have a next state")
             checked_next_state = None
+            checked_next_action_mask = None
         else:
             if next_state is None:
                 raise ValueError("A non-terminal transition requires a next state")
             checked_next_state = _copy_state(next_state, name="next_state")
+            checked_next_action_mask = _copy_action_mask(next_action_mask)
 
         self._transitions.append(
             Transition(
@@ -92,7 +97,8 @@ class ReplayBuffer:
                 action_index=int(action_index),
                 reward=float(reward),
                 next_state=checked_next_state,
-                terminal=terminal
+                terminal=terminal,
+                next_action_mask=checked_next_action_mask,
             )
         )
 
@@ -124,6 +130,7 @@ class ReplayBuffer:
             "rewards": batch.rewards.copy(),
             "next_states": batch.next_states.copy(),
             "terminals": batch.terminals.copy(),
+            "next_action_masks": batch.next_action_masks.copy(),
             "rng_state": deepcopy(self._rng.bit_generator.state)
         }
 
@@ -136,6 +143,7 @@ class ReplayBuffer:
             "rewards",
             "next_states",
             "terminals",
+            "next_action_masks",
             "rng_state"
         }
 
@@ -172,6 +180,9 @@ class ReplayBuffer:
             name="terminals",
             dtype=np.bool_
         )
+        next_action_masks = _require_array(
+            state["next_action_masks"], name="next_action_masks", dtype=np.bool_
+        )
 
         count = states.shape[0]
 
@@ -189,6 +200,9 @@ class ReplayBuffer:
 
         if terminals.shape != (count,):
             raise ValueError("Replay terminal flags have an incompatible shape.")
+
+        if next_action_masks.shape != (count, len(ACTIONS)):
+            raise ValueError("Replay next action masks have an incompatible shape.")
 
         if count > self.capacity:
             raise ValueError("Replay state exceeds configured capacity.")
@@ -211,6 +225,8 @@ class ReplayBuffer:
             raise ValueError(
                 "Terminal replay entries require zero next-state placeholders."
             )
+        if count and not np.all(next_action_masks.any(axis=1)):
+            raise ValueError("Replay next action masks require a legal action.")
 
         restored_transitions = [
             Transition(
@@ -223,6 +239,9 @@ class ReplayBuffer:
                     else next_states[index].copy()
                 ),
                 terminal=bool(terminals[index]),
+                next_action_mask=(
+                    None if bool(terminals[index]) else next_action_masks[index].copy()
+                ),
             )
             for index in range(count)
         ]
@@ -259,6 +278,18 @@ def _copy_state(state: np.ndarray, *, name: str) -> np.ndarray:
 
     return values.copy()
 
+
+def _copy_action_mask(mask: np.ndarray | None) -> np.ndarray:
+    """Copy an optional next-state mask; absent masks retain all actions."""
+    if mask is None:
+        return np.ones(len(ACTIONS), dtype=np.bool_)
+    values = np.asarray(mask)
+    if values.shape != (len(ACTIONS),) or values.dtype != np.bool_:
+        raise ValueError("next_action_mask must be a boolean action vector")
+    if not np.any(values):
+        raise ValueError("next_action_mask must retain a legal action")
+    return values.copy()
+
 def _transitions_to_batch(
     transitions: list[Transition],
 ) -> ReplayBatch:
@@ -269,7 +300,8 @@ def _transitions_to_batch(
             action_indices=np.empty(0, dtype=np.int64),
             rewards=np.empty(0, dtype=np.float32),
             next_states=np.empty((0, FEATURE_COUNT), dtype=np.float32),
-            terminals=np.empty(0, dtype=np.bool_)
+            terminals=np.empty(0, dtype=np.bool_),
+            next_action_masks=np.empty((0, len(ACTIONS)), dtype=np.bool_),
         )
 
     return ReplayBatch(
@@ -298,6 +330,14 @@ def _transitions_to_batch(
             [transition.terminal for transition in transitions],
             dtype=np.bool_,
         ),
+        next_action_masks=np.stack(
+            [
+                transition.next_action_mask
+                if transition.next_action_mask is not None
+                else np.ones(len(ACTIONS), dtype=np.bool_)
+                for transition in transitions
+            ]
+        ).astype(np.bool_, copy=False),
     )
 
 def _require_array(

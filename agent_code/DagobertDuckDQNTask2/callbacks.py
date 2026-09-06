@@ -8,8 +8,9 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .config import DEFAULT_CONFIG
+from .config import DEFAULT_CONFIG, DQNConfig
 from .features import normalize_features, state_to_features
+from .legality import framework_legal_action_mask
 from .model import DQNLearner, select_action
 from .persistence import (
     CHECKPOINT_PATH,
@@ -19,6 +20,7 @@ from .persistence import (
 from .replay import ReplayBuffer
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
+ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 
 
 def setup(self) -> None:
@@ -50,6 +52,9 @@ def act(self, game_state: dict | None) -> str:
         state=state,
         epsilon=epsilon,
         rng=self.action_rng,
+        action_mask=(
+            framework_legal_action_mask(game_state) if self.config.action_masking else None
+        ),
     )
 
 
@@ -57,6 +62,9 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     """Restore resumable training state or initialize a new one."""
     if CHECKPOINT_PATH.is_file():
         loaded = load_training_checkpoint(CHECKPOINT_PATH)
+
+        if loaded.config.action_masking != _configured_training_config().action_masking:
+            raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
 
         if loaded.agent_seed != agent_seed:
             raise ValueError(
@@ -78,7 +86,7 @@ def _setup_training_policy(self, agent_seed: int) -> None:
         )
         return
 
-    self.config = DEFAULT_CONFIG
+    self.config = _configured_training_config()
     action_rng, replay_seed = _initial_random_streams(agent_seed)
 
     self.learner = DQNLearner(
@@ -165,3 +173,13 @@ def _read_agent_seed() -> int:
         raise ValueError("BOMBERMAN_AGENT_SEED must be non-negative.")
 
     return seed
+
+
+def _configured_training_config() -> DQNConfig:
+    """Read the run-plan's explicit treatment selector for a fresh run."""
+    mode = os.environ.get(ACTION_MASKING_ENV, "none")
+    if mode == "none":
+        return DEFAULT_CONFIG
+    if mode == "framework_legal":
+        return DQNConfig(action_masking=True)
+    raise ValueError(f"{ACTION_MASKING_ENV} must be 'none' or 'framework_legal'.")
