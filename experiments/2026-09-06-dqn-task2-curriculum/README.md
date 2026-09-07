@@ -107,9 +107,33 @@ failures, in about 6 hours. Deterministic repeats matched exactly (identical
 decision-time measurements differed). Compact evidence:
 `result.json`, `summary.csv` (via
 `training/analyze_issue97_dqn_task2_curriculum.py`, which produces both
-even without arm B, clearly marked; see "Known gaps"). Raw per-episode data
-(~1.5 GiB: `training_outputs/run-plans/issue97-dqn-task2-direct-classic-unmasked/`)
-is retained on the owner's machine and not committed.
+even without arm B, clearly marked; see "Known gaps").
+
+## Evidence: committed, not the ~1.5 GiB raw output tree
+
+Arm A's full raw output tree (every job's attempt directory, including a
+full agent-source snapshot per job) runs to ~1.5 GiB, overwhelmingly
+redundant source snapshots and per-round framework dumps rather than
+evidence. The team decided not to retain that centrally. What actually
+matters for verifying the claimed result -- every episode row the analyzer
+reads -- is committed instead, at `evidence/issue97-dqn-task2-direct-classic-unmasked/`
+(`training/export_evidence.py`): `evaluation-episodes.csv`,
+`training-episodes.csv.gz`, and `manifest.json` (plan fingerprints,
+per-job provenance, evidence-file checksums), ~6.1 MiB total.
+
+Independently checkable without the raw tree or any archive:
+
+```bash
+python -m training.analyze_issue97_dqn_task2_curriculum \
+  --verify-from-evidence experiments/2026-09-06-dqn-task2-curriculum/evidence \
+  --output experiments/2026-09-06-dqn-task2-curriculum
+# -> MATCHES committed result.json
+```
+
+Confirmed to print exactly that against this experiment's own committed
+evidence. If arm B's evidence is ever exported into the same evidence root
+(as `issue86-dqn-task2-unmasked/`), this same command picks it up
+automatically and verifies the completed direct-vs-staged comparison too.
 
 **No comparison against the staged arm was computed.** Arm B is Issue #86's
 retained unmasked artifact, and its raw per-episode evidence lives in an

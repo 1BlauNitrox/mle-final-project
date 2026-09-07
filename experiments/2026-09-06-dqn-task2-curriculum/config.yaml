@@ -30,3 +30,7 @@ epsilon_at_classic_entry:
 known_gaps:
   - "direct_vs_staged comparison not computed: #86's raw archive (external, SHA-256 841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f) was not available locally"
   - "acceptance criterion 4 (numeric decision criteria accepted before training starts) was not met before arm A ran; see README's Process note -- unrecoverable for arm A, not fixable by documentation alone"
+evidence:
+  raw_output_tree: "not retained centrally (~1.5 GiB, team decision -- mostly redundant per-job source snapshots and framework_stats.json dumps, not evidence)"
+  committed: "evidence/issue97-dqn-task2-direct-classic-unmasked/{training-episodes.csv.gz,evaluation-episodes.csv,manifest.json}, ~6.1 MiB"
+  verification: "python -m training.analyze_issue97_dqn_task2_curriculum --verify-from-evidence experiments/2026-09-06-dqn-task2-curriculum/evidence --output experiments/2026-09-06-dqn-task2-curriculum"
