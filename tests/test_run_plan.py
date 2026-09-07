@@ -83,6 +83,24 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
 
 
+@pytest.mark.parametrize("literal", ["off", "on"])
+def test_unquoted_escape_treatment_literals_are_accepted(
+    tmp_path: Path,
+    literal: str,
+) -> None:
+    path = _write_plan(tmp_path, {**_plan_data(), "escape_continuations": literal})
+    quoted = f"escape_continuations: '{literal}'"
+    unquoted = f"escape_continuations: {literal}"
+    path.write_text(
+        path.read_text(encoding="utf-8").replace(quoted, unquoted),
+        encoding="utf-8",
+    )
+
+    plan = run_plan.load_plan(path)
+
+    assert plan.escape_continuations == literal
+
+
 def test_agent_fingerprint_ignores_runtime_logs_and_staged_checkpoint(
     tmp_path: Path,
 ) -> None:

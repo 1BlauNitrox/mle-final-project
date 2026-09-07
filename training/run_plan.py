@@ -142,6 +142,11 @@ def load_plan(path: Path) -> ResolvedPlan:
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
     escape_continuations = raw.get("escape_continuations", "off")
+    # PyYAML uses YAML 1.1 resolution, where bare ``off`` and ``on`` load as
+    # booleans. Accept the documented unquoted plan syntax and normalize it
+    # before validating the persisted treatment value.
+    if type(escape_continuations) is bool:
+        escape_continuations = "on" if escape_continuations else "off"
     if escape_continuations not in VALID_ESCAPE_CONTINUATIONS:
         raise ValueError(
             "escape_continuations must be one of "
