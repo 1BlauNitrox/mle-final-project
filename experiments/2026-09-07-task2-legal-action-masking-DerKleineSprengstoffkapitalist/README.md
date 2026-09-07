@@ -61,6 +61,39 @@ Confirmation seeds remain unused.
 
 Training begins only after the experiment definition has been reviewed.
 
+## Evidence
+
+The compact evaluation evidence is available from the
+[Issue #110 evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue110-evidence-v1).
+
+- File: `issue110-evidence-v1.tar.gz`
+- SHA-256: `0648c1d864e1fc75040c951fe31626db5c18185775c0836457703dc6208f9ce5`
+- Size: `1964311` bytes
+- Contents: primary and deterministic-repeat episode rows, resolved plans,
+  run statuses, evaluated model artifacts and a per-file manifest.
+
+Retrieve and verify:
+
+```bash
+gh release download issue110-evidence-v1 \
+  --repo 1BlauNitrox/mle-final-project \
+  --pattern issue110-evidence-v1.tar.gz
+
+echo "0648c1d864e1fc75040c951fe31626db5c18185775c0836457703dc6208f9ce5  issue110-evidence-v1.tar.gz" \
+  | shasum -a 256 --check
+```
+
+Reproduce:
+
+```bash
+mkdir issue110-evidence
+tar -xzf issue110-evidence-v1.tar.gz -C issue110-evidence
+
+python -m training.analyze_issue110_legal_action_masking \
+  --plan-root issue110-evidence/issue110-evidence-v1/training_outputs/run-plans \
+  --output /tmp/issue110-reproduced
+```
+
 ## Results
 
 The registered experiment did not pass.
