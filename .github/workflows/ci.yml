@@ -828,6 +828,11 @@ jobs:
 
       - name: Protected replay staged progression smoke
         run: |
+          # The earlier training smoke intentionally advances the checkpoint;
+          # restore the fresh artifact before exercising the staged plan.
+          cp /tmp/dqntask2-clean-checkpoint.pt \
+            agent_code/DagobertDuckDQNTask2/checkpoint.pt
+
           smoke_root="$(mktemp -d)"
           python -m training.run_plan \
             training/run_plans/issue88-dqn-protected-replay-smoke.yaml \
