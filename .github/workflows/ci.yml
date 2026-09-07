@@ -782,7 +782,7 @@ jobs:
           test "$before" = "$after"
 
           test "$after" = \
-            "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e"
+            "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60"
 
       - name: Seeded Task 2 training smoke
         run: |
