@@ -66,4 +66,3 @@ results:
   masked_invalid_action_rate: 0.0
   task1_retention_difference: 0.0
   deterministic: true
-  
