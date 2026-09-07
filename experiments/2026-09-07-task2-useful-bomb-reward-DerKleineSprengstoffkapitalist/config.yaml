@@ -8,7 +8,7 @@ execution_authorization: user_directed_without_recorded_peer_approval
 
 revisions:
   registration_base: "933a8fe"
-  experiment_commit: null
+  experiment_commit: "eb215172b16146772dd543ae90813f852ad041e4"
   framework_revision: "0f55c1d"
 
 artifacts:

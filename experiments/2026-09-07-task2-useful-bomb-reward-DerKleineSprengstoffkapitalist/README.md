@@ -9,6 +9,7 @@
 - Owner: LiliWestermann
 - Date: 2026-09-07
 - Registration base: `933a8fe`
+- Experiment commit: `eb215172b16146772dd543ae90813f852ad041e4`
 - Framework revision: `0f55c1d`
 - Execution authorization: user-directed; no separate pre-training peer approval
 
