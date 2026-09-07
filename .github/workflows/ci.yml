@@ -690,7 +690,7 @@ jobs:
           )" = "57581"
 
           echo \
-            "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
             | sha256sum --check
 
           echo \
