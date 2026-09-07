@@ -1,0 +1,48 @@
+schema_version: 1
+plan_id: issue108-dqn-task3-smoke
+agent: DagobertDuckDQNTask3
+artifact_path: checkpoint.pt
+max_parallel_training: 1
+replicas:
+  - id: smoke
+    world_seed: 10801
+    agent_seed: 10802
+    parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
+training_stages:
+  - id: classic-peaceful
+    scenario: classic
+    rounds: 1
+    opponents: [peaceful_agent]
+  - id: classic-collector
+    scenario: classic
+    rounds: 1
+    opponents: [coin_collector_agent]
+evaluation_suites:
+  - id: task1-regression
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: [10811]
+    agent_seeds: [10812]
+    opponents: []
+  - id: task2-regression
+    population: confirmation
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: [10821]
+    agent_seeds: [10822]
+    opponents: []
+  - id: task3-peaceful
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: [10831]
+    agent_seeds: [10832]
+    opponents: [peaceful_agent]
+  - id: task3-collector
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: [10841]
+    agent_seeds: [10842]
+    opponents: [coin_collector_agent]

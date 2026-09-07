@@ -84,6 +84,7 @@ jobs:
           agent_code/DagobertDuckDQN
           agent_code/DerKleineSprengstoffkapitalist
           agent_code/DagobertDuckDQNTask2
+          agent_code/DagobertDuckDQNTask3
 
       - name: Compile Python sources
         run: python -m compileall -q .
@@ -845,3 +846,60 @@ jobs:
           # This is integration evidence that the migrated BOMB row does not
           # dominate on Task 1 states, not a scientific performance claim.
           cp /tmp/dqntask2-clean-checkpoint.pt agent_code/DagobertDuckDQNTask2/checkpoint.pt
+
+  dqn-task3-successor-smoke:
+    name: DQN Task 3 successor smoke test
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.dqn == 'true'
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Verify Task 3 artifact and run focused tests
+        run: |
+          test -s agent_code/DagobertDuckDQNTask3/checkpoint.pt
+          test -s agent_code/DagobertDuckDQNTask3/artifact.json
+          test -s agent_code/DagobertDuckDQNTask3/parent-artifact.json
+          echo \
+            "7fea4ae757870ef51ef80206d2c5c948cc4d977ef03a43e6f600d3527ad23166  agent_code/DagobertDuckDQNTask3/checkpoint.pt" \
+            | sha256sum --check
+          python -m pytest \
+            tests/test_DagobertDuckDQNTask3_opponents.py \
+            tests/test_DagobertDuckDQNTask3_successor.py -q
+
+      - name: Package Task 3 successor
+        run: |
+          python scripts/package_agent.py DagobertDuckDQNTask3
+          test -s dist/final-project-agent-code.zip
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask3/checkpoint.pt'
+          unzip -l dist/final-project-agent-code.zip \
+            | grep 'DagobertDuckDQNTask3/features/opponents.py'
+
+      - name: Evaluate packaged successor against both Task 3 smoke opponents
+        run: |
+          clean_framework="$(mktemp -d)"
+          git archive HEAD | tar -x -C "$clean_framework"
+          rm -rf "$clean_framework/agent_code/DagobertDuckDQNTask3"
+          unzip -q dist/final-project-agent-code.zip -d "$clean_framework/agent_code"
+          before="$(sha256sum "$clean_framework/agent_code/DagobertDuckDQNTask3/checkpoint.pt" | cut -d ' ' -f 1)"
+          (
+            cd "$clean_framework"
+            python main.py play --agents DagobertDuckDQNTask3 peaceful_agent --scenario classic --no-gui --n-rounds 1 --seed 10831
+            python main.py play --agents DagobertDuckDQNTask3 coin_collector_agent --scenario classic --no-gui --n-rounds 1 --seed 10841
+          )
+          after="$(sha256sum "$clean_framework/agent_code/DagobertDuckDQNTask3/checkpoint.pt" | cut -d ' ' -f 1)"
+          test "$before" = "$after"
