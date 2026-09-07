@@ -173,13 +173,10 @@ def load_plan(path: Path) -> ResolvedPlan:
             json.dumps(raw, sort_keys=True, separators=(",", ":")).encode("utf-8")
         ),
         "source": _fingerprint_paths(SOURCE_PATHS),
-        "framework": _fingerprint_paths(
-            ("agents.py", "environment.py", "main.py", "settings.py")
-        ),
+        "framework": _fingerprint_paths(("agents.py", "environment.py", "main.py", "settings.py")),
         "agent": _fingerprint_directory(REPOSITORY_ROOT / "agent_code" / agent),
         "parent_artifacts": {
-            replica.replica_id: replica.parent_artifact_sha256
-            for replica in replicas
+            replica.replica_id: replica.parent_artifact_sha256 for replica in replicas
         },
         "dependencies": _dependency_record(),
     }
@@ -329,9 +326,7 @@ def _run_job(
         return
 
     replica = next(item for item in plan.replicas if item.replica_id == job.replica)
-    alias_directory = _prepare_replica_workspace(
-        plan, replica, plan_directory, workspace_root
-    )
+    alias_directory = _prepare_replica_workspace(plan, replica, plan_directory, workspace_root)
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
     artifact_before = _sha256_file(artifact) if artifact and artifact.is_file() else None
@@ -360,7 +355,10 @@ def _run_job(
         _write_json_atomic(status_path, status)
 
     try:
-        environment_overrides = {"BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking}
+        environment_overrides = {
+            "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
+            "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
+        }
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
@@ -399,10 +397,7 @@ def _run_job(
             if artifact is not None:
                 artifact_record = {
                     "path": (
-                        Path("replicas")
-                        / job.replica
-                        / "agent"
-                        / str(plan.artifact_path)
+                        Path("replicas") / job.replica / "agent" / str(plan.artifact_path)
                     ).as_posix(),
                     "sha256": artifact_before,
                     "selection": "immutable evaluation input",
@@ -413,11 +408,7 @@ def _run_job(
                     f"Training job {job.run_id} did not produce {plan.artifact_path}"
                 )
             checkpoint = (
-                plan_directory
-                / "artifacts"
-                / job.replica
-                / job.stage_or_suite
-                / artifact.name
+                plan_directory / "artifacts" / job.replica / job.stage_or_suite / artifact.name
             )
             checkpoint.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(artifact, checkpoint)
@@ -433,8 +424,8 @@ def _run_job(
             attempt["status"] = "completed"
             attempt["finished_at"] = _timestamp()
             attempt["metadata"] = (
-                run_directory / "metadata.json"
-            ).relative_to(plan_directory).as_posix()
+                (run_directory / "metadata.json").relative_to(plan_directory).as_posix()
+            )
             job_status["status"] = "completed"
     except BaseException as error:
         if alias_directory.is_dir():
@@ -625,9 +616,7 @@ def _parse_suite(value: Any) -> dict[str, Any]:
     mapping = _mapping(value, "evaluation suite")
     population = _text(mapping, "population")
     if population not in VALID_POPULATIONS[1:]:
-        raise ValueError(
-            f"Evaluation population must be one of {list(VALID_POPULATIONS[1:])}"
-        )
+        raise ValueError(f"Evaluation population must be one of {list(VALID_POPULATIONS[1:])}")
     world_seeds = _integer_list(mapping, "world_seeds")
     agent_seeds = _integer_list(mapping, "agent_seeds")
     if len(world_seeds) != len(agent_seeds) or not world_seeds:
@@ -643,23 +632,18 @@ def _parse_suite(value: Any) -> dict[str, Any]:
     }
 
 
-def _validate_seed_populations(
-    replicas: tuple[Replica, ...], suites: list[dict[str, Any]]
-) -> None:
+def _validate_seed_populations(replicas: tuple[Replica, ...], suites: list[dict[str, Any]]) -> None:
     populations: dict[str, set[int]] = {name: set() for name in VALID_POPULATIONS}
     for replica in replicas:
         populations["training"].update((replica.world_seed, replica.agent_seed))
     for suite in suites:
-        populations[suite["population"]].update(
-            suite["world_seeds"] + suite["agent_seeds"]
-        )
+        populations[suite["population"]].update(suite["world_seeds"] + suite["agent_seeds"])
     for index, left in enumerate(VALID_POPULATIONS):
         for right in VALID_POPULATIONS[index + 1 :]:
             overlap = populations[left] & populations[right]
             if overlap:
                 raise ValueError(
-                    f"Protected seed populations {left!r} and {right!r} overlap: "
-                    f"{sorted(overlap)}"
+                    f"Protected seed populations {left!r} and {right!r} overlap: {sorted(overlap)}"
                 )
 
 
@@ -718,9 +702,7 @@ def _remove_staging_aliases(plan: ResolvedPlan, plan_directory: Path) -> None:
     for replica in plan.replicas:
         alias = _alias_directory(plan, replica)
         if alias.is_dir():
-            _snapshot_workspace(
-                alias, _workspace_directory(plan_directory, replica.replica_id)
-            )
+            _snapshot_workspace(alias, _workspace_directory(plan_directory, replica.replica_id))
             _remove_tree(alias)
 
 
@@ -814,8 +796,7 @@ def _opponents(mapping: dict[str, Any]) -> list[str]:
     unsupported = [
         item
         for item in values
-        if item not in SUPPORTED_OPPONENTS
-        and not (REPOSITORY_ROOT / "agent_code" / item).is_dir()
+        if item not in SUPPORTED_OPPONENTS and not (REPOSITORY_ROOT / "agent_code" / item).is_dir()
     ]
     if unsupported:
         raise ValueError(f"Unsupported supplied opponents: {unsupported}")
@@ -826,12 +807,7 @@ def _relative_file_path(value: Any, field: str) -> Path:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field} must be a non-empty relative file path")
     path = Path(value)
-    if (
-        path.is_absolute()
-        or path.drive
-        or ".." in path.parts
-        or path.name in {"", "."}
-    ):
+    if path.is_absolute() or path.drive or ".." in path.parts or path.name in {"", "."}:
         raise ValueError(f"{field} must be an unambiguous path inside the agent directory")
     return path
 
@@ -859,9 +835,7 @@ def _text(mapping: dict[str, Any], field: str) -> str:
 def _identifier(mapping: dict[str, Any], field: str) -> str:
     value = _text(mapping, field)
     if any(not (character.isalnum() or character in "-_") for character in value):
-        raise ValueError(
-            f"{field} must contain only letters, digits, hyphens, and underscores"
-        )
+        raise ValueError(f"{field} must contain only letters, digits, hyphens, and underscores")
     return value
 
 
@@ -889,8 +863,7 @@ def _non_negative_integer(mapping: dict[str, Any], field: str) -> int:
 def _integer_list(mapping: dict[str, Any], field: str) -> list[int]:
     values = _list(mapping, field)
     if not all(
-        isinstance(item, int) and not isinstance(item, bool) and item >= 0
-        for item in values
+        isinstance(item, int) and not isinstance(item, bool) and item >= 0 for item in values
     ):
         raise ValueError(f"{field} must contain only non-negative integers")
     if len(values) != len(set(values)):
@@ -923,9 +896,7 @@ def _read_json(path: Path) -> dict[str, Any]:
 def _write_json_atomic(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(
-        json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    temporary.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     temporary.replace(path)
 
 
