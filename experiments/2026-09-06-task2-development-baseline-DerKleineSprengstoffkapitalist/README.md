@@ -1,13 +1,13 @@
 # Tabular Task 2 development baseline
 
-> Status: prospective protocol; no scientific run has started.
+> Status: completed_negative_baseline
 
 ## Metadata
 
 - Issue: #102
 - Agent: `DerKleineSprengstoffkapitalist`
 - Owner: LiliWestermann
-- Reviewer:
+- Reviewer: 
 - Date: 2026-09-06
 - Registration base: `8ec66d760e6601f8b82091f572d12a33c044b1bf`
 - Experiment commit: `fb3352232619ae44fa39ac2ccaabf9f9ef9ff944`
@@ -81,12 +81,35 @@ size, TD error, epsilon, and reward.
 
 ## Evidence
 
-Commit the protocol, exact configuration, compact per-seed observations,
-aggregates, result JSON, and final figures. Keep raw logs, replays, temporary
-checkpoints, and training workspaces outside Git.
+The complete compact evidence is available from the
+[Issue #102 evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue102-evidence-v1).
 
-Large required evidence must have a durable location, SHA-256, byte size,
-schema, retrieval command, and verification command.
+- File: `issue102-evidence-v1.tar.gz`
+- SHA-256: `c580031fdff9ebcb3614b9433f2fd1665225e28c8a0a33c5b89f8e1857320e6f`
+- Size: `1234446` bytes
+- Contents: 720 primary and 720 repeat evaluation rows, resolved plans,
+  statuses, metadata, and seven evaluated model artifacts.
+
+Retrieve and verify:
+
+```bash
+gh release download issue102-evidence-v1 \
+  --repo 1BlauNitrox/mle-final-project \
+  --pattern issue102-evidence-v1.tar.gz
+
+echo "<DEIN_HASH>  issue102-evidence-v1.tar.gz" | shasum -a 256 --check
+```
+
+Reproduce:
+
+```bash
+mkdir issue102-evidence
+tar -xzf issue102-evidence-v1.tar.gz -C issue102-evidence
+
+python -m training.analyze_tabular_task2_experiment \
+  --plan-root issue102-evidence/training_outputs/run-plans \
+  --output /tmp/issue102-reproduced
+```
 
 ## Execution
 
