@@ -1,0 +1,53 @@
+{
+  "manifest_schema_version": 1,
+  "status": "task3_opponent_awareness_provisional",
+  "agent": "DagobertDuckDQNTask3",
+  "capability": "task1_task2_behavior_plus_public_opponent_awareness",
+  "artifact": {
+    "path": "checkpoint.pt",
+    "sha256": "7fea4ae757870ef51ef80206d2c5c948cc4d977ef03a43e6f600d3527ad23166",
+    "size_bytes": 59117,
+    "note": "Fresh provisional Task 3 migration checkpoint; no scientific training or evaluation evidence."
+  },
+  "model_contract": {
+    "algorithm": "deep_q_network",
+    "checkpoint_schema_version": 1,
+    "model_schema_version": 1,
+    "feature_schema_version": 3,
+    "input_dim": 29,
+    "hidden_sizes": [64, 64],
+    "action_order": ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"],
+    "forbidden_actions": []
+  },
+  "parent": {
+    "agent": "DagobertDuckDQNTask2",
+    "artifact_path": "checkpoint-issue85-zero-suffix.pt",
+    "artifact_sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
+    "source_commit": "933a8fe11440e0f7645254390928da6af5dad46d",
+    "framework_revision": "0f55c1d",
+    "selection_status": "provisional_fixture_pending_issue_107",
+    "task2_gate_status": "mixed_negative_issue_46; no Task 3 claim"
+  },
+  "migration": {
+    "script": "scripts/migrate_task3_dqn_successor.py",
+    "parent_input_dim": 21,
+    "parent_output_dim": 6,
+    "parent_hidden_sizes": [64, 64],
+    "successor_input_dim": 29,
+    "successor_output_dim": 6,
+    "seed": 44,
+    "rule": [
+      "copy the parent's 21 input columns verbatim",
+      "zero the eight Task 3 opponent-feature columns",
+      "copy both hidden layers and all six output rows verbatim",
+      "reset optimizer, replay buffer, epsilon, and RNG state for Task 3"
+    ]
+  },
+  "policy": {
+    "task1_task2_prefix_present": true,
+    "opponent_features_present": true,
+    "elimination_event": "KILLED_OPPONENT",
+    "scientific_training_authorized": false,
+    "final_parent_binding_required_after_issue_107": true
+  }
+}
