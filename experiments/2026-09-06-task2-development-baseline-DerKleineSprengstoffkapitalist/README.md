@@ -7,7 +7,7 @@
 - Issue: #102
 - Agent: `DerKleineSprengstoffkapitalist`
 - Owner: LiliWestermann
-- Reviewer: 
+- Reviewer:
 - Date: 2026-09-06
 - Registration base: `8ec66d760e6601f8b82091f572d12a33c044b1bf`
 - Experiment commit: `fb3352232619ae44fa39ac2ccaabf9f9ef9ff944`
