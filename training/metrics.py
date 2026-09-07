@@ -24,6 +24,7 @@ CSV_COLUMNS = (
     "coins_found",
     "crates_destroyed",
     "bombs_dropped",
+    "useful_bombs",
     "self_kills",
     "invalid_actions",
     "attempted_actions",
@@ -375,6 +376,12 @@ def _normalize_agent_episode(
         "shaped_reward": _optional_number(
             learning_metrics.get("shaped_reward"),
             field="shaped_reward",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "useful_bombs": _optional_non_negative_int(
+            learning_metrics.get("useful_bombs"),
+            field="useful_bombs",
             round_number=round_number,
             agent_name=agent_name,
         ),

@@ -1,0 +1,20 @@
+schema_version: 1
+plan_id: issue114-tabular-task2-control-diagnostics
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+useful_bomb_reward: 0.0
+max_parallel_training: 2
+
+replicas:
+  - {id: r1, world_seed: 101001, agent_seed: 201001, parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz, parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"}
+  - {id: r2, world_seed: 101002, agent_seed: 201002, parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz, parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"}
+  - {id: r3, world_seed: 101003, agent_seed: 201003, parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz, parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"}
+  - {id: r4, world_seed: 101004, agent_seed: 201004, parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz, parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"}
+  - {id: r5, world_seed: 101005, agent_seed: 201005, parent_artifact: ../../agent_code/DerKleineSprengstoffkapitalist/model.npz, parent_artifact_sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"}
+
+training_stages:
+  - {id: visible-coins, scenario: coin-heaven, rounds: 2000, opponents: []}
+  - {id: dense-crates, scenario: loot-crate, rounds: 2000, opponents: []}
+  - {id: classic-crates, scenario: classic, rounds: 6000, opponents: []}
+
+evaluation_suites: []
