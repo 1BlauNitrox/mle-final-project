@@ -1,7 +1,7 @@
 # DagobertDuckDQNTask2
 
-> Status: Task 2 capability implemented (issue #44) and evaluated in the
-> preregistered Issue #46 development experiment.
+> Status: Issue #87 multi-step escape implementation complete; the four-cell
+> campaign is registered separately in Issue #107.
 >
 > Current measured result: the corrected evaluation passed determinism and
 > latency checks, but failed the registered Task 2 feasibility and Task 1
@@ -16,6 +16,10 @@ the metric correction concerning initially hidden coins.
 ## Purpose
 
 `DagobertDuckDQNTask2` is the DQN Task 2 successor of `DagobertDuckDQN`.
+
+Issue #87 appends five learned survival-continuation indicators to the
+existing 21-feature Task 2 representation. This implementation contains
+correctness evidence only; the authorized scientific campaign is separate.
 
 ## Legal-action masking (Issue #86)
 
@@ -106,10 +110,13 @@ The rule (`agent_code/DagobertDuckDQNTask2/migration.py`, tested in
   compatible with the parent's shapes, and neither has any value for a
   network that has not yet trained under the new architecture.
 
-`checkpoint.pt` is preserved as the exact Issue #44 / #46 migration start. The
-separate `checkpoint-issue85-zero-suffix.pt` is the corrected, fresh,
-training-ready artifact (`completed_episodes=0`), with parent and artifact
-checksums recorded in `artifact.json`. Neither is trained or evaluated evidence.
+The historical Issue #44 / #46 `checkpoint.pt` remains available in repository
+history. The separate `checkpoint-issue85-zero-suffix.pt` is the corrected
+21-feature source. The committed `checkpoint.pt` is now the Issue #87 fresh,
+26-feature training-ready artifact (`completed_episodes=0`), generated only by
+`scripts/migrate_task2_escape_continuations.py` from that corrected source.
+Checksums and provenance are recorded in `artifact.json`; none of these fresh
+artifacts is scientific training or evaluation evidence.
 The bounded Issue #85 paired evaluation protocol is registered in
 `experiments/2026-09-06-dqn-task2-migration-retention/`. Its first execution
 was rejected by the provenance analyzer because the runner and run plan used
@@ -125,7 +132,7 @@ UP, RIGHT, DOWN, LEFT, WAIT, BOMB
 `BOMB` is appended; the first five indices are unchanged from Task 1, so the
 migrated output rows keep their meaning exactly.
 
-## Feature schema (version 2, 21 features)
+## Feature schema (version 3, 26 features)
 
 Indices 0-7 are the unchanged Task 1 prefix (identical values on Task 1
 states -- pinned by `test_task1_prefix_matches_parent_on_task1_states`):
@@ -149,6 +156,7 @@ Indices 8-20 are the Task 2 additions, computed in
 | 18 | `crate_distance_bin` | `{0..3}` |
 | 19 | `crates_destroyed_here_bin` | `{0..3}`, capped |
 | 20 | `bomb_has_useful_target` | `{0, 1}` |
+| 21-25 | `continuation_up/right/down/left/wait` | `{0, 1}` |
 
 Normalization divides indices `7`, `9`, `18`, `19` by `3`; everything else is
 already in `[-1, 1]`.
@@ -166,7 +174,32 @@ not currently occupied by a bomb or another agent) *and* not lethal at the
 exact step the agent would arrive there, for every step of the path, not just
 the destination. `safe_escape_exists` additionally simulates a hypothetical
 bomb placed at the current position to answer "if I place a bomb here, can I
-still get away?"
+ still get away?"
+
+### Multi-step escape treatment (Issue #87)
+
+`surviving_continuation_after_action` evaluates each of `UP`, `RIGHT`, `DOWN`,
+`LEFT`, and `WAIT` as a framework transition at absolute arrival time 1. The
+indicator is 1 only when that first action is enterable, safe at arrival, and
+has at least one safe trajectory through the existing
+`MAX_ESCAPE_SEARCH_STEPS` of 10 arrivals. Reaching the horizon without a
+lethal arrival is the terminal-safe condition; a next-step-safe dead end is
+therefore 0. With no danger, legal actions are 1 and blocked actions are 0.
+If no safe continuation exists, the corresponding indicators are 0.
+
+`WAIT` is always a legal first action and may remain on the agent's own live
+bomb. Bomb tiles cannot be re-entered until the framework detonation time;
+current opponent positions block the first movement but are not predicted after
+that action. All overlapping blast intervals come from the existing danger map.
+The separate `escape_exists_after_bomb` feature keeps the framework-aligned
+hypothetical timer (`BOMB_TIMER - 1`) and is unchanged.
+
+The treatment is selected with `BOMBERMAN_DQN_ESCAPE_CONTINUATIONS=off|on` and
+persisted in the checkpoint configuration. Both treatments use the same
+26-input network. The off/control arm receives neutral zero values in indices
+21-25, and the Issue #87 migration zero-initializes those input columns, so it
+starts with the corrected Issue #85 function. A resumed checkpoint rejects a
+mismatched treatment instead of silently changing representation semantics.
 
 **Crate targeting** (`nearest_crate_features`, `crates_destroyed_by_bomb_at`)
 uses deterministic BFS to the nearest reachable open tile from which a bomb
@@ -189,7 +222,7 @@ with why its greedy evaluation diverged so far from its training performance
 reaches the same floor around episode 8,000 instead. `learning_rate`
 (`0.001 -> 0.0005`), `target_update_interval` (`250 -> 500`), and
 `replay_warmup` (`256 -> 500`) are also revised, more conservatively, for the
-larger 21-feature/6-action problem.
+larger 26-feature/6-action problem.
 
 **These are implementation defaults, not a validated fix.** None of the four
 has been tested as a controlled variable; citing them as evidence that Task 2
@@ -334,6 +367,10 @@ stays the migration's direct output.
   (wall-blocking, crate pass-through), danger-map timers and lingering,
   per-direction safety, escape existence (including a sealed no-escape case
   and a walk-away case), and crate targeting.
+- `tests/test_DagobertDuckDQNTask2_escape_continuations.py`: bounded
+  multi-step geometry, waits, bomb occupancy, overlapping blasts, exhaustive
+  trajectory agreement with the implementation contract, unchanged framework
+  blast geometry, and full `act()` latency.
 - `tests/test_DagobertDuckDQNTask2_migration.py`: preserved input/hidden/
   output weights, the conservative `BOMB` row, deterministic repeatability,
   and rejection of an incompatible parent or successor config.
@@ -367,6 +404,10 @@ DagobertDuckDQNTask2/
     └── bombs_and_crates.py
 ```
 
+The migration source and generator are repository-level provenance tooling:
+`checkpoint-issue85-zero-suffix.pt` is the explicit input to
+`scripts/migrate_task2_escape_continuations.py`.
+
 Evaluation-time code is self-contained inside this directory. It does not
 import from the parent agent, `training/`, `experiments/`, or `scripts/`
 (`migration.py` is imported only by the migration script and its tests, never
@@ -381,15 +422,15 @@ Parent imports are permitted only in repository-level differential tests.
 - The danger model does not account for an opponent placing a new bomb,
   matching the opponent-free Task 2 curriculum; it will need revisiting for
   Task 3.
-- Escape search is bounded to 10 steps and accepts a destination only outside
-  every currently represented blast footprint; intermediate steps are checked
-  against all retained lethal intervals.
+- Escape search is bounded to 10 arrivals. Continuation indicators require a
+  safe trajectory through the full bound, while the pre-existing escape
+  feature retains its own destination-safe semantics.
 - The curriculum mixing `coin-heaven`/`loot-crate`/`classic` is not yet
   implemented in `training/` orchestration.
 - `KILLED_SELF`/`GOT_KILLED`/`SURVIVED_ROUND` reward magnitudes and the
   epsilon/learning-rate/target-interval/replay-warmup revision are all
   untested defaults pending a registered experiment.
 
-The next issue should register a prospective Task 2 experiment: fixed seeds,
-a stopping rule, and success criteria, following the pattern #41/#58
-established for Task 1.
+Issue #107 is the registered prospective four-cell campaign for the escape and
+protected-replay interaction. No performance conclusion is made by this
+implementation issue.
