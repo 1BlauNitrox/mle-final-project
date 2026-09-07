@@ -379,7 +379,7 @@ def _normalize_agent_episode(
             round_number=round_number,
             agent_name=agent_name,
         ),
-        "useful_bombs": _optional_non_negative_int(
+        "useful_bombs": _optional_number(
             learning_metrics.get("useful_bombs"),
             field="useful_bombs",
             round_number=round_number,
