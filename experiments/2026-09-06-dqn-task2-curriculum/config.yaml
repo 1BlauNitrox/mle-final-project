@@ -1,8 +1,8 @@
 schema_version: 1
 issue: 97
 owner: 1BlauNitrox
-reviewer: null
-status: partially_completed_staged_comparison_pending
+reviewer: Waffelmanufaktur
+status: incomplete_acceptance_criteria_unmet
 starting_artifact:
   path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
   sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
@@ -24,5 +24,9 @@ actual_execution:
     - issue103-dqn-task2-reward-control
     - issue103-dqn-task2-reward-survival-rebalance
     - issue103-dqn-task2-reward-safety-bomb
+epsilon_at_classic_entry:
+  direct: 1.0
+  staged: 0.3011399909896719
 known_gaps:
   - "direct_vs_staged comparison not computed: #86's raw archive (external, SHA-256 841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f) was not available locally"
+  - "acceptance criterion 4 (numeric decision criteria accepted before training starts) was not met before arm A ran; see README's Process note -- unrecoverable for arm A, not fixable by documentation alone"

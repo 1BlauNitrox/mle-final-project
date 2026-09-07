@@ -1,10 +1,14 @@
 # Issue #97 staged curriculum for Task 2 DQN
 
-> Status: **Partially completed.** Arm A (direct) ran to completion on
-> 2026-09-07; arm B (staged, reused from #86) could not be included because
-> its raw per-episode evidence is not available on the machine that ran arm
-> A. See "Result and decision" for what this does and does not show, and
-> "Known gaps" for what completes the registered comparison.
+> Status: **Incomplete — does not satisfy #97's acceptance criteria; this
+> issue stays open.** Arm A (direct) ran to completion on 2026-09-07, but
+> two of #97's five specific acceptance criteria are unmet: the matched
+> direct-vs-staged comparison was not computed (arm B's raw evidence is
+> unavailable), and the numeric decision criteria were not accepted *before*
+> arm A's training run, as #97 requires. See "Result" for what arm A's own
+> numbers show and "Known gaps" / "Process note" for what is unmet and why.
+> This PR documents arm A as a descriptive record, not a completion of #97 —
+> see [Waffelmanufaktur's review](https://github.com/1BlauNitrox/mle-final-project/pull/99#pullrequestreview-5130878281).
 
 ## Hypothesis and single factor
 
@@ -133,6 +137,27 @@ so this is a rough consistency check, not evidence either result is "more
 correct"; the spread between them is a reasonable indication of how much
 across-seed variance to expect at n=5 replicas.
 
+**Epsilon at first entry into `classic`** (acceptance criterion 3, required
+disclosure, not a free parameter):
+
+- **Arm A (direct):** exactly the configured `initial_epsilon` = **1.0**.
+  Arm A trains on `classic` from its very first episode, so this is the
+  recorded `epsilon` column's value on episode 1 of every replica
+  (confirmed directly from the raw training data, not assumed).
+- **Arm B (staged):** **≈0.301**. This is not read from arm B's raw data
+  (unavailable, see above) but computed analytically from the documented,
+  deterministic schedule: `epsilon_decay=0.9997` applied for exactly 4,000
+  episodes (2,000 `coin-heaven` + 2,000 `loot-crate`) starting from
+  `initial_epsilon=1.0`, i.e. `1.0 * 0.9997**4000 ≈ 0.3011`, still well
+  above the `minimum_epsilon=0.1` floor. This value depends only on
+  already-registered hyperparameters and the schedule's episode counts, not
+  on anything specific to a given training run, so it did not need the
+  missing archive to compute.
+
+As #97 itself says: this ~0.70 gap in starting exploration is a structural
+difference between the arms, not something either arm's result should be
+attributed to without a further isolated experiment.
+
 ## Known gaps
 
 - **The registered direct-vs-staged comparison is not computed.** Completing
@@ -145,9 +170,26 @@ across-seed variance to expect at n=5 replicas.
   ```
   The script already supports this (`--staged-plan-root`); it only produced
   a direct-arm-only result here because that archive was not available.
-  No decision rule was ever fixed for this comparison either (see below),
-  so completing it produces descriptive paired statistics, not an
-  adopt/reject call, until the team sets one.
-- **No decision rule was fixed before running**, per the owner's standing
-  preference to set numeric criteria themselves — this was true when arm A
-  was registered and remains true now that it has run.
+
+## Process note: acceptance criterion 4 was not met before arm A ran
+
+#97's own acceptance criteria require "exact numeric decision criteria...
+accepted by the team **before training starts**." Arm A's 50,000-episode run
+was started, and has now completed, without that happening — an ordering
+violation, not a documentation gap, and not something this PR can fix after
+the fact. Concretely, this means:
+
+- No decision rule is applied to arm A's numbers anywhere in this document;
+  the table above is descriptive only, exactly because there is no
+  legitimate rule to apply retroactively.
+- Whoever sets #97's decision rule going forward should treat arm A's
+  already-visible numbers as a source of bias: a rule chosen with knowledge
+  of this specific result is no longer the pre-registered, blind criterion
+  #97 called for. The methodologically clean options are (a) set the rule
+  now while explicitly disregarding arm A's numbers and accept the
+  resulting rule is not provably blind, or (b) treat arm A as informational
+  only and retrain a fresh direct arm once a rule is fixed first. Neither
+  is this PR's call to make.
+- This PR does not close #97 (`Refs #97`, not `Closes #97`) precisely
+  because of this and the missing staged comparison above — see
+  [Waffelmanufaktur's review](https://github.com/1BlauNitrox/mle-final-project/pull/99#pullrequestreview-5130878281).
