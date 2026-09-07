@@ -21,6 +21,7 @@ def _plan_data() -> dict[str, object]:
         "plan_id": "test-matrix",
         "agent": "DerKleineSprengstoffkapitalist",
         "artifact_path": "model.npz",
+        "escape_continuations": "off",
         "max_parallel_training": 2,
         "replicas": [
             {"id": "r1", "world_seed": 101, "agent_seed": 201},
@@ -82,6 +83,24 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
 
 
+@pytest.mark.parametrize("literal", ["off", "on"])
+def test_unquoted_escape_treatment_literals_are_accepted(
+    tmp_path: Path,
+    literal: str,
+) -> None:
+    path = _write_plan(tmp_path, {**_plan_data(), "escape_continuations": literal})
+    quoted = f"escape_continuations: '{literal}'"
+    unquoted = f"escape_continuations: {literal}"
+    path.write_text(
+        path.read_text(encoding="utf-8").replace(quoted, unquoted),
+        encoding="utf-8",
+    )
+
+    plan = run_plan.load_plan(path)
+
+    assert plan.escape_continuations == literal
+
+
 def test_agent_fingerprint_ignores_runtime_logs_and_staged_checkpoint(
     tmp_path: Path,
 ) -> None:
@@ -121,6 +140,10 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
         "artifact path": (
             lambda plan: plan.update(artifact_path="../model.npz"),
             "unambiguous path",
+        ),
+        "escape treatment": (
+            lambda plan: plan.update(escape_continuations="invalid"),
+            "escape_continuations",
         ),
     }
     for name, (mutate, message) in mutations.items():
@@ -179,6 +202,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["metadata_extra"]["run_plan"]["artifact_writable"] is False
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
+        "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
     }
 

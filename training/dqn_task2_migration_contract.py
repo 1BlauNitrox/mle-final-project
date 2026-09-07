@@ -105,7 +105,10 @@ def create_probe_report() -> dict[str, Any]:
         if parent_raw is None or successor_raw is None:
             raise ValueError(f"Probe {probe['id']!r} did not encode.")
         parent_state = normalize_parent(parent_raw)
-        successor_state = normalize_successor(successor_raw)
+        # The registered Issue #85 contract targets the historical 21-feature
+        # network. Issue #87 appends its five columns, so compare the preserved
+        # prefix explicitly rather than changing the old evidence definition.
+        successor_state = normalize_successor(successor_raw[:21])
         with torch.no_grad():
             parent_q = parent(torch.from_numpy(parent_state))
             successor_q = corrected(torch.from_numpy(successor_state))

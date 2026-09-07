@@ -679,6 +679,7 @@ jobs:
       - name: Verify successor artifact and lineage
         run: |
           test -s agent_code/DagobertDuckDQNTask2/checkpoint.pt
+          test -s agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
           test -s agent_code/DagobertDuckDQNTask2/artifact.json
           test -s agent_code/DagobertDuckDQNTask2/parent-artifact.json
           test -s agent_code/DagobertDuckDQNTask2/requirements.txt
@@ -686,10 +687,14 @@ jobs:
           test "$(
             stat -c '%s' \
               agent_code/DagobertDuckDQNTask2/checkpoint.pt
-          )" = "54704"
+          )" = "57581"
 
           echo \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            | sha256sum --check
+
+          echo \
+            "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015  agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt" \
             | sha256sum --check
 
           echo \
@@ -702,6 +707,8 @@ jobs:
           tests/test_DagobertDuckDQNTask2_successor.py
           tests/test_DagobertDuckDQNTask2_bombs_and_crates.py
           tests/test_DagobertDuckDQNTask2_migration.py
+          tests/test_DagobertDuckDQNTask2_escape_migration.py
+          tests/test_DagobertDuckDQNTask2_escape_continuations.py
           tests/test_DagobertDuckDQNTask2_train.py
           -v
 
@@ -775,7 +782,7 @@ jobs:
           test "$before" = "$after"
 
           test "$after" = \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e"
+            "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60"
 
       - name: Seeded Task 2 training smoke
         run: |

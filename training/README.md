@@ -17,6 +17,13 @@ Every launcher should record the agent commit, configuration, scenarios,
 opponents, seeds, rounds, and output location. Follow
 [`docs/0004-experimentation-protocol.md`](../docs/0004-experimentation-protocol.md).
 
+Staged plans for `DagobertDuckDQNTask2` may set
+`escape_continuations: off` or `escape_continuations: on`. The runner exports
+that choice as `BOMBERMAN_DQN_ESCAPE_CONTINUATIONS`; the agent persists it in
+the checkpoint and rejects a mismatched resume. The Issue #87 feature-off arm
+therefore uses the same 26-input network with neutral zero continuation
+columns, while the feature-on arm receives the computed indicators.
+
 # Training and Experiment Pipeline
 
 This directory contains repository-level tooling for reproducible Bomberman
@@ -138,6 +145,7 @@ following fields control execution:
 | `agent` | string | none | Required existing directory below `agent_code/`. |
 | `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
 | `action_masking` | string | `none` | Task-2 DQN treatment selector: `none` or `framework_legal`; recorded in every job and protected by the plan fingerprint. |
+| `escape_continuations` | string | `off` | Task-2 DQN #87 feature selector: `off` or `on`; recorded in every job and protected by the plan fingerprint. |
 | `max_parallel_training` | positive integer | `1` | Bounds independent replica workers. Evaluation remains serial and single-process. |
 | `replicas` | list | none | At least one independent replica with a unique `id`, non-negative `world_seed`, non-negative `agent_seed`, and optional `parent_artifact`. |
 | `training_stages` | list | `[]` | Ordered stages with unique `id`, supported `scenario`, positive `rounds`, and zero to three ordered `opponents`. |
