@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .config import DEFAULT_CONFIG, DQNConfig
+from .config import DEFAULT_CONFIG, PROTECTED_SOURCE_EPISODES, DQNConfig
 from .features import normalize_features, state_to_features
 from .legality import framework_legal_action_mask
 from .model import DQNLearner, select_action
@@ -111,6 +111,7 @@ def _setup_training_policy(self, agent_seed: int) -> None:
         self.action_rng = action_rng
         self.epsilon = loaded.epsilon
         self.completed_episodes = loaded.completed_episodes
+        _apply_collection_phase(self, _collection_is_open())
         self.agent_seed = agent_seed
         self.policy_network = self.learner.online_network
 
@@ -131,6 +132,8 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     self.replay_buffer = ReplayBuffer(
         capacity=self.config.replay_capacity,
         seed=replay_seed,
+        mode=self.config.replay_treatment,
+        collection_open=_collection_is_open(),
     )
     self.action_rng = action_rng
     self.epsilon = self.config.initial_epsilon

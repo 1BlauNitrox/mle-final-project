@@ -125,6 +125,11 @@ def save_checkpoint(
         ),
     }
 
+    return _save_payload_atomically(payload, Path(path))
+
+
+def _save_payload_atomically(payload: dict[str, Any], path: Path) -> Path:
+    """Write one restricted-load-compatible payload with an atomic replace."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path: Path | None = None
@@ -190,8 +195,32 @@ def load_training_checkpoint(
 def load_evaluation_checkpoint(
     path: Path = CHECKPOINT_PATH,
 ) -> LoadedEvaluationCheckpoint:
-    """Load only the frozen online policy required for evaluation."""
+    """Load only the frozen online policy required for evaluation.
+
+    Both the historical resumable checkpoint and the stripped evaluation
+    artifact produced by :func:`export_evaluation_checkpoint` are accepted.
+    The latter contains no optimizer, target network, replay, or RNG state.
+    """
     payload, config = _load_payload(path)
+
+    if _is_evaluation_artifact(payload):
+        if payload["artifact_schema_version"] != EVALUATION_ARTIFACT_SCHEMA_VERSION:
+            raise ValueError("Evaluation artifact schema version mismatch.")
+        if payload["model_schema_version"] != MODEL_SCHEMA_VERSION:
+            raise ValueError("Evaluation artifact model schema mismatch.")
+        if payload["feature_schema_version"] != FEATURE_SCHEMA_VERSION:
+            raise ValueError("Evaluation artifact feature schema mismatch.")
+        if payload["actions"] != list(ACTIONS):
+            raise ValueError("Evaluation artifact action order mismatch.")
+        if payload["rewards"] != REWARDS:
+            raise ValueError("Evaluation artifact reward mapping mismatch.")
+        network = _load_network(config, payload["network_state"], seed=0)
+        return LoadedEvaluationCheckpoint(
+            config=config,
+            network=network,
+            completed_episodes=int(payload["completed_episodes"]),
+        )
+
     learner_state = payload["learner_state"]
 
     if not isinstance(learner_state, dict):
@@ -207,29 +236,56 @@ def load_evaluation_checkpoint(
     if set(learner_state) != required_learner_fields:
         raise ValueError("Checkpoint learner state has unexpected fields.")
 
-    network = build_q_network(
+    network = _load_network(
         config,
+        learner_state["online_network"],
         seed=int(payload["agent_seed"]),
     )
-
-    try:
-        network.load_state_dict(
-            learner_state["online_network"],
-            strict=True,
-        )
-    except (KeyError, TypeError, ValueError, RuntimeError) as error:
-        raise ValueError(
-            "Checkpoint online-network state is incompatible."
-        ) from error
-
-    network.eval()
-    network.requires_grad_(False)
 
     return LoadedEvaluationCheckpoint(
         config=config,
         network=network,
         completed_episodes=int(payload["completed_episodes"]),
     )
+
+
+def export_evaluation_checkpoint(
+    source: Path,
+    destination: Path,
+) -> Path:
+    """Export a resumable checkpoint without training-only state."""
+    loaded = load_evaluation_checkpoint(source)
+    payload = {
+        "artifact_schema_version": EVALUATION_ARTIFACT_SCHEMA_VERSION,
+        "model_schema_version": MODEL_SCHEMA_VERSION,
+        "feature_schema_version": FEATURE_SCHEMA_VERSION,
+        "actions": list(ACTIONS),
+        "rewards": dict(REWARDS),
+        "config": asdict(loaded.config),
+        "completed_episodes": loaded.completed_episodes,
+        "network_state": deepcopy(loaded.network.state_dict()),
+    }
+    return _save_payload_atomically(payload, Path(destination))
+
+
+def _is_evaluation_artifact(payload: dict[str, Any]) -> bool:
+    return "artifact_schema_version" in payload
+
+
+def _load_network(
+    config: DQNConfig,
+    state: Any,
+    *,
+    seed: int,
+) -> QNetwork:
+    network = build_q_network(config, seed=seed)
+    try:
+        network.load_state_dict(state, strict=True)
+    except (KeyError, TypeError, ValueError, RuntimeError) as error:
+        raise ValueError("Checkpoint network state is incompatible.") from error
+    network.eval()
+    network.requires_grad_(False)
+    return network
 
 
 def _load_payload(
@@ -258,6 +314,22 @@ def _load_payload(
         raise ValueError(
             f"Could not load checkpoint: {path}"
         ) from error
+
+    if isinstance(payload, dict) and "artifact_schema_version" in payload:
+        required_fields = {
+            "artifact_schema_version",
+            "model_schema_version",
+            "feature_schema_version",
+            "actions",
+            "rewards",
+            "config",
+            "completed_episodes",
+            "network_state",
+        }
+        if set(payload) != required_fields:
+            raise ValueError("Evaluation artifact has unexpected fields.")
+        config = _restore_config(payload["config"])
+        return payload, config
 
     required_fields = {
         "checkpoint_schema_version",
@@ -392,24 +464,15 @@ def _serialize_replay(
     """Convert replay arrays to restricted-load-compatible tensors."""
     state = replay_buffer.state_dict()
 
-    return {
-        "capacity": state["capacity"],
-        "states": torch.from_numpy(state["states"]).clone(),
-        "action_indices": torch.from_numpy(
-            state["action_indices"]
-        ).clone(),
-        "rewards": torch.from_numpy(state["rewards"]).clone(),
-        "next_states": torch.from_numpy(
-            state["next_states"]
-        ).clone(),
-        "terminals": torch.from_numpy(
-            state["terminals"]
-        ).clone(),
-        "next_action_masks": torch.from_numpy(
-            state["next_action_masks"]
-        ).clone(),
-        "rng_state": deepcopy(state["rng_state"]),
-    }
+    return _replay_to_tensors(state)
+
+
+def _replay_to_tensors(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _replay_to_tensors(item) for key, item in value.items()}
+    if isinstance(value, np.ndarray):
+        return torch.from_numpy(value).clone()
+    return deepcopy(value)
 
 
 def _restore_replay(
@@ -422,6 +485,12 @@ def _restore_replay(
     if not isinstance(value, dict):
         raise ValueError("Stored replay state must be a dictionary.")
 
+    stored_mode = value.get("mode", "uniform")
+    if stored_mode not in REPLAY_TREATMENTS:
+        raise ValueError("Stored replay treatment is invalid.")
+    if stored_mode != config.replay_treatment:
+        raise ValueError("Stored replay treatment does not match configuration.")
+
     required_fields = {
         "capacity",
         "states",
@@ -433,8 +502,28 @@ def _restore_replay(
         "rng_state",
     }
     legacy_fields = required_fields - {"next_action_masks"}
-    if set(value) not in (required_fields, legacy_fields):
+    current_fields = required_fields | {"mode"}
+    if stored_mode == "uniform" and set(value) not in (
+        required_fields,
+        current_fields,
+        legacy_fields,
+    ):
         raise ValueError("Stored replay state has unexpected fields.")
+
+    if stored_mode == "protected_task1":
+        replay_buffer = ReplayBuffer(
+            capacity=config.replay_capacity,
+            seed=seed,
+            mode=stored_mode,
+            collection_open=bool(value.get("collection_open", True)),
+        )
+        replay_buffer.load_state_dict(
+            {
+                key: _tensor_tree_to_numpy(item)
+                for key, item in value.items()
+            }
+        )
+        return replay_buffer
 
     replay_state = {
         "capacity": value["capacity"],
@@ -476,10 +565,20 @@ def _restore_replay(
     replay_buffer = ReplayBuffer(
         capacity=config.replay_capacity,
         seed=seed,
+        mode="uniform",
     )
     replay_buffer.load_state_dict(replay_state)
 
     return replay_buffer
+
+
+def _tensor_tree_to_numpy(value: Any) -> Any:
+    """Convert replay tensors recursively while preserving RNG dictionaries."""
+    if isinstance(value, dict):
+        return {key: _tensor_tree_to_numpy(item) for key, item in value.items()}
+    if isinstance(value, torch.Tensor):
+        return value.detach().cpu().numpy().copy()
+    return deepcopy(value)
 
 
 def _tensor_to_numpy(

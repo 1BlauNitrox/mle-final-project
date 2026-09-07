@@ -128,6 +128,17 @@ def run_experiment(
         environment["BOMBERMAN_AGENT_SEED"] = str(agent_seed)
     if environment_overrides:
         environment.update(environment_overrides)
+    if (
+        mode == "training"
+        and environment.get("BOMBERMAN_DQN_REPLAY_TREATMENT")
+        == "protected_task1"
+        and "BOMBERMAN_DQN_REPLAY_COLLECTION" not in (environment_overrides or {})
+    ):
+        # A standalone Task 2 training invocation can identify its scenario,
+        # while staged plans provide the stricter first-stage marker explicitly.
+        environment["BOMBERMAN_DQN_REPLAY_COLLECTION"] = (
+            "task1" if scenario == "coin-heaven" else "closed"
+        )
 
     start_time = monotonic()
 

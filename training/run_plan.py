@@ -328,6 +328,20 @@ def _run_training_sequence(
         _run_job(plan, job, plan_directory, status, status_path, lock, workspace_root)
 
 
+def _is_initial_task1_stage(plan: ResolvedPlan, job: Job) -> bool:
+    """Identify only the first coin-heaven stage as protected-source collection."""
+    training_jobs = [
+        candidate
+        for candidate in plan.jobs
+        if candidate.kind == "training" and candidate.replica == job.replica
+    ]
+    return (
+        bool(training_jobs)
+        and job.run_id == training_jobs[0].run_id
+        and job.scenario == "coin-heaven"
+    )
+
+
 def _run_job(
     plan: ResolvedPlan,
     job: Job,
@@ -376,7 +390,15 @@ def _run_job(
         environment_overrides = {
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
+            "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
+        if job.kind == "training":
+            environment_overrides["BOMBERMAN_DQN_REPLAY_COLLECTION"] = (
+                "task1"
+                if _is_initial_task1_stage(plan, job)
+                else "closed"
+            )
+>>>>>>> dedb435 (feat(training): add protected Task 1 replay treatment)
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
