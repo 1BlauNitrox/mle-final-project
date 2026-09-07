@@ -1,0 +1,30 @@
+schema_version: 1
+plan_id: issue102-tabular-task1-frozen
+agent: DerKleineVermoegensumverteiler
+artifact_path: model.npz
+max_parallel_training: 1
+
+replicas:
+  - id: frozen
+    world_seed: 101001
+    agent_seed: 201001
+    parent_artifact: ../../agent_code/DerKleineVermoegensumverteiler/model.npz
+    parent_artifact_sha256: "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"
+
+training_stages: []
+
+evaluation_suites:
+  - id: coin-heaven-primary
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: &coin_worlds [103001, 103002, 103003, 103004, 103005, 103006, 103007, 103008, 103009, 103010, 103011, 103012, 103013, 103014, 103015, 103016, 103017, 103018, 103019, 103020, 103021, 103022, 103023, 103024, 103025, 103026, 103027, 103028, 103029, 103030, 103031, 103032, 103033, 103034, 103035, 103036, 103037, 103038, 103039, 103040]
+    agent_seeds: &coin_agents [203001, 203002, 203003, 203004, 203005, 203006, 203007, 203008, 203009, 203010, 203011, 203012, 203013, 203014, 203015, 203016, 203017, 203018, 203019, 203020, 203021, 203022, 203023, 203024, 203025, 203026, 203027, 203028, 203029, 203030, 203031, 203032, 203033, 203034, 203035, 203036, 203037, 203038, 203039, 203040]
+    opponents: []
+  - id: coin-heaven-repeat
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: *coin_worlds
+    agent_seeds: *coin_agents
+    opponents: []
