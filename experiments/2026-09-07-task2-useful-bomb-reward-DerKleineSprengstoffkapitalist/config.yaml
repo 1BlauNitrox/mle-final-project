@@ -115,3 +115,10 @@ results:
   deterministic_repeats: true
   diagnostic_replay_models_match: true
   confirmation_seeds_used: false
+
+evidence_release:
+  tag: issue114-evidence-v1
+  asset: issue114-evidence-v1.tar.gz
+  size_bytes: 13349397
+  sha256: "855f9e5bf00b478ce9993e5107deb45a515536e345fdf8cb51723139dba05554"
+  manifest_entries: 5060

@@ -135,5 +135,9 @@ python -m training.plot_issue114_results
 ```
 
 `evidence.csv`, `training-summary.csv`, `summary.csv`, and `result.json` are
-compact committed derivatives. The immutable run evidence is linked below
-after packaging.
+compact committed derivatives. The immutable run evidence is available as
+[`issue114-evidence-v1.tar.gz`](https://github.com/1BlauNitrox/mle-final-project/releases/download/issue114-evidence-v1/issue114-evidence-v1.tar.gz)
+(13,349,397 bytes; SHA-256
+`855f9e5bf00b478ce9993e5107deb45a515536e345fdf8cb51723139dba05554`). Its
+manifest contains 5,060 entries and was verified without mismatches. Recreate
+it with `python -m training.package_issue114_evidence`.
