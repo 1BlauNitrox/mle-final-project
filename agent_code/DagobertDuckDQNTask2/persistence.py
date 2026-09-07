@@ -17,6 +17,8 @@ import torch
 from .config import (
     ACTIONS,
     FEATURE_SCHEMA_VERSION,
+    LEGACY_FEATURE_COUNT,
+    REPLAY_TREATMENTS,
     REWARDS,
     DQNConfig,
 )
@@ -28,9 +30,14 @@ from .model import (
 )
 from .replay import ReplayBuffer
 
-CHECKPOINT_SCHEMA_VERSION = 1
-MODEL_SCHEMA_VERSION = 1
+CHECKPOINT_SCHEMA_VERSION = 2
+MODEL_SCHEMA_VERSION = 2
+LEGACY_CHECKPOINT_SCHEMA_VERSION = 1
+LEGACY_MODEL_SCHEMA_VERSION = 1
+LEGACY_FEATURE_SCHEMA_VERSION = 2
 CHECKPOINT_PATH = Path(__file__).resolve().parent / "checkpoint.pt"
+EVALUATION_ARTIFACT_SCHEMA_VERSION = 1
+EVALUATION_CHECKPOINT_NAME = "checkpoint-evaluation.pt"
 
 CHECKPOINT_REPLACE_ATTEMPTS = 10
 CHECKPOINT_REPLACE_RETRY_SECONDS = 0.1
@@ -153,6 +160,11 @@ def load_training_checkpoint(
 ) -> LoadedTrainingCheckpoint:
     """Load and validate a complete resumable training checkpoint."""
     payload, config = _load_payload(path)
+    if "artifact_schema_version" in payload or not _is_current_schema(payload):
+        raise ValueError(
+            "Training checkpoint uses the legacy 21-feature schema; "
+            "resume requires the Issue #87 migrated checkpoint."
+        )
     agent_seed = int(payload["agent_seed"])
 
     learner = DQNLearner(
@@ -269,14 +281,26 @@ def _load_payload(
     if not isinstance(payload, dict) or set(payload) != required_fields:
         raise ValueError("Checkpoint has unexpected fields.")
 
-    if payload["checkpoint_schema_version"] != CHECKPOINT_SCHEMA_VERSION:
-        raise ValueError("Checkpoint schema version mismatch.")
-
-    if payload["model_schema_version"] != MODEL_SCHEMA_VERSION:
-        raise ValueError("Model schema version mismatch.")
-
-    if payload["feature_schema_version"] != FEATURE_SCHEMA_VERSION:
-        raise ValueError("Feature schema version mismatch.")
+    schema = (
+        payload["checkpoint_schema_version"],
+        payload["model_schema_version"],
+        payload["feature_schema_version"],
+    )
+    current_schema = (
+        CHECKPOINT_SCHEMA_VERSION,
+        MODEL_SCHEMA_VERSION,
+        FEATURE_SCHEMA_VERSION,
+    )
+    legacy_schema = (
+        LEGACY_CHECKPOINT_SCHEMA_VERSION,
+        LEGACY_MODEL_SCHEMA_VERSION,
+        LEGACY_FEATURE_SCHEMA_VERSION,
+    )
+    if schema not in (current_schema, legacy_schema):
+        raise ValueError(
+            "Checkpoint schema is incompatible; expected the current Issue #87 "
+            "schema or the explicitly supported legacy evaluation schema."
+        )
 
     if payload["actions"] != list(ACTIONS):
         raise ValueError("Checkpoint action order mismatch.")
@@ -285,6 +309,11 @@ def _load_payload(
         raise ValueError("Checkpoint reward mapping mismatch.")
 
     config = _restore_config(payload["config"])
+
+    if schema == legacy_schema and config.input_dim != LEGACY_FEATURE_COUNT:
+        raise ValueError("Legacy checkpoint must use the 21-feature configuration.")
+    if schema == current_schema and config.input_dim != DQNConfig().input_dim:
+        raise ValueError("Current checkpoint must use the 26-feature configuration.")
 
     agent_seed = payload["agent_seed"]
     epsilon = payload["epsilon"]
@@ -312,15 +341,31 @@ def _load_payload(
     return payload, config
 
 
+def _is_current_schema(payload: dict[str, Any]) -> bool:
+    """Return whether a payload can be resumed by the current trainer."""
+    return (
+        payload["checkpoint_schema_version"] == CHECKPOINT_SCHEMA_VERSION
+        and payload["model_schema_version"] == MODEL_SCHEMA_VERSION
+        and payload["feature_schema_version"] == FEATURE_SCHEMA_VERSION
+    )
+
+
 def _restore_config(value: Any) -> DQNConfig:
     """Validate and reconstruct the stored DQN configuration."""
     if not isinstance(value, dict):
         raise ValueError("Stored configuration must be a dictionary.")
 
     expected_defaults = asdict(DQNConfig())
-    # Evaluation artifacts predating Issue #86 are unmasked by definition.
+    # Historical Task 2 artifacts predate one or both persisted treatment
+    # switches. They remain loadable for read-only provenance checks, but the
+    # trainer rejects them above rather than silently resuming incompatible
+    # replay/model state.
     if "action_masking" not in value:
         value = {**value, "action_masking": False}
+    if "escape_continuation_features" not in value:
+        value = {**value, "escape_continuation_features": False}
+    if "replay_treatment" not in value:
+        value = {**value, "replay_treatment": "uniform"}
 
     if set(value) != set(expected_defaults):
         raise ValueError("Stored configuration has unexpected fields.")

@@ -679,6 +679,7 @@ jobs:
       - name: Verify successor artifact and lineage
         run: |
           test -s agent_code/DagobertDuckDQNTask2/checkpoint.pt
+          test -s agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
           test -s agent_code/DagobertDuckDQNTask2/artifact.json
           test -s agent_code/DagobertDuckDQNTask2/parent-artifact.json
           test -s agent_code/DagobertDuckDQNTask2/requirements.txt
@@ -686,10 +687,14 @@ jobs:
           test "$(
             stat -c '%s' \
               agent_code/DagobertDuckDQNTask2/checkpoint.pt
-          )" = "54704"
+          )" = "57581"
 
           echo \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e  agent_code/DagobertDuckDQNTask2/checkpoint.pt" \
+            | sha256sum --check
+
+          echo \
+            "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015  agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt" \
             | sha256sum --check
 
           echo \
@@ -702,6 +707,9 @@ jobs:
           tests/test_DagobertDuckDQNTask2_successor.py
           tests/test_DagobertDuckDQNTask2_bombs_and_crates.py
           tests/test_DagobertDuckDQNTask2_migration.py
+          tests/test_DagobertDuckDQNTask2_escape_migration.py
+          tests/test_DagobertDuckDQNTask2_escape_continuations.py
+          tests/test_DagobertDuckDQNTask2_protected_replay.py
           tests/test_DagobertDuckDQNTask2_train.py
           -v
 
@@ -775,7 +783,7 @@ jobs:
           test "$before" = "$after"
 
           test "$after" = \
-            "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e"
+            "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e"
 
       - name: Seeded Task 2 training smoke
         run: |
@@ -817,6 +825,40 @@ jobs:
             | cut -d ' ' -f 1 > /tmp/dqntask2-checkpoint-after.sha256
 
           diff /tmp/dqntask2-checkpoint-before.sha256 /tmp/dqntask2-checkpoint-after.sha256
+
+      - name: Protected replay staged progression smoke
+        run: |
+          smoke_root="$(mktemp -d)"
+          python -m training.run_plan \
+            training/run_plans/issue88-dqn-protected-replay-smoke.yaml \
+            --output-root "$smoke_root"
+
+          python - "$smoke_root" <<'PY'
+          from pathlib import Path
+          import sys
+
+          from agent_code.DagobertDuckDQNTask2.persistence import load_training_checkpoint
+
+          root = Path(sys.argv[1]) / "issue88-dqn-protected-replay-smoke"
+          checkpoint = load_training_checkpoint(
+              root / "replicas" / "smoke" / "agent" / "checkpoint.pt"
+          )
+          if checkpoint.config.replay_treatment != "protected_task1":
+              raise SystemExit("protected replay treatment was not persisted")
+          if checkpoint.replay_buffer.collection_open:
+              raise SystemExit("protected collection remained open after crate stage")
+          if not checkpoint.replay_buffer.protected_size:
+              raise SystemExit("protected partition is empty")
+          if not checkpoint.replay_buffer.other_size:
+              raise SystemExit("other partition is empty")
+          if len(checkpoint.replay_buffer) > 10000:
+              raise SystemExit("replay exceeded total capacity")
+          print(
+              checkpoint.completed_episodes,
+              checkpoint.replay_buffer.protected_size,
+              checkpoint.replay_buffer.other_size,
+          )
+          PY
 
       - name: Task 1 coin-heaven regression smoke
         run: |

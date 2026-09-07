@@ -31,6 +31,8 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
+VALID_ESCAPE_CONTINUATIONS = ("off", "on")
+VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
 SUPPORTED_OPPONENTS = {
     "peaceful_agent",
     "coin_collector_agent",
@@ -96,6 +98,8 @@ class ResolvedPlan:
     agent: str
     artifact_path: str | None
     action_masking: str
+    escape_continuations: str
+    replay_treatment: str
     max_parallel_training: int
     replicas: tuple[Replica, ...]
     jobs: tuple[Job, ...]
@@ -139,6 +143,18 @@ def load_plan(path: Path) -> ResolvedPlan:
     action_masking = raw.get("action_masking", "none")
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
+    escape_continuations = raw.get("escape_continuations", "off")
+    if escape_continuations not in VALID_ESCAPE_CONTINUATIONS:
+        raise ValueError(
+            "escape_continuations must be one of "
+            f"{list(VALID_ESCAPE_CONTINUATIONS)}"
+        )
+    replay_treatment = raw.get("replay_treatment", "uniform")
+    if replay_treatment not in VALID_REPLAY_TREATMENTS:
+        raise ValueError(
+            "replay_treatment must be one of "
+            f"{list(VALID_REPLAY_TREATMENTS)}"
+        )
 
     max_parallel = raw.get("max_parallel_training", 1)
     if not isinstance(max_parallel, int) or isinstance(max_parallel, bool) or max_parallel < 1:
@@ -193,6 +209,8 @@ def load_plan(path: Path) -> ResolvedPlan:
         agent=agent,
         artifact_path=artifact_path,
         action_masking=action_masking,
+        escape_continuations=escape_continuations,
+        replay_treatment=replay_treatment,
         max_parallel_training=max_parallel,
         replicas=replicas,
         jobs=jobs,
@@ -388,6 +406,15 @@ def _run_job(
                         artifact.name if job.kind == "evaluation" and artifact is not None else None
                     ),
                     "action_masking": plan.action_masking,
+                    "escape_continuations": plan.escape_continuations,
+                    "replay_treatment": plan.replay_treatment,
+                    "replay_collection": (
+                        "task1"
+                        if job.kind == "training" and _is_initial_task1_stage(plan, job)
+                        else "closed"
+                        if job.kind == "training"
+                        else None
+                    ),
                     "fingerprints": plan.fingerprints,
                 }
             },

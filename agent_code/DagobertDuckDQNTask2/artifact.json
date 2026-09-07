@@ -5,9 +5,9 @@
     "capability": "task1_navigation_plus_task2_bombs_and_crates",
     "artifact": {
       "path": "checkpoint.pt",
-      "sha256": "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e",
-      "size_bytes": 54704,
-      "note": "The preserved Issue #44 fresh training-ready checkpoint (completed_episodes=0). It uses seeded Task 2 input columns and remains the exact Issue #46 untrained starting artifact."
+      "sha256": "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e",
+      "size_bytes": 57581,
+      "note": "The Issue #87 fresh training-ready checkpoint (completed_episodes=0), migrated explicitly from the corrected Issue #85 artifact with zero continuation columns."
     },
     "corrected_migration_artifact": {
       "path": "checkpoint-issue85-zero-suffix.pt",
@@ -17,9 +17,9 @@
     },
     "model_contract": {
       "algorithm": "deep_q_network",
-      "checkpoint_schema_version": 1,
-      "model_schema_version": 1,
-      "feature_schema_version": 2,
+      "checkpoint_schema_version": 2,
+      "model_schema_version": 2,
+      "feature_schema_version": 3,
       "action_order": [
         "UP",
         "RIGHT",
@@ -29,6 +29,22 @@
         "BOMB"
       ],
       "forbidden_actions": []
+    },
+    "escape_continuation_migration": {
+      "script": "scripts/migrate_task2_escape_continuations.py",
+      "source_artifact_path": "checkpoint-issue85-zero-suffix.pt",
+      "source_artifact_sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
+      "source_input_dim": 21,
+      "destination_input_dim": 26,
+      "destination_feature_schema_version": 3,
+      "seed": 87,
+      "rule": [
+        "load the corrected Issue #85 artifact rather than the historical checkpoint.pt",
+        "copy the corrected network's first 21 input columns and zero the five continuation columns",
+        "copy both hidden layers and all six output rows verbatim",
+        "initialize the target network from the migrated online network",
+        "reset optimizer and replay state for a fresh training start"
+      ]
     },
     "parent": {
       "agent": "DagobertDuckDQN",
@@ -81,6 +97,7 @@
     },
     "policy": {
       "task2_features_present": true,
+      "escape_continuation_features_present": true,
       "bomb_action_present": true,
       "scientific_training_authorized": false
     }

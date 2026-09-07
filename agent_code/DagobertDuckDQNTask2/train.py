@@ -80,8 +80,8 @@ def game_events_occurred(
     if old_game_state is None or new_game_state is None or self_action not in ACTION_TO_INDEX:
         return
 
-    old_features = state_to_features(old_game_state)
-    new_features = state_to_features(new_game_state)
+    old_features = _state_to_features(self, old_game_state)
+    new_features = _state_to_features(self, new_game_state)
 
     if old_features is None or new_features is None:
         return
@@ -155,7 +155,7 @@ def end_of_round(
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTION_TO_INDEX:
-            last_features = state_to_features(last_game_state)
+            last_features = _state_to_features(self, last_game_state)
 
             if last_features is not None:
                 _record_transition(
@@ -347,3 +347,14 @@ def _transition_identity(
         return None
 
     return round_number, step_number
+
+
+def _state_to_features(self, game_state: dict | None):
+    """Build features using the persisted feature treatment and input width."""
+    features = state_to_features(
+        game_state,
+        include_continuation_features=self.config.escape_continuation_features,
+    )
+    if features is not None and self.config.input_dim < len(features):
+        return features[: self.config.input_dim]
+    return features
