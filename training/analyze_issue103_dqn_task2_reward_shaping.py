@@ -10,7 +10,7 @@ from pathlib import Path
 from statistics import fmean, median
 from typing import Any
 
-from training.aggregate import read_episodes_csv
+from training.aggregate import _parse_csv_row, read_episodes_csv
 from training.paired_bootstrap import paired_bootstrap
 from training.run_experiment import REPOSITORY_ROOT
 
@@ -75,6 +75,81 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                         }
                     )
 
+    return _compute_and_write_result(rows, deterministic_repeats, output)
+
+
+def rows_from_evidence(evidence_root: Path) -> tuple[list[dict[str, Any]], bool]:
+    """Rebuild the same analysis-ready rows from committed evidence CSVs.
+
+    Reads only `evidence_root/<plan_id>/evaluation-episodes.csv` (written by
+    `training/export_evidence.py`), which already carries every column
+    `_suite_rows` would have read from the raw job tree plus the identifying
+    columns (`treatment` here comes from the plan's own `reward_variant`, not
+    re-derived). This is what makes the committed result independently
+    reproducible without the ~4.4 GiB raw output tree or an external archive:
+    a reviewer with only this repository checkout can run this against the
+    committed evidence and get byte-identical numbers.
+    """
+    evidence_root = Path(evidence_root).resolve()
+    rows: list[dict[str, Any]] = []
+    deterministic_repeats = True
+
+    for treatment, plan_id in PLAN_IDS.items():
+        manifest = _read_json(evidence_root / plan_id / "manifest.json")
+        if manifest.get("reward_variant") != treatment:
+            raise ValueError(f"Unexpected reward_variant for {plan_id}")
+        by_key: dict[tuple[str, str], dict[int, dict[str, Any]]] = defaultdict(dict)
+        with (evidence_root / plan_id / "evaluation-episodes.csv").open(
+            encoding="utf-8", newline=""
+        ) as handle:
+            for row_number, raw_row in enumerate(csv.DictReader(handle), start=2):
+                row = _parse_csv_row(raw_row, row_number)
+                row["world_seed"] = int(raw_row["world_seed"])
+                row["agent_seed"] = int(raw_row["agent_seed"])
+                by_key[(row["replica"], row["stage_or_suite"])][row["world_seed"]] = row
+
+        replicas = {
+            row["replica"] for rows_by_seed in by_key.values() for row in rows_by_seed.values()
+        }
+        for replica in replicas:
+            for suite_id, scenario in PRIMARY_SUITES.items():
+                primary = by_key[(replica, suite_id)]
+                repeat = by_key[(replica, suite_id.replace("-primary", "-repeat"))]
+                for world_seed in sorted(primary):
+                    primary_row, repeat_row = primary[world_seed], repeat[world_seed]
+                    if primary_row.get("executed_action_sequence_sha256") != repeat_row.get(
+                        "executed_action_sequence_sha256"
+                    ):
+                        deterministic_repeats = False
+                    available = primary_row.get("initially_available_coins")
+                    if not isinstance(available, int) or available <= 0:
+                        raise ValueError("Evaluation row has no available-coin count")
+                    rows.append(
+                        {
+                            **primary_row,
+                            "treatment": treatment,
+                            "scenario": scenario,
+                            "collection_fraction": primary_row["coins_collected"] / available,
+                        }
+                    )
+    return rows, deterministic_repeats
+
+
+def verify_from_evidence(
+    evidence_root: Path, expected_result_path: Path
+) -> tuple[dict[str, Any], bool]:
+    """Recompute the result from evidence and compare it to the committed one."""
+    rows, deterministic_repeats = rows_from_evidence(evidence_root)
+    recomputed = _compute_and_write_result(rows, deterministic_repeats, output=None)
+    expected = _read_json(Path(expected_result_path))
+    return recomputed, recomputed == expected
+
+
+def _compute_and_write_result(
+    rows: list[dict[str, Any]],
+    deterministic_repeats: bool,
+    output: Path | None,
+) -> dict[str, Any]:
     summaries = _summaries(rows)
     comparisons = {
         treatment: {
@@ -115,12 +190,13 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
             for treatment in TREATMENTS
         },
     }
-    output = Path(output).resolve()
-    output.mkdir(parents=True, exist_ok=True)
-    _write_summary(output / "summary.csv", summaries)
-    (output / "result.json").write_text(
-        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    if output is not None:
+        output = Path(output).resolve()
+        output.mkdir(parents=True, exist_ok=True)
+        _write_summary(output / "summary.csv", summaries)
+        (output / "result.json").write_text(
+            json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
     return result
 
 
@@ -290,7 +366,26 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan-root", type=Path, default=PLAN_ROOT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument(
+        "--verify-from-evidence",
+        type=Path,
+        default=None,
+        metavar="EVIDENCE_ROOT",
+        help=(
+            "Instead of reading the raw job tree under --plan-root, recompute "
+            "the result from committed evidence CSVs under EVIDENCE_ROOT "
+            "(see training/export_evidence.py) and compare it to --output's "
+            "committed result.json. Exits non-zero on any mismatch."
+        ),
+    )
     args = parser.parse_args()
+    if args.verify_from_evidence is not None:
+        recomputed, matches = verify_from_evidence(
+            args.verify_from_evidence, args.output / "result.json"
+        )
+        print(json.dumps(recomputed, indent=2, sort_keys=True))
+        print("MATCHES committed result.json" if matches else "MISMATCH vs committed result.json")
+        return 0 if matches else 1
     print(json.dumps(analyze(args.plan_root, args.output), indent=2, sort_keys=True))
     return 0
 

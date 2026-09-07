@@ -182,12 +182,49 @@ own machine on 2026-09-07 and completed in full (915/915 jobs, 0 failures)
 in about 6 hours -- well inside the ~45 wall-hour serial estimate above.
 Deterministic repeats matched exactly (identical
 `executed_action_sequence_sha256` between every primary/repeat pair; the
-only differences were incidental decision-time measurements). Full compact
-evidence: `result.json`, `summary.csv` (`training/analyze_issue103_dqn_task2_reward_shaping.py`).
-The raw per-episode archive (~4.4 GiB: `training_outputs/run-plans/issue103-dqn-task2-reward-{control,survival-rebalance,safety-bomb}/`)
-is retained on the owner's own machine and is not committed; reproduce the
-compact evidence from it with
-`python -m training.analyze_issue103_dqn_task2_reward_shaping --plan-root training_outputs/run-plans --output training_outputs/issue103-analysis`.
+only differences were incidental decision-time measurements). Full compact evidence: `result.json`, `summary.csv`
+(`training/analyze_issue103_dqn_task2_reward_shaping.py`).
+
+## Evidence: committed, not the ~4.4 GiB raw output tree
+
+The full raw output tree (every job's attempt directory, including a full
+agent-source snapshot per job) runs to ~4.4 GiB. The team decided this is
+not worth hosting anywhere durable: it is overwhelmingly redundant source
+snapshots and per-round framework dumps (`framework_stats.json` alone is
+~39 MB *per training job*), not evidence. What actually matters for
+verifying the claimed result -- every episode row the analyzer reads -- is
+committed instead, at `evidence/<plan-id>/`:
+
+- `evaluation-episodes.csv` and `training-episodes.csv.gz`: every job's
+  `episodes.csv` rows, tagged with `plan_id`/`run_id`/`kind`/`replica`/
+  `stage_or_suite`/`world_seed`/`agent_seed` (via
+  `training/export_evidence.py`). ~19 MiB total across all three arms.
+- `manifest.json`: the plan's own configuration/source/framework/agent
+  fingerprints (from `resolved_plan.json`), per-job provenance (status,
+  seeds, git commit, duration), and the two evidence files' own SHA-256.
+
+This is independently checkable **without the raw tree or any external
+archive**: `analyze_issue103_dqn_task2_reward_shaping.py --verify-from-evidence`
+rebuilds the exact same `rows` from the committed `evaluation-episodes.csv`
+alone, recomputes `result.json` end-to-end (the same `_summaries`/
+`_paired_comparisons`/`_criteria` code path as the original run), and
+diffs it against the committed one:
+
+```bash
+python -m training.analyze_issue103_dqn_task2_reward_shaping \
+  --verify-from-evidence experiments/2026-09-07-dqn-task2-reward-shaping/evidence \
+  --output experiments/2026-09-07-dqn-task2-reward-shaping
+# -> MATCHES committed result.json
+```
+
+Confirmed to print exactly that against this experiment's own committed
+evidence and `result.json`. A reviewer with only this repository checkout
+can run this one command; they do not need to trust that the owner's
+machine still holds the same 4.4 GiB it started with. To regenerate
+`evidence/` from a fresh raw run instead (e.g. if the experiment is ever
+re-run): `python -m training.export_evidence --plan-directory
+training_outputs/run-plans/<plan-id> --output experiments/2026-09-07-dqn-task2-reward-shaping/evidence/<plan-id>`
+for each of the three plan IDs.
 
 **Both treatments are rejected.** Neither cleared gate 3 (a confirmed
 `classic` survival-rate improvement):

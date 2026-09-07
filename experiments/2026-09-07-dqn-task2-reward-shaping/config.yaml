@@ -23,3 +23,7 @@ actual_execution:
   max_parallel_training: 1
   wall_hours: 6
   concurrent_with: issue97-dqn-task2-direct-classic-unmasked
+evidence:
+  raw_output_tree: "not retained centrally (~4.4 GiB, team decision -- mostly redundant per-job source snapshots and framework_stats.json dumps, not evidence)"
+  committed: "evidence/<plan-id>/{training-episodes.csv.gz,evaluation-episodes.csv,manifest.json}, ~19 MiB total"
+  verification: "python -m training.analyze_issue103_dqn_task2_reward_shaping --verify-from-evidence experiments/2026-09-07-dqn-task2-reward-shaping/evidence --output experiments/2026-09-07-dqn-task2-reward-shaping"
