@@ -51,40 +51,6 @@ training diagnostics. It does not run or claim a scientific result -- that is
 separate, downstream experiment work. Curriculum orchestration is explicitly
 split to issue #50.
 
-## Protected replay (Issue #88)
-
-Training has an explicit `replay_treatment` switch, persisted in the DQN
-configuration and staged run-plan fingerprint. The `uniform` control is the
-existing 10,000-transition FIFO with uniform sampling. The fixed
-`protected_task1` treatment reserves a 2,000-transition FIFO for transitions
-from the initial 2,000 `coin-heaven` episodes and retains later transitions in
-an 8,000-transition FIFO. Both partitions use FIFO replacement independently,
-so total replay capacity remains exactly 10,000 and membership is disjoint.
-
-During later stages, a batch of 64 contains 16 protected and 48 other samples
-when both partitions have enough data. If either partition is short, the
-missing quota is filled from the other partition without replacement. The
-first collection stage keeps the control's uniform sampling behavior where
-possible. The treatment does not add episodes or ingest evaluation states.
-The checkpoint stores both partition contents, the irreversible collection
-phase, treatment configuration, and replay RNG state, so a resume reproduces
-the next samples and optimizer updates. Use the agent-local
-`export_evaluation_checkpoint` helper to produce an evaluation artifact without
-replay, optimizer, target-network, or RNG state.
-
-For a reproducible export from a training checkpoint, run:
-
-```bash
-python scripts/export_task2_evaluation_artifact.py \
-  agent_code/DagobertDuckDQNTask2/checkpoint.pt \
-  agent_code/DagobertDuckDQNTask2/checkpoint-evaluation.pt
-```
-
-Evaluation can select that file with
-`BOMBERMAN_EVALUATION_CHECKPOINT=checkpoint-evaluation.pt`. The evaluation
-artifact must be selected prospectively and its checksum recorded with the
-experiment or release metadata.
-
 ## Parent baseline
 
 The immutable parent agent is:

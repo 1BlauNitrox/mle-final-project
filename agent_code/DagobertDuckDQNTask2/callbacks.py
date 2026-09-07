@@ -22,8 +22,6 @@ from .replay import ReplayBuffer
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
-REPLAY_TREATMENT_ENV = "BOMBERMAN_DQN_REPLAY_TREATMENT"
-REPLAY_COLLECTION_ENV = "BOMBERMAN_DQN_REPLAY_COLLECTION"
 
 
 def setup(self) -> None:
@@ -82,7 +80,6 @@ def _setup_training_policy(self, agent_seed: int) -> None:
             loaded.config.action_masking != configured.action_masking
             or loaded.config.escape_continuation_features
             != configured.escape_continuation_features
-            or loaded.config.replay_treatment != configured.replay_treatment
         )
         reset_fresh_state = treatment_mismatch or loaded.agent_seed != agent_seed
         if treatment_mismatch:
@@ -224,19 +221,12 @@ def _configured_training_config() -> DQNConfig:
     if escape_mode not in {"off", "on"}:
         raise ValueError(f"{ESCAPE_CONTINUATIONS_ENV} must be 'off' or 'on'.")
 
-    replay_treatment = os.environ.get(REPLAY_TREATMENT_ENV, "uniform")
-    if replay_treatment not in {"uniform", "protected_task1"}:
-        raise ValueError(
-            f"{REPLAY_TREATMENT_ENV} must be 'uniform' or 'protected_task1'."
-        )
-
-    if mode == "none" and escape_mode == "off" and replay_treatment == "uniform":
+    if mode == "none" and escape_mode == "off":
         return DEFAULT_CONFIG
 
     return DQNConfig(
         action_masking=mode == "framework_legal",
         escape_continuation_features=escape_mode == "on",
-        replay_treatment=replay_treatment,
     )
 
 
@@ -261,37 +251,3 @@ def _validate_evaluation_treatment(config: DQNConfig) -> None:
             raise ValueError(
                 "Evaluation escape-continuation mode does not match checkpoint."
             )
-
-    replay_mode = os.environ.get(REPLAY_TREATMENT_ENV)
-    if replay_mode is not None:
-        if replay_mode not in {"uniform", "protected_task1"}:
-            raise ValueError(
-                f"{REPLAY_TREATMENT_ENV} must be 'uniform' or 'protected_task1'."
-            )
-        if config.replay_treatment != replay_mode:
-            raise ValueError("Evaluation replay treatment does not match checkpoint.")
-
-
-def _collection_is_open() -> bool:
-    """Return whether this job collects the initial Task 1 transitions."""
-    phase = os.environ.get(REPLAY_COLLECTION_ENV, "task1")
-    if phase not in {"task1", "closed"}:
-        raise ValueError(f"{REPLAY_COLLECTION_ENV} must be 'task1' or 'closed'.")
-    return phase == "task1"
-
-
-def _apply_collection_phase(
-    self,
-    collection_open: bool,
-) -> None:
-    """Close, but never reopen, protected collection at a stage boundary."""
-    if self.config.replay_treatment != "protected_task1":
-        return
-    if collection_open:
-        if (
-            not self.replay_buffer.collection_open
-            and self.completed_episodes < PROTECTED_SOURCE_EPISODES
-        ):
-            raise ValueError("Protected replay collection cannot be reopened on resume.")
-        return
-    self.replay_buffer.close_protected_collection()

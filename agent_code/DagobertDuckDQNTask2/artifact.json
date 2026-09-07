@@ -5,7 +5,7 @@
     "capability": "task1_navigation_plus_task2_bombs_and_crates",
     "artifact": {
       "path": "checkpoint.pt",
-      "sha256": "180789956148938f54a4bebf6932d57619bb833865f32d85253b9a737ffde71e",
+      "sha256": "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60",
       "size_bytes": 57581,
       "note": "The Issue #87 fresh training-ready checkpoint (completed_episodes=0), migrated explicitly from the corrected Issue #85 artifact with zero continuation columns."
     },

@@ -40,13 +40,6 @@ ACTION_TO_INDEX: dict[str, int] = {
     action: index for index, action in enumerate(ACTIONS)
 }
 
-REPLAY_TREATMENTS: tuple[str, ...] = ("uniform", "protected_task1")
-PROTECTED_REPLAY_CAPACITY = 2_000
-OTHER_REPLAY_CAPACITY = 8_000
-PROTECTED_REPLAY_BATCH_SIZE = 16
-PROTECTED_SOURCE_EPISODES = 2_000
-PROTECTED_SOURCE_SCENARIO = "coin-heaven"
-
 LEGACY_FEATURE_COUNT = 21
 FEATURE_COUNT = 26
 FEATURE_SCHEMA_VERSION = 3
@@ -129,7 +122,6 @@ class DQNConfig:
     torch_num_threads: int = 1
     action_masking: bool = False
     escape_continuation_features: bool = False
-    replay_treatment: str = "uniform"
 
     def __post_init__(self) -> None:
         """Reject internally inconsistent configurations."""
@@ -187,12 +179,6 @@ class DQNConfig:
 
         if type(self.escape_continuation_features) is not bool:
             raise ValueError("escape_continuation_features must be a bool.")
-
-        if self.replay_treatment not in REPLAY_TREATMENTS:
-            raise ValueError(
-                "replay_treatment must be one of "
-                f"{list(REPLAY_TREATMENTS)}."
-            )
 
 
 DEFAULT_CONFIG = DQNConfig()

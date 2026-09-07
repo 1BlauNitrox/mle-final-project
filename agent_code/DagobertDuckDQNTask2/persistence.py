@@ -18,7 +18,6 @@ from .config import (
     ACTIONS,
     FEATURE_SCHEMA_VERSION,
     LEGACY_FEATURE_COUNT,
-    REPLAY_TREATMENTS,
     REWARDS,
     DQNConfig,
 )
@@ -36,9 +35,6 @@ LEGACY_CHECKPOINT_SCHEMA_VERSION = 1
 LEGACY_MODEL_SCHEMA_VERSION = 1
 LEGACY_FEATURE_SCHEMA_VERSION = 2
 CHECKPOINT_PATH = Path(__file__).resolve().parent / "checkpoint.pt"
-EVALUATION_ARTIFACT_SCHEMA_VERSION = 1
-EVALUATION_CHECKPOINT_NAME = "checkpoint-evaluation.pt"
-
 CHECKPOINT_REPLACE_ATTEMPTS = 10
 CHECKPOINT_REPLACE_RETRY_SECONDS = 0.1
 
@@ -356,17 +352,13 @@ def _restore_config(value: Any) -> DQNConfig:
         raise ValueError("Stored configuration must be a dictionary.")
 
     expected_defaults = asdict(DQNConfig())
-    # Historical Task 2 artifacts predate one or both persisted treatment
-    # switches. They remain loadable for read-only provenance checks, but the
-    # trainer rejects them above rather than silently resuming incompatible
-    # replay/model state.
+    # Historical Task 2 artifacts predate the persisted escape-feature switch.
+    # They remain loadable for read-only provenance checks, but the trainer
+    # rejects them above rather than silently resuming incompatible state.
     if "action_masking" not in value:
         value = {**value, "action_masking": False}
     if "escape_continuation_features" not in value:
         value = {**value, "escape_continuation_features": False}
-    if "replay_treatment" not in value:
-        value = {**value, "replay_treatment": "uniform"}
-
     if set(value) != set(expected_defaults):
         raise ValueError("Stored configuration has unexpected fields.")
 
