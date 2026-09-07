@@ -1,6 +1,6 @@
 # Tabular Task 2 legal-action masking
 
-> Status: registered
+> Status: completed_negative
 
 ## Metadata
 
@@ -60,3 +60,33 @@ Confirmation seeds remain unused.
 ## Execution
 
 Training begins only after the experiment definition has been reviewed.
+
+## Results
+
+The registered experiment did not pass.
+
+- Classic masked-minus-unmasked mean difference: `-0.00111`
+- Paired 95% confidence interval: `[-0.00389, 0.00111]`
+- Replicas improving: `0/5`
+- Masked invalid-action rate: `0.0`
+- Coin-heaven retention difference versus Task 1: `0.0`
+- Deterministic repeats: passed
+- Runtime limits: passed
+
+Framework-legal masking successfully eliminated invalid actions but did not
+improve Task 2 hidden-coin collection.
+
+## Interpretation
+
+Most masked replicas placed very few bombs and collected no hidden coins.
+Replica r1 was an exception, but also had a high self-kill rate. Overall,
+masking reduced invalid actions and aggregate self-kills without improving
+collection performance.
+
+## Decision
+
+The registered collection-performance hypothesis was rejected. Framework-legal
+masking eliminated invalid actions and reduced aggregate self-kills without a
+statistically demonstrated collection regression. The masking capability is
+therefore retained as an optional configuration, but it does not replace the
+unmasked baseline.

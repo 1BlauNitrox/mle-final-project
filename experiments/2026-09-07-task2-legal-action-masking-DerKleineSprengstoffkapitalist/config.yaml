@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 110
-status: approved
+status: completed_negative
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
 reviewer: "Waffelmanufraktur"
@@ -56,3 +56,16 @@ success_criteria:
   deterministic_repeat: true
 
 reserved_confirmation_seeds_used: false
+
+results:
+  passed: false
+  decision: retain_unmasked_baseline
+  classic_masked_minus_unmasked:
+    mean_difference: -0.0011111111111111111
+    ci_lower: -0.0038888888888888888
+    ci_upper: 0.0011111111111111111
+  replicas_improving: 0
+  masked_invalid_action_rate: 0.0
+  task1_retention_difference: 0.0
+  deterministic: true
+  
