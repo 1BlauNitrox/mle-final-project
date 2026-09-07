@@ -183,6 +183,15 @@ def load_plan(path: Path) -> ResolvedPlan:
     suites = [_parse_suite(item) for item in raw_suites]
     _require_unique([stage["id"] for stage in stages], "training stage IDs")
     _require_unique([suite["id"] for suite in suites], "evaluation suite IDs")
+    if (
+        replay_treatment == "protected_task1"
+        and stages
+        and stages[0]["scenario"] != "coin-heaven"
+    ):
+        raise ValueError(
+            "protected_task1 replay treatment requires the first training stage "
+            "to use the coin-heaven scenario"
+        )
 
     jobs = _expand_jobs(replicas, stages, suites)
     _require_unique([job.run_id for job in jobs], "expanded run IDs")
