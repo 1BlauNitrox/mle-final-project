@@ -1,5 +1,5 @@
 schema_version: 1
-plan_id: issue114-tabular-task2-control-diagnostics
+plan_id: issue114-tabular-task2-control-diagnostics-v2
 agent: DerKleineSprengstoffkapitalist
 artifact_path: model.npz
 useful_bomb_reward: 0.0
