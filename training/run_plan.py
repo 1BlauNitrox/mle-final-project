@@ -398,7 +398,6 @@ def _run_job(
                 if _is_initial_task1_stage(plan, job)
                 else "closed"
             )
->>>>>>> dedb435 (feat(training): add protected Task 1 replay treatment)
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
