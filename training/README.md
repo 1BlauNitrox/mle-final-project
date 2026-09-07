@@ -213,6 +213,25 @@ Example plans are in `training/run_plans/`:
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
 
+### Issue #107 Task 2 factorial campaign
+
+Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1
+reference plans. Validate the cross-plan matrix, source hashes, 200,000-episode
+training budget, 5,120-episode evaluation budget, treatment metadata, and seed
+collision audit without starting a run:
+
+```bash
+python -m training.run_issue107_campaign --dry-run
+python -m training.analyze_issue107_task2_factorial --validate-protocol
+```
+
+The launcher requires a clean reviewed commit, an explicit
+`--authorize-compute` flag, the full reviewed SHA, and an actual server hardware
+description. Exact launch, resume, analysis, ceilings, contrasts, and selection
+commands are registered in
+`experiments/2026-09-07-dqn-task2-factorial/README.md`. A dry run is integration
+validation only and produces no performance evidence.
+
 ### Issue #46 Task 2 DQN development baseline
 
 Issue #46 uses three immutable plans so the five trained artifacts and both
