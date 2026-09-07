@@ -1,8 +1,13 @@
 schema_version: 1
 issue: 110
-status: registered
+status: approved
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
+reviewer: "Waffelmanufraktur"
+approval:
+  method: personal
+  date: "2026-09-07"
+  approved_before_training: true
 
 revisions:
   experiment_commit: "6ceebe3fe6c75a378512cb7c7ebd022ce302df1c"

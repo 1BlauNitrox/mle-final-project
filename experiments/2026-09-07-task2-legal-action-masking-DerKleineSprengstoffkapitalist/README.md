@@ -10,6 +10,8 @@
 - Date: 2026-09-07
 - Experiment commit: `6ceebe3fe6c75a378512cb7c7ebd022ce302df1c`
 - Framework revision: `0f55c1d`
+- Reviewer: `Waffelmanufraktur`
+- Approval: Personally approved on 2026-09-07 before training.
 
 ## Research question
 
