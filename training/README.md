@@ -258,16 +258,24 @@ lineage and are not selected implicitly.
 
 ### Issue #103 reward-shaping treatments for Task 2 DQN
 
-**Registered, ready to execute.** Three independent plans compare
+**Completed, both treatments rejected.** Three independent plans compared
 `control`, `survival_rebalance`, and `safety_bomb` reward configurations,
 each direct-classic training from the same starting artifact and seeds. See
 `experiments/2026-09-07-dqn-task2-reward-shaping/README.md` for the full
-protocol.
+protocol and result.
 
 ```bash
 python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-control.yaml --dry-run
 python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-survival-rebalance.yaml --dry-run
 python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-safety-bomb.yaml --dry-run
+```
+
+Reproduce the compact result from completed run-plan output with:
+
+```bash
+python -m training.analyze_issue103_dqn_task2_reward_shaping \
+  --plan-root training_outputs/run-plans \
+  --output training_outputs/issue103-analysis
 ```
 
 ### Issue #41 registered DQN series

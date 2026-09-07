@@ -1,8 +1,8 @@
 # Issue #103 reward-shaping treatments for Task 2 DQN
 
-> Status: **Registered — ready to execute.** Not blocked on #97 (this
-> experiment trains direct-classic only, independent of the curriculum
-> question) or on anything else.
+> Status: **Completed — both treatments rejected.** See "Result and
+> decision" below. Independent of #97 throughout (direct-classic training,
+> not the curriculum question).
 
 ## Hypothesis and factors
 
@@ -105,7 +105,7 @@ placement (so both are always tallied as diagnostics, in every arm), but
 0.0 under `control` and `survival_rebalance`, and only `safety_bomb` gives
 either a nonzero reward.
 
-## Decision rule (Claude's proposal; confirm or adjust before training starts)
+## Decision rule (Claude's proposal, applied mechanically to the result below)
 
 For each treatment arm independently, paired against control by replica ID:
 
@@ -113,21 +113,28 @@ For each treatment arm independently, paired against control by replica ID:
    < 100 ms decision time in every scenario.
 2. **Non-regression**: paired 95% bootstrap CI lower bound for collection
    fraction (treatment − control) ≥ -0.05 in all three scenarios.
-3. **Primary effect**:
-   - `survival_rebalance`: paired 95% CI lower bound for survival rate
-     (treatment − control) ≥ 0 in `classic`.
-   - `safety_bomb`: paired 95% CI lower bound for the `UNSAFE_BOMB_PLACED`
-     rate reduction (control − treatment) > 0 in `classic` (the mechanism
-     actually fires less), **and** paired 95% CI lower bound for survival
-     rate (treatment − control) ≥ 0 in `classic` (fewer unsafe placements
-     actually reduce deaths, not just bomb attempts).
+3. **Primary effect**: paired 95% CI lower bound for survival rate
+   (treatment − control) ≥ 0 in `classic`.
 4. An arm is adopted only if it clears gates 1-3. If both clear, prefer the
    larger `classic` survival-rate improvement. If neither clears, retain
    control and report the negative result, as #86 did.
 
-These numeric criteria are Claude's proposal, made at the owner's explicit
-invitation this round -- not a team-ratified threshold. Adjust before
-training if the team wants different margins.
+**Correction made when writing the analyzer** (`training/analyze_issue103_dqn_task2_reward_shaping.py`):
+the originally proposed `safety_bomb` gate 3 ("paired CI lower bound for the
+`UNSAFE_BOMB_PLACED` rate reduction > 0") is not computable from the
+available data -- that per-event-type diagnostic is only ever exposed on
+*training* episodes (`train.py`'s `end_of_round`), never on the *evaluation*
+episodes this decision rule is scored against, which only carry the
+framework's native per-episode counters (`self_kills`, `crates_destroyed`,
+`bombs_dropped`, etc.), not a breakdown by shaping-event type. Replaced with
+the plain survival-rate gate above, which both arms now share -- self-kills
+without opponents are the sole cause of a `classic`/`loot-crate` death here,
+so a survival-rate improvement already is the direct evidence a working
+safety mechanism would produce.
+
+These numeric criteria remain Claude's proposal, made at the owner's
+explicit invitation -- not a team-ratified threshold. They were applied
+mechanically to the result below, unchanged after seeing it.
 
 ## Execution
 
@@ -158,11 +165,83 @@ tmux new -s issue103-safety
 python -m training.run_plan training/run_plans/issue103-dqn-task2-reward-safety-bomb.yaml 2>&1 | tee logs/issue103-safety-bomb.log
 ```
 
-Each plan uses at most two training workers and 8 GiB RAM. Combined across
+Each plan was drafted for at most two training workers and 8 GiB RAM.
+Executed here with `max_parallel_training: 1` in all three plans instead
+(committed as actually run): all three arms plus Issue #97's direct arm ran
+concurrently on one machine, so bounding each plan to one worker kept total
+concurrent training processes at four rather than eight. Combined across
 all three arms: 915 jobs, 150,000 training episodes total (1.5x #86's
-two-arm total), an estimated ~75 CPU-hours / ~45 wall-hours if run serially
--- proportionally less wall-clock if run concurrently, bounded by the host's
-own CPU/RAM headroom for three simultaneous `max_parallel_training: 2`
-plans. Detach with `Ctrl-b d`; resume an interrupted plan with `--resume`.
-Do not alter a plan, source tree, or artifact between a failed run and its
-resume.
+two-arm total). Detach with `Ctrl-b d`; resume an interrupted plan with
+`--resume`. Do not alter a plan, source tree, or artifact between a failed
+run and its resume.
+
+## Result and decision
+
+All three arms and Issue #97's direct arm ran concurrently on the owner's
+own machine on 2026-09-07 and completed in full (915/915 jobs, 0 failures)
+in about 6 hours -- well inside the ~45 wall-hour serial estimate above.
+Deterministic repeats matched exactly (identical
+`executed_action_sequence_sha256` between every primary/repeat pair; the
+only differences were incidental decision-time measurements). Full compact
+evidence: `result.json`, `summary.csv` (`training/analyze_issue103_dqn_task2_reward_shaping.py`).
+The raw per-episode archive (~4.4 GiB: `training_outputs/run-plans/issue103-dqn-task2-reward-{control,survival-rebalance,safety-bomb}/`)
+is retained on the owner's own machine and is not committed; reproduce the
+compact evidence from it with
+`python -m training.analyze_issue103_dqn_task2_reward_shaping --plan-root training_outputs/run-plans --output training_outputs/issue103-analysis`.
+
+**Both treatments are rejected.** Neither cleared gate 3 (a confirmed
+`classic` survival-rate improvement):
+
+| Gate | `survival_rebalance` | `safety_bomb` |
+| --- | --- | --- |
+| Timing | pass | pass |
+| Collection non-regression (all 3 scenarios) | pass | **fail** (coin-heaven -0.027 [-0.072, 0.010], lower bound below -0.05) |
+| `classic` survival improved | fail: -0.04 [-0.32, 0.30] | fail: **-0.22** [-0.52, 0.12] |
+
+`survival_rebalance` shows a real, if unregistered-for, behavioral shift:
+relative to control, mean `classic` coins rose 0.24→0.32 and mean crates
+destroyed 5.6→6.48 (similarly in `loot-crate`: 0.9→1.3 coins, 4.26→5.1
+crates) -- the agent visibly engaged more, consistent with the reduced
+`SURVIVED_ROUND`/strengthened `WAITED` doing what they were meant to do.
+But that extra engagement cost survival: `classic` survival fell 0.48→0.44,
+`loot-crate` 0.52→0.32, with self-kill rate rising correspondingly. The
+paired confidence intervals are wide enough (n=5 replicas × 10 seeds) that
+none of this reaches significance in either direction -- it is a directionally
+consistent but not confirmed engagement-for-safety trade-off, not a
+confident negative result.
+
+`safety_bomb` looks worse without an offsetting upside: survival and
+self-kill rate moved the wrong way in all three scenarios (`classic`
+survival 0.48→0.26, `loot-crate` 0.52→0.24), collection-fraction actively
+regressed in `coin-heaven`, and the invalid-action rate rose sharply in
+`classic` (0.123→0.272) despite the mechanism adding no new action options.
+The point estimates suggest the treatment may have made bombing decisions
+*more* hesitant or erratic rather than safer, though the wide intervals mean
+this is not a statistically confident finding of harm either -- only a clear
+absence of the intended benefit. No follow-up is proposed without first
+understanding why (see "Known gaps" below).
+
+Per the decision rule: **both `survival_rebalance` and `safety_bomb` are
+rejected for this training configuration; `main`'s current reward values
+(`control`) are retained.** This does not establish that either mechanism
+is universally unhelpful -- it rejects these exact values, this seed
+population, and this direct-classic training protocol.
+
+## Known gaps
+
+- **Root cause of `safety_bomb`'s regression is not investigated here.**
+  The per-episode `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` event counts that
+  would show *how often* the mechanism actually fired are only recorded on
+  training episodes, not evaluation episodes (see the decision-rule
+  correction above) -- so this result cannot say whether the penalty was
+  too large, miscalibrated against the escape-search's own limits (e.g. its
+  `MAX_ESCAPE_SEARCH_STEPS=10` truncation), or simply insufficient signal at
+  `n=5` replicas. A follow-up reading the *training* episodes' event counts
+  (not requiring new runs) could narrow this down.
+- **No combined arm.** `survival_rebalance` and `safety_bomb` were
+  deliberately kept independent (see "Hypothesis and factors"); whether
+  combining them compounds or cancels their effects is untested.
+- **Not cross-checked against Issue #97's direct arm**, which used
+  different replica seeds (`51001`-`51005` vs this experiment's
+  `91001`-`91005`) and so cannot be paired against this result, only
+  eyeballed for rough consistency of scale.

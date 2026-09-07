@@ -3,7 +3,7 @@ plan_id: issue103-dqn-task2-reward-survival-rebalance
 agent: DagobertDuckDQNTask2
 artifact_path: checkpoint.pt
 reward_variant: survival_rebalance
-max_parallel_training: 2
+max_parallel_training: 1
 replicas:
   - {id: r1, world_seed: 91001, agent_seed: 92001, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
   - {id: r2, world_seed: 91002, agent_seed: 92002, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}

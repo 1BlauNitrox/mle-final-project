@@ -1,0 +1,204 @@
+{
+  "comparisons": {
+    "safety_bomb": {
+      "paired_collection_fraction_minus_control": {
+        "classic": {
+          "ci_lower": -0.013333333333333334,
+          "ci_upper": 0.024444444444444446,
+          "mean_difference": 0.0044444444444444444,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.07241,
+          "ci_upper": 0.010409999999999853,
+          "mean_difference": -0.027200000000000002,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": -0.009999999999999998,
+          "ci_upper": 0.006000000000000001,
+          "mean_difference": -0.0015999999999999999,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      },
+      "paired_self_kill_rate_minus_control": {
+        "classic": {
+          "ci_lower": -0.12,
+          "ci_upper": 0.52,
+          "mean_difference": 0.22,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.08,
+          "ci_upper": 0.22,
+          "mean_difference": 0.06,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": -0.06,
+          "ci_upper": 0.6,
+          "mean_difference": 0.28,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      },
+      "paired_survival_rate_minus_control": {
+        "classic": {
+          "ci_lower": -0.52,
+          "ci_upper": 0.12,
+          "mean_difference": -0.22,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.22,
+          "ci_upper": 0.08,
+          "mean_difference": -0.06,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": -0.6,
+          "ci_upper": 0.06,
+          "mean_difference": -0.28,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      }
+    },
+    "survival_rebalance": {
+      "paired_collection_fraction_minus_control": {
+        "classic": {
+          "ci_lower": -0.02,
+          "ci_upper": 0.03777777777777778,
+          "mean_difference": 0.008888888888888889,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.0484,
+          "ci_upper": 0.05599999999999999,
+          "mean_difference": 0.0003999999999999976,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": -0.008,
+          "ci_upper": 0.026000000000000002,
+          "mean_difference": 0.007999999999999998,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      },
+      "paired_self_kill_rate_minus_control": {
+        "classic": {
+          "ci_lower": -0.3,
+          "ci_upper": 0.32,
+          "mean_difference": 0.04,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.08,
+          "ci_upper": 0.44,
+          "mean_difference": 0.16,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": 0.0,
+          "ci_upper": 0.4,
+          "mean_difference": 0.2,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      },
+      "paired_survival_rate_minus_control": {
+        "classic": {
+          "ci_lower": -0.32,
+          "ci_upper": 0.3,
+          "mean_difference": -0.04,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "coin-heaven": {
+          "ci_lower": -0.44,
+          "ci_upper": 0.08,
+          "mean_difference": -0.16,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        },
+        "loot-crate": {
+          "ci_lower": -0.4,
+          "ci_upper": 0.0,
+          "mean_difference": -0.2,
+          "paired_models": 5,
+          "paired_seeds_per_model": 10,
+          "resampler_seed": 103,
+          "resamples": 10000
+        }
+      }
+    }
+  },
+  "criteria": {
+    "safety_bomb": {
+      "classic_survival_improved": false,
+      "collection_non_regression": false,
+      "deterministic_repeats": true,
+      "timing_within_limits": true
+    },
+    "survival_rebalance": {
+      "classic_survival_improved": false,
+      "collection_non_regression": true,
+      "deterministic_repeats": true,
+      "timing_within_limits": true
+    }
+  },
+  "decision": {
+    "safety_bomb": "reject_safety_bomb_for_this_training_configuration",
+    "survival_rebalance": "reject_survival_rebalance_for_this_training_configuration"
+  },
+  "deterministic_repeats": true,
+  "issue": 103,
+  "primary_evaluation_episodes": 450,
+  "schema_version": 1
+}

@@ -2,7 +2,7 @@ schema_version: 1
 issue: 103
 owner: 1BlauNitrox
 reviewer: null
-status: registered_pending_review
+status: completed_rejected
 starting_artifact:
   path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
   sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
@@ -18,3 +18,8 @@ resource_ceiling:
   wall_hours: 45
   memory_gib: 8
   max_parallel_training: 2
+actual_execution:
+  date: 2026-09-07
+  max_parallel_training: 1
+  wall_hours: 6
+  concurrent_with: issue97-dqn-task2-direct-classic-unmasked
