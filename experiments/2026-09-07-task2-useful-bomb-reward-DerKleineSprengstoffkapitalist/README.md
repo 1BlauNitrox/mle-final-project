@@ -1,6 +1,6 @@
 # Tabular Task 2 immediate useful-bomb reward
 
-> Status: prospectively_registered
+> Status: completed_negative
 
 ## Metadata
 
@@ -82,3 +82,58 @@ python -m training.run_plan training/run_plans/issue114-tabular-task2-useful-bom
 ```
 
 No result was inspected before this protocol and its decision rule were written.
+
+## Results
+
+All registered original plans completed: 80/80 Task 1 jobs and 1,215/1,215
+jobs in each Task 2 arm. Primary/repeat action hashes matched for every
+evaluation episode. The candidate-minus-control `classic` collection effect was
+`+0.00333` (paired 95% bootstrap CI `[-0.00167, +0.00944]`), and only three of
+five replicas improved. The primary effect is therefore not distinguishable
+from zero under the registered rule.
+
+The treatment changed bomb behavior strongly: mean useful bombs per training
+episode increased from `1.34866` to `1.72198`, and mean crates destroyed per
+`classic` evaluation episode increased from `1.175` to `7.070` (paired
+difference `+5.895`, 95% CI `[+5.110, +6.695]`). This did not translate into a
+reliable collection gain. Instead, the aggregate `classic` self-kill rate rose
+from `0.145` to `0.595`, far beyond the allowed `+0.02` margin.
+
+Task 1 retention passed with a candidate-minus-frozen effect of `0.0` and CI
+`[0.0, 0.0]`. Runtime limits passed, and confirmation seeds remained unused.
+
+## Diagnostic recorder correction
+
+The agent returned `useful_bombs` during the original training, but the generic
+episode CSV schema initially discarded that field. After discovering this only
+during final analysis, the recorder was corrected and training-only diagnostic
+plans replayed the exact registered seeds and budgets. All ten final replay
+model SHA-256 hashes matched their corresponding original models exactly, so
+the replay restored the missing observation without changing the learned
+policies or replacing the original evaluation evidence.
+
+## Decision and interpretation
+
+Decision: **reject `USEFUL_BOMB_PLACED: +1.0` for this configuration**. The
+reward successfully encourages crate-directed bombs, but over-incentivizes
+bomb placement without accounting for escape safety. It fails the registered
+CI, replica-consistency, and self-kill gates. The default reward therefore
+remains `0.0`; the opt-in capability is retained for controlled follow-up work.
+A sensible next experiment would combine a smaller useful-bomb reward with an
+explicit safe-escape condition, registered as a new experiment rather than
+tuned on these development results.
+
+## Figures and reproduction
+
+- `figures/collection-effects.png`: paired collection effects and 95% CIs.
+- `figures/bomb-behavior.png`: useful-bomb and crate-destruction changes.
+- `figures/classic-self-kills.png`: the safety regression and allowed margin.
+
+```bash
+python -m training.analyze_issue114_useful_bomb_reward
+python -m training.plot_issue114_results
+```
+
+`evidence.csv`, `training-summary.csv`, `summary.csv`, and `result.json` are
+compact committed derivatives. The immutable run evidence is linked below
+after packaging.

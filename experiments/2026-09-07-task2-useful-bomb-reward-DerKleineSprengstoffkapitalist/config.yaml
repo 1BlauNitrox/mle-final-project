@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 114
-status: prospectively_registered
+status: completed_negative
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
 reviewer: null
@@ -101,3 +101,17 @@ outputs:
     - resolved_plans
     - statuses
     - evaluation_metadata
+
+results:
+  decision: reject_useful_bomb_reward_for_this_configuration
+  classic_collection_difference: 0.0033333333333333335
+  classic_collection_ci_95: [-0.0016666666666666666, 0.009444444444444445]
+  replicas_improving_classic: 3
+  useful_bombs_per_training_episode: {control: 1.34866, candidate: 1.72198}
+  classic_crates_destroyed_per_episode: {control: 1.175, candidate: 7.07}
+  classic_self_kill_rate: {control: 0.145, candidate: 0.595}
+  task1_retention_difference: 0.0
+  task1_retention_ci_95: [0.0, 0.0]
+  deterministic_repeats: true
+  diagnostic_replay_models_match: true
+  confirmation_seeds_used: false
