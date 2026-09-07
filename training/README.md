@@ -24,6 +24,12 @@ the checkpoint and rejects a mismatched resume. The Issue #87 feature-off arm
 therefore uses the same 26-input network with neutral zero continuation
 columns, while the feature-on arm receives the computed indicators.
 
+Protected replay plans may set `replay_treatment: uniform` or
+`replay_treatment: protected_task1`. The protected treatment marks only the
+first `coin-heaven` training stage as its source phase; standalone training
+automatically closes collection for non-coin-heaven scenarios. Evaluation
+jobs never create or update replay state.
+
 # Training and Experiment Pipeline
 
 This directory contains repository-level tooling for reproducible Bomberman
@@ -146,6 +152,7 @@ following fields control execution:
 | `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
 | `action_masking` | string | `none` | Task-2 DQN treatment selector: `none` or `framework_legal`; recorded in every job and protected by the plan fingerprint. |
 | `escape_continuations` | string | `off` | Task-2 DQN #87 feature selector: `off` or `on`; recorded in every job and protected by the plan fingerprint. |
+| `replay_treatment` | string | `uniform` | Task-2 DQN #88 replay selector: `uniform` or `protected_task1`; recorded in every job and protected by the plan fingerprint. |
 | `max_parallel_training` | positive integer | `1` | Bounds independent replica workers. Evaluation remains serial and single-process. |
 | `replicas` | list | none | At least one independent replica with a unique `id`, non-negative `world_seed`, non-negative `agent_seed`, and optional `parent_artifact`. |
 | `training_stages` | list | `[]` | Ordered stages with unique `id`, supported `scenario`, positive `rounds`, and zero to three ordered `opponents`. |
@@ -185,13 +192,26 @@ budget and curriculum proportions, so expansion is deterministic for fixed
 configuration and seeds. The selected checkpoint is mechanically the artifact
 present after the exact final episode of each stage.
 
+For the `protected_task1` DQN treatment, the first training stage is the only
+source-collection phase and must be the initial `coin-heaven` stage. The agent
+stores at most 2,000 of its transitions in a protected FIFO and at most 8,000
+later transitions in the other FIFO. At a closed-stage batch boundary the
+sampler draws exactly 16 protected and 48 other entries when both partitions
+have sufficient data; missing quota is filled from the other partition without
+replacement. The treatment does not launch extra episodes or ingest evaluation
+states. Collection state, partition contents, treatment, and RNG state are in
+the resumable checkpoint, while evaluation uses only the exported network
+artifact.
+
 Example plans are in `training/run_plans/`:
 
 - `task1-example.yaml`: `coin-heaven` without opponents;
 - `task2-example.yaml`: visible coins, `loot-crate`, then `classic`, without opponents;
 - `task3-example.yaml`: `classic` with peaceful and coin-collector opponents plus Task 1/2 regressions;
 - `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
-- `tasks1-3-smoke.yaml`: three one-round integration checks.
+- `tasks1-3-smoke.yaml`: three one-round integration checks; and
+- `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
+  loot-crate replay-treatment integration check; it is not scientific evidence.
 
 ### Issue #46 Task 2 DQN development baseline
 

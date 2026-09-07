@@ -153,6 +153,18 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
             run_plan.load_plan(_write_plan(tmp_path / name, data))
 
 
+def test_protected_replay_requires_initial_coin_heaven_stage(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["replay_treatment"] = "protected_task1"
+    data["training_stages"][0]["scenario"] = "loot-crate"
+
+    with pytest.raises(
+        ValueError,
+        match="protected_task1 replay treatment requires the first training stage",
+    ):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
 def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> None:
     data = _plan_data()
     data["max_parallel_training"] = 1
@@ -203,6 +215,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
+        "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
     }
 

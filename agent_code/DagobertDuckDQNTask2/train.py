@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 
-from .config import ACTION_TO_INDEX
+from .config import ACTION_TO_INDEX, PROTECTED_SOURCE_EPISODES
 from .features import normalize_features, state_to_features
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
@@ -197,6 +197,8 @@ def end_of_round(
         self.epsilon * self.config.epsilon_decay,
     )
     self.completed_episodes += 1
+    if self.completed_episodes >= PROTECTED_SOURCE_EPISODES:
+        self.replay_buffer.close_protected_collection()
 
     save_checkpoint(
         learner=self.learner,
@@ -255,6 +257,14 @@ def _record_transition(
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
+        partition=(
+            "protected"
+            if self.config.replay_treatment == "protected_task1"
+            and self.replay_buffer.collection_open
+            else "other"
+            if self.config.replay_treatment == "protected_task1"
+            else None
+        ),
     )
     self.episode_reward += reward
 

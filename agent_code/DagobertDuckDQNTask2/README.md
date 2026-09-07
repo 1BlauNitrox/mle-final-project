@@ -43,6 +43,37 @@ survival non-regression gates. It is therefore rejected for this configuration,
 not adopted as the agent default. The compact evidence and raw-archive checksum
 are recorded in `experiments/2026-09-06-dqn-task2-legal-action-masking/`.
 
+## Protected replay (Issue #88)
+
+Training has an explicit `replay_treatment` switch, persisted in the DQN
+configuration and staged run-plan fingerprint. The `uniform` control is the
+existing 10,000-transition FIFO with uniform sampling. The fixed
+`protected_task1` treatment reserves a 2,000-transition FIFO for transitions
+from the initial 2,000 `coin-heaven` episodes and retains later transitions in
+an 8,000-transition FIFO. Both partitions use FIFO replacement independently,
+so total replay capacity remains exactly 10,000 and membership is disjoint.
+
+During later stages, a batch of 64 contains 16 protected and 48 other samples
+when both partitions have enough data. If either partition is short, the
+missing quota is filled from the other partition without replacement. The
+treatment does not add episodes or ingest evaluation states. The checkpoint
+stores both partition contents, the irreversible collection phase, treatment
+configuration, and replay RNG state, so a resume reproduces the next samples
+and optimizer updates.
+
+For a reproducible evaluation-only export from a training checkpoint, run:
+
+```bash
+python scripts/export_task2_evaluation_artifact.py \
+  agent_code/DagobertDuckDQNTask2/checkpoint.pt \
+  agent_code/DagobertDuckDQNTask2/checkpoint-evaluation.pt
+```
+
+The exported artifact contains only the frozen online network and its model
+configuration. Select it with
+`BOMBERMAN_EVALUATION_CHECKPOINT=checkpoint-evaluation.pt` and record its
+checksum in the experiment or release metadata.
+
 Issue #43 created it as a byte-identical, behavior-preserving scaffold of the
 frozen Task 1 baseline. Issue #44 (this revision) adds the actual Task 2
 capability: bomb/crate/danger features, a six-action network, a one-way
