@@ -1,8 +1,10 @@
 # Issue #97 staged curriculum for Task 2 DQN
 
-> Status: **Registered — ready to execute.** Issue #86 reached its decision
-> (masking rejected, unmasked control retained); see "Resolved from Issue #86"
-> below for what that fixed and what it did not change.
+> Status: **Partially completed.** Arm A (direct) ran to completion on
+> 2026-09-07; arm B (staged, reused from #86) could not be included because
+> its raw per-episode evidence is not available on the machine that ran arm
+> A. See "Result and decision" for what this does and does not show, and
+> "Known gaps" for what completes the registered comparison.
 
 ## Hypothesis and single factor
 
@@ -82,8 +84,70 @@ tmux new -s issue97
 python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml 2>&1 | tee logs/issue97-direct-classic.log
 ```
 
-This plan uses at most two training workers, 8 GiB RAM, and a 24 CPU-hour /
-15 wall-hour ceiling — half of #86's, since only one arm (not two) is freshly
-trained here. Detach with `Ctrl-b d`; resume an interrupted run with
+This plan was drafted for at most two training workers, 8 GiB RAM, and a
+24 CPU-hour / 15 wall-hour ceiling — half of #86's, since only one arm (not
+two) is freshly trained here. Executed here with `max_parallel_training: 1`
+instead (committed as actually run): this plan ran concurrently with all
+three of Issue #103's reward-shaping arms on one machine, so bounding each
+plan to one worker kept total concurrent training processes at four rather
+than eight. Detach with `Ctrl-b d`; resume an interrupted run with
 `--resume`. Do not alter the plan, source tree, or artifact between a failed
 run and its resume.
+
+## Result and decision
+
+Arm A (direct) ran on the owner's own machine on 2026-09-07 (concurrently
+with Issue #103's three arms) and completed in full: 305/305 jobs, 0
+failures, in about 6 hours. Deterministic repeats matched exactly (identical
+`executed_action_sequence_sha256` between every primary/repeat pair; only
+decision-time measurements differed). Compact evidence:
+`result.json`, `summary.csv` (via
+`training/analyze_issue97_dqn_task2_curriculum.py`, which produces both
+even without arm B, clearly marked; see "Known gaps"). Raw per-episode data
+(~1.5 GiB: `training_outputs/run-plans/issue97-dqn-task2-direct-classic-unmasked/`)
+is retained on the owner's machine and not committed.
+
+**No comparison against the staged arm was computed.** Arm B is Issue #86's
+retained unmasked artifact, and its raw per-episode evidence lives in an
+external server archive (SHA-256
+`841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f`, see
+`experiments/2026-09-06-dqn-task2-legal-action-masking/README.md`) that was
+not present on the machine that ran arm A. The direct-vs-staged question
+this issue was registered to answer is therefore **still open** — see
+"Known gaps".
+
+What arm A's own numbers show, descriptively (no registered decision rule
+applies to a single arm; not compared against control or staged):
+
+| Scenario | Collection fraction | Survival rate | Self-kill rate | Invalid-action rate |
+| --- | --- | --- | --- | --- |
+| `classic` | 0.042 | 0.36 | 0.64 | 0.171 |
+| `coin-heaven` | 0.077 | 0.62 | 0.38 | 0.285 |
+| `loot-crate` | 0.024 | 0.42 | 0.58 | 0.229 |
+
+These are broadly the same order of magnitude as Issue #103's `control` arm
+(same reward values, same direct-classic protocol, different replica seeds:
+`51001`-`51005` here vs. `91001`-`91005` there) — e.g. `classic` survival
+0.36 here vs. 0.48 there. The two are not formally paired (different seeds),
+so this is a rough consistency check, not evidence either result is "more
+correct"; the spread between them is a reasonable indication of how much
+across-seed variance to expect at n=5 replicas.
+
+## Known gaps
+
+- **The registered direct-vs-staged comparison is not computed.** Completing
+  it needs #86's raw archive (see above) extracted somewhere reachable, then:
+  ```bash
+  python -m training.analyze_issue97_dqn_task2_curriculum \
+    --direct-plan-root training_outputs/run-plans \
+    --staged-plan-root <path to the extracted archive's training_outputs/run-plans> \
+    --output training_outputs/issue97-analysis
+  ```
+  The script already supports this (`--staged-plan-root`); it only produced
+  a direct-arm-only result here because that archive was not available.
+  No decision rule was ever fixed for this comparison either (see below),
+  so completing it produces descriptive paired statistics, not an
+  adopt/reject call, until the team sets one.
+- **No decision rule was fixed before running**, per the owner's standing
+  preference to set numeric criteria themselves — this was true when arm A
+  was registered and remains true now that it has run.

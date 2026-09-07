@@ -3,7 +3,7 @@ plan_id: issue97-dqn-task2-direct-classic-unmasked
 agent: DagobertDuckDQNTask2
 artifact_path: checkpoint.pt
 action_masking: none
-max_parallel_training: 2
+max_parallel_training: 1
 replicas:
   - {id: r1, world_seed: 51001, agent_seed: 61001, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
   - {id: r2, world_seed: 51002, agent_seed: 61002, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}

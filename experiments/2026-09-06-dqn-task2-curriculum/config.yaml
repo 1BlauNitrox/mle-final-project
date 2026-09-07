@@ -2,7 +2,7 @@ schema_version: 1
 issue: 97
 owner: 1BlauNitrox
 reviewer: null
-status: registered_pending_review
+status: partially_completed_staged_comparison_pending
 starting_artifact:
   path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
   sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
@@ -16,3 +16,13 @@ resource_ceiling:
   wall_hours: 15
   memory_gib: 8
   max_parallel_training: 2
+actual_execution:
+  date: 2026-09-07
+  max_parallel_training: 1
+  wall_hours: 6
+  concurrent_with:
+    - issue103-dqn-task2-reward-control
+    - issue103-dqn-task2-reward-survival-rebalance
+    - issue103-dqn-task2-reward-safety-bomb
+known_gaps:
+  - "direct_vs_staged comparison not computed: #86's raw archive (external, SHA-256 841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f) was not available locally"
