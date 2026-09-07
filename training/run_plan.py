@@ -444,6 +444,7 @@ def _run_job(
                     ),
                     "action_masking": plan.action_masking,
                     "escape_continuations": plan.escape_continuations,
+                    "replay_treatment": plan.replay_treatment,
                     "fingerprints": plan.fingerprints,
                 }
             },
