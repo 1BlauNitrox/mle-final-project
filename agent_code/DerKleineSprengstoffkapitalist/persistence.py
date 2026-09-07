@@ -37,6 +37,7 @@ class LoadedModel:
     epsilon: float
     completed_episodes: int
     parent_model_sha256: str
+    useful_bomb_reward: float
 
 
 def save_model(
@@ -44,6 +45,7 @@ def save_model(
     *,
     epsilon: float,
     completed_episodes: int,
+    useful_bomb_reward: float = 0.0,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -54,6 +56,9 @@ def save_model(
 
     if completed_episodes < 0:
         raise ValueError("Completed episodes must be non-negative.")
+
+    if useful_bomb_reward not in (0.0, 1.0):
+        raise ValueError("Useful-bomb reward must be either 0.0 or 1.0.")
 
     parent_prior = load_parent_prior(parent_path)
     states, q_values = _serialize_q_table(q_table)
@@ -72,6 +77,7 @@ def save_model(
         "rewards": REWARDS,
         "parent_model_sha256": parent_prior.sha256,
         "bomb_prior_margin": BOMB_PRIOR_MARGIN,
+        "useful_bomb_reward": useful_bomb_reward,
     }
 
     path = Path(path)
@@ -140,6 +146,8 @@ def load_model(
             metadata_text = str(archive["metadata"].item())
 
         metadata = json.loads(metadata_text)
+        if "useful_bomb_reward" not in metadata:
+            metadata = {**metadata, "useful_bomb_reward": 0.0}
 
     except (
         OSError,
@@ -184,6 +192,7 @@ def load_model(
         epsilon=float(metadata["epsilon"]),
         completed_episodes=int(metadata["completed_episodes"]),
         parent_model_sha256=parent_prior.sha256,
+        useful_bomb_reward=float(metadata["useful_bomb_reward"]),
     )
 
 
@@ -294,6 +303,7 @@ def _validate_metadata(metadata: Any) -> None:
         "rewards",
         "parent_model_sha256",
         "bomb_prior_margin",
+        "useful_bomb_reward",
     }
 
     if set(metadata) != required_fields:
@@ -316,6 +326,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["bomb_prior_margin"] != BOMB_PRIOR_MARGIN:
         raise ValueError("Bomb prior margin mismatch")
+
+    if metadata["useful_bomb_reward"] not in (0.0, 1.0):
+        raise ValueError("Stored useful-bomb reward is invalid")
 
     learning_rate = metadata["learning_rate"]
     discount_factor = metadata["discount_factor"]

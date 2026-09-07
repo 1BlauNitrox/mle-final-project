@@ -66,11 +66,12 @@ def game_events_occurred(
 
     _count_diagnostic_events(self, events)
 
-    if _is_useful_bomb(
+    useful_bomb = _is_useful_bomb(
         old_game_state,
         self_action,
         events,
-    ):
+    )
+    if useful_bomb:
         self.episode_event_counts["USEFUL_BOMB_PLACED"] += 1
 
     if old_game_state is None or self_action is None:
@@ -92,6 +93,9 @@ def game_events_occurred(
 
     training_events = list(events)
 
+    if useful_bomb:
+        training_events.append("USEFUL_BOMB_PLACED")
+
     movement_event = _coin_movement_event(
         old_game_state,
         new_game_state,
@@ -106,7 +110,10 @@ def game_events_occurred(
         state=old_state,
         action=self_action,
         next_state=new_state,
-        reward=reward_from_events(training_events),
+        reward=reward_from_events(
+            training_events,
+            useful_bomb_reward=self.useful_bomb_reward,
+        ),
         diagnostic_events=tuple(events),
     )
 
@@ -182,6 +189,7 @@ def end_of_round(
         self.q_table,
         epsilon=self.epsilon,
         completed_episodes=self.completed_episodes,
+        useful_bomb_reward=self.useful_bomb_reward,
         path=MODEL_PATH,
     )
 

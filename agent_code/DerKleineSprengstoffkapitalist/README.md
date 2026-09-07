@@ -155,9 +155,9 @@ diagnostics:
 | `mean_abs_td_error` | Mean absolute temporal-difference error |
 | `epsilon` | Exploration rate used during the completed episode |
 
-`useful_bombs` is a diagnostic count only. It does not introduce an
-additional reward. Potential-based reward shaping remains outside the scope
-of issue #45.
+`useful_bombs` remains a diagnostic count by default. Experiment #114 adds an
+optional immediate reward for the same event; the registered control uses
+`0.0` and the candidate uses `+1.0`.
 
 ## Rewards
 
@@ -180,6 +180,10 @@ rewards for destroyed crates, revealed coins, death, and survival.
 
 No direct reward is assigned to `BOMB_DROPPED` or `BOMB_EXPLODED`. Bomb
 placement must receive value through its later consequences.
+
+The Issue #114 treatment can additionally reward `USEFUL_BOMB_PLACED`, defined
+as a framework-confirmed placement whose blast can destroy at least one crate.
+The default is `0.0`, so existing models and evaluation behavior are unchanged.
 
 Potential-based reward shaping is deliberately out of scope for issue #45.
 Changing the inherited shaping formulation would be a separate controlled

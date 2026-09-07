@@ -12,11 +12,16 @@ from .migration import load_parent_prior
 from .model import QTable
 from .persistence import MODEL_PATH, load_model
 
+USEFUL_BOMB_REWARD_ENV = "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD"
+VALID_USEFUL_BOMB_REWARDS = (0.0, 1.0)
+
 
 def setup(self) -> None:
     """Initialize the Qtable, random generator and exploration state."""
 
     agent_seed = _read_agent_seed()
+    configured_reward = _read_useful_bomb_reward()
+    self.useful_bomb_reward = configured_reward
 
     self.rng = np.random.default_rng(agent_seed)
 
@@ -25,6 +30,10 @@ def setup(self) -> None:
 
         self.q_table = loaded.q_table
         self.completed_episodes = loaded.completed_episodes
+
+        is_fresh_model = loaded.completed_episodes == 0 and len(loaded.q_table) == 0
+        if loaded.useful_bomb_reward != configured_reward and not is_fresh_model:
+            raise ValueError(f"{USEFUL_BOMB_REWARD_ENV} does not match the stored model treatment.")
 
         if self.train:
             self.epsilon = loaded.epsilon
@@ -78,3 +87,19 @@ def _read_agent_seed() -> int:
         return int(raw_seed)
     except ValueError as error:
         raise ValueError("BOMBERMAN_AGENT_SEED must be an integer") from error
+
+
+def _read_useful_bomb_reward() -> float:
+    """Read the prospectively registered reward treatment."""
+
+    raw_reward = os.environ.get(USEFUL_BOMB_REWARD_ENV, "0.0")
+    try:
+        reward = float(raw_reward)
+    except ValueError as error:
+        raise ValueError(f"{USEFUL_BOMB_REWARD_ENV} must be numeric.") from error
+
+    if reward not in VALID_USEFUL_BOMB_REWARDS:
+        raise ValueError(
+            f"{USEFUL_BOMB_REWARD_ENV} must be one of {list(VALID_USEFUL_BOMB_REWARDS)}."
+        )
+    return reward

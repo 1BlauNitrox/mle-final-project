@@ -101,6 +101,7 @@ def make_agent() -> SimpleNamespace:
         q_table=QTable(parent_values={}),
         epsilon=INITIAL_EPSILON,
         completed_episodes=0,
+        useful_bomb_reward=0.0,
     )
 
     training.setup_training(agent)
@@ -319,6 +320,32 @@ def test_bomb_transition_updates_bomb_q_value() -> None:
     assert len(agent.absolute_td_errors) == 1
 
 
+def test_useful_bomb_treatment_rewards_the_placement_transition() -> None:
+    agent = make_agent()
+    agent.useful_bomb_reward = 1.0
+    old_game_state = make_game_state(position=(4, 4), step=1)
+    old_game_state["field"][4, 3] = 1
+    new_game_state = make_game_state(
+        position=(4, 4),
+        bomb_available=False,
+        bombs=[((4, 4), 3)],
+        step=2,
+    )
+    new_game_state["field"][4, 3] = 1
+
+    training.game_events_occurred(
+        agent,
+        old_game_state,
+        "BOMB",
+        new_game_state,
+        ["BOMB_DROPPED"],
+    )
+
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.reward == pytest.approx(1.0)
+    assert agent.episode_event_counts["USEFUL_BOMB_PLACED"] == 1
+
+
 def test_terminal_transition_does_not_bootstrap(
     model_path: Path,
 ) -> None:
@@ -508,6 +535,34 @@ def test_callbacks_resume_saved_training_state(
     )
 
 
+def test_callbacks_reject_reward_treatment_mismatch(
+    model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parent_prior = load_parent_prior()
+    source_table = QTable(parent_values=parent_prior.values)
+    state = state_to_features(make_game_state())
+    assert state is not None
+    source_table.update(
+        state=state,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+    save_model(
+        source_table,
+        epsilon=0.42,
+        completed_episodes=1,
+        useful_bomb_reward=1.0,
+        path=model_path,
+    )
+    monkeypatch.setenv("BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD", "0.0")
+
+    with pytest.raises(ValueError, match="does not match"):
+        callbacks.setup(SimpleNamespace(train=True, logger=Mock()))
+
+
 def test_end_of_round_returns_complete_episode_metrics(
     model_path: Path,
 ) -> None:
@@ -519,9 +574,8 @@ def test_end_of_round_returns_complete_episode_metrics(
         step=1,
     )
 
-    # Eine Kiste direkt über dem Agenten macht die Bombe nützlich.
+    # A crate directly above the agent makes this a useful bomb.
     old_game_state["field"][4, 3] = 1
-
     new_game_state = make_game_state(
         position=(4, 4),
         bomb_available=False,
@@ -593,6 +647,7 @@ def test_invalid_actions_are_counted(
     assert metrics["invalid_actions"] == pytest.approx(1.0)
     assert metrics["bombs_dropped"] == pytest.approx(0.0)
     assert metrics["useful_bombs"] == pytest.approx(0.0)
+
 
 def test_matching_survivor_callback_counts_final_step_events_once(
     model_path: Path,

@@ -138,6 +138,7 @@ following fields control execution:
 | `agent` | string | none | Required existing directory below `agent_code/`. |
 | `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
 | `action_masking` | string | `none` | Task-2 DQN treatment selector: `none` or `framework_legal`; recorded in every job and protected by the plan fingerprint. |
+| `useful_bomb_reward` | number | `0.0` | Tabular Task-2 treatment selector: `0.0` or `1.0`; exposed to the agent, recorded in every job, and protected by the plan fingerprint. |
 | `max_parallel_training` | positive integer | `1` | Bounds independent replica workers. Evaluation remains serial and single-process. |
 | `replicas` | list | none | At least one independent replica with a unique `id`, non-negative `world_seed`, non-negative `agent_seed`, and optional `parent_artifact`. |
 | `training_stages` | list | `[]` | Ordered stages with unique `id`, supported `scenario`, positive `rounds`, and zero to three ordered `opponents`. |
