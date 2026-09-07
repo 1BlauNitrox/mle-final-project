@@ -138,7 +138,6 @@ def test_escape_treatment_is_persisted_in_the_checkpoint(
         replay_buffer=ReplayBuffer(
             capacity=config.replay_capacity,
             seed=456,
-            mode=config.replay_treatment,
         ),
         action_rng=np.random.default_rng(789),
         epsilon=config.initial_epsilon,

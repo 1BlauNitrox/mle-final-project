@@ -106,8 +106,6 @@ def _setup_training_policy(self, agent_seed: int) -> None:
             replay_buffer = ReplayBuffer(
                 capacity=config.replay_capacity,
                 seed=replay_seed,
-                mode=config.replay_treatment,
-                collection_open=_collection_is_open(),
             )
 
         self.config = config
