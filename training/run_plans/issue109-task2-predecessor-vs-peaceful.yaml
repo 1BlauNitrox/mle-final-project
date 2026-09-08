@@ -1,0 +1,11 @@
+schema_version: 1
+plan_id: issue109-task2-predecessor-vs-peaceful
+agent: DagobertDuckDQNTask2
+artifact_path: checkpoint.pt
+max_parallel_training: 1
+replicas:
+  - {id: frozen, world_seed: 109006, agent_seed: 209006, parent_artifact: ../../agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt}
+training_stages: []
+evaluation_suites:
+  - {id: classic-peaceful-primary, population: development, scenario: classic, rounds: 1, world_seeds: &peaceful_worlds [109101, 109102, 109103, 109104, 109105, 109106, 109107, 109108, 109109, 109110], agent_seeds: &peaceful_agents [209101, 209102, 209103, 209104, 209105, 209106, 209107, 209108, 209109, 209110], opponents: [peaceful_agent]}
+  - {id: classic-peaceful-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *peaceful_worlds, agent_seeds: *peaceful_agents, opponents: [peaceful_agent]}
