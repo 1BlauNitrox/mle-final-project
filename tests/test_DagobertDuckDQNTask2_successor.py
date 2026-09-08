@@ -133,8 +133,8 @@ def test_action_space_preserves_task1_indices() -> None:
 
 
 def test_feature_schema_extends_task1() -> None:
-    assert SUCCESSOR_FEATURE_COUNT == 21
-    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == 2
+    assert SUCCESSOR_FEATURE_COUNT == 26
+    assert SUCCESSOR_FEATURE_SCHEMA_VERSION == 3
 
 
 def test_task1_prefix_matches_parent_on_task1_states(
@@ -174,6 +174,7 @@ def test_task1_state_has_neutral_task2_features(
             crate_distance_bin,
             crates_here,
             useful_target,
+            *continuations,
         ) = features[8:]
 
         assert bomb_available == 1
@@ -189,6 +190,13 @@ def test_task1_state_has_neutral_task2_features(
         assert (crate_dx, crate_dy, crate_distance_bin) == (0, 0, 0)
         assert crates_here == 0
         assert useful_target == 0
+        assert tuple(continuations) == (
+            features[0],
+            features[1],
+            features[2],
+            features[3],
+            1,
+        )
 
 
 def test_migrated_network_continues_the_parent_weights() -> None:
@@ -204,6 +212,37 @@ def test_migrated_network_continues_the_parent_weights() -> None:
 
     assert torch.equal(parent_linear[0].weight, successor_linear[0].weight[:, :8])
     assert torch.equal(parent_linear[-1].weight, successor_linear[-1].weight[:5, :])
+
+
+def test_issue87_artifact_preserves_parent_q_values_with_neutral_suffix(
+    representative_states: list[dict],
+) -> None:
+    parent = load_parent_checkpoint(PARENT_CHECKPOINT)
+    successor = load_successor_checkpoint(SUCCESSOR_CHECKPOINT)
+
+    assert successor.config.input_dim == 26
+    assert successor.config.escape_continuation_features is False
+
+    for game_state in representative_states:
+        parent_features = parent_state_to_features(game_state)
+        successor_features = successor_state_to_features(game_state)
+        assert parent_features is not None
+        assert successor_features is not None
+
+        with torch.no_grad():
+            parent_q_values = parent.network(
+                torch.from_numpy(normalize_parent_features(parent_features))
+            )
+            successor_q_values = successor.network(
+                torch.from_numpy(normalize_successor_features(successor_features))
+            )
+
+        torch.testing.assert_close(
+            successor_q_values[:5],
+            parent_q_values,
+            rtol=0.0,
+            atol=INHERITED_Q_VALUE_TOLERANCE,
+        )
 
 
 def test_corrected_artifact_preserves_parent_q_values(
@@ -224,7 +263,9 @@ def test_corrected_artifact_preserves_parent_q_values(
                 torch.from_numpy(normalize_parent_features(parent_features))
             )
             corrected_q_values = corrected.network(
-                torch.from_numpy(normalize_successor_features(successor_features))
+                torch.from_numpy(
+                    normalize_successor_features(successor_features[:21])
+                )
             )[:5]
 
         torch.testing.assert_close(
@@ -235,7 +276,9 @@ def test_corrected_artifact_preserves_parent_q_values(
         )
         with torch.no_grad():
             bomb_q_value = corrected.network(
-                torch.from_numpy(normalize_successor_features(successor_features))
+                torch.from_numpy(
+                    normalize_successor_features(successor_features[:21])
+                )
             )[5]
         assert bomb_q_value < parent_q_values.max()
         assert select_parent_action(
@@ -243,9 +286,9 @@ def test_corrected_artifact_preserves_parent_q_values(
             state=normalize_parent_features(parent_features),
             epsilon=0.0,
             rng=np.random.default_rng(8501),
-        ) == select_successor_action(
-            network=corrected.network,
-            state=normalize_successor_features(successor_features),
+            ) == select_successor_action(
+                network=corrected.network,
+                state=normalize_successor_features(successor_features[:21]),
             epsilon=0.0,
             rng=np.random.default_rng(8501),
         )

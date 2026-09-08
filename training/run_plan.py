@@ -31,6 +31,8 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
+VALID_ESCAPE_CONTINUATIONS = ("off", "on")
+VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
 SUPPORTED_OPPONENTS = {
     "peaceful_agent",
     "coin_collector_agent",
@@ -49,6 +51,7 @@ SOURCE_PATHS = (
 DEPENDENCIES = (
     "matplotlib",
     "numpy",
+    "psutil",
     "pygame",
     "pytest",
     "PyYAML",
@@ -96,6 +99,8 @@ class ResolvedPlan:
     agent: str
     artifact_path: str | None
     action_masking: str
+    escape_continuations: str
+    replay_treatment: str
     max_parallel_training: int
     replicas: tuple[Replica, ...]
     jobs: tuple[Job, ...]
@@ -139,7 +144,23 @@ def load_plan(path: Path) -> ResolvedPlan:
     action_masking = raw.get("action_masking", "none")
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
-
+    escape_continuations = raw.get("escape_continuations", "off")
+    # PyYAML uses YAML 1.1 resolution, where bare ``off`` and ``on`` load as
+    # booleans. Accept the documented unquoted plan syntax and normalize it
+    # before validating the persisted treatment value.
+    if type(escape_continuations) is bool:
+        escape_continuations = "on" if escape_continuations else "off"
+    if escape_continuations not in VALID_ESCAPE_CONTINUATIONS:
+        raise ValueError(
+            "escape_continuations must be one of "
+            f"{list(VALID_ESCAPE_CONTINUATIONS)}"
+        )
+    replay_treatment = raw.get("replay_treatment", "uniform")
+    if replay_treatment not in VALID_REPLAY_TREATMENTS:
+        raise ValueError(
+            "replay_treatment must be one of "
+            f"{list(VALID_REPLAY_TREATMENTS)}"
+        )
     max_parallel = raw.get("max_parallel_training", 1)
     if not isinstance(max_parallel, int) or isinstance(max_parallel, bool) or max_parallel < 1:
         raise ValueError("max_parallel_training must be a positive integer")
@@ -163,6 +184,15 @@ def load_plan(path: Path) -> ResolvedPlan:
     suites = [_parse_suite(item) for item in raw_suites]
     _require_unique([stage["id"] for stage in stages], "training stage IDs")
     _require_unique([suite["id"] for suite in suites], "evaluation suite IDs")
+    if (
+        replay_treatment == "protected_task1"
+        and stages
+        and stages[0]["scenario"] != "coin-heaven"
+    ):
+        raise ValueError(
+            "protected_task1 replay treatment requires the first training stage "
+            "to use the coin-heaven scenario"
+        )
 
     jobs = _expand_jobs(replicas, stages, suites)
     _require_unique([job.run_id for job in jobs], "expanded run IDs")
@@ -190,6 +220,8 @@ def load_plan(path: Path) -> ResolvedPlan:
         agent=agent,
         artifact_path=artifact_path,
         action_masking=action_masking,
+        escape_continuations=escape_continuations,
+        replay_treatment=replay_treatment,
         max_parallel_training=max_parallel,
         replicas=replicas,
         jobs=jobs,
@@ -204,6 +236,7 @@ def execute_plan(
     resume: bool = False,
     evaluation_only: bool = False,
     workspace_root: Path | None = None,
+    process_monitor: Any | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
     if evaluation_only:
@@ -264,6 +297,7 @@ def execute_plan(
                     status_path,
                     lock,
                     workspace_root,
+                    process_monitor,
                 )
                 for replica in plan.replicas
                 if training_by_replica[replica.replica_id]
@@ -281,6 +315,7 @@ def execute_plan(
                     status_path,
                     lock,
                     workspace_root,
+                    process_monitor,
                 )
     except BaseException as error:
         status["status"] = "interrupted" if isinstance(error, KeyboardInterrupt) else "failed"
@@ -307,9 +342,33 @@ def _run_training_sequence(
     status_path: Path,
     lock: threading.Lock,
     workspace_root: Path | None = None,
+    process_monitor: Any | None = None,
 ) -> None:
     for job in jobs:
-        _run_job(plan, job, plan_directory, status, status_path, lock, workspace_root)
+        _run_job(
+            plan,
+            job,
+            plan_directory,
+            status,
+            status_path,
+            lock,
+            workspace_root,
+            process_monitor,
+        )
+
+
+def _is_initial_task1_stage(plan: ResolvedPlan, job: Job) -> bool:
+    """Identify only the first coin-heaven stage as protected-source collection."""
+    training_jobs = [
+        candidate
+        for candidate in plan.jobs
+        if candidate.kind == "training" and candidate.replica == job.replica
+    ]
+    return (
+        bool(training_jobs)
+        and job.run_id == training_jobs[0].run_id
+        and job.scenario == "coin-heaven"
+    )
 
 
 def _run_job(
@@ -320,6 +379,7 @@ def _run_job(
     status_path: Path,
     lock: threading.Lock,
     workspace_root: Path | None = None,
+    process_monitor: Any | None = None,
 ) -> None:
     job_status = status["jobs"][job.run_id]
     if job_status["status"] == "completed":
@@ -358,7 +418,15 @@ def _run_job(
         environment_overrides = {
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
+            "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
+            "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
+        if job.kind == "training":
+            environment_overrides["BOMBERMAN_DQN_REPLAY_COLLECTION"] = (
+                "task1"
+                if _is_initial_task1_stage(plan, job)
+                else "closed"
+            )
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
         run_directory = run_experiment(
@@ -386,9 +454,18 @@ def _run_job(
                         artifact.name if job.kind == "evaluation" and artifact is not None else None
                     ),
                     "action_masking": plan.action_masking,
+                    "escape_continuations": plan.escape_continuations,
+                    "replay_treatment": plan.replay_treatment,
                     "fingerprints": plan.fingerprints,
+                    **(
+                        {"campaign": process_monitor.campaign_metadata}
+                        if process_monitor is not None
+                        and getattr(process_monitor, "campaign_metadata", None) is not None
+                        else {}
+                    ),
                 }
             },
+            process_monitor=process_monitor,
         )
         if job.kind == "evaluation":
             artifact_after = _sha256_file(artifact) if artifact and artifact.is_file() else None

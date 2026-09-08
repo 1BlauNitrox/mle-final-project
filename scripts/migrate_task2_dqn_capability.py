@@ -23,7 +23,7 @@ from agent_code.DagobertDuckDQN.persistence import (
     CHECKPOINT_PATH as PARENT_CHECKPOINT_PATH,
 )
 from agent_code.DagobertDuckDQN.persistence import load_evaluation_checkpoint
-from agent_code.DagobertDuckDQNTask2.config import DEFAULT_CONFIG
+from agent_code.DagobertDuckDQNTask2.config import DQNConfig
 from agent_code.DagobertDuckDQNTask2.migration import migrate_online_network
 from agent_code.DagobertDuckDQNTask2.model import DQNLearner
 from agent_code.DagobertDuckDQNTask2.persistence import (
@@ -33,6 +33,7 @@ from agent_code.DagobertDuckDQNTask2.persistence import save_checkpoint
 from agent_code.DagobertDuckDQNTask2.replay import ReplayBuffer
 
 MIGRATION_SEED = 44
+LEGACY_TASK2_CONFIG = DQNConfig(input_dim=21)
 CORRECTED_CHECKPOINT_PATH = SUCCESSOR_CHECKPOINT_PATH.with_name(
     "checkpoint-issue85-zero-suffix.pt"
 )
@@ -52,16 +53,16 @@ def main() -> None:
     parent = load_evaluation_checkpoint(PARENT_CHECKPOINT_PATH)
     migrated_network = migrate_online_network(
         parent.network,
-        config=DEFAULT_CONFIG,
+        config=LEGACY_TASK2_CONFIG,
         seed=MIGRATION_SEED,
     )
 
-    learner = DQNLearner(config=DEFAULT_CONFIG, seed=MIGRATION_SEED)
+    learner = DQNLearner(config=LEGACY_TASK2_CONFIG, seed=MIGRATION_SEED)
     learner.online_network.load_state_dict(migrated_network.state_dict())
     learner.target_network.load_state_dict(migrated_network.state_dict())
 
     empty_replay = ReplayBuffer(
-        capacity=DEFAULT_CONFIG.replay_capacity,
+        capacity=LEGACY_TASK2_CONFIG.replay_capacity,
         seed=MIGRATION_SEED,
     )
     fresh_action_rng = np.random.default_rng(MIGRATION_SEED)
@@ -70,7 +71,7 @@ def main() -> None:
         learner=learner,
         replay_buffer=empty_replay,
         action_rng=fresh_action_rng,
-        epsilon=DEFAULT_CONFIG.initial_epsilon,
+        epsilon=LEGACY_TASK2_CONFIG.initial_epsilon,
         completed_episodes=0,
         agent_seed=MIGRATION_SEED,
         path=CORRECTED_CHECKPOINT_PATH,
