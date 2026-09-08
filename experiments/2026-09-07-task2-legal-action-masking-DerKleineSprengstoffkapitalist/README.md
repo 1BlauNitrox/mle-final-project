@@ -1,6 +1,6 @@
 # Tabular Task 2 legal-action masking
 
-> Status: completed_negative
+> Status: exploratory_incomplete
 
 ## Metadata
 
@@ -59,7 +59,9 @@ Confirmation seeds remain unused.
 
 ## Execution
 
-Training begins only after the experiment definition has been reviewed.
+This retained execution is exploratory because no compute budget was
+prospectively recorded before training. Its results must not be treated as
+confirmatory scientific evidence.
 
 ## Evidence
 

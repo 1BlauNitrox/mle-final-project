@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 110
-status: completed_negative
+status: exploratory_incomplete
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
 reviewer: "Waffelmanufraktur"
@@ -12,6 +12,11 @@ revisions:
   experiment_commit: "6ceebe3fe6c75a378512cb7c7ebd022ce302df1c"
   framework_revision: "0f55c1d"
 
+limitations:
+  prospectively_recorded_compute_budget: false
+  scientific_completion_claimed: false
+  confirmation_seeds_used: false
+  
 hypothesis:
   treatment: framework_legal_action_masking
   baseline: no_action_masking
