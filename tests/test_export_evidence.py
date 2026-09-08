@@ -7,7 +7,7 @@ import gzip
 import json
 from pathlib import Path
 
-from training.export_evidence import export_plan_evidence
+from training.export_evidence import export_plan_evidence, verify_evidence_files
 
 EPISODE_HEADER = [
     "schema_version",
@@ -180,6 +180,87 @@ def test_export_produces_tagged_training_and_evaluation_csvs_and_a_manifest(
     assert len(evaluation_rows) == 1
     assert evaluation_rows[0]["stage_or_suite"] == "classic-primary"
     assert evaluation_rows[0]["world_seed"] == "71001"
+
+
+def test_export_survives_git_style_lf_normalization(tmp_path: Path) -> None:
+    """Regression test for a manifest fingerprinted before Git's own eol=lf rewrite.
+
+    `evaluation-episodes.csv` is committed under a `*.csv text eol=lf`
+    .gitattributes rule, which rewrites any CRLF line ending to LF on both
+    add and checkout. A manifest fingerprinted against CRLF bytes (the
+    csv module's default lineterminator) therefore no longer matches what
+    any clean checkout of the same commit contains. This asserts the export
+    writes LF directly, so simulating Git's own normalization is a no-op.
+    """
+    plan_directory = tmp_path / "plan"
+    _write_job(
+        plan_directory,
+        run_id="eval-r1-classic-primary-seed-001",
+        kind="evaluation",
+        replica="r1",
+        stage_or_suite="classic-primary",
+        world_seed=71001,
+        agent_seed=81001,
+        rows=2,
+    )
+
+    output_directory = tmp_path / "evidence"
+    export_plan_evidence(plan_directory, output_directory)
+
+    evaluation_path = output_directory / "evaluation-episodes.csv"
+    data = evaluation_path.read_bytes()
+    assert b"\r" not in data
+
+    with gzip.open(output_directory / "training-episodes.csv.gz", "rb") as handle:
+        training_data = handle.read()
+    assert b"\r" not in training_data
+
+    git_normalized = data.replace(b"\r\n", b"\n")
+    assert git_normalized == data
+
+
+def test_verify_evidence_files_accepts_freshly_exported_evidence(tmp_path: Path) -> None:
+    plan_directory = tmp_path / "plan"
+    _write_job(
+        plan_directory,
+        run_id="eval-r1-classic-primary-seed-001",
+        kind="evaluation",
+        replica="r1",
+        stage_or_suite="classic-primary",
+        world_seed=71001,
+        agent_seed=81001,
+        rows=1,
+    )
+
+    output_directory = tmp_path / "evidence"
+    manifest = export_plan_evidence(plan_directory, output_directory)
+
+    verify_evidence_files(output_directory, manifest)
+
+
+def test_verify_evidence_files_rejects_a_manifest_evidence_mismatch(tmp_path: Path) -> None:
+    plan_directory = tmp_path / "plan"
+    _write_job(
+        plan_directory,
+        run_id="eval-r1-classic-primary-seed-001",
+        kind="evaluation",
+        replica="r1",
+        stage_or_suite="classic-primary",
+        world_seed=71001,
+        agent_seed=81001,
+        rows=1,
+    )
+
+    output_directory = tmp_path / "evidence"
+    manifest = export_plan_evidence(plan_directory, output_directory)
+
+    (output_directory / "evaluation-episodes.csv").write_bytes(b"tampered content\n")
+
+    try:
+        verify_evidence_files(output_directory, manifest)
+        raise AssertionError("expected ValueError for a manifest/evidence mismatch")
+    except ValueError as error:
+        assert "does not match its manifest record" in str(error)
 
 
 def test_export_rejects_an_incomplete_plan(tmp_path: Path) -> None:

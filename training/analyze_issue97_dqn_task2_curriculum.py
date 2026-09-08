@@ -22,6 +22,7 @@ from statistics import fmean, median
 from typing import Any
 
 from training.aggregate import _parse_csv_row, read_episodes_csv
+from training.export_evidence import verify_evidence_files
 from training.paired_bootstrap import paired_bootstrap
 from training.run_experiment import REPOSITORY_ROOT
 
@@ -138,8 +139,11 @@ def rows_from_evidence(evidence_root: Path) -> tuple[list[dict[str, Any]], bool,
     active = arm_plan_ids if staged_arm_available else {"direct": arm_plan_ids["direct"]}
 
     for arm, plan_id in active.items():
+        plan_directory = evidence_root / plan_id
+        manifest = _read_json(plan_directory / "manifest.json")
+        verify_evidence_files(plan_directory, manifest)
         by_key: dict[tuple[str, str], dict[int, dict[str, Any]]] = defaultdict(dict)
-        with (evidence_root / plan_id / "evaluation-episodes.csv").open(
+        with (plan_directory / "evaluation-episodes.csv").open(
             encoding="utf-8", newline=""
         ) as handle:
             for row_number, raw_row in enumerate(csv.DictReader(handle), start=2):
