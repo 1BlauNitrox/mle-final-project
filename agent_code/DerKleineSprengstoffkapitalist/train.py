@@ -7,9 +7,12 @@ from dataclasses import dataclass
 from statistics import fmean
 from typing import Any
 
+import numpy as np
+
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
 from .features import StateFeatures, state_to_features
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
+from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
 from .rewards import reward_from_events
 
@@ -33,6 +36,7 @@ class PendingTransition:
     state: StateFeatures
     action: str
     next_state: StateFeatures
+    next_action_mask: np.ndarray | None
     reward: float
     diagnostic_events: tuple[str, ...]
 
@@ -106,6 +110,11 @@ def game_events_occurred(
         state=old_state,
         action=self_action,
         next_state=new_state,
+        next_action_mask=(
+            framework_legal_action_mask(new_game_state)
+            if self.action_masking == "framework_legal"
+            else None
+        ),
         reward=reward_from_events(training_events),
         diagnostic_events=tuple(events),
     )
@@ -182,6 +191,7 @@ def end_of_round(
         self.q_table,
         epsilon=self.epsilon,
         completed_episodes=self.completed_episodes,
+        action_masking=self.action_masking,
         path=MODEL_PATH,
     )
 
@@ -208,6 +218,7 @@ def _finalize_pending_transition(self) -> None:
         reward=pending.reward,
         next_state=pending.next_state,
         terminal=False,
+        next_action_mask=pending.next_action_mask,
     )
 
     self.pending_transition = None
@@ -221,11 +232,17 @@ def _apply_update(
     reward: float,
     next_state: StateFeatures | None,
     terminal: bool,
+    next_action_mask: np.ndarray | None = None,
 ) -> None:
     """Update the Q-table and record diagnostics."""
 
     td_error = self.q_table.update(
-        state=state, action=action, reward=reward, next_state=next_state, terminal=terminal
+        state=state,
+        action=action,
+        reward=reward,
+        next_state=next_state,
+        terminal=terminal,
+        next_action_mask=next_action_mask,
     )
 
     self.episode_reward += reward
