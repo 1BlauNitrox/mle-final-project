@@ -16,7 +16,7 @@ limitations:
   prospectively_recorded_compute_budget: false
   scientific_completion_claimed: false
   confirmation_seeds_used: false
-  
+
 hypothesis:
   treatment: framework_legal_action_masking
   baseline: no_action_masking
