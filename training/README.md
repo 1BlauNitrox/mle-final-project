@@ -209,6 +209,9 @@ Example plans are in `training/run_plans/`:
 - `task1-example.yaml`: `coin-heaven` without opponents;
 - `task2-example.yaml`: visible coins, `loot-crate`, then `classic`, without opponents;
 - `task3-example.yaml`: `classic` with peaceful and coin-collector opponents plus Task 1/2 regressions;
+- `issue108-dqn-task3-smoke.yaml`: the bounded Task 3 successor path, with
+  peaceful-agent training before coin-collector training and explicit
+  opponent-free Task 1/Task 2 regressions;
 - `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
 - `tasks1-3-smoke.yaml`: three one-round integration checks; and
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
