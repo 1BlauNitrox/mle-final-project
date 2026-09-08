@@ -14,7 +14,7 @@ tested as a controlled variable and must not be cited as evidence until it
 is (mirrors the caveat issue #58 applies to its own reward-shaping values).
 
 `learning_rate` and `target_update_interval` are also revised, conservatively,
-for the larger Task 2 input/action space (21 features and 6 actions versus 8
+for the larger Task 2 input/action space (26 features and 6 actions versus 8
 and 5): a smaller learning rate and less frequent target synchronization
 both reduce how much a single noisy update can move the value estimates.
 `replay_warmup` is raised so training does not start learning from as narrow
@@ -40,8 +40,45 @@ ACTION_TO_INDEX: dict[str, int] = {
     action: index for index, action in enumerate(ACTIONS)
 }
 
-FEATURE_COUNT = 21
-FEATURE_SCHEMA_VERSION = 2
+REPLAY_TREATMENTS: tuple[str, ...] = ("uniform", "protected_task1")
+PROTECTED_REPLAY_CAPACITY = 2_000
+OTHER_REPLAY_CAPACITY = 8_000
+PROTECTED_REPLAY_BATCH_SIZE = 16
+PROTECTED_SOURCE_EPISODES = 2_000
+PROTECTED_SOURCE_SCENARIO = "coin-heaven"
+
+LEGACY_FEATURE_COUNT = 21
+FEATURE_COUNT = 26
+FEATURE_SCHEMA_VERSION = 3
+
+FEATURE_NAMES: tuple[str, ...] = (
+    "free_up",
+    "free_right",
+    "free_down",
+    "free_left",
+    "coin_visible",
+    "coin_dx",
+    "coin_dy",
+    "coin_distance_bin",
+    "bomb_available",
+    "danger_countdown_bin",
+    "safe_up",
+    "safe_right",
+    "safe_down",
+    "safe_left",
+    "escape_exists_after_bomb",
+    "crate_visible",
+    "crate_dx",
+    "crate_dy",
+    "crate_distance_bin",
+    "crates_destroyed_here_bin",
+    "bomb_has_useful_target",
+    "continuation_up",
+    "continuation_right",
+    "continuation_down",
+    "continuation_left",
+    "continuation_wait",
+)
 
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
@@ -91,11 +128,21 @@ class DQNConfig:
     default_seed: int = 0
     torch_num_threads: int = 1
     action_masking: bool = False
+    escape_continuation_features: bool = False
+    replay_treatment: str = "uniform"
 
     def __post_init__(self) -> None:
         """Reject internally inconsistent configurations."""
-        if self.input_dim != FEATURE_COUNT:
-            raise ValueError("input_dim must match FEATURE_COUNT.")
+        if self.input_dim not in (LEGACY_FEATURE_COUNT, FEATURE_COUNT):
+            raise ValueError(
+                "input_dim must match FEATURE_COUNT or the supported legacy "
+                f"dimension {LEGACY_FEATURE_COUNT}."
+            )
+
+        if self.input_dim == LEGACY_FEATURE_COUNT and self.escape_continuation_features:
+            raise ValueError(
+                "Legacy 21-feature configurations cannot enable continuation features."
+            )
 
         if self.output_dim != len(ACTIONS):
             raise ValueError("output_dim must match the action count.")
@@ -137,6 +184,15 @@ class DQNConfig:
 
         if type(self.action_masking) is not bool:
             raise ValueError("action_masking must be a bool.")
+
+        if type(self.escape_continuation_features) is not bool:
+            raise ValueError("escape_continuation_features must be a bool.")
+
+        if self.replay_treatment not in REPLAY_TREATMENTS:
+            raise ValueError(
+                "replay_treatment must be one of "
+                f"{list(REPLAY_TREATMENTS)}."
+            )
 
 
 DEFAULT_CONFIG = DQNConfig()

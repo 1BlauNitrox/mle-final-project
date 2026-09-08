@@ -21,7 +21,7 @@ from agent_code.DagobertDuckDQNTask2.replay import ReplayBuffer
 from training.run_experiment import REPOSITORY_ROOT
 
 ISSUE = 46
-SOURCE_SHA256 = "44cd337001b27b8596eaed985cfae1d7f30ecaf0b6b0328b35185395b7b81b6e"
+SOURCE_SHA256 = "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60"
 DEFAULT_OUTPUT = REPOSITORY_ROOT / "training_outputs" / "issue-46-starting-artifacts"
 
 

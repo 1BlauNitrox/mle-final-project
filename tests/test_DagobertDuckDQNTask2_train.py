@@ -22,7 +22,11 @@ import agent_code.DagobertDuckDQNTask2.callbacks as callbacks
 import agent_code.DagobertDuckDQNTask2.train as training
 from agent_code.DagobertDuckDQNTask2.config import DEFAULT_CONFIG
 from agent_code.DagobertDuckDQNTask2.model import DQNLearner
-from agent_code.DagobertDuckDQNTask2.persistence import save_checkpoint
+from agent_code.DagobertDuckDQNTask2.persistence import (
+    load_evaluation_checkpoint,
+    load_training_checkpoint,
+    save_checkpoint,
+)
 from agent_code.DagobertDuckDQNTask2.replay import ReplayBuffer
 
 
@@ -120,6 +124,66 @@ def test_callback_setup_restores_all_training_objects(
     assert restored.epsilon == source.epsilon
     assert restored.replay_buffer.capacity == source.replay_buffer.capacity
     assert restored.policy_network is restored.learner.online_network
+
+
+def test_escape_treatment_is_persisted_in_the_checkpoint(
+    tmp_path: Path,
+) -> None:
+    config = replace(DEFAULT_CONFIG, escape_continuation_features=True)
+    learner = DQNLearner(config=config, seed=123)
+    path = tmp_path / "escape-on.pt"
+
+    save_checkpoint(
+        learner=learner,
+        replay_buffer=ReplayBuffer(
+            capacity=config.replay_capacity,
+            seed=456,
+        ),
+        action_rng=np.random.default_rng(789),
+        epsilon=config.initial_epsilon,
+        completed_episodes=0,
+        agent_seed=123,
+        path=path,
+    )
+
+    loaded = load_evaluation_checkpoint(path)
+    assert loaded.config.escape_continuation_features is True
+    assert loaded.config.input_dim == 26
+
+
+def test_resume_rejects_a_changed_escape_treatment(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    source = make_agent()
+    path = tmp_path / "checkpoint.pt"
+    save_checkpoint(
+        learner=source.learner,
+        replay_buffer=source.replay_buffer,
+        action_rng=source.action_rng,
+        epsilon=source.epsilon,
+        completed_episodes=1,
+        agent_seed=source.agent_seed,
+        path=path,
+    )
+    monkeypatch.setattr(callbacks, "CHECKPOINT_PATH", path)
+    monkeypatch.setenv(callbacks.ESCAPE_CONTINUATIONS_ENV, "on")
+    restored = SimpleNamespace(logger=Mock())
+
+    with pytest.raises(ValueError, match="treatment"):
+        callbacks._setup_training_policy(restored, source.agent_seed)
+
+
+def test_historical_issue85_artifact_cannot_resume_training() -> None:
+    historical = (
+        Path(__file__).resolve().parents[1]
+        / "agent_code"
+        / "DagobertDuckDQNTask2"
+        / "checkpoint-issue85-zero-suffix.pt"
+    )
+
+    with pytest.raises(ValueError, match="legacy 21-feature"):
+        load_training_checkpoint(historical)
 
 
 def test_fresh_migration_checkpoint_is_reseeded_for_an_independent_replica(

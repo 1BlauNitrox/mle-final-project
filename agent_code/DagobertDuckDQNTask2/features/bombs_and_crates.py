@@ -202,6 +202,83 @@ def safe_escape_exists(
     return False
 
 
+def surviving_continuation_after_action(
+    field: np.ndarray,
+    danger_map: DangerMap,
+    blocked_positions: set[Position],
+    bombs: list[tuple[Position, int]],
+    start: Position,
+    direction: tuple[int, int],
+) -> bool:
+    """Return whether one candidate action has a safe future continuation.
+
+    The candidate action is evaluated as the framework's next arrival at time
+    ``1``.  A movement action must enter an open, currently unoccupied tile;
+    ``WAIT`` remains legal even when the agent is standing on its own bomb.
+    Every later move is checked against the same absolute danger intervals and
+    bomb-occupancy windows as :func:`safe_escape_exists`.  A path is accepted
+    only after it reaches ``MAX_ESCAPE_SEARCH_STEPS`` safe arrivals.  This
+    deliberately distinguishes a neighbor that is safe only for the next
+    arrival from a neighbor with an actual survival continuation.
+
+    Opponent positions are a step-zero snapshot: they block the candidate
+    movement and are not predicted after that first action.  Bomb positions are
+    enforced at every step until their framework detonation time.  The caller
+    must pass the same bomb list used to construct ``danger_map`` so that
+    overlapping blast windows and hypothetical bombs remain consistent.
+    """
+    x, y = start
+    dx, dy = direction
+    is_wait = direction == (0, 0)
+    candidate = start if is_wait else (x + dx, y + dy)
+
+    if not is_wait and not _is_free_tile(
+        field, candidate[0], candidate[1], blocked_positions
+    ):
+        return False
+
+    if not is_safe_at_arrival(danger_map, candidate, 1):
+        return False
+
+    bomb_occupied_until = _bomb_occupied_until(bombs)
+    queue = deque([(candidate, 1)])
+    visited = {(candidate, 1)}
+    moves = (*DIRECTIONS, (0, 0))
+
+    while queue:
+        (current_x, current_y), elapsed = queue.popleft()
+        if elapsed >= MAX_ESCAPE_SEARCH_STEPS:
+            return True
+
+        for move_x, move_y in moves:
+            next_position = (current_x + move_x, current_y + move_y)
+            wait = (move_x, move_y) == (0, 0)
+
+            if not _is_open_tile(
+                field, next_position[0], next_position[1]
+            ):
+                continue
+
+            next_time = elapsed + 1
+            if (
+                not wait
+                and next_time < bomb_occupied_until.get(next_position, 0)
+            ):
+                continue
+
+            if not is_safe_at_arrival(danger_map, next_position, next_time):
+                continue
+
+            state = (next_position, next_time)
+            if state in visited:
+                continue
+
+            visited.add(state)
+            queue.append(state)
+
+    return False
+
+
 def crates_destroyed_by_bomb_at(position: Position, field: np.ndarray) -> int:
     """Count crates that a bomb placed at `position` would destroy."""
     return sum(1 for coords in blast_footprint(position, field) if field[coords] == 1)

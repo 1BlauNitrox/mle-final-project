@@ -1,12 +1,11 @@
-"""One-way checkpoint migration from the frozen Task 1 network to Task 2.
+"""Versioned one-way checkpoint migrations for the Task 2 DQN.
 
-Only the input and output layers change shape (8 -> 21 inputs, 5 -> 6
-outputs); the hidden layers stay (64, 64) and are copied verbatim. The new
-input columns are zeroed so the inherited five Q-values remain exactly the
-parent's for every Task 2 feature suffix. The new BOMB output row is
-deliberately overwritten to a fixed, conservative estimate
-(see `BOMB_OUTPUT_BIAS` below) so a freshly migrated policy does not select
-an untested action by chance of initialization.
+The original Task 1 migration grows the network from 8 inputs and 5 outputs
+to the configured Task 2 shape. Issue #87 adds a second migration from the
+corrected Issue #85 21-input artifact to the common 26-input architecture.
+Both migrations zero every newly added input column so inherited action
+values are preserved before learning. Hidden layers and compatible output rows
+are copied verbatim; the new BOMB row remains conservative.
 """
 
 from __future__ import annotations
@@ -14,12 +13,13 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-from .config import DEFAULT_CONFIG, DQNConfig
+from .config import DEFAULT_CONFIG, FEATURE_COUNT, LEGACY_FEATURE_COUNT, DQNConfig
 from .model import QNetwork, build_q_network
 
 PARENT_INPUT_DIM = 8
 PARENT_OUTPUT_DIM = 5
 PARENT_HIDDEN_SIZES = (64, 64)
+TASK2_OUTPUT_DIM = 6
 
 MIGRATION_INIT_SEED = 44
 BOMB_OUTPUT_BIAS = -1.0
@@ -76,6 +76,70 @@ def migrate_online_network(
             migrated_layer.bias.copy_(parent_layer.bias)
 
         _migrate_output_layer(parent_layers[-1], migrated_layers[-1])
+
+    return migrated
+
+
+def migrate_escape_continuation_network(
+    task2_network: QNetwork,
+    *,
+    config: DQNConfig = DEFAULT_CONFIG,
+    seed: int = MIGRATION_INIT_SEED,
+) -> QNetwork:
+    """Append issue #87 inputs to the corrected Issue #85 Task 2 network."""
+    if task2_network.config.input_dim != LEGACY_FEATURE_COUNT:
+        raise ValueError(
+            "Issue #87 migration requires the corrected 21-feature Task 2 "
+            f"network, got input_dim {task2_network.config.input_dim}."
+        )
+
+    if task2_network.config.output_dim != TASK2_OUTPUT_DIM:
+        raise ValueError(
+            f"Issue #87 migration requires {TASK2_OUTPUT_DIM} actions, "
+            f"got {task2_network.config.output_dim}."
+        )
+
+    if config.input_dim != FEATURE_COUNT:
+        raise ValueError(
+            "Issue #87 migration requires the current 26-feature config, "
+            f"got input_dim {config.input_dim}."
+        )
+
+    if tuple(task2_network.config.hidden_sizes) != PARENT_HIDDEN_SIZES:
+        raise ValueError(
+            "Migration requires the unchanged hidden sizes "
+            f"{PARENT_HIDDEN_SIZES}."
+        )
+
+    if tuple(config.hidden_sizes) != PARENT_HIDDEN_SIZES:
+        raise ValueError(
+            "Migration requires the unchanged hidden sizes "
+            f"{PARENT_HIDDEN_SIZES}."
+        )
+
+    migrated = build_q_network(config, seed=seed)
+    source_layers = [
+        layer for layer in task2_network.layers if isinstance(layer, nn.Linear)
+    ]
+    migrated_layers = [
+        layer for layer in migrated.layers if isinstance(layer, nn.Linear)
+    ]
+
+    if len(source_layers) != len(migrated_layers):
+        raise ValueError("Migration requires the same number of linear layers.")
+
+    with torch.no_grad():
+        migrated_layers[0].weight[:, :LEGACY_FEATURE_COUNT].copy_(
+            source_layers[0].weight
+        )
+        migrated_layers[0].weight[:, LEGACY_FEATURE_COUNT:].zero_()
+        migrated_layers[0].bias.copy_(source_layers[0].bias)
+
+        for source_layer, migrated_layer in zip(
+            source_layers[1:], migrated_layers[1:], strict=True
+        ):
+            migrated_layer.weight.copy_(source_layer.weight)
+            migrated_layer.bias.copy_(source_layer.bias)
 
     return migrated
 
