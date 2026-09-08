@@ -1,0 +1,162 @@
+schema_version: 1
+issue: 107
+status: prospective_protocol
+agent: DagobertDuckDQNTask2
+protocol_base_commit: f4eddf9ea411eef0975e811bde5a353011f5144e
+execution_commit: reviewed_clean_branch_head
+owner: Waffelmanufaktur
+non_author_reviewer: 1BlauNitrox
+source_checkpoint:
+  path: agent_code/DagobertDuckDQNTask2/checkpoint.pt
+  sha256: 4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60
+  size_bytes: 57581
+  lineage_source:
+    path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
+    sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
+  lineage_rule: >-
+    The 26-feature source was migrated from the corrected Issue 85 artifact by
+    copying its 21 input columns and zeroing the five Issue 87 continuation
+    columns. All four cells start from these identical network weights.
+retention_baseline:
+  path: agent_code/DagobertDuckDQN/checkpoint.pt
+  sha256: eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e
+  size_bytes: 23829
+cells:
+  A:
+    label: control
+    escape_continuations: off
+    replay_treatment: uniform
+    plan: training/run_plans/issue107-cell-a-control.yaml
+  B:
+    label: escape
+    escape_continuations: on
+    replay_treatment: uniform
+    plan: training/run_plans/issue107-cell-b-escape.yaml
+  C:
+    label: replay
+    escape_continuations: off
+    replay_treatment: protected_task1
+    plan: training/run_plans/issue107-cell-c-replay.yaml
+  D:
+    label: combined
+    escape_continuations: on
+    replay_treatment: protected_task1
+    plan: training/run_plans/issue107-cell-d-combined.yaml
+baselines:
+  untrained:
+    plan: training/run_plans/issue107-untrained.yaml
+  frozen_task1:
+    plan: training/run_plans/issue107-frozen-task1.yaml
+fixed_controls:
+  action_masking: none
+  hidden_sizes: [64, 64]
+  learning_rate: 0.0005
+  gamma: 0.9
+  batch_size: 64
+  replay_capacity: 10000
+  replay_warmup: 500
+  target_update_interval: 500
+  max_gradient_norm: 10.0
+  epsilon: {initial: 1.0, decay: 0.9997, minimum: 0.1}
+  rewards: current_DagobertDuckDQNTask2_defaults
+  opponents: []
+training:
+  paired_replicas: 5
+  world_seeds: [107001, 107002, 107003, 107004, 107005]
+  agent_seeds: [207001, 207002, 207003, 207004, 207005]
+  stages:
+    - {id: visible-coins, scenario: coin-heaven, rounds: 2000}
+    - {id: dense-crates, scenario: loot-crate, rounds: 2000}
+    - {id: classic-crates, scenario: classic, rounds: 6000}
+  episodes_per_replica: 10000
+  total_replicas: 20
+  total_episodes: 200000
+  selected_checkpoint_episode: 10000
+  max_parallel_training: 4
+evaluation:
+  passes: [primary, deterministic-repeat]
+  rounds_per_seed: 1
+  suites:
+    classic:
+      world_seeds: {start: 307001, stop_inclusive: 307040}
+      agent_seeds: {start: 407001, stop_inclusive: 407040}
+    coin-heaven:
+      world_seeds: {start: 308001, stop_inclusive: 308040}
+      agent_seeds: {start: 408001, stop_inclusive: 408040}
+    loot-crate:
+      world_seeds: {start: 309001, stop_inclusive: 309040}
+      agent_seeds: {start: 409001, stop_inclusive: 409040}
+  factorial_episodes: 4800
+  untrained_episodes: 240
+  frozen_task1_episodes: 80
+  total_episodes: 5120
+reserved_confirmation:
+  world_seed_ranges: [[307041, 307050], [308041, 308050], [309041, 309050]]
+  agent_seed_ranges: [[407041, 407050], [408041, 408050], [409041, 409050]]
+analysis:
+  bootstrap_resamples: 10000
+  confidence_interval_percent: 95
+  efficacy_family_size: 4
+  efficacy_bonferroni_interval_percent: 98.75
+  contrast_resampler_seeds:
+    escape_b_minus_a: 10701
+    escape_d_minus_c: 10702
+    replay_c_minus_a: 10703
+    replay_d_minus_b: 10704
+    interaction: 10705
+criteria:
+  escape:
+    classic_self_kill_reduction_min: 0.15
+    efficacy_adjusted_ci_lower_strictly_above: 0.0
+  replay:
+    coin_heaven_collection_improvement_min: 0.10
+    efficacy_adjusted_ci_lower_strictly_above: 0.0
+  non_regression:
+    collection_margin: 0.05
+    survival_margin: 0.05
+    ci_lower_strictly_above_margin: true
+  absolute_task2:
+    mean_classic_collection_fraction_min: 0.30
+    trained_minus_untrained_mean_min: 0.10
+    trained_minus_untrained_ci_lower_strictly_above: 0.0
+    replicas_improving_min: 4
+    aggregate_self_kill_rate_max: 0.20
+    aggregate_invalid_action_rate_max: 0.10
+    per_replica_invalid_action_rate_max: 0.15
+    every_replica_destroys_crate_and_finds_coin: true
+  absolute_task1:
+    retention_ci_lower_strictly_above: -0.05
+    replicas_within_0_10_min: 4
+    aggregate_and_per_replica_invalid_action_rate_strictly_below: 0.01
+    bomb_actions: 0
+  compatibility:
+    maximum_episode_p95_decision_time_ms_strictly_below: 50
+    maximum_decision_time_ms_strictly_below: 100
+    deterministic_repeat: true
+    evaluation_artifact_immutable: true
+selection:
+  eligibility:
+    B: escape efficacy and all B-minus-A non-regression guards
+    C: replay efficacy and all C-minus-A non-regression guards
+    D: both D-minus-C escape and D-minus-B replay efficacy plus all guards
+  no_eligible_treatment_fallback: A
+  eligible_cell_order:
+    - overall absolute Task 2 and Task 1 pass
+    - absolute Task 2 pass
+    - absolute Task 1 pass
+    - higher classic mean collection fraction
+    - lower classic self-kill rate
+    - higher coin-heaven mean collection fraction
+    - alphabetical cell ID
+  representative_artifact: >-
+    Median replica by primary classic mean collection fraction within the
+    selected cell; sort by the metric and then replica ID and select item 3 of 5.
+resources:
+  cpu_hours_max: 48
+  wall_clock_hours_max: 24
+  memory_gib_max: 8
+  max_training_workers: 4
+  evaluation_workers: 1
+  paid_resources: false
+  compute_authorization: required_at_launch
+  hardware_record: required_at_launch

@@ -7,6 +7,15 @@
 > latency checks, but failed the registered Task 2 feasibility and Task 1
 > retention gates. It is therefore not a submission candidate.
 
+Issue #107 prospectively registers the final four-cell Task 2 campaign on the
+merged Issue #87 and #88 implementations. It compares control, escape-only,
+protected-replay-only, and combined cells from identical 26-feature migrated
+weights. The protocol, seed lists, gates, multiplicity handling, mechanical
+selection rule, and guarded server launcher are in
+`experiments/2026-09-07-dqn-task2-factorial/`. No Issue #107 scientific run or
+performance result is recorded yet, and compute remains unauthorized until the
+launcher receives explicit human authorization for the reviewed commit.
+
 Issue #46 currently has an incomplete negative/mixed result. Corrected development
 evaluation passed determinism and latency checks, but failed the registered
 Task 2 feasibility and Task 1 retention gates. See
