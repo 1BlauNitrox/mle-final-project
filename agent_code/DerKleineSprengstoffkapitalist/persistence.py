@@ -61,7 +61,7 @@ def save_model(
 
     if useful_bomb_reward not in (0.0, 1.0):
         raise ValueError("Useful-bomb reward must be either 0.0 or 1.0.")
-    
+
     if action_masking not in {"none", "framework_legal"}:
         raise ValueError("Invalid action-masking mode.")
 
