@@ -208,10 +208,39 @@ Example plans are in `training/run_plans/`:
 - `task1-example.yaml`: `coin-heaven` without opponents;
 - `task2-example.yaml`: visible coins, `loot-crate`, then `classic`, without opponents;
 - `task3-example.yaml`: `classic` with peaceful and coin-collector opponents plus Task 1/2 regressions;
+- `issue108-dqn-task3-smoke.yaml`: the bounded Task 3 successor path, with
+  peaceful-agent training before coin-collector training and explicit
+  opponent-free Task 1/Task 2 regressions;
 - `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
 - `tasks1-3-smoke.yaml`: three one-round integration checks; and
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
+
+### Issue #107 Task 2 factorial campaign
+
+Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1
+reference plans. Validate the cross-plan matrix, source hashes, 200,000-episode
+training budget, 5,120-episode evaluation budget, treatment metadata, and seed
+collision audit without starting a run:
+
+```bash
+python -m training.run_issue107_campaign --dry-run
+python -m training.analyze_issue107_task2_factorial --validate-protocol
+```
+
+The launcher requires a clean reviewed commit, an explicit
+`--authorize-compute` flag, the full reviewed SHA, and an actual server hardware
+description. Its `psutil`-backed campaign monitor enforces and persists the
+aggregate CPU, wall-clock, and memory ceilings across active and resumed work;
+the analyzer rejects outputs whose resolved plans differ from the registered
+reviewed plans, while ignoring only relocated parent-artifact paths whose
+registered hashes remain unchanged. It also requires the unique authorization
+and resource records and their reviewed-commit/limit binding in every job's
+metadata, so direct run-plan output cannot be analyzed as campaign evidence.
+Exact launch, resume, analysis, ceilings, contrasts, and
+selection commands are registered in
+`experiments/2026-09-07-dqn-task2-factorial/README.md`. A dry run is integration
+validation only and produces no performance evidence.
 
 ### Issue #46 Task 2 DQN development baseline
 

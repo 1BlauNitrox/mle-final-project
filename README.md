@@ -183,6 +183,7 @@ coding agents and contributors must follow when working in this repository.
 | [0005](docs/0005-definition-of-ready-and-done.md) | Definition of Ready and Definition of Done |
 | [0006](docs/0006-ai-usage.md) | AI-use policy and disclosure log |
 | [0007](docs/0007-task-1-baseline-contract.md) | Normative scope, metrics, and completion rule for the Task 1 learned baseline |
+| [0008](docs/0008-task-3-opponent-awareness-contract.md) | Task 3 opponent-awareness feature, reward, and migration contract |
 
 Each learned agent also has an agent card in its own `README.md`. Keep it current
 with the model, state representation, rewards, training procedure, dependencies,

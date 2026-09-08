@@ -118,6 +118,14 @@ DerKleineVermoegensumverteiler
               v
 DerKleineSprengstoffkapitalist
     behavior-preserving Task 2 successor scaffold
+
+The DQN lineage follows the same rule. `DagobertDuckDQNTask2` remains
+unchanged while `DagobertDuckDQNTask3` is a separately named successor. Its
+provisional implementation copies the corrected Task 2 artifact through an
+explicit zero-column migration, keeps the six-action/64-64 contract, and
+contains its own opponent feature, reward, persistence, and callback code.
+The final Task 2 parent binding is deferred to issue #107; the Task 3
+successor does not import the parent at evaluation time.
 ```
 The successor initially retains the parent's five-action policy, eight-feature
 schema, rewards, Q-learning implementation, and read-only evaluation behavior.

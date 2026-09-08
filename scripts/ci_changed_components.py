@@ -112,6 +112,8 @@ def classify_path(raw_path: str) -> AffectedComponents:
     if parts[0] == "agent_code" and len(parts) >= 2:
         if parts[1] == "DagobertDuckDQN":
             return DQN_COMPONENTS
+        if parts[1] in {"DagobertDuckDQNTask2", "DagobertDuckDQNTask3"}:
+            return DQN_COMPONENTS
         if parts[1] == "DerKleineVermoegensumverteiler":
             return TABULAR_COMPONENT
         if parts[1] == "_team_agent_template":
