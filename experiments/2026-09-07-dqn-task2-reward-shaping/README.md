@@ -1,8 +1,10 @@
 # Issue #103 reward-shaping treatments for Task 2 DQN
 
-> Status: **Completed — both treatments rejected.** See "Result and
-> decision" below. Independent of #97 throughout (direct-classic training,
-> not the curriculum question).
+> Status: **Completed exploratory/descriptive run.** The decision rule was
+> neither prospectively approved nor kept unchanged, so this record makes no
+> confirmatory adoption or rejection decision and leaves #103 open. The run
+> remained independent of #97 (direct-classic training, not the curriculum
+> question).
 
 ## Hypothesis and factors
 
@@ -105,9 +107,10 @@ placement (so both are always tallied as diagnostics, in every arm), but
 0.0 under `control` and `survival_rebalance`, and only `safety_bomb` gives
 either a nonzero reward.
 
-## Decision rule (Claude's proposal, applied mechanically to the result below)
+## Unapproved analysis rule and scope limitation
 
-For each treatment arm independently, paired against control by replica ID:
+The issue proposed the following rule for each treatment arm, paired against
+control by replica ID:
 
 1. **Timing** (carried over from #46/#86 unchanged): p95 < 50 ms and max
    < 100 ms decision time in every scenario.
@@ -115,9 +118,8 @@ For each treatment arm independently, paired against control by replica ID:
    fraction (treatment − control) ≥ -0.05 in all three scenarios.
 3. **Primary effect**: paired 95% CI lower bound for survival rate
    (treatment − control) ≥ 0 in `classic`.
-4. An arm is adopted only if it clears gates 1-3. If both clear, prefer the
-   larger `classic` survival-rate improvement. If neither clears, retain
-   control and report the negative result, as #86 did.
+4. An arm would be adopted only if it cleared gates 1-3. If both cleared, the
+   proposal preferred the larger `classic` survival-rate improvement.
 
 **Correction made when writing the analyzer** (`training/analyze_issue103_dqn_task2_reward_shaping.py`):
 the originally proposed `safety_bomb` gate 3 ("paired CI lower bound for the
@@ -132,9 +134,12 @@ without opponents are the sole cause of a `classic`/`loot-crate` death here,
 so a survival-rate improvement already is the direct evidence a working
 safety mechanism would produce.
 
-These numeric criteria remain Claude's proposal, made at the owner's
-explicit invitation -- not a team-ratified threshold. They were applied
-mechanically to the result below, unchanged after seeing it.
+These numeric criteria were a Claude proposal and were never prospectively
+approved by a non-author reviewer. The `safety_bomb` primary criterion was
+also changed after the protocol was written. The analyzer therefore reports
+the computable rule only as retrospective diagnostics. It always records
+`no_confirmatory_decision_unapproved_rule`; the observations cannot support
+adopting or rejecting either treatment or closing #103.
 
 ## Execution
 
@@ -175,7 +180,7 @@ two-arm total). Detach with `Ctrl-b d`; resume an interrupted plan with
 `--resume`. Do not alter a plan, source tree, or artifact between a failed
 run and its resume.
 
-## Result and decision
+## Exploratory observations
 
 All three arms and Issue #97's direct arm ran concurrently on the owner's
 own machine on 2026-09-07 and completed in full (915/915 jobs, 0 failures)
@@ -184,6 +189,14 @@ Deterministic repeats matched exactly (identical
 `executed_action_sequence_sha256` between every primary/repeat pair; the
 only differences were incidental decision-time measurements). Full compact evidence: `result.json`, `summary.csv`
 (`training/analyze_issue103_dqn_task2_reward_shaping.py`).
+
+Every job records `git_dirty: true`. All jobs agree on commit
+`e039853b03c1bd632b799dc9b94c90729acf26b1` and on their source, framework,
+agent, dependency, configuration, and parent-artifact fingerprints, but the
+dirty execution source cannot be reconstructed from that clean commit. The
+discarded raw tree contained the per-job source snapshots. This is an
+additional reason the record remains exploratory rather than reproducible
+confirmatory evidence.
 
 ## Evidence: committed, not the ~4.4 GiB raw output tree
 
@@ -199,16 +212,18 @@ committed instead, at `evidence/<plan-id>/`:
   `episodes.csv` rows, tagged with `plan_id`/`run_id`/`kind`/`replica`/
   `stage_or_suite`/`world_seed`/`agent_seed` (via
   `training/export_evidence.py`). ~19 MiB total across all three arms.
-- `manifest.json`: the plan's own configuration/source/framework/agent
+- `manifest.json`: the observed configuration/source/framework/agent
   fingerprints (from `resolved_plan.json`), per-job provenance (status,
   seeds, git commit, duration), and the two evidence files' own SHA-256.
 
-This is independently checkable **without the raw tree or any external
-archive**: `analyze_issue103_dqn_task2_reward_shaping.py --verify-from-evidence`
+The retained observations are independently checkable **without the raw tree
+or any external archive**:
+`analyze_issue103_dqn_task2_reward_shaping.py --verify-from-evidence`
+first requires both files in every manifest to match their recorded byte size
+and SHA-256. It then
 rebuilds the exact same `rows` from the committed `evaluation-episodes.csv`
-alone, recomputes `result.json` end-to-end (the same `_summaries`/
-`_paired_comparisons`/`_criteria` code path as the original run), and
-diffs it against the committed one:
+alone, recomputes `result.json` end-to-end, and diffs it against the committed
+one:
 
 ```bash
 python -m training.analyze_issue103_dqn_task2_reward_shaping \
@@ -226,8 +241,8 @@ re-run): `python -m training.export_evidence --plan-directory
 training_outputs/run-plans/<plan-id> --output experiments/2026-09-07-dqn-task2-reward-shaping/evidence/<plan-id>`
 for each of the three plan IDs.
 
-**Both treatments are rejected.** Neither cleared gate 3 (a confirmed
-`classic` survival-rate improvement):
+Under the retrospective rule, neither treatment satisfies the proposed
+`classic` survival diagnostic:
 
 | Gate | `survival_rebalance` | `safety_bomb` |
 | --- | --- | --- |
@@ -247,29 +262,29 @@ none of this reaches significance in either direction -- it is a directionally
 consistent but not confirmed engagement-for-safety trade-off, not a
 confident negative result.
 
-`safety_bomb` looks worse without an offsetting upside: survival and
+`safety_bomb` has worse point estimates without an offsetting observed upside:
+survival and
 self-kill rate moved the wrong way in all three scenarios (`classic`
 survival 0.48→0.26, `loot-crate` 0.52→0.24), collection-fraction actively
 regressed in `coin-heaven`, and the invalid-action rate rose sharply in
 `classic` (0.123→0.272) despite the mechanism adding no new action options.
 The point estimates suggest the treatment may have made bombing decisions
 *more* hesitant or erratic rather than safer, though the wide intervals mean
-this is not a statistically confident finding of harm either -- only a clear
-absence of the intended benefit. No follow-up is proposed without first
-understanding why (see "Known gaps" below).
+this is not a statistically confident finding of harm or a confirmatory
+absence of benefit. Any follow-up should first investigate the mechanism (see
+"Known gaps" below).
 
-Per the decision rule: **both `survival_rebalance` and `safety_bomb` are
-rejected for this training configuration; `main`'s current reward values
-(`control`) are retained.** This does not establish that either mechanism
-is universally unhelpful -- it rejects these exact values, this seed
-population, and this direct-classic training protocol.
+No reward-selection decision follows from this run. `main` continues to use
+the control rewards because no valid prospectively approved result justifies a
+change. Issue #103 remains open unless the team prospectively approves a fixed,
+computable rule and executes a new controlled run.
 
 ## Known gaps
 
 - **Root cause of `safety_bomb`'s regression is not investigated here.**
   The per-episode `SAFE_BOMB_PLACED`/`UNSAFE_BOMB_PLACED` event counts that
   would show *how often* the mechanism actually fired are only recorded on
-  training episodes, not evaluation episodes (see the decision-rule
+  training episodes, not evaluation episodes (see the analysis-rule
   correction above) -- so this result cannot say whether the penalty was
   too large, miscalibrated against the escape-search's own limits (e.g. its
   `MAX_ESCAPE_SEARCH_STEPS=10` truncation), or simply insufficient signal at

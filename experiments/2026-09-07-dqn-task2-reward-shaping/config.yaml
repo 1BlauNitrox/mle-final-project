@@ -2,7 +2,9 @@ schema_version: 1
 issue: 103
 owner: 1BlauNitrox
 reviewer: null
-status: completed_rejected
+status: completed_exploratory
+decision_rule_status: not_prospectively_approved_and_changed_before_analysis
+scientific_conclusion: none
 starting_artifact:
   path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
   sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
@@ -27,3 +29,5 @@ evidence:
   raw_output_tree: "not retained centrally (~4.4 GiB, team decision -- mostly redundant per-job source snapshots and framework_stats.json dumps, not evidence)"
   committed: "evidence/<plan-id>/{training-episodes.csv.gz,evaluation-episodes.csv,manifest.json}, ~19 MiB total"
   verification: "python -m training.analyze_issue103_dqn_task2_reward_shaping --verify-from-evidence experiments/2026-09-07-dqn-task2-reward-shaping/evidence --output experiments/2026-09-07-dqn-task2-reward-shaping"
+  execution_git_dirty: true
+  source_provenance_limitation: "all jobs record the same commit and source fingerprint, but the dirty execution source cannot be reconstructed from a clean commit"

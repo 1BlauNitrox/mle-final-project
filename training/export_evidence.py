@@ -131,14 +131,22 @@ def _fieldnames(rows: list[dict[str, Any]]) -> list[str]:
 
 def _write_plain_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=_fieldnames(rows))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=_fieldnames(rows),
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 
 
 def _write_gzipped_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     with gzip.open(path, "wt", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=_fieldnames(rows))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=_fieldnames(rows),
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 

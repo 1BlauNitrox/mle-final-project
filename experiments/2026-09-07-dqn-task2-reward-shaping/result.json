@@ -1,4 +1,5 @@
 {
+  "analysis_status": "exploratory_descriptive",
   "comparisons": {
     "safety_bomb": {
       "paired_collection_fraction_minus_control": {
@@ -179,7 +180,14 @@
       }
     }
   },
-  "criteria": {
+  "decision": {
+    "safety_bomb": "no_confirmatory_decision_unapproved_rule",
+    "survival_rebalance": "no_confirmatory_decision_unapproved_rule"
+  },
+  "deterministic_repeats": true,
+  "issue": 103,
+  "primary_evaluation_episodes": 450,
+  "retrospective_diagnostics": {
     "safety_bomb": {
       "classic_survival_improved": false,
       "collection_non_regression": false,
@@ -193,12 +201,5 @@
       "timing_within_limits": true
     }
   },
-  "decision": {
-    "safety_bomb": "reject_safety_bomb_for_this_training_configuration",
-    "survival_rebalance": "reject_survival_rebalance_for_this_training_configuration"
-  },
-  "deterministic_repeats": true,
-  "issue": 103,
-  "primary_evaluation_episodes": 450,
   "schema_version": 1
 }

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import gzip
+import hashlib
 import json
 from pathlib import Path
 
@@ -175,11 +176,18 @@ def test_export_produces_tagged_training_and_evaluation_csvs_and_a_manifest(
     assert training_rows[0]["world_seed"] == "1"
 
     evaluation_path = output_directory / "evaluation-episodes.csv"
+    assert b"\r\n" not in evaluation_path.read_bytes()
     with evaluation_path.open(encoding="utf-8", newline="") as handle:
         evaluation_rows = list(csv.DictReader(handle))
     assert len(evaluation_rows) == 1
     assert evaluation_rows[0]["stage_or_suite"] == "classic-primary"
     assert evaluation_rows[0]["world_seed"] == "71001"
+    evaluation_record = manifest["evidence_files"]["evaluation-episodes.csv"]
+    evaluation_bytes = evaluation_path.read_bytes()
+    assert evaluation_record == {
+        "sha256": hashlib.sha256(evaluation_bytes).hexdigest(),
+        "size_bytes": len(evaluation_bytes),
+    }
 
 
 def test_export_rejects_an_incomplete_plan(tmp_path: Path) -> None:

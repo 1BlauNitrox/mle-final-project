@@ -1,9 +1,10 @@
-"""Validate and summarize the preregistered Issue #103 run-plan outputs."""
+"""Validate and summarize the exploratory Issue #103 run-plan outputs."""
 
 from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
@@ -28,6 +29,9 @@ PRIMARY_SUITES = {
     "loot-crate-primary": "loot-crate",
 }
 NON_REGRESSION_MARGIN = -0.05
+EVIDENCE_FILENAMES = frozenset(
+    {"training-episodes.csv.gz", "evaluation-episodes.csv"}
+)
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
@@ -95,11 +99,15 @@ def rows_from_evidence(evidence_root: Path) -> tuple[list[dict[str, Any]], bool]
     deterministic_repeats = True
 
     for treatment, plan_id in PLAN_IDS.items():
-        manifest = _read_json(evidence_root / plan_id / "manifest.json")
+        plan_directory = evidence_root / plan_id
+        manifest = _read_json(plan_directory / "manifest.json")
+        _verify_evidence_files(plan_directory, manifest, plan_id)
+        if manifest.get("plan_id") != plan_id:
+            raise ValueError(f"Unexpected plan_id in evidence manifest: {plan_id}")
         if manifest.get("reward_variant") != treatment:
             raise ValueError(f"Unexpected reward_variant for {plan_id}")
         by_key: dict[tuple[str, str], dict[int, dict[str, Any]]] = defaultdict(dict)
-        with (evidence_root / plan_id / "evaluation-episodes.csv").open(
+        with (plan_directory / "evaluation-episodes.csv").open(
             encoding="utf-8", newline=""
         ) as handle:
             for row_number, raw_row in enumerate(csv.DictReader(handle), start=2):
@@ -135,6 +143,37 @@ def rows_from_evidence(evidence_root: Path) -> tuple[list[dict[str, Any]], bool]
     return rows, deterministic_repeats
 
 
+def _verify_evidence_files(
+    plan_directory: Path,
+    manifest: dict[str, Any],
+    plan_id: str,
+) -> None:
+    """Require every declared evidence file to match its committed record."""
+    records = manifest.get("evidence_files")
+    if not isinstance(records, dict) or set(records) != EVIDENCE_FILENAMES:
+        raise ValueError(f"Evidence file manifest mismatch for {plan_id}")
+
+    for filename in sorted(EVIDENCE_FILENAMES):
+        record = records[filename]
+        if not isinstance(record, dict):
+            raise ValueError(f"Invalid evidence record for {plan_id}/{filename}")
+        expected_size = record.get("size_bytes")
+        expected_sha256 = record.get("sha256")
+        if not isinstance(expected_size, int) or isinstance(expected_size, bool):
+            raise ValueError(f"Invalid evidence size for {plan_id}/{filename}")
+        if not isinstance(expected_sha256, str) or len(expected_sha256) != 64:
+            raise ValueError(f"Invalid evidence checksum for {plan_id}/{filename}")
+
+        path = plan_directory / filename
+        if not path.is_file():
+            raise ValueError(f"Missing evidence file for {plan_id}: {filename}")
+        data = path.read_bytes()
+        if len(data) != expected_size:
+            raise ValueError(f"Evidence size mismatch for {plan_id}/{filename}")
+        if hashlib.sha256(data).hexdigest() != expected_sha256:
+            raise ValueError(f"Evidence checksum mismatch for {plan_id}/{filename}")
+
+
 def verify_from_evidence(
     evidence_root: Path, expected_result_path: Path
 ) -> tuple[dict[str, Any], bool]:
@@ -165,7 +204,7 @@ def _compute_and_write_result(
         }
         for treatment in TREATMENTS
     }
-    criteria = {
+    retrospective_diagnostics = {
         treatment: _criteria(
             rows,
             comparisons[treatment]["paired_collection_fraction_minus_control"],
@@ -177,16 +216,13 @@ def _compute_and_write_result(
     result = {
         "schema_version": 1,
         "issue": 103,
+        "analysis_status": "exploratory_descriptive",
         "deterministic_repeats": deterministic_repeats,
         "primary_evaluation_episodes": len(rows),
         "comparisons": comparisons,
-        "criteria": criteria,
+        "retrospective_diagnostics": retrospective_diagnostics,
         "decision": {
-            treatment: (
-                f"adopt_{treatment}"
-                if all(criteria[treatment].values())
-                else f"reject_{treatment}_for_this_training_configuration"
-            )
+            treatment: "no_confirmatory_decision_unapproved_rule"
             for treatment in TREATMENTS
         },
     }
@@ -352,7 +388,11 @@ def _criteria(
 
 def _write_summary(path: Path, summaries: list[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(summaries[0]))
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(summaries[0]),
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(summaries)
 
