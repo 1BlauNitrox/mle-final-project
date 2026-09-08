@@ -146,6 +146,7 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
         "useful bomb reward": (
             lambda plan: plan.update(useful_bomb_reward=0.5),
             "useful_bomb_reward",
+        ),
         "escape treatment": (
             lambda plan: plan.update(escape_continuations="invalid"),
             "escape_continuations",
@@ -199,9 +200,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
 
     with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
         with pytest.raises(RuntimeError, match="planned failure"):
-            run_plan.execute_plan(
-                plan, output_root=output_root, process_monitor=process_monitor
-            )
+            run_plan.execute_plan(plan, output_root=output_root, process_monitor=process_monitor)
 
         plan_directory = output_root / plan.plan_id
         failed_status = json.loads((plan_directory / "status.json").read_text())

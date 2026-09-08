@@ -160,16 +160,10 @@ def load_plan(path: Path) -> ResolvedPlan:
     if type(escape_continuations) is bool:
         escape_continuations = "on" if escape_continuations else "off"
     if escape_continuations not in VALID_ESCAPE_CONTINUATIONS:
-        raise ValueError(
-            "escape_continuations must be one of "
-            f"{list(VALID_ESCAPE_CONTINUATIONS)}"
-        )
+        raise ValueError(f"escape_continuations must be one of {list(VALID_ESCAPE_CONTINUATIONS)}")
     replay_treatment = raw.get("replay_treatment", "uniform")
     if replay_treatment not in VALID_REPLAY_TREATMENTS:
-        raise ValueError(
-            "replay_treatment must be one of "
-            f"{list(VALID_REPLAY_TREATMENTS)}"
-        )
+        raise ValueError(f"replay_treatment must be one of {list(VALID_REPLAY_TREATMENTS)}")
     max_parallel = raw.get("max_parallel_training", 1)
     if not isinstance(max_parallel, int) or isinstance(max_parallel, bool) or max_parallel < 1:
         raise ValueError("max_parallel_training must be a positive integer")
@@ -193,11 +187,7 @@ def load_plan(path: Path) -> ResolvedPlan:
     suites = [_parse_suite(item) for item in raw_suites]
     _require_unique([stage["id"] for stage in stages], "training stage IDs")
     _require_unique([suite["id"] for suite in suites], "evaluation suite IDs")
-    if (
-        replay_treatment == "protected_task1"
-        and stages
-        and stages[0]["scenario"] != "coin-heaven"
-    ):
+    if replay_treatment == "protected_task1" and stages and stages[0]["scenario"] != "coin-heaven":
         raise ValueError(
             "protected_task1 replay treatment requires the first training stage "
             "to use the coin-heaven scenario"
@@ -428,15 +418,12 @@ def _run_job(
         environment_overrides = {
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": str(plan.useful_bomb_reward),
-        }
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
         if job.kind == "training":
             environment_overrides["BOMBERMAN_DQN_REPLAY_COLLECTION"] = (
-                "task1"
-                if _is_initial_task1_stage(plan, job)
-                else "closed"
+                "task1" if _is_initial_task1_stage(plan, job) else "closed"
             )
         if job.kind == "evaluation" and artifact is not None:
             environment_overrides["BOMBERMAN_EVALUATION_CHECKPOINT"] = artifact.name
