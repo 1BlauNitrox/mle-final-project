@@ -39,6 +39,7 @@ def run_experiment(
     environment_overrides: dict[str, str] | None = None,
     run_id: str | None = None,
     metadata_extra: dict[str, Any] | None = None,
+    process_monitor: Any | None = None,
 ) -> Path:
     """Run one game job and create a self-contained experiment directory."""
     _validate_arguments(
@@ -128,16 +129,34 @@ def run_experiment(
         environment["BOMBERMAN_AGENT_SEED"] = str(agent_seed)
     if environment_overrides:
         environment.update(environment_overrides)
+    if (
+        mode == "training"
+        and environment.get("BOMBERMAN_DQN_REPLAY_TREATMENT")
+        == "protected_task1"
+        and "BOMBERMAN_DQN_REPLAY_COLLECTION" not in (environment_overrides or {})
+    ):
+        # A standalone Task 2 training invocation can identify its scenario,
+        # while staged plans provide the stricter first-stage marker explicitly.
+        environment["BOMBERMAN_DQN_REPLAY_COLLECTION"] = (
+            "task1" if scenario == "coin-heaven" else "closed"
+        )
 
     start_time = monotonic()
 
     try:
-        result = subprocess.run(
-            command,
-            cwd=REPOSITORY_ROOT,
-            env=environment,
-            check=False,
-        )
+        if process_monitor is None:
+            result = subprocess.run(
+                command,
+                cwd=REPOSITORY_ROOT,
+                env=environment,
+                check=False,
+            )
+        else:
+            result = _run_monitored_process(
+                command,
+                environment=environment,
+                process_monitor=process_monitor,
+            )
 
         metadata["return_code"] = result.returncode
 
@@ -180,6 +199,37 @@ def run_experiment(
         _write_json(metadata_path, metadata)
 
     return run_directory
+
+
+def _run_monitored_process(
+    command: list[str],
+    *,
+    environment: dict[str, str],
+    process_monitor: Any,
+) -> subprocess.CompletedProcess[Any]:
+    """Run one framework process under a campaign-owned resource monitor."""
+    process = subprocess.Popen(command, cwd=REPOSITORY_ROOT, env=environment)
+    try:
+        process_monitor.register(process.pid)
+        while True:
+            process_monitor.check()
+            try:
+                return_code = process.wait(timeout=0.25)
+                process_monitor.check()
+                return subprocess.CompletedProcess(command, return_code)
+            except subprocess.TimeoutExpired:
+                continue
+    except BaseException:
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait()
+        raise
+    finally:
+        process_monitor.unregister(process.pid)
 
 
 def _build_game_command(

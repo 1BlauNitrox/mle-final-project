@@ -775,6 +775,24 @@ experiments/
     `-- figures/
 ```
 
+## Task 2 replay treatments
+
+The DQN Task 2 agent supports two persisted replay modes. `uniform` is the
+baseline single 10,000-transition FIFO and retains its historical uniform
+without-replacement sampler. `protected_task1` keeps two disjoint FIFO
+partitions: 2,000 transitions collected only during the initial 2,000
+coin-heaven training episodes, and 8,000 transitions from later training. Once
+the initial collection phase closes, each 64-transition update samples 16
+protected and 48 other transitions when both partitions are sufficiently full.
+Missing quota is filled from the other partition without replacement. The
+checkpoint records the mode, partition contents, collection phase, and replay
+RNG state; a resume rejects a different mode or incompatible partition schema.
+
+Evaluation does not construct replay or optimizer state. Training checkpoints
+can be converted with the agent-local evaluation export helper into an artifact
+containing only the frozen online network and the metadata required to rebuild
+it.
+
 ## Agent cards
 
 Every learned agent's `README.md` should answer:
