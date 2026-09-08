@@ -36,7 +36,7 @@ must be rebound before scientific Task 3 training. This provisional fixture is
 not evidence and does not close that dependency.
 
 Migration copies the 21 Task 2 input columns, both 64-unit hidden layers, and
-all six output rows. The eight Task 3 input columns are zero-initialized, so
+all six output rows. The thirteen Task 3 input columns are zero-initialized, so
 initial inherited Q-values and greedy actions are preserved within the
 documented float32 tolerance. Optimizer, replay, epsilon, and RNG state are
 reset for Task 3 training. Incompatible feature schema, action order, reward
@@ -44,7 +44,7 @@ mapping, or configuration fails during checkpoint loading.
 
 ## Learning model and evaluation contract
 
-This is a CPU DQN with a `29 -> 64 -> 64 -> 6` multilayer perceptron, seeded
+This is a CPU DQN with a `34 -> 64 -> 64 -> 6` multilayer perceptron, seeded
 epsilon-greedy training, bounded replay, a target network, and the inherited
 Task 2 hyperparameters. The action order is:
 

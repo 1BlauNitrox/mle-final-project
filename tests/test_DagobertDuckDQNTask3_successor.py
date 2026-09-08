@@ -83,7 +83,7 @@ def make_agent() -> SimpleNamespace:
 
 
 def test_schema_and_action_order_extend_task2_without_reordering() -> None:
-    assert FEATURE_COUNT == 29
+    assert FEATURE_COUNT == 34
     assert FEATURE_SCHEMA_VERSION == 3
     assert ACTIONS == ("UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB")
 
@@ -206,11 +206,13 @@ def test_terminal_elimination_is_recorded_once(
 
 
 def test_task3_normalization_preserves_binary_and_signed_domains() -> None:
-    raw = tuple(range(21)) + (1, -1, 1, 3, 1, 0, 3, 3)
+    raw = tuple(range(21)) + (1, -1, 1, 3, 1, 0, 1, 0, 1, 0, -1, 1, 3)
     normalized = normalize_features(raw)
 
     assert normalized.shape == (FEATURE_COUNT,)
     assert normalized[22] == -1.0
     assert normalized[24] == 1.0
     assert normalized[27] == 1.0
-    assert normalized[28] == 1.0
+    assert normalized[28] == 0.0
+    assert normalized[31] == -1.0
+    assert normalized[33] == 1.0

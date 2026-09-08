@@ -5,8 +5,8 @@
   "capability": "task1_task2_behavior_plus_public_opponent_awareness",
   "artifact": {
     "path": "checkpoint.pt",
-    "sha256": "7fea4ae757870ef51ef80206d2c5c948cc4d977ef03a43e6f600d3527ad23166",
-    "size_bytes": 59117,
+    "sha256": "7e3ac14a88e33e43da7736ec56507d935f71af059b8ac42442d550184ae39902",
+    "size_bytes": 61677,
     "note": "Fresh provisional Task 3 migration checkpoint; no scientific training or evaluation evidence."
   },
   "model_contract": {
@@ -14,7 +14,7 @@
     "checkpoint_schema_version": 1,
     "model_schema_version": 1,
     "feature_schema_version": 3,
-    "input_dim": 29,
+    "input_dim": 34,
     "hidden_sizes": [64, 64],
     "action_order": ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"],
     "forbidden_actions": []
@@ -33,12 +33,12 @@
     "parent_input_dim": 21,
     "parent_output_dim": 6,
     "parent_hidden_sizes": [64, 64],
-    "successor_input_dim": 29,
+    "successor_input_dim": 34,
     "successor_output_dim": 6,
     "seed": 44,
     "rule": [
       "copy the parent's 21 input columns verbatim",
-      "zero the eight Task 3 opponent-feature columns",
+      "zero the thirteen Task 3 opponent-feature columns",
       "copy both hidden layers and all six output rows verbatim",
       "reset optimizer, replay buffer, epsilon, and RNG state for Task 3"
     ]

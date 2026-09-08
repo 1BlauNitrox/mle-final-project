@@ -16,8 +16,7 @@ from .bombs_and_crates import (
 )
 from .navigation import DIRECTIONS
 
-OPPONENT_FEATURE_COUNT = 8
-MAX_OPPONENT_COUNT_BIN = 3
+OPPONENT_FEATURE_COUNT = 13
 
 
 def opponent_features(
@@ -29,30 +28,29 @@ def opponent_features(
     danger_map_with_hypothetical_bomb: DangerMap,
     bombs_with_hypothetical: list[tuple[Position, int]],
 ) -> tuple[int, ...]:
-    """Return the version-three eight-value opponent feature suffix.
+    """Return the version-four thirteen-value opponent feature suffix.
 
     The attack descriptors answer what a bomb at the current position would
-    affect and whether the current geometry leaves a time-safe escape. They
-    are descriptive inputs, not a selected action or a safety mask.
+    affect and whether the current geometry leaves a time-safe escape. The
+    four per-direction occupancy flags and the second-nearest descriptors
+    are what make "opponents as obstacles" and multi-opponent awareness
+    (up to three in `classic`) explicit rather than collapsed into a single
+    count. They are descriptive inputs, not a selected action or a safety
+    mask.
     """
-    opponent_positions = _opponent_positions(game_state)
-    if not opponent_positions:
+    ranked = _ranked_opponents(game_state, position)
+    if not ranked:
         return (0,) * OPPONENT_FEATURE_COUNT
 
-    nearest = min(
-        opponent_positions,
-        key=lambda candidate: (
-            _manhattan_distance(position, candidate),
-            candidate[0],
-            candidate[1],
-        ),
-    )
     x, y = position
-    nearest_x, nearest_y = nearest
-    distance = _manhattan_distance(position, nearest)
+    opponent_positions = set(ranked)
+    nearest = ranked[0]
+    nearest_distance = _manhattan_distance(position, nearest)
+
     footprint = set(blast_footprint(position, field))
-    blast_count = min(sum(candidate in footprint for candidate in opponent_positions), 3)
-    attack_opportunity = int(blast_count > 0)
+    attack_opportunity = int(
+        any(candidate in footprint for candidate in opponent_positions)
+    )
     attack_escape_exists = int(
         attack_opportunity
         and safe_escape_exists(
@@ -63,23 +61,46 @@ def opponent_features(
             position,
         )
     )
-    adjacent_count = min(
-        sum(
-            (x + dx, y + dy) in opponent_positions
-            for dx, dy in DIRECTIONS
-        ),
-        MAX_OPPONENT_COUNT_BIN,
+    adjacency = tuple(
+        int((x + dx, y + dy) in opponent_positions) for dx, dy in DIRECTIONS
     )
+
+    if len(ranked) >= 2:
+        second = ranked[1]
+        second_sign_x = _sign(second[0] - x)
+        second_sign_y = _sign(second[1] - y)
+        second_distance_bin = _distance_bin(_manhattan_distance(position, second))
+    else:
+        second_sign_x = 0
+        second_sign_y = 0
+        second_distance_bin = 0
 
     return (
         1,
-        _sign(nearest_x - x),
-        _sign(nearest_y - y),
-        _distance_bin(distance),
+        _sign(nearest[0] - x),
+        _sign(nearest[1] - y),
+        _distance_bin(nearest_distance),
         attack_opportunity,
         attack_escape_exists,
-        blast_count,
-        adjacent_count,
+        *adjacency,
+        second_sign_x,
+        second_sign_y,
+        second_distance_bin,
+    )
+
+
+def _ranked_opponents(game_state: dict, position: Position) -> tuple[Position, ...]:
+    """Return public opponent positions ordered nearest-first, ties broken by coordinate."""
+    positions = _opponent_positions(game_state)
+    return tuple(
+        sorted(
+            positions,
+            key=lambda candidate: (
+                _manhattan_distance(position, candidate),
+                candidate[0],
+                candidate[1],
+            ),
+        )
     )
 
 

@@ -4,7 +4,7 @@ parent_agent: DagobertDuckDQNTask2
 parent_artifact: checkpoint-issue85-zero-suffix.pt
 parent_artifact_sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
 feature_schema_version: 3
-feature_count: 29
+feature_count: 34
 action_order: [UP, RIGHT, DOWN, LEFT, WAIT, BOMB]
 hidden_sizes: [64, 64]
 elimination_event: KILLED_OPPONENT

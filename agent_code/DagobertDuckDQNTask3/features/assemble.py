@@ -3,8 +3,14 @@
 Indices 0-7 are the unchanged Task 1 navigation prefix (see `navigation.py`);
 issue #43's differential tests pin their values identical to the frozen
 parent on Task 1 states. Indices 8-20 are the Task 2 additions from
-`bombs_and_crates.py`. Indices 21-28 are the public-opponent suffix from
-`opponents.py`.
+`bombs_and_crates.py`. Indices 21-33 are the public-opponent suffix from
+`opponents.py`: nearest-opponent presence/direction/distance (21-24), attack
+opportunity and its escape (25-26), per-direction opponent occupancy (27-30,
+mirroring `free_directions`' own ordering so opponents count as obstacles
+per direction rather than as one aggregate count), and second-nearest
+opponent direction/distance (31-33, zero when fewer than two opponents are
+present) so up to `classic`'s three opponents are not collapsed into a
+single nearest-only signal.
 """
 
 from __future__ import annotations
@@ -37,7 +43,7 @@ MAX_CRATES_DESTROYED_BIN = 3
 
 
 def state_to_features(game_state: dict | None) -> StateFeatures | None:
-    """Encode a framework state as the 29-element Task 3 feature tuple."""
+    """Encode a framework state as the 34-element Task 3 feature tuple."""
     if game_state is None:
         return None
 
@@ -128,7 +134,7 @@ def normalize_features(features: StateFeatures) -> np.ndarray:
 
     normalized = values.copy()
 
-    for index in (7, 9, 18, 19, 24, 27, 28):
+    for index in (7, 9, 18, 19, 24, 33):
         normalized[index] /= 3.0
 
     return normalized

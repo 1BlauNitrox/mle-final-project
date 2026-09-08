@@ -40,7 +40,7 @@ ACTION_TO_INDEX: dict[str, int] = {
     action: index for index, action in enumerate(ACTIONS)
 }
 
-FEATURE_COUNT = 29
+FEATURE_COUNT = 34
 FEATURE_SCHEMA_VERSION = 3
 
 REWARDS: dict[str, float] = {

@@ -14,32 +14,43 @@ manifest after #107; no Task 3 result is used for that selection.
 
 ## Feature schema
 
-Feature schema version 3 has 29 inputs. Indices 0--20 are copied unchanged
-from Task 2. Indices 21--28 are appended in this order:
+Feature schema version 3 has 34 inputs. Indices 0--20 are copied unchanged
+from Task 2. Indices 21--33 are appended in this order:
 
 | Index | Feature | Domain and definition |
 | ---: | --- | --- |
 | 21 | `opponent_visible` | `1` when at least one public opponent exists, else `0` |
 | 22 | `opponent_dx` | Sign of nearest opponent x-coordinate minus own x-coordinate |
 | 23 | `opponent_dy` | Sign of nearest opponent y-coordinate minus own y-coordinate |
-| 24 | `opponent_distance_bin` | Manhattan distance: `0` absent, `1` for 1, `2` for 2--3, `3` for 4+ |
+| 24 | `opponent_distance_bin` | Manhattan distance to the nearest opponent: `0` absent, `1` for 1, `2` for 2--3, `3` for 4+ |
 | 25 | `opponent_attack_opportunity` | `1` when a bomb at the current position would include any opponent in its wall-blocked blast footprint |
 | 26 | `opponent_attack_escape_exists` | `1` only when an attack opportunity exists and a time-safe escape remains after that hypothetical bomb |
-| 27 | `opponent_blast_count_bin` | Public opponents in the current-position bomb footprint, capped to `3` |
-| 28 | `adjacent_opponent_count_bin` | Public opponents in the four neighboring tiles, capped to `3` |
+| 27 | `opponent_adjacent_up` | `1` when a public opponent occupies the tile one step up |
+| 28 | `opponent_adjacent_right` | `1` when a public opponent occupies the tile one step right |
+| 29 | `opponent_adjacent_down` | `1` when a public opponent occupies the tile one step down |
+| 30 | `opponent_adjacent_left` | `1` when a public opponent occupies the tile one step left |
+| 31 | `second_opponent_dx` | Sign of second-nearest opponent x-coordinate minus own x-coordinate; `0` when fewer than two opponents are present |
+| 32 | `second_opponent_dy` | Sign of second-nearest opponent y-coordinate minus own y-coordinate; `0` when fewer than two opponents are present |
+| 33 | `second_opponent_distance_bin` | Manhattan distance to the second-nearest opponent, same bins as index 24; `0` when fewer than two opponents are present |
 
-The two occupancy descriptors intentionally expose public blast/neighbor
-occupancy without
-encoding a preferred action. Opponents are obstacles in immediate movement,
-crate-target BFS, and every non-wait step of the escape search. The nearest
-opponent tie-break is Manhattan distance followed by x and y coordinate, so
-the representation is deterministic and does not depend on agent ordering.
-When no opponent is present, all eight appended raw values are zero.
+The four per-direction occupancy flags (27--30) mirror `free_directions`'
+own per-direction ordering, so opponents count as obstacles in each specific
+direction rather than as one aggregate count -- the original eight-value
+suffix collapsed this into a single `adjacent_opponent_count_bin` and a
+single `opponent_blast_count_bin`, which this schema replaces with the
+per-direction flags and the second-nearest descriptors (31--33) so that
+`classic`'s up to three simultaneous opponents are not collapsed into a
+nearest-only signal. Opponents are obstacles in immediate movement,
+crate-target BFS, and every non-wait step of the escape search. Both the
+nearest and second-nearest tie-breaks are Manhattan distance followed by x
+and y coordinate, so the representation is deterministic and does not
+depend on agent ordering. When no opponent is present, all thirteen
+appended raw values are zero.
 
-Only the distance bin and the two capped count bins are divided during
-normalization: index 24 is divided by 3, and indices 27--28 are divided by 3.
-Signed direction values remain in `[-1, 1]`; the binary values are already
-normalized.
+Only the two distance bins are divided during normalization: indices 24 and
+33 are each divided by 3. Signed direction values remain in `[-1, 1]`; the
+binary values (including the four per-direction occupancy flags) are
+already normalized.
 
 ## Elimination signal and attribution
 
@@ -70,8 +81,8 @@ provisional parent source is current-main commit
 `933a8fe11440e0f7645254390928da6af5dad46d`.
 
 Migration copies all 21 inherited input columns, hidden layers, and all six
-output rows and biases. The eight new input columns are zero-initialized, so
-the initial Task 3 Q-values and greedy behavior equal Task 2 for every
+output rows and biases. The thirteen new input columns are zero-initialized,
+so the initial Task 3 Q-values and greedy behavior equal Task 2 for every
 state. The optimizer, replay buffer, epsilon schedule, and RNG streams are
 reset as a new Task 3 training state. The checkpoint records feature schema 3,
 the complete reward mapping, action order, and the Task 3 configuration;

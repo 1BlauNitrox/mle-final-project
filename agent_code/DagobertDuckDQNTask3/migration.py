@@ -1,7 +1,7 @@
 """One-way migration from the provisional Task 2 DQN into Task 3.
 
 The six-action output contract and both hidden layers are unchanged. Only the
-input expands from 21 to 29 features; the appended columns are zeroed so the
+input expands from 21 to 34 features; the appended columns are zeroed so the
 initial Task 3 network is function-preserving for the inherited feature
 prefix.
 """
@@ -17,7 +17,7 @@ from .model import QNetwork, build_q_network
 PARENT_INPUT_DIM = 21
 PARENT_OUTPUT_DIM = 6
 PARENT_HIDDEN_SIZES = (64, 64)
-NEW_INPUT_DIM = 29
+NEW_INPUT_DIM = 34
 MIGRATION_INIT_SEED = 44
 INHERITED_Q_VALUE_TOLERANCE = 1e-5
 
