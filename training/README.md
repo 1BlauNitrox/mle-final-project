@@ -227,8 +227,11 @@ python -m training.analyze_issue107_task2_factorial --validate-protocol
 
 The launcher requires a clean reviewed commit, an explicit
 `--authorize-compute` flag, the full reviewed SHA, and an actual server hardware
-description. Exact launch, resume, analysis, ceilings, contrasts, and selection
-commands are registered in
+description. Its `psutil`-backed campaign monitor enforces and persists the
+aggregate CPU, wall-clock, and memory ceilings across active and resumed work;
+the analyzer rejects outputs whose resolved plans differ from the registered
+reviewed plans. Exact launch, resume, analysis, ceilings, contrasts, and
+selection commands are registered in
 `experiments/2026-09-07-dqn-task2-factorial/README.md`. A dry run is integration
 validation only and produces no performance evidence.
 

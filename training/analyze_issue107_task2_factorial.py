@@ -16,6 +16,7 @@ import numpy as np
 from training.aggregate import read_episodes_csv
 from training.run_experiment import REPOSITORY_ROOT
 from training.run_issue107_campaign import CELL_TREATMENTS, PLAN_PATHS, validate_protocol
+from training.run_plan import load_plan
 
 PLAN_ROOT = REPOSITORY_ROOT / "training_outputs" / "run-plans"
 DEFAULT_OUTPUT = REPOSITORY_ROOT / "training_outputs" / "issue107-analysis"
@@ -83,7 +84,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
         resolved = _read_json(plan_directory / "resolved_plan.json")
         if status.get("status") != "completed":
             raise ValueError(f"Run plan is not completed: {plan_id}")
-        _validate_resolved_treatment(treatment, resolved)
+        _validate_registered_plan(treatment, resolved)
         if treatment in CELL_TREATMENTS:
             cell_fingerprints.append(resolved["fingerprints"])
             resource_rows.extend(_training_resources(treatment, plan_directory, status, resolved))
@@ -201,7 +202,19 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     return result
 
 
-def _validate_resolved_treatment(treatment: str, resolved: dict[str, Any]) -> None:
+def _validate_registered_plan(treatment: str, resolved: dict[str, Any]) -> None:
+    """Bind evidence to every field and fingerprint in the reviewed plan."""
+    registered = load_plan(PLAN_PATHS[treatment]).to_dict()
+    if resolved != registered:
+        changed = sorted(
+            key
+            for key in set(resolved) | set(registered)
+            if resolved.get(key) != registered.get(key)
+        )
+        raise ValueError(
+            f"Resolved plan does not match registered plan for {treatment}: {changed}"
+        )
+
     expected = CELL_TREATMENTS.get(treatment)
     if (
         expected is not None

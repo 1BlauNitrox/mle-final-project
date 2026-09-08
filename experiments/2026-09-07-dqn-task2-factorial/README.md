@@ -163,8 +163,17 @@ python -m training.analyze_issue107_task2_factorial
 
 The fixed ceiling is 48 CPU-hours, 24 wall-clock hours, four training workers,
 8 GiB aggregate RAM, and one serial evaluation worker. No paid resource is
-authorized. If the ceiling is reached, retain the partial record and stop; do
-not extend the budget or remove weak replicas.
+authorized. The launcher samples every active Bomberman process tree, persists
+campaign-wide CPU, wall-clock, and peak-memory use beside the authorization
+record, and includes completed jobs when resuming. Crossing any ceiling
+terminates all active campaign process trees and retains their failed-attempt
+snapshots plus the resource record. Do not extend the budget, delete the
+partial record, or remove weak replicas. This training-only guard requires
+`psutil`, declared in `requirements-dev.txt`.
+
+The analyzer accepts evidence only when every recorded resolved plan exactly
+matches the plan loaded from this reviewed execution revision, including jobs,
+seeds, source/dependency/agent fingerprints, and parent-artifact hashes.
 
 ## Evidence and follow-up
 

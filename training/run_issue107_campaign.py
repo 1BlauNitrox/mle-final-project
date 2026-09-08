@@ -10,10 +10,15 @@ import platform
 import re
 import subprocess
 import sys
+import threading
+import time
+from collections.abc import Callable
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import psutil
 import yaml
 
 from training.run_experiment import REPOSITORY_ROOT
@@ -38,6 +43,9 @@ CELL_TREATMENTS = {
 }
 SOURCE_SHA256 = "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60"
 TASK1_SHA256 = "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
+CPU_HOURS_MAX = 48
+WALL_CLOCK_HOURS_MAX = 24
+MEMORY_GIB_MAX = 8
 TRAINING_SEEDS = tuple(zip(range(107_001, 107_006), range(207_001, 207_006), strict=True))
 SCENARIOS = ("classic", "coin-heaven", "loot-crate")
 EXPECTED_STAGES = (
@@ -47,6 +55,201 @@ EXPECTED_STAGES = (
 )
 
 
+class CampaignResourceLimitExceeded(RuntimeError):
+    """Raised after the campaign monitor stops all work at a registered ceiling."""
+
+
+@dataclass(frozen=True)
+class CampaignLimits:
+    """Aggregate resource ceilings for all active and completed campaign jobs."""
+
+    cpu_seconds: float
+    wall_seconds: float
+    memory_bytes: int
+
+
+class CampaignResourceMonitor:
+    """Persist aggregate usage and terminate the campaign process forest on breach."""
+
+    def __init__(
+        self,
+        *,
+        state_path: Path,
+        authorized_at: str,
+        limits: CampaignLimits,
+        time_fn: Callable[[], float] = time.time,
+        process_factory: Callable[[int], Any] = psutil.Process,
+        wait_procs: Callable[..., Any] = psutil.wait_procs,
+    ) -> None:
+        self.state_path = Path(state_path)
+        self.limits = limits
+        self._time_fn = time_fn
+        self._process_factory = process_factory
+        self._wait_procs = wait_procs
+        self._lock = threading.RLock()
+        self._authorized_epoch = datetime.fromisoformat(
+            authorized_at.replace("Z", "+00:00")
+        ).timestamp()
+        self._active: dict[int, dict[str, Any]] = {}
+        if self.state_path.exists():
+            state = json.loads(self.state_path.read_text(encoding="utf-8"))
+            if state.get("authorized_at") != authorized_at:
+                raise ValueError("Campaign resource state belongs to another authorization")
+            expected_limits = {
+                "cpu_seconds": self.limits.cpu_seconds,
+                "wall_seconds": self.limits.wall_seconds,
+                "memory_bytes": self.limits.memory_bytes,
+            }
+            if state.get("limits") != expected_limits:
+                raise ValueError("Campaign resource state uses different limits")
+            self._completed_cpu_seconds = float(state["cpu_seconds_consumed"])
+            self._peak_memory_bytes = int(state.get("peak_memory_bytes", 0))
+            self._limit_reached = state.get("limit_reached")
+        else:
+            self._completed_cpu_seconds = 0.0
+            self._peak_memory_bytes = 0
+            self._limit_reached = None
+            self._persist(0.0, 0)
+
+    def register(self, pid: int) -> None:
+        """Register one framework root process before it begins consuming budget."""
+        with self._lock:
+            if self._limit_reached:
+                raise CampaignResourceLimitExceeded(str(self._limit_reached))
+            self._active[pid] = {
+                "process": self._process_factory(pid),
+                "cpu_seconds": 0.0,
+            }
+        self.check()
+
+    def unregister(self, pid: int) -> None:
+        """Commit the last sampled CPU use so a resume includes completed jobs."""
+        with self._lock:
+            self._sample_locked()
+            record = self._active.pop(pid, None)
+            if record is not None:
+                self._completed_cpu_seconds += float(record["cpu_seconds"])
+            cpu_seconds, memory_bytes = self._usage_locked()
+            self._persist(cpu_seconds, memory_bytes)
+
+    def check(self) -> None:
+        """Sample aggregate usage and stop every active process at the first breach."""
+        with self._lock:
+            if self._limit_reached:
+                message = str(self._limit_reached)
+                processes = self._processes_locked()
+            else:
+                self._sample_locked()
+                cpu_seconds, memory_bytes = self._usage_locked()
+                wall_seconds = max(0.0, self._time_fn() - self._authorized_epoch)
+                breached = None
+                if wall_seconds > self.limits.wall_seconds:
+                    breached = (
+                        f"wall ceiling exceeded: {wall_seconds:.3f} > "
+                        f"{self.limits.wall_seconds:.3f} seconds"
+                    )
+                elif cpu_seconds > self.limits.cpu_seconds:
+                    breached = (
+                        f"CPU ceiling exceeded: {cpu_seconds:.3f} > "
+                        f"{self.limits.cpu_seconds:.3f} seconds"
+                    )
+                elif memory_bytes > self.limits.memory_bytes:
+                    breached = (
+                        f"memory ceiling exceeded: {memory_bytes} > "
+                        f"{self.limits.memory_bytes} bytes"
+                    )
+                if breached is not None:
+                    self._limit_reached = breached
+                self._persist(cpu_seconds, memory_bytes)
+                message = breached
+                processes = self._processes_locked() if breached else []
+        if message is not None:
+            self._terminate(processes)
+            raise CampaignResourceLimitExceeded(message)
+
+    def _sample_locked(self) -> None:
+        for record in self._active.values():
+            processes = self._tree(record["process"])
+            cpu_seconds = 0.0
+            for process in processes:
+                try:
+                    times = process.cpu_times()
+                    cpu_seconds += float(times.user) + float(times.system)
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    continue
+            record["cpu_seconds"] = max(record["cpu_seconds"], cpu_seconds)
+
+    def _usage_locked(self) -> tuple[float, int]:
+        cpu_seconds = self._completed_cpu_seconds + sum(
+            float(record["cpu_seconds"]) for record in self._active.values()
+        )
+        unique: dict[int, Any] = {}
+        for process in self._processes_locked():
+            unique[process.pid] = process
+        memory_bytes = 0
+        for process in unique.values():
+            try:
+                memory_bytes += int(process.memory_info().rss)
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                continue
+        self._peak_memory_bytes = max(self._peak_memory_bytes, memory_bytes)
+        return cpu_seconds, memory_bytes
+
+    def _processes_locked(self) -> list[Any]:
+        processes: list[Any] = []
+        for record in self._active.values():
+            processes.extend(self._tree(record["process"]))
+        return processes
+
+    @staticmethod
+    def _tree(root: Any) -> list[Any]:
+        try:
+            return [*root.children(recursive=True), root]
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            return [root]
+
+    def _terminate(self, processes: list[Any]) -> None:
+        unique = {process.pid: process for process in processes}.values()
+        for process in unique:
+            try:
+                process.terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+        _, alive = self._wait_procs(list(unique), timeout=5)
+        for process in alive:
+            try:
+                process.kill()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+
+    def _persist(self, cpu_seconds: float, memory_bytes: int) -> None:
+        wall_seconds = max(0.0, self._time_fn() - self._authorized_epoch)
+        value = {
+            "schema_version": 1,
+            "authorized_at": datetime.fromtimestamp(
+                self._authorized_epoch, timezone.utc
+            ).isoformat().replace("+00:00", "Z"),
+            "cpu_seconds_consumed": cpu_seconds,
+            "wall_seconds_elapsed": wall_seconds,
+            "current_memory_bytes": memory_bytes,
+            "peak_memory_bytes": self._peak_memory_bytes,
+            "limits": {
+                "cpu_seconds": self.limits.cpu_seconds,
+                "wall_seconds": self.limits.wall_seconds,
+                "memory_bytes": self.limits.memory_bytes,
+            },
+            "active_root_pids": sorted(self._active),
+            "limit_reached": self._limit_reached,
+            "updated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        }
+        self.state_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = self.state_path.with_suffix(self.state_path.suffix + ".tmp")
+        temporary.write_text(
+            json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+        temporary.replace(self.state_path)
+
+
 def validate_protocol() -> dict[str, Any]:
     """Fail closed unless all six plans form the registered campaign."""
     config = _read_yaml(CONFIG_PATH)
@@ -54,6 +257,13 @@ def validate_protocol() -> dict[str, Any]:
 
     _require(config.get("issue") == 107, "Experiment config must identify Issue #107")
     _require(config.get("status") == "prospective_protocol", "Protocol status changed")
+    resources = config.get("resources", {})
+    _require(resources.get("cpu_hours_max") == CPU_HOURS_MAX, "CPU ceiling changed")
+    _require(
+        resources.get("wall_clock_hours_max") == WALL_CLOCK_HOURS_MAX,
+        "Wall-clock ceiling changed",
+    )
+    _require(resources.get("memory_gib_max") == MEMORY_GIB_MAX, "Memory ceiling changed")
     _verify_artifact(
         REPOSITORY_ROOT / config["source_checkpoint"]["path"],
         SOURCE_SHA256,
@@ -188,9 +398,9 @@ def execute_campaign(
         "platform": platform.platform(),
         "python": sys.version,
         "logical_cpu_count": os.cpu_count(),
-        "cpu_hours_max": 48,
-        "wall_clock_hours_max": 24,
-        "memory_gib_max": 8,
+        "cpu_hours_max": CPU_HOURS_MAX,
+        "wall_clock_hours_max": WALL_CLOCK_HOURS_MAX,
+        "memory_gib_max": MEMORY_GIB_MAX,
         "max_training_workers": 4,
         "evaluation_workers": 1,
     }
@@ -210,19 +420,36 @@ def execute_campaign(
         changed = any(existing.get(name) != authorization[name] for name in immutable_fields)
         if not resume or changed:
             raise ValueError("Existing Issue #107 authorization record is incompatible")
+        authorization = existing
     else:
         authorization_path.write_text(
             json.dumps(authorization, indent=2, sort_keys=True) + "\n",
             encoding="utf-8",
         )
 
+    resource_state_path = (
+        output_root.parent / f"issue107-campaign-resources-{reviewed_commit}.json"
+    )
+    if resume and not resource_state_path.is_file():
+        raise ValueError("Resume requires the retained campaign resource record")
+    resource_monitor = CampaignResourceMonitor(
+        state_path=resource_state_path,
+        authorized_at=authorization["authorized_at"],
+        limits=CampaignLimits(
+            cpu_seconds=CPU_HOURS_MAX * 60 * 60,
+            wall_seconds=WALL_CLOCK_HOURS_MAX * 60 * 60,
+            memory_bytes=MEMORY_GIB_MAX * 1024**3,
+        ),
+    )
     for name in ("A", "B", "C", "D", "untrained", "frozen_task1"):
+        resource_monitor.check()
         plan = load_plan(PLAN_PATHS[name])
         plan_directory = output_root / plan.plan_id
         execute_plan(
             plan,
             output_root=output_root,
             resume=resume and plan_directory.exists(),
+            process_monitor=resource_monitor,
         )
 
 
