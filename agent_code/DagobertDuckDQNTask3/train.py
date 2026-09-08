@@ -37,6 +37,7 @@ class PendingTransition:
     """A surviving transition whose terminal status is not yet known."""
 
     identity: tuple[Any, Any] | None
+    diagnostic_events: tuple[str, ...]
     state: np.ndarray
     action: str
     action_index: int
@@ -75,9 +76,10 @@ def game_events_occurred(
     """Finalize the previous transition and retain the current one."""
     _finalize_pending_transition(self)
 
-    self.episode_event_counts.update(
+    diagnostic_events = tuple(
         event for event in events if event in DIAGNOSTIC_EVENTS
     )
+    self.episode_event_counts.update(diagnostic_events)
 
     if old_game_state is None or new_game_state is None or self_action not in ACTION_TO_INDEX:
         return
@@ -107,6 +109,7 @@ def game_events_occurred(
 
     self.pending_transition = PendingTransition(
         identity=_transition_identity(old_game_state),
+        diagnostic_events=diagnostic_events,
         state=normalize_features(old_features),
         action=self_action,
         action_index=ACTION_TO_INDEX[self_action],
@@ -127,10 +130,6 @@ def end_of_round(
     events: list[str],
 ) -> dict[str, float | None]:
     """Finalize the episode exactly once and save resumable state."""
-    self.episode_event_counts.update(
-        event for event in events if event in DIAGNOSTIC_EVENTS
-    )
-
     callback_identity = _transition_identity(last_game_state)
     pending = self.pending_transition
 
@@ -144,6 +143,19 @@ def end_of_round(
     if callback_matches_pending:
         assert pending is not None
 
+        # The framework has already delivered this action's event list through
+        # game_events_occurred. At end-of-round it appends terminal events
+        # (for example SURVIVED_ROUND) to that same list. Count only the
+        # multiset difference so a final KILLED_OPPONENT is not reported
+        # twice, while simultaneous attributable kills retain their count.
+        terminal_diagnostic_counts = Counter(
+            event for event in events if event in DIAGNOSTIC_EVENTS
+        )
+        pending_diagnostic_counts = Counter(pending.diagnostic_events)
+        self.episode_event_counts.update(
+            (terminal_diagnostic_counts - pending_diagnostic_counts).elements()
+        )
+
         _record_transition(
             self,
             state=pending.state,
@@ -154,6 +166,9 @@ def end_of_round(
         )
         self.pending_transition = None
     else:
+        self.episode_event_counts.update(
+            event for event in events if event in DIAGNOSTIC_EVENTS
+        )
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTION_TO_INDEX:
