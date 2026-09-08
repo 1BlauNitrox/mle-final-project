@@ -13,6 +13,8 @@ import pytest
 import torch
 
 import agent_code.DagobertDuckDQNTask3.train as training
+from agent_code.DagobertDuckDQNTask2.config import LEGACY_FEATURE_COUNT
+from agent_code.DagobertDuckDQNTask2.config import DQNConfig as Task2Config
 from agent_code.DagobertDuckDQNTask2.features import (
     normalize_features as normalize_task2,
 )
@@ -39,6 +41,10 @@ from agent_code.DagobertDuckDQNTask3.persistence import (
 )
 from agent_code.DagobertDuckDQNTask3.replay import ReplayBuffer
 from agent_code.DagobertDuckDQNTask3.rewards import reward_from_events
+
+LEGACY_TASK2_CONFIG = Task2Config(
+    input_dim=LEGACY_FEATURE_COUNT, escape_continuation_features=False
+)
 
 
 def make_state(step: int = 1, *, others: list[tuple] | None = None) -> dict:
@@ -118,12 +124,16 @@ def test_task1_and_task2_prefix_is_preserved() -> None:
     assert task2_features is not None
     assert task3_features is not None
     assert task3_features[:8] == task1_features
-    assert task3_features[:21] == task2_features
+    # Task2's own feature vector is now permanently 26-wide (issue #87's
+    # continuation columns are always present, zero-gated rather than
+    # shape-gated) but Task3 was migrated from the frozen pre-#87 21-wide
+    # checkpoint, so only the shared 21-element prefix is comparable.
+    assert task3_features[:21] == task2_features[:21]
     assert len(task3_features) == FEATURE_COUNT
 
 
 def test_migration_zeroes_new_columns_and_preserves_all_outputs() -> None:
-    parent = build_task2_network(seed=7)
+    parent = build_task2_network(config=LEGACY_TASK2_CONFIG, seed=7)
     migrated = migrate_online_network(parent, seed=44)
     parent_layers = [layer for layer in parent.layers if hasattr(layer, "weight")]
     migrated_layers = [layer for layer in migrated.layers if hasattr(layer, "weight")]
@@ -143,7 +153,7 @@ def test_migration_zeroes_new_columns_and_preserves_all_outputs() -> None:
 
 
 def test_migration_preserves_q_values_and_new_columns_receive_gradients() -> None:
-    parent = build_task2_network(seed=8)
+    parent = build_task2_network(config=LEGACY_TASK2_CONFIG, seed=8)
     migrated = migrate_online_network(parent, seed=44)
     state = make_state(others=[("opponent", 0, True, (5, 3))])
     task2_features = __import__(
@@ -155,7 +165,7 @@ def test_migration_preserves_q_values_and_new_columns_receive_gradients() -> Non
     assert task3_features is not None
 
     with torch.no_grad():
-        parent_q = parent(torch.from_numpy(normalize_task2(task2_features)))
+        parent_q = parent(torch.from_numpy(normalize_task2(task2_features[:21])))
         migrated_q = migrated(torch.from_numpy(normalize_features(task3_features)))
 
     torch.testing.assert_close(
