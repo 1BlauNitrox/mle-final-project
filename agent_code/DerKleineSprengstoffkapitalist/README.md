@@ -189,6 +189,20 @@ Potential-based reward shaping is deliberately out of scope for issue #45.
 Changing the inherited shaping formulation would be a separate controlled
 variable and requires a prospectively registered experiment.
 
+## Action masking
+
+The agent supports two action-selection modes:
+
+- `none`: no action mask is applied;
+- `framework_legal`: actions rejected by the framework are excluded during
+  exploration, greedy selection, tie-breaking, and Bellman bootstrapping.
+
+The selected mode is stored in the model artifact. Resuming training with a
+different mode is rejected to prevent incompatible continuation.
+
+Framework-legal masking prevents invalid actions but does not exclude actions
+that are legal yet tactically unsafe.
+
 ## Training status
 
 Task 2 training is implemented and enabled. A newly initialized agent starts
@@ -271,12 +285,21 @@ from the parent agent, `training/`, `experiments/`, or `scripts/`.
 
 Parent imports are permitted only in repository-level differential tests.
 
-## Limitations and next steps
+## Experimental evidence and limitations
 
-The current successor:
+Issue #102 established the current unmasked Task 2 development baseline.
 
-- has not yet been scientifically trained for Task 2;
-- has not yet produced Task 2 performance evidence;
+Issue #110 evaluated optional framework-legal masking. The retained execution
+eliminated invalid actions and reduced aggregate self-kills, but did not improve
+hidden-coin collection. Because no compute budget was prospectively recorded,
+the execution is classified as exploratory and does not constitute a completed
+confirmatory experiment.
+
+The unmasked configuration remains the baseline. Framework-legal masking
+remains an optional capability.
+
+The agent still:
+
 - uses a categorical sparse state representation;
 - does not contain a full opponent strategy;
 - retains the inherited non-potential-based coin movement shaping;
@@ -285,3 +308,5 @@ The current successor:
 
 Potential-based reward shaping and further reward tuning must be evaluated as
 separate controlled experiments.
+- retains inherited non-potential-based movement shaping;
+- can select actions that are framework-legal but tactically unsafe.

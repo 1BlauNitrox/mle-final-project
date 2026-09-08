@@ -102,6 +102,7 @@ def make_agent() -> SimpleNamespace:
         epsilon=INITIAL_EPSILON,
         completed_episodes=0,
         useful_bomb_reward=0.0,
+        action_masking="none",
     )
 
     training.setup_training(agent)

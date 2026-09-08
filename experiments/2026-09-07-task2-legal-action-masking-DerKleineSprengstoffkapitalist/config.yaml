@@ -1,0 +1,73 @@
+schema_version: 1
+issue: 110
+status: exploratory_incomplete
+agent: DerKleineSprengstoffkapitalist
+owner: LiliWestermann
+reviewer: "Waffelmanufraktur"
+approval:
+  method: personal
+  date: "2026-09-07"
+  approved_before_training: true
+revisions:
+  experiment_commit: "6ceebe3fe6c75a378512cb7c7ebd022ce302df1c"
+  framework_revision: "0f55c1d"
+
+limitations:
+  prospectively_recorded_compute_budget: false
+  scientific_completion_claimed: false
+  confirmation_seeds_used: false
+
+hypothesis:
+  treatment: framework_legal_action_masking
+  baseline: no_action_masking
+  primary_metric: classic_coin_collection_fraction
+
+controlled_variables:
+  training_seeds: [101001, 101002, 101003, 101004, 101005]
+  agent_seeds: [201001, 201002, 201003, 201004, 201005]
+  training_episodes_per_replica: 10000
+  curriculum:
+    - {scenario: coin-heaven, rounds: 2000}
+    - {scenario: loot-crate, rounds: 2000}
+    - {scenario: classic, rounds: 6000}
+  features: unchanged
+  rewards: unchanged
+  hyperparameters: unchanged
+  opponents: []
+
+treatments:
+  control:
+    run_plan: training/run_plans/issue110-tabular-task2-unmasked.yaml
+    action_masking: none
+  candidate:
+    run_plan: training/run_plans/issue110-tabular-task2-masked.yaml
+    action_masking: framework_legal
+  task1_reference:
+    run_plan: training/run_plans/issue110-tabular-task1-frozen.yaml
+
+success_criteria:
+  masked_minus_unmasked_classic_mean:
+    minimum: 0.0
+    paired_ci_lower_strictly_above: 0.0
+  replicas_improving_min: 4
+  masked_invalid_action_rate_max_exclusive: 0.01
+  task1_retention_ci_lower_strictly_above: -0.05
+  coin_heaven_bomb_actions: 0
+  self_kill_rate_maximum_increase: 0.02
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+  deterministic_repeat: true
+
+reserved_confirmation_seeds_used: false
+
+results:
+  passed: false
+  decision: retain_unmasked_baseline
+  classic_masked_minus_unmasked:
+    mean_difference: -0.0011111111111111111
+    ci_lower: -0.0038888888888888888
+    ci_upper: 0.0011111111111111111
+  replicas_improving: 0
+  masked_invalid_action_rate: 0.0
+  task1_retention_difference: 0.0
+  deterministic: true

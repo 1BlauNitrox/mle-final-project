@@ -418,6 +418,7 @@ def _run_job(
         environment_overrides = {
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": str(plan.useful_bomb_reward),
+            "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
