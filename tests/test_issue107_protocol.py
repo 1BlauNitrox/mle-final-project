@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from types import SimpleNamespace
 
 import numpy as np
@@ -13,6 +14,8 @@ from training.analyze_issue107_task2_factorial import (
     _eligibility,
     _select_cell,
     _select_representative,
+    _validate_campaign_execution,
+    _validate_job_campaign,
     _validate_registered_plan,
 )
 from training.run_issue107_campaign import (
@@ -200,6 +203,89 @@ def test_analyzer_rejects_outputs_not_bound_to_registered_plan(mutated_field) ->
 
     with pytest.raises(ValueError, match="does not match registered plan"):
         _validate_registered_plan("A", mutated)
+
+
+def test_analyzer_accepts_registered_plan_from_relocated_checkout() -> None:
+    resolved = load_plan(PLAN_PATHS["A"]).to_dict()
+    for replica in resolved["replicas"]:
+        replica["parent_artifact"] = f"/retrieved/checkout/{replica['replica_id']}.pt"
+
+    _validate_registered_plan("A", resolved)
+
+
+def test_analyzer_rejects_direct_plan_outputs_without_campaign_records(tmp_path) -> None:
+    plan_root = tmp_path / "run-plans"
+    plan_root.mkdir()
+
+    with pytest.raises(ValueError, match="authorization and resource records"):
+        _validate_campaign_execution(plan_root)
+
+
+def test_analyzer_requires_unbreached_campaign_resource_record(tmp_path) -> None:
+    reviewed_commit = "a" * 40
+    authorized_at = "2026-09-08T08:00:00Z"
+    plan_root = tmp_path / "run-plans"
+    plan_root.mkdir()
+    authorization = {
+        "issue": 107,
+        "compute_authorized": True,
+        "reviewed_commit": reviewed_commit,
+        "authorized_at": authorized_at,
+        "authorized_by": "team owner",
+        "hardware_description": "test server",
+        "cpu_hours_max": 48,
+        "wall_clock_hours_max": 24,
+        "memory_gib_max": 8,
+        "max_training_workers": 4,
+        "evaluation_workers": 1,
+    }
+    resource = {
+        "authorized_at": authorized_at,
+        "cpu_seconds_consumed": 1.0,
+        "wall_seconds_elapsed": 2.0,
+        "peak_memory_bytes": 3,
+        "limits": {
+            "cpu_seconds": 48 * 60 * 60,
+            "wall_seconds": 24 * 60 * 60,
+            "memory_bytes": 8 * 1024**3,
+        },
+        "active_root_pids": [],
+        "limit_reached": None,
+    }
+    authorization_path = tmp_path / (
+        f"issue107-campaign-authorization-{reviewed_commit}.json"
+    )
+    resource_path = tmp_path / f"issue107-campaign-resources-{reviewed_commit}.json"
+    authorization_path.write_text(json.dumps(authorization), encoding="utf-8")
+    resource_path.write_text(json.dumps(resource), encoding="utf-8")
+
+    assert _validate_campaign_execution(plan_root)["reviewed_commit"] == reviewed_commit
+
+    resource["limit_reached"] = "CPU ceiling exceeded"
+    resource_path.write_text(json.dumps(resource), encoding="utf-8")
+    with pytest.raises(ValueError, match="breached or uses different limits"):
+        _validate_campaign_execution(plan_root)
+
+
+def test_analyzer_requires_campaign_binding_in_every_job_metadata() -> None:
+    campaign = {
+        "schema_version": 1,
+        "issue": 107,
+        "reviewed_commit": "a" * 40,
+        "authorized_at": "2026-09-08T08:00:00Z",
+        "cpu_hours_max": 48,
+        "wall_clock_hours_max": 24,
+        "memory_gib_max": 8,
+        "max_training_workers": 4,
+        "evaluation_workers": 1,
+    }
+    metadata = {"git_commit": "a" * 40, "run_plan": {}}
+
+    with pytest.raises(ValueError, match="authorization metadata mismatch"):
+        _validate_job_campaign(metadata, campaign, "direct-job")
+
+    metadata["run_plan"]["campaign"] = campaign
+    _validate_job_campaign(metadata, campaign, "authorized-job")
 
 
 def test_bootstrap_reports_registered_and_multiplicity_adjusted_intervals() -> None:

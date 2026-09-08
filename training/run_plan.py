@@ -461,6 +461,12 @@ def _run_job(
                     "escape_continuations": plan.escape_continuations,
                     "replay_treatment": plan.replay_treatment,
                     "fingerprints": plan.fingerprints,
+                    **(
+                        {"campaign": process_monitor.campaign_metadata}
+                        if process_monitor is not None
+                        and getattr(process_monitor, "campaign_metadata", None) is not None
+                        else {}
+                    ),
                 }
             },
             process_monitor=process_monitor,

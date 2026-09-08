@@ -174,6 +174,8 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
     output_root = tmp_path / "outputs"
     calls: list[dict[str, object]] = []
+    campaign = {"reviewed_commit": "a" * 40, "cpu_hours_max": 48}
+    process_monitor = SimpleNamespace(campaign_metadata=campaign)
 
     def fake_runner(**kwargs: object) -> Path:
         calls.append(kwargs)
@@ -192,7 +194,9 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
 
     with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
         with pytest.raises(RuntimeError, match="planned failure"):
-            run_plan.execute_plan(plan, output_root=output_root)
+            run_plan.execute_plan(
+                plan, output_root=output_root, process_monitor=process_monitor
+            )
 
         plan_directory = output_root / plan.plan_id
         failed_status = json.loads((plan_directory / "status.json").read_text())
@@ -202,7 +206,12 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         assert (plan_directory / "jobs/train-r1-coins/attempt-001-failed-agent").is_dir()
         assert not run_plan._alias_directory(plan, plan.replicas[0]).exists()
 
-        run_plan.execute_plan(plan, output_root=output_root, resume=True)
+        run_plan.execute_plan(
+            plan,
+            output_root=output_root,
+            resume=True,
+            process_monitor=process_monitor,
+        )
 
     status = json.loads((plan_directory / "status.json").read_text())
     assert status["status"] == "completed"
@@ -213,6 +222,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["metadata_extra"]["run_plan"]["processes"] == 1
     assert calls[-1]["metadata_extra"]["run_plan"]["artifact_writable"] is False
     assert calls[-1]["metadata_extra"]["run_plan"]["replay_treatment"] == "uniform"
+    assert calls[-1]["metadata_extra"]["run_plan"]["campaign"] == campaign
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",

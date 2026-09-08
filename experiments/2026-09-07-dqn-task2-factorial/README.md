@@ -171,9 +171,15 @@ snapshots plus the resource record. Do not extend the budget, delete the
 partial record, or remove weak replicas. This training-only guard requires
 `psutil`, declared in `requirements-dev.txt`.
 
-The analyzer accepts evidence only when every recorded resolved plan exactly
-matches the plan loaded from this reviewed execution revision, including jobs,
-seeds, source/dependency/agent fingerprints, and parent-artifact hashes.
+The analyzer accepts evidence only when every recorded resolved plan matches
+the plan loaded from this reviewed execution revision, including jobs, seeds,
+source/dependency/agent fingerprints, and parent-artifact hashes. It ignores
+only the machine-absolute parent-artifact location so a retrieved archive can
+be verified from another checkout. Every job must also identify the same
+reviewed commit, authorization timestamp, and fixed resource limits, and the
+unique campaign authorization/resource records must show a completed,
+within-budget execution with no active process or recorded breach. Direct
+`training.run_plan` output is therefore not valid campaign evidence.
 
 ## Evidence and follow-up
 

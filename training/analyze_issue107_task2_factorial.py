@@ -15,7 +15,14 @@ import numpy as np
 
 from training.aggregate import read_episodes_csv
 from training.run_experiment import REPOSITORY_ROOT
-from training.run_issue107_campaign import CELL_TREATMENTS, PLAN_PATHS, validate_protocol
+from training.run_issue107_campaign import (
+    CELL_TREATMENTS,
+    CPU_HOURS_MAX,
+    MEMORY_GIB_MAX,
+    PLAN_PATHS,
+    WALL_CLOCK_HOURS_MAX,
+    validate_protocol,
+)
 from training.run_plan import load_plan
 
 PLAN_ROOT = REPOSITORY_ROOT / "training_outputs" / "run-plans"
@@ -71,6 +78,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     validate_protocol()
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
+    campaign = _validate_campaign_execution(plan_root)
     rows: list[dict[str, Any]] = []
     deterministic = True
     repeat_latency_ok = True
@@ -87,7 +95,9 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
         _validate_registered_plan(treatment, resolved)
         if treatment in CELL_TREATMENTS:
             cell_fingerprints.append(resolved["fingerprints"])
-            resource_rows.extend(_training_resources(treatment, plan_directory, status, resolved))
+            resource_rows.extend(
+                _training_resources(treatment, plan_directory, status, resolved, campaign)
+            )
 
         replicas = [item["replica_id"] for item in resolved["replicas"]]
         suites = (
@@ -100,7 +110,13 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
             artifact_hashes: set[str] = set()
             for suite_id, scenario in suites.items():
                 primary_rows, primary_hashes = _suite_rows(
-                    plan_directory, status, resolved, replica, suite_id, treatment
+                    plan_directory,
+                    status,
+                    resolved,
+                    replica,
+                    suite_id,
+                    treatment,
+                    campaign,
                 )
                 repeat_rows, repeat_hashes = _suite_rows(
                     plan_directory,
@@ -109,6 +125,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                     replica,
                     suite_id.replace("-primary", "-repeat"),
                     treatment,
+                    campaign,
                 )
                 artifact_hashes.update(primary_hashes | repeat_hashes)
                 for primary, repeat in zip(primary_rows, repeat_rows, strict=True):
@@ -163,6 +180,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
         "deterministic_repeats": deterministic,
         "repeat_latency_within_limits": repeat_latency_ok,
         "evaluation_artifacts_immutable": True,
+        "authorized_bounded_campaign": True,
         "all_twenty_final_artifacts_retained": len(
             {(item["cell"], item["model"]) for item in summaries if item["cell"] in CELL_TREATMENTS}
         )
@@ -205,11 +223,13 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
 def _validate_registered_plan(treatment: str, resolved: dict[str, Any]) -> None:
     """Bind evidence to every field and fingerprint in the reviewed plan."""
     registered = load_plan(PLAN_PATHS[treatment]).to_dict()
-    if resolved != registered:
+    portable_resolved = _without_parent_locations(resolved)
+    portable_registered = _without_parent_locations(registered)
+    if portable_resolved != portable_registered:
         changed = sorted(
             key
-            for key in set(resolved) | set(registered)
-            if resolved.get(key) != registered.get(key)
+            for key in set(portable_resolved) | set(portable_registered)
+            if portable_resolved.get(key) != portable_registered.get(key)
         )
         raise ValueError(
             f"Resolved plan does not match registered plan for {treatment}: {changed}"
@@ -229,6 +249,96 @@ def _validate_registered_plan(treatment: str, resolved: dict[str, Any]) -> None:
         raise ValueError(f"Action masking must remain off for {treatment}")
 
 
+def _without_parent_locations(plan: dict[str, Any]) -> dict[str, Any]:
+    """Ignore only machine-local parent paths while retaining their hashes."""
+    return {
+        **plan,
+        "replicas": [
+            {**replica, "parent_artifact": None}
+            for replica in plan.get("replicas", [])
+        ],
+    }
+
+
+def _validate_campaign_execution(plan_root: Path) -> dict[str, Any]:
+    """Require the unique authorization and bounded resource record."""
+    record_root = plan_root.parent
+    authorizations = sorted(record_root.glob("issue107-campaign-authorization-*.json"))
+    resources = sorted(record_root.glob("issue107-campaign-resources-*.json"))
+    if len(authorizations) != 1 or len(resources) != 1:
+        raise ValueError("Analysis requires unique campaign authorization and resource records")
+
+    authorization = _read_json(authorizations[0])
+    resource = _read_json(resources[0])
+    reviewed_commit = authorization.get("reviewed_commit")
+    expected_limits = {
+        "cpu_seconds": CPU_HOURS_MAX * 60 * 60,
+        "wall_seconds": WALL_CLOCK_HOURS_MAX * 60 * 60,
+        "memory_bytes": MEMORY_GIB_MAX * 1024**3,
+    }
+    expected_campaign = {
+        "schema_version": 1,
+        "issue": 107,
+        "reviewed_commit": reviewed_commit,
+        "authorized_at": authorization.get("authorized_at"),
+        "cpu_hours_max": CPU_HOURS_MAX,
+        "wall_clock_hours_max": WALL_CLOCK_HOURS_MAX,
+        "memory_gib_max": MEMORY_GIB_MAX,
+        "max_training_workers": 4,
+        "evaluation_workers": 1,
+    }
+    authorization_fields = {
+        "issue": 107,
+        "compute_authorized": True,
+        "cpu_hours_max": CPU_HOURS_MAX,
+        "wall_clock_hours_max": WALL_CLOCK_HOURS_MAX,
+        "memory_gib_max": MEMORY_GIB_MAX,
+        "max_training_workers": 4,
+        "evaluation_workers": 1,
+    }
+    if any(
+        authorization.get(key) != value
+        for key, value in authorization_fields.items()
+    ):
+        raise ValueError("Campaign authorization does not match the registered protocol")
+    if not str(authorization.get("authorized_by", "")).strip() or not str(
+        authorization.get("hardware_description", "")
+    ).strip():
+        raise ValueError("Campaign authorization is missing its human or hardware record")
+    if not isinstance(reviewed_commit, str) or len(reviewed_commit) != 40:
+        raise ValueError("Campaign authorization has no full reviewed commit")
+    if authorizations[0].stem != f"issue107-campaign-authorization-{reviewed_commit}":
+        raise ValueError("Campaign authorization filename does not match its reviewed commit")
+    if resources[0].stem != f"issue107-campaign-resources-{reviewed_commit}":
+        raise ValueError("Campaign resource filename does not match the reviewed commit")
+    if resource.get("authorized_at") != authorization.get("authorized_at"):
+        raise ValueError("Campaign resource record belongs to another authorization")
+    if resource.get("limits") != expected_limits or resource.get("limit_reached") is not None:
+        raise ValueError("Campaign resource record is breached or uses different limits")
+    usage = (
+        ("cpu_seconds_consumed", expected_limits["cpu_seconds"]),
+        ("wall_seconds_elapsed", expected_limits["wall_seconds"]),
+        ("peak_memory_bytes", expected_limits["memory_bytes"]),
+    )
+    if any(
+        not isinstance(resource.get(key), (int, float)) or resource[key] > limit
+        for key, limit in usage
+    ):
+        raise ValueError("Campaign resource usage exceeds the registered limits")
+    if resource.get("active_root_pids") != []:
+        raise ValueError("Campaign resource record still has active processes")
+    return expected_campaign
+
+
+def _validate_job_campaign(
+    metadata: dict[str, Any], expected_campaign: dict[str, Any], job_id: str
+) -> None:
+    if metadata.get("git_commit") != expected_campaign["reviewed_commit"]:
+        raise ValueError(f"Reviewed commit mismatch for {job_id}")
+    if metadata.get("run_plan", {}).get("campaign") != expected_campaign:
+        raise ValueError(f"Campaign authorization metadata mismatch for {job_id}")
+
+
 def _suite_rows(
     plan_directory: Path,
     status: dict[str, Any],
@@ -236,6 +346,7 @@ def _suite_rows(
     replica: str,
     suite_id: str,
     treatment: str,
+    campaign: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], set[str]]:
     prefix = f"eval-{replica}-{suite_id}-seed-"
     keys = sorted(key for key in status["jobs"] if key.startswith(prefix))
@@ -264,6 +375,7 @@ def _suite_rows(
         if len(episode_rows) != 1:
             raise ValueError(f"Expected one episode row for {key}")
         metadata = _read_json(run_directory / "metadata.json")
+        _validate_job_campaign(metadata, campaign, key)
         registered = expected[key]
         for field in ("world_seed", "agent_seed", "scenario", "rounds"):
             if metadata.get(field) != registered[field]:
@@ -654,6 +766,7 @@ def _training_resources(
     plan_directory: Path,
     status: dict[str, Any],
     resolved: dict[str, Any],
+    campaign: dict[str, Any],
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for job in resolved["jobs"]:
@@ -662,6 +775,7 @@ def _training_resources(
         record = status["jobs"][job["run_id"]]
         attempt = record["attempts"][-1]
         metadata = _read_json(plan_directory / attempt["metadata"])
+        _validate_job_campaign(metadata, campaign, job["run_id"])
         rows.append(
             {
                 "cell": cell,

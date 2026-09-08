@@ -80,12 +80,14 @@ class CampaignResourceMonitor:
         time_fn: Callable[[], float] = time.time,
         process_factory: Callable[[int], Any] = psutil.Process,
         wait_procs: Callable[..., Any] = psutil.wait_procs,
+        campaign_metadata: dict[str, Any] | None = None,
     ) -> None:
         self.state_path = Path(state_path)
         self.limits = limits
         self._time_fn = time_fn
         self._process_factory = process_factory
         self._wait_procs = wait_procs
+        self.campaign_metadata = campaign_metadata
         self._lock = threading.RLock()
         self._authorized_epoch = datetime.fromisoformat(
             authorized_at.replace("Z", "+00:00")
@@ -440,6 +442,17 @@ def execute_campaign(
             wall_seconds=WALL_CLOCK_HOURS_MAX * 60 * 60,
             memory_bytes=MEMORY_GIB_MAX * 1024**3,
         ),
+        campaign_metadata={
+            "schema_version": 1,
+            "issue": 107,
+            "reviewed_commit": reviewed_commit,
+            "authorized_at": authorization["authorized_at"],
+            "cpu_hours_max": CPU_HOURS_MAX,
+            "wall_clock_hours_max": WALL_CLOCK_HOURS_MAX,
+            "memory_gib_max": MEMORY_GIB_MAX,
+            "max_training_workers": 4,
+            "evaluation_workers": 1,
+        },
     )
     for name in ("A", "B", "C", "D", "untrained", "frozen_task1"):
         resource_monitor.check()
