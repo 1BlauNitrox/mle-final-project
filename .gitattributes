@@ -13,5 +13,6 @@
 # comparison on Windows regardless of how the writer encodes the file.
 *.csv text eol=lf
 *.json text eol=lf
+*.csv.gz binary
 *.png binary
 *.ttf binary
