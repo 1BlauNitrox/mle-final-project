@@ -1,0 +1,22 @@
+schema_version: 1
+plan_id: issue88-dqn-protected-replay-smoke
+agent: DagobertDuckDQNTask2
+artifact_path: checkpoint.pt
+max_parallel_training: 1
+action_masking: none
+escape_continuations: "off"
+replay_treatment: protected_task1
+replicas:
+  - id: smoke
+    world_seed: 88001
+    agent_seed: 88002
+training_stages:
+  - id: initial-task1
+    scenario: coin-heaven
+    rounds: 2
+    opponents: []
+  - id: crate-stage
+    scenario: loot-crate
+    rounds: 2
+    opponents: []
+evaluation_suites: []

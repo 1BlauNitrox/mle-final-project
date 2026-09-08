@@ -9,7 +9,7 @@ from typing import Any
 
 import numpy as np
 
-from .config import ACTION_TO_INDEX
+from .config import ACTION_TO_INDEX, PROTECTED_SOURCE_EPISODES
 from .features import (
     ESCAPE_AFTER_BOMB_INDEX,
     StateFeatures,
@@ -87,8 +87,8 @@ def game_events_occurred(
     if old_game_state is None or new_game_state is None or self_action not in ACTION_TO_INDEX:
         return
 
-    old_features = state_to_features(old_game_state)
-    new_features = state_to_features(new_game_state)
+    old_features = _state_to_features(self, old_game_state)
+    new_features = _state_to_features(self, new_game_state)
 
     if old_features is None or new_features is None:
         return
@@ -168,7 +168,7 @@ def end_of_round(
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTION_TO_INDEX:
-            last_features = state_to_features(last_game_state)
+            last_features = _state_to_features(self, last_game_state)
 
             if last_features is not None:
                 _record_transition(
@@ -210,6 +210,8 @@ def end_of_round(
         self.epsilon * self.config.epsilon_decay,
     )
     self.completed_episodes += 1
+    if self.completed_episodes >= PROTECTED_SOURCE_EPISODES:
+        self.replay_buffer.close_protected_collection()
 
     save_checkpoint(
         learner=self.learner,
@@ -268,6 +270,14 @@ def _record_transition(
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
+        partition=(
+            "protected"
+            if self.config.replay_treatment == "protected_task1"
+            and self.replay_buffer.collection_open
+            else "other"
+            if self.config.replay_treatment == "protected_task1"
+            else None
+        ),
     )
     self.episode_reward += reward
 
@@ -382,3 +392,14 @@ def _transition_identity(
         return None
 
     return round_number, step_number
+
+
+def _state_to_features(self, game_state: dict | None):
+    """Build features using the persisted feature treatment and input width."""
+    features = state_to_features(
+        game_state,
+        include_continuation_features=self.config.escape_continuation_features,
+    )
+    if features is not None and self.config.input_dim < len(features):
+        return features[: self.config.input_dim]
+    return features

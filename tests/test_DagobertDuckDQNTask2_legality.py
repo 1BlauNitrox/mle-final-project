@@ -43,7 +43,7 @@ def test_masked_exploration_and_greedy_selection_never_choose_ineligible_action(
     network = build_q_network(DQNConfig(), seed=1)
     with torch.no_grad():
         network.layers[-1].bias.copy_(torch.arange(6, dtype=torch.float32))
-    state = np.zeros(21, dtype=np.float32)
+    state = np.zeros(DQNConfig().input_dim, dtype=np.float32)
     mask = np.asarray([True, False, False, False, True, False], dtype=np.bool_)
     assert (
         select_action(
@@ -83,7 +83,7 @@ def test_empty_mask_is_rejected() -> None:
     with pytest.raises(ValueError, match="legal"):
         select_action(
             network=network,
-            state=np.zeros(21, dtype=np.float32),
+            state=np.zeros(DQNConfig().input_dim, dtype=np.float32),
             epsilon=0.0,
             rng=np.random.default_rng(1),
             action_mask=np.zeros(6, dtype=np.bool_),
