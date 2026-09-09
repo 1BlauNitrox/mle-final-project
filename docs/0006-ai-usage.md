@@ -1,5 +1,10 @@
 # 0006 AI Usage and Disclosure
 
+Issue #125 preparation (2026-09-10): OpenAI Codex drafted the 26-plus-13 input
+migration requirements and regression checklist from the verified Issue #107
+limitations. This is a proposed design, not implemented or validated behavior;
+human review and selected-parent binding remain required.
+
 ## Course rule
 
 AI may be used to brainstorm, assist with code, and draft report text. The final
