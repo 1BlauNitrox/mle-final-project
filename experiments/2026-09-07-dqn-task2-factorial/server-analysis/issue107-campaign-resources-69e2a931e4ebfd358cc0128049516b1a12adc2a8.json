@@ -1,0 +1,16 @@
+{
+  "active_root_pids": [],
+  "authorized_at": "2026-09-08T21:47:17.613005Z",
+  "cpu_seconds_consumed": 54882.1000000003,
+  "current_memory_bytes": 0,
+  "limit_reached": null,
+  "limits": {
+    "cpu_seconds": 172800,
+    "memory_bytes": 8589934592,
+    "wall_seconds": 86400
+  },
+  "peak_memory_bytes": 1689563136,
+  "schema_version": 1,
+  "updated_at": "2026-09-09T05:48:50.283121Z",
+  "wall_seconds_elapsed": 28892.67010641098
+}

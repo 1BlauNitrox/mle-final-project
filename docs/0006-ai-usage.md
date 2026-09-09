@@ -75,3 +75,17 @@ AI output is a draft or suggestion, never experimental evidence.
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
 individually.
+
+Issue #107 server-result interpretation (2026-09-09): OpenAI Codex inspected
+the downloaded result JSON, tables, authorization and resource records, and
+documented the reported contrasts, failed safeguards and mechanical A/r2
+selection. Codex subsequently verified 5,180 jobs and twenty final artifacts,
+implemented and tested explicit Linux path ordering and execution-versus-analysis
+dependency handling, and reproduced the server result exactly from downloaded
+episode evidence using the unchanged registered analyzer. A human reviewer must verify the retained
+evidence and interpretation before accepting the result. No training was run
+and no agent default or artifact was changed.
+The subsequent self-review added final archive-member integrity validation
+and regression tests, and documented the distinction between disposable local
+downloads and server diagnostics. This self-review does not replace approval
+by another team member.

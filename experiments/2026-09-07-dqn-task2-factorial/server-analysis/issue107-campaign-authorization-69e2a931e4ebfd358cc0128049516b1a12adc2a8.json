@@ -1,0 +1,31 @@
+{
+  "authorized_at": "2026-09-08T21:47:17.613005Z",
+  "authorized_by": "Julius / 1BlauNitrox",
+  "available_memory_gib": 8.0,
+  "compute_authorized": true,
+  "cpu_hours_max": 48,
+  "evaluation_episodes": 5120,
+  "evaluation_workers": 1,
+  "hardware_description": "<workbench; Linux 6.17.2-1-pve x86_64 GNU/Linux; Linux 6.17.2-1-pve x86_64 GNU/Linux>",
+  "issue": 107,
+  "logical_cpu_count": 4,
+  "max_training_workers": 4,
+  "memory_gib_max": 8,
+  "plans": {
+    "A": "issue107-cell-a-control",
+    "B": "issue107-cell-b-escape",
+    "C": "issue107-cell-c-replay",
+    "D": "issue107-cell-d-combined",
+    "frozen_task1": "issue107-frozen-task1",
+    "untrained": "issue107-untrained"
+  },
+  "platform": "Linux-6.17.2-1-pve-x86_64-with-glibc2.43",
+  "python": "3.14.4 (main, Jun 18 2026, 14:25:02) [GCC 15.2.0]",
+  "reviewed_commit": "69e2a931e4ebfd358cc0128049516b1a12adc2a8",
+  "scientific_result": null,
+  "source_sha256": "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60",
+  "task1_sha256": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e",
+  "training_episodes": 200000,
+  "training_replicas": 20,
+  "wall_clock_hours_max": 24
+}
