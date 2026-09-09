@@ -113,6 +113,80 @@ new scientific plan; it must not silently replace the registered selection.
 
 ## Evidence status and reproduction
 
+### Replica-level diagnosis from the downloaded summaries
+
+These are descriptive observations from `server-analysis/result.json`, not
+additional prospective tests or a new selection rule. Each row summarizes 40
+primary episodes per scenario.
+
+| Escape-only B replica | Classic collection | Classic self-kills | Task 1 collection | Task 1 self-kills | Task 1 invalid actions |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| r1 | 20.00% | 2.5% | 5.75% | 0% | 2.55% |
+| r2 | 25.56% | 0% | 31.35% | 22.5% | 37.87% |
+| r3 | 24.44% | 5% | 22.10% | 0% | 28.12% |
+| r4 | 21.94% | 2.5% | 10.95% | 0% | 2.69% |
+| r5 | 29.17% | 0% | 98.75% | 0% | 12.10% |
+
+The classic survival effect is distributed across all five B replicas; it is
+not created by a single unusually safe seed. Task 1 performance is much less
+consistent. Four B replicas collect at most 31.35%, while r5 collects 98.75%.
+The latter still violates the Task 1 invalid-action and zero-BOMB requirements,
+and its classic invalid-action rate is 23.27%, above the per-replica limit.
+Selecting r5 as a success would therefore both ignore failed gates and violate
+the registered median selection rule. B/r2 accounts for all nine Task 1
+self-kills among B's 200 primary episodes; retaining this replica is essential
+to an honest uncertainty estimate.
+
+Task 1 failure is not just a survival issue: all A replicas survive every
+coin-heaven episode, yet collect only 3.45%-8.20%. A/r1 spends 15,402 of 16,000
+actions waiting (96.26%); A/r3 has an invalid-action rate of 81.44%. B/r1 also
+waits on 15,364 of 16,000 actions (96.03%). These counts support passivity and
+invalid-action problems, but cannot establish their learning-time cause or
+prove a particular movement loop without trajectories. Action-BOMB counts are
+attempts, not necessarily successful bomb placements.
+
+### Optimization implications and limits
+
+The strongest supported direction is to preserve the escape mechanism while
+addressing navigation retention and action quality. This is a recommendation
+for a future controlled proposal, not adoption under #107's failed guards.
+
+- Audit the retained training records and checkpoint replay partitions before
+  proposing a fix: was the protected pool populated as configured, sampled
+  at the fixed quota, and retained through the stage transitions? A correct
+  implementation can still fail scientifically. The aggregate outcome does
+  not prove that replay is broken or that a larger quota will work.
+- If implementation checks pass and the team explicitly authorizes a new
+  study, a focused candidate is continued Task 1 practice during later
+  training, compared with the same escape-enabled baseline under an equal
+  total episode budget. Fresh experience differs from repeatedly sampling a
+  fixed historical pool. Its benefit is a hypothesis; exact schedule,
+  thresholds, seeds and budget must be registered before execution.
+- Invalid actions deserve attention, but #107 did not test action masking.
+  The earlier #86 masking comparison failed its performance guards. A new
+  escape-plus-mask interaction cannot be declared beneficial from these
+  tables; it would need its own controlled test.
+- Do not change rewards, replay quota, network size and training duration
+  together. Nothing in this experiment isolates a need for a larger network,
+  longer training or a particular reward adjustment.
+
+The accepted #106/#109 time box still takes precedence: prepare Task 3 and
+finish this evidence review rather than silently start another Task 2 sweep.
+If the team chooses B as an exploratory Task 3 parent, record that departure
+from A/r2 explicitly and preserve B's active escape inputs in the successor.
+The currently prepared 34-input Task 3 migration accepts only a control parent
+with disabled continuation inputs; passing B through it would discard learned
+information and is intentionally rejected. A B successor needs a reviewed
+representation retaining the 26 Task 2 inputs plus the 13 opponent inputs
+(39 inputs if appended unchanged), with migration and regression tests.
+
+### Transfer status
+
+At this follow-up inspection all six plan directories were present and five
+status files reported completion. B's status file was still absent locally.
+This is a transfer limitation, not evidence of a failed server run. The full
+local analyzer remains blocked until the remaining files are available.
+
 `server-analysis/` retains the downloaded analyzer outputs; Git normalizes CSV
 line endings to LF without changing field values. These
 aggregate files are not sufficient to reproduce confidence intervals without
