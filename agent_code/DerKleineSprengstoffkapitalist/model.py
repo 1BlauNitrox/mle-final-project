@@ -14,6 +14,14 @@ PARENT_ACTION_COUNT = 5
 
 BOMB_PRIOR_MARGIN = 1.0
 
+PARENT_PRIOR_INITIALIZATION = "parent_prior"
+ZERO_INITIALIZATION = "zeros"
+
+VALID_INITIALIZATIONS = (
+    PARENT_PRIOR_INITIALIZATION,
+    ZERO_INITIALIZATION,
+)
+
 Task1State = tuple[int, ...]
 
 
@@ -26,6 +34,8 @@ class QTable:
         learning_rate: float = LEARNING_RATE,
         discount_factor: float = DISCOUNT_FACTOR,
         parent_values: Mapping[Task1State, np.ndarray] | None = None,
+        feature_count: int = FEATURE_COUNT,
+        initialization: str = PARENT_PRIOR_INITIALIZATION,
     ) -> None:
         if not 0.0 < learning_rate <= 1.0:
             raise ValueError("Learning rate must be in (0, 1].")
@@ -33,8 +43,29 @@ class QTable:
         if not 0.0 <= discount_factor <= 1.0:
             raise ValueError("Discount factor must be in [0, 1].")
 
+        if type(feature_count) is not int or feature_count < 1:
+            raise ValueError("Feature count must be a positive integer.")
+
+        if initialization not in VALID_INITIALIZATIONS:
+            raise ValueError(
+                f"Initialization must be one of {list(VALID_INITIALIZATIONS)}."
+            )
+
+        if initialization == PARENT_PRIOR_INITIALIZATION:
+            if feature_count < PARENT_FEATURE_COUNT:
+                raise ValueError(
+                    "Parent-prior initialization requires at least "
+                    f"{PARENT_FEATURE_COUNT} features."
+                )
+        elif parent_values:
+            raise ValueError(
+                "Zero initialization cannot receive parent Q-values."
+            )
+
         self.learning_rate = learning_rate
         self.discount_factor = discount_factor
+        self.feature_count = feature_count
+        self.initialization = initialization
         self.parent_values = self._copy_parent_values(parent_values or {})
         self.values: dict[StateFeatures, np.ndarray] = {}
 
@@ -127,7 +158,10 @@ class QTable:
         self,
         state: StateFeatures,
     ) -> np.ndarray:
-        """Project a Task 2 state onto its frozen Task 1 prior."""
+        """Return the configured initial Q-values for an unseen state."""
+
+        if self.initialization == ZERO_INITIALIZATION:
+            return np.zeros(len(ACTIONS), dtype=float)
 
         parent_state = tuple(state[:PARENT_FEATURE_COUNT])
 
@@ -163,15 +197,16 @@ class QTable:
 
         return self.values[state]
 
-    @staticmethod
-    def _validate_state(state: StateFeatures) -> None:
+    def _validate_state(self, state: StateFeatures) -> None:
         """Validate the minimum structural Task 2 state contract."""
 
         if not isinstance(state, tuple):
             raise ValueError("State must be a tuple.")
 
-        if len(state) != FEATURE_COUNT:
-            raise ValueError(f"Expected {FEATURE_COUNT} state values, got {len(state)}.")
+        if len(state) != self.feature_count:
+            raise ValueError(
+                f"Expected {self.feature_count} state values, got {len(state)}."
+            )
 
     @staticmethod
     def _copy_parent_values(

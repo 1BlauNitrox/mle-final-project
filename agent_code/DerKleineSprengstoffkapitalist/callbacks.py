@@ -7,72 +7,118 @@ import os
 import numpy as np
 
 from .config import DEFAULT_SEED, INITIAL_EPSILON
-from .features import state_to_features
+from .features import (
+    BASELINE_STATE_REPRESENTATION,
+    VALID_STATE_REPRESENTATIONS,
+    encode_state,
+    get_state_representation,
+)
 from .legality import framework_legal_action_mask
 from .migration import load_parent_prior
-from .model import QTable
+from .model import (
+    PARENT_PRIOR_INITIALIZATION,
+    VALID_INITIALIZATIONS,
+    QTable,
+)
 from .persistence import MODEL_PATH, load_model
 
 USEFUL_BOMB_REWARD_ENV = "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD"
 VALID_USEFUL_BOMB_REWARDS = (0.0, 1.0)
 ACTION_MASKING_ENV = "BOMBERMAN_TABULAR_ACTION_MASKING"
 VALID_ACTION_MASKING = {"none", "framework_legal"}
+STATE_REPRESENTATION_ENV = "BOMBERMAN_TABULAR_STATE_REPRESENTATION"
+INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
 
 
 def setup(self) -> None:
-    """Initialize the Qtable, random generator and exploration state."""
+    """Initialize the Q-table, random generator and exploration state."""
 
     agent_seed = _read_agent_seed()
-    configured_reward = _read_useful_bomb_reward()
-    self.useful_bomb_reward = configured_reward
 
-    configured_action_masking = _read_action_masking()
-    self.action_masking = configured_action_masking
+    self.useful_bomb_reward = _read_useful_bomb_reward()
+    self.action_masking = _read_action_masking()
+    self.state_representation = _read_state_representation()
+    self.initialization = _read_initialization()
+
+    representation = get_state_representation(
+        self.state_representation
+    )
 
     self.rng = np.random.default_rng(agent_seed)
 
     if MODEL_PATH.is_file():
         loaded = load_model(MODEL_PATH)
-
-        is_fresh_model = loaded.completed_episodes == 0 and len(loaded.q_table) == 0
-
-        if loaded.action_masking != configured_action_masking and not is_fresh_model:
-            raise ValueError(f"{ACTION_MASKING_ENV} does not match the stored model mode.")
-
-        self.q_table = loaded.q_table
-        self.completed_episodes = loaded.completed_episodes
-
-        is_fresh_model = loaded.completed_episodes == 0 and len(loaded.q_table) == 0
-        if loaded.useful_bomb_reward != configured_reward and not is_fresh_model:
-            raise ValueError(f"{USEFUL_BOMB_REWARD_ENV} does not match the stored model treatment.")
-
-        if self.train:
-            self.epsilon = loaded.epsilon
-        else:
-            self.epsilon = 0.0
-
-        self.logger.info(
-            "Loaded model with %d states after %d episodes",
-            len(self.q_table),
-            self.completed_episodes,
+        is_fresh_model = (
+            loaded.completed_episodes == 0
+            and len(loaded.q_table) == 0
         )
-        return
+
+        mismatches = []
+
+        if loaded.action_masking != self.action_masking:
+            mismatches.append(ACTION_MASKING_ENV)
+
+        if loaded.useful_bomb_reward != self.useful_bomb_reward:
+            mismatches.append(USEFUL_BOMB_REWARD_ENV)
+
+        if loaded.state_representation != self.state_representation:
+            mismatches.append(STATE_REPRESENTATION_ENV)
+
+        if loaded.initialization != self.initialization:
+            mismatches.append(INITIALIZATION_ENV)
+
+        if mismatches and (not is_fresh_model or not self.train):
+            raise ValueError(
+                "Configured treatment does not match the stored model: "
+                + ", ".join(mismatches)
+            )
+
+        if not mismatches:
+            self.q_table = loaded.q_table
+            self.completed_episodes = loaded.completed_episodes
+            self.epsilon = loaded.epsilon if self.train else 0.0
+
+            self.logger.info(
+                "Loaded model with %d states after %d episodes",
+                len(self.q_table),
+                self.completed_episodes,
+            )
+            return
 
     if not self.train:
-        raise FileNotFoundError(f"Evaluation model does not exist: {MODEL_PATH}")
+        raise FileNotFoundError(
+            f"Evaluation model does not exist: {MODEL_PATH}"
+        )
 
     parent_prior = load_parent_prior()
-    self.q_table = QTable(parent_values=parent_prior.values)
+
+    self.q_table = QTable(
+        parent_values=(
+            parent_prior.values
+            if self.initialization == PARENT_PRIOR_INITIALIZATION
+            else None
+        ),
+        feature_count=representation.feature_count,
+        initialization=self.initialization,
+    )
     self.completed_episodes = 0
     self.epsilon = INITIAL_EPSILON
 
-    self.logger.info("Initialized new model with seed %d", agent_seed)
+    self.logger.info(
+        "Initialized %s model with %s initialization and seed %d",
+        self.state_representation,
+        self.initialization,
+        agent_seed,
+    )
 
 
 def act(self, game_state: dict) -> str:
     """Choose an action using epsilon-greedy exploration during training."""
 
-    state = state_to_features(game_state)
+    state = encode_state(
+        game_state,
+        self.state_representation,
+    )
 
     if state is None:
         return "WAIT"
@@ -131,3 +177,37 @@ def _read_action_masking() -> str:
         raise ValueError(f"{ACTION_MASKING_ENV} must be 'none' or 'framework_legal'.")
 
     return mode
+
+
+def _read_state_representation() -> str:
+    """Read and validate the selected state representation."""
+
+    representation = os.environ.get(
+        STATE_REPRESENTATION_ENV,
+        BASELINE_STATE_REPRESENTATION,
+    )
+
+    if representation not in VALID_STATE_REPRESENTATIONS:
+        raise ValueError(
+            f"{STATE_REPRESENTATION_ENV} must be one of "
+            f"{list(VALID_STATE_REPRESENTATIONS)}."
+        )
+
+    return representation
+
+
+def _read_initialization() -> str:
+    """Read and validate the Q-table initialization mode."""
+
+    initialization = os.environ.get(
+        INITIALIZATION_ENV,
+        PARENT_PRIOR_INITIALIZATION,
+    )
+
+    if initialization not in VALID_INITIALIZATIONS:
+        raise ValueError(
+            f"{INITIALIZATION_ENV} must be one of "
+            f"{list(VALID_INITIALIZATIONS)}."
+        )
+
+    return initialization

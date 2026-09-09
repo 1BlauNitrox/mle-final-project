@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
-from .features import StateFeatures, state_to_features
+from .features import StateFeatures, encode_state
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
@@ -89,8 +89,14 @@ def game_events_occurred(
         )
         return
 
-    old_state = state_to_features(old_game_state)
-    new_state = state_to_features(new_game_state)
+    old_state = encode_state(
+        old_game_state,
+        self.state_representation,
+    )
+    new_state = encode_state(
+        new_game_state,
+        self.state_representation,
+    )
 
     if old_state is None or new_state is None:
         return
@@ -165,7 +171,10 @@ def end_of_round(
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTIONS:
-            last_state = state_to_features(last_game_state)
+            last_state = encode_state(
+                last_game_state,
+                self.state_representation,
+            )
 
             if last_state is not None:
                 _apply_update(
@@ -200,6 +209,8 @@ def end_of_round(
         completed_episodes=self.completed_episodes,
         useful_bomb_reward=self.useful_bomb_reward,
         action_masking=self.action_masking,
+        state_representation=self.state_representation,
+        initialization=self.initialization,
         path=MODEL_PATH,
     )
 

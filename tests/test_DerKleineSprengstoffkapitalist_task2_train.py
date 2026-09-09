@@ -19,12 +19,18 @@ from agent_code.DerKleineSprengstoffkapitalist.config import (
     MINIMUM_EPSILON,
 )
 from agent_code.DerKleineSprengstoffkapitalist.features import (
+    BASELINE_STATE_REPRESENTATION,
+    COMPACT_STATE_REPRESENTATION,
     state_to_features,
 )
 from agent_code.DerKleineSprengstoffkapitalist.migration import (
     load_parent_prior,
 )
-from agent_code.DerKleineSprengstoffkapitalist.model import QTable
+from agent_code.DerKleineSprengstoffkapitalist.model import (
+    PARENT_PRIOR_INITIALIZATION,
+    ZERO_INITIALIZATION,
+    QTable,
+)
 from agent_code.DerKleineSprengstoffkapitalist.persistence import (
     load_model,
     save_model,
@@ -103,6 +109,8 @@ def make_agent() -> SimpleNamespace:
         completed_episodes=0,
         useful_bomb_reward=0.0,
         action_masking="none",
+        state_representation=BASELINE_STATE_REPRESENTATION,
+        initialization=PARENT_PRIOR_INITIALIZATION,
     )
 
     training.setup_training(agent)
@@ -153,6 +161,75 @@ def test_fresh_training_agent_uses_parent_prior(
         agent.q_table.parent_values[parent_state],
         parent_prior.values[parent_state],
     )
+
+
+def test_compact_training_uses_zero_initialized_five_feature_states(
+    model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        callbacks.STATE_REPRESENTATION_ENV,
+        COMPACT_STATE_REPRESENTATION,
+    )
+    monkeypatch.setenv(
+        callbacks.INITIALIZATION_ENV,
+        ZERO_INITIALIZATION,
+    )
+
+    agent = SimpleNamespace(
+        train=True,
+        logger=Mock(),
+    )
+
+    callbacks.setup(agent)
+    training.setup_training(agent)
+
+    assert agent.state_representation == COMPACT_STATE_REPRESENTATION
+    assert agent.initialization == ZERO_INITIALIZATION
+    assert agent.q_table.feature_count == 5
+    assert agent.q_table.parent_values == {}
+
+    old_game_state = make_game_state(
+        position=(3, 3),
+        coins=[(5, 3)],
+        step=1,
+    )
+    new_game_state = make_game_state(
+        position=(4, 3),
+        coins=[(5, 3)],
+        step=2,
+    )
+
+    selected_action = callbacks.act(agent, old_game_state)
+
+    assert selected_action in ACTIONS
+
+    training.game_events_occurred(
+        agent,
+        old_game_state,
+        "RIGHT",
+        new_game_state,
+        [],
+    )
+
+    assert agent.pending_transition is not None
+    assert len(agent.pending_transition.state) == 5
+    assert len(agent.pending_transition.next_state) == 5
+
+    training.end_of_round(
+        agent,
+        None,
+        None,
+        [],
+    )
+
+    assert model_path.is_file()
+
+    loaded = load_model(model_path)
+
+    assert loaded.state_representation == COMPACT_STATE_REPRESENTATION
+    assert loaded.initialization == ZERO_INITIALIZATION
+    assert loaded.q_table.feature_count == 5
 
 
 def test_all_six_actions_are_valid_training_actions() -> None:
@@ -687,3 +764,49 @@ def test_matching_survivor_callback_counts_final_step_events_once(
     assert metrics["bombs_dropped"] == pytest.approx(1.0)
     assert metrics["invalid_actions"] == pytest.approx(1.0)
     assert metrics["survived_round"] == pytest.approx(1.0)
+
+
+def test_callbacks_reject_state_representation_mismatch(
+    model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    compact_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    compact_table.update(
+        state=(0, 15, 0, 0, 1),
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    save_model(
+        compact_table,
+        epsilon=0.42,
+        completed_episodes=1,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        path=model_path,
+    )
+
+    monkeypatch.setenv(
+        callbacks.STATE_REPRESENTATION_ENV,
+        BASELINE_STATE_REPRESENTATION,
+    )
+    monkeypatch.setenv(
+        callbacks.INITIALIZATION_ENV,
+        PARENT_PRIOR_INITIALIZATION,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="BOMBERMAN_TABULAR_STATE_REPRESENTATION",
+    ):
+        callbacks.setup(
+            SimpleNamespace(
+                train=True,
+                logger=Mock(),
+            )
+        )
