@@ -29,9 +29,18 @@ def migrate_online_network(
     seed: int = MIGRATION_INIT_SEED,
 ) -> QNetwork:
     """Build a Task 3 network with compatible Task 2 weights copied exactly."""
-    if parent_network.config.input_dim != PARENT_INPUT_DIM:
+    parent_input_dim = parent_network.config.input_dim
+    if (
+        parent_input_dim == 26
+        and getattr(parent_network.config, "escape_continuation_features", None) is not False
+    ):
         raise ValueError(
-            f"Parent network input_dim must be {PARENT_INPUT_DIM}, "
+            "A 26-input parent requires escape_continuations=off; "
+            "active features cannot be discarded."
+        )
+    if parent_input_dim not in (PARENT_INPUT_DIM, 26):
+        raise ValueError(
+            f"Parent network input_dim must be {PARENT_INPUT_DIM} or 26, "
             f"got {parent_network.config.input_dim}."
         )
     if parent_network.config.output_dim != PARENT_OUTPUT_DIM:
@@ -55,19 +64,15 @@ def migrate_online_network(
         raise ValueError("Task 3 must retain the six-action output contract.")
 
     migrated = build_q_network(config, seed=seed)
-    parent_layers = [
-        layer for layer in parent_network.layers if isinstance(layer, nn.Linear)
-    ]
-    migrated_layers = [
-        layer for layer in migrated.layers if isinstance(layer, nn.Linear)
-    ]
+    parent_layers = [layer for layer in parent_network.layers if isinstance(layer, nn.Linear)]
+    migrated_layers = [layer for layer in migrated.layers if isinstance(layer, nn.Linear)]
 
     if len(parent_layers) != len(migrated_layers):
         raise ValueError("Migration requires the same number of linear layers.")
 
     with torch.no_grad():
         migrated_layers[0].weight[:, :PARENT_INPUT_DIM].copy_(
-            parent_layers[0].weight
+            parent_layers[0].weight[:, :PARENT_INPUT_DIM]
         )
         migrated_layers[0].weight[:, PARENT_INPUT_DIM:].zero_()
         migrated_layers[0].bias.copy_(parent_layers[0].bias)

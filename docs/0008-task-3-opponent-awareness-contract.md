@@ -74,6 +74,13 @@ transition is not updated once as ordinary and again as terminal.
 
 ## Migration and persistence
 
+A 26-input Task 2 control parent is also supported when its persisted
+`escape_continuation_features` flag is false: the last five inputs are always
+zero, so their columns may be removed while preserving all six Q-values.
+Parents with active continuation features are rejected; preserving those
+requires a separately reviewed Task 3 schema. The migration CLI requires a
+matching parent SHA-256 before loading and supports an explicit output path.
+
 The provisional parent is the corrected Task 2 artifact
 `checkpoint-issue85-zero-suffix.pt`, SHA-256
 `3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015`. The

@@ -1,5 +1,8 @@
 # Issue #109 peaceful-opponent Task 3 comparison
 
+See [PREPARATION.md](PREPARATION.md) for the current parent-migration path,
+matched retention coverage and the explicit scientific launch gates.
+
 > Status: **Registered protocol, not ready for scientific execution.** Run
 > plans dry-run cleanly and are ready to launch mechanically, but issue
 > #109's own acceptance criteria require an assigned owner/reviewer, fixed
@@ -38,7 +41,7 @@ Both arms are evaluated on the identical 10 development seed pairs
 5 replicas can each be paired against the same single Task 2 reference
 point.
 
-Task 3's own plan additionally evaluates the standard opponent-free
+Both plans additionally evaluate the standard opponent-free
 retention battery (`classic`, `coin-heaven`, `loot-crate`, reusing the same
 development seed pairs established in #86/#97/#103 for cross-experiment
 comparability), per issue #109's explicit requirement to report absolute
@@ -108,7 +111,7 @@ state); `issue109-task3-vs-coincollector.yaml` must wait for the peaceful
 stage's decision regardless of available compute.
 
 5 replicas × (1 training stage + 8 evaluation suites × 10 seed pairs) = 405
-jobs, 50,000 training episodes, for the Task 3 arm. 1 replica × 2
-evaluation suites × 10 seed pairs = 20 jobs for the frozen Task 2
+jobs, 50,000 training episodes, for the Task 3 arm. 1 replica × 8
+evaluation suites × 10 seed pairs = 80 jobs for the frozen Task 2
 predecessor. Proposed ceiling: 24 CPU-hours / 15 wall-hours / 8 GiB / two
 training workers (owner must accept or replace, per issue #109).

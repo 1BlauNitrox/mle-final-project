@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import sys
 from pathlib import Path
@@ -32,9 +33,7 @@ from agent_code.DagobertDuckDQNTask3.persistence import (  # noqa: E402
 )
 from agent_code.DagobertDuckDQNTask3.replay import ReplayBuffer  # noqa: E402
 
-PARENT_CHECKPOINT_PATH = TASK2_CHECKPOINT_PATH.with_name(
-    "checkpoint-issue85-zero-suffix.pt"
-)
+PARENT_CHECKPOINT_PATH = TASK2_CHECKPOINT_PATH.with_name("checkpoint-issue85-zero-suffix.pt")
 
 
 def sha256_file(path: Path) -> str:
@@ -46,7 +45,16 @@ def sha256_file(path: Path) -> str:
 
 
 def main() -> None:
-    parent = load_evaluation_checkpoint(PARENT_CHECKPOINT_PATH)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--parent", type=Path, default=PARENT_CHECKPOINT_PATH)
+    parser.add_argument("--output", type=Path, default=SUCCESSOR_CHECKPOINT_PATH)
+    parser.add_argument("--parent-sha256", required=True)
+    args = parser.parse_args()
+    if args.parent.resolve() == args.output.resolve():
+        parser.error("Parent and output must be different files")
+    if sha256_file(args.parent) != args.parent_sha256:
+        parser.error("Parent SHA-256 mismatch")
+    parent = load_evaluation_checkpoint(args.parent)
     migrated_network = migrate_online_network(
         parent.network,
         config=DEFAULT_CONFIG,
@@ -67,14 +75,14 @@ def main() -> None:
         epsilon=DEFAULT_CONFIG.initial_epsilon,
         completed_episodes=0,
         agent_seed=MIGRATION_INIT_SEED,
-        path=SUCCESSOR_CHECKPOINT_PATH,
+        path=args.output,
     )
 
-    print(f"Parent checkpoint:    {PARENT_CHECKPOINT_PATH}")
-    print(f"Parent SHA-256:       {sha256_file(PARENT_CHECKPOINT_PATH)}")
-    print(f"Migrated checkpoint:  {SUCCESSOR_CHECKPOINT_PATH}")
-    print(f"Migrated SHA-256:      {sha256_file(SUCCESSOR_CHECKPOINT_PATH)}")
-    print(f"Migrated size:         {SUCCESSOR_CHECKPOINT_PATH.stat().st_size} bytes")
+    print(f"Parent checkpoint:    {args.parent}")
+    print(f"Parent SHA-256:       {sha256_file(args.parent)}")
+    print(f"Migrated checkpoint:  {args.output}")
+    print(f"Migrated SHA-256:      {sha256_file(args.output)}")
+    print(f"Migrated size:         {args.output.stat().st_size} bytes")
 
 
 if __name__ == "__main__":
