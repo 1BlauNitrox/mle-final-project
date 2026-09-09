@@ -131,22 +131,14 @@ def _fieldnames(rows: list[dict[str, Any]]) -> list[str]:
 
 def _write_plain_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=_fieldnames(rows),
-            lineterminator="\n",
-        )
+        writer = csv.DictWriter(handle, fieldnames=_fieldnames(rows), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
 
 def _write_gzipped_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     with gzip.open(path, "wt", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(
-            handle,
-            fieldnames=_fieldnames(rows),
-            lineterminator="\n",
-        )
+        writer = csv.DictWriter(handle, fieldnames=_fieldnames(rows), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -154,6 +146,27 @@ def _write_gzipped_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 def _file_record(path: Path) -> dict[str, Any]:
     data = path.read_bytes()
     return {"sha256": hashlib.sha256(data).hexdigest(), "size_bytes": len(data)}
+
+
+def verify_evidence_files(evidence_directory: Path, manifest: dict[str, Any]) -> None:
+    """Raise if any evidence file's on-disk size/SHA-256 differs from its manifest record.
+
+    A manifest is fingerprinted at export time, before Git's own clean/smudge
+    filters (e.g. a `text eol=lf` .gitattributes rule) can rewrite a committed
+    text file's bytes -- so an analyzer that trusts the manifest without this
+    check can silently validate against evidence a reviewer's checkout does
+    not actually contain.
+    """
+    for filename, recorded in manifest["evidence_files"].items():
+        path = evidence_directory / filename
+        if not path.is_file():
+            raise ValueError(f"Evidence file listed in manifest is missing: {path}")
+        actual = _file_record(path)
+        if actual != recorded:
+            raise ValueError(
+                f"Evidence file does not match its manifest record: {path} "
+                f"(manifest: {recorded}, actual: {actual})"
+            )
 
 
 def _read_json(path: Path) -> dict[str, Any]:

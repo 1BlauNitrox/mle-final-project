@@ -1,0 +1,11 @@
+{
+  "deterministic_repeats": true,
+  "issue": 97,
+  "note": "The staged arm (Issue #86's retained unmasked artifact) was not available locally when this ran: its raw per-episode evidence lives in an external server archive (SHA-256 841f01f86719a28d7a9d10d69685f6293c94e281b0dd39379d09947a4c180c1f, see experiments/2026-09-06-dqn-task2-legal-action-masking/README.md), not in this checkout. This result therefore only describes the direct arm; the registered direct-vs-staged comparison is still open. Re-run this script with --staged-plan-root pointing at that archive's extracted training_outputs/run-plans directory to complete it.",
+  "paired_collection_fraction_staged_minus_direct": null,
+  "paired_survival_rate_staged_minus_direct": null,
+  "primary_evaluation_episodes": 150,
+  "schema_version": 1,
+  "staged_arm_available": false,
+  "timing_within_limits": true
+}

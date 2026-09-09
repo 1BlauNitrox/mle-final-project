@@ -209,6 +209,9 @@ Example plans are in `training/run_plans/`:
 - `task1-example.yaml`: `coin-heaven` without opponents;
 - `task2-example.yaml`: visible coins, `loot-crate`, then `classic`, without opponents;
 - `task3-example.yaml`: `classic` with peaceful and coin-collector opponents plus Task 1/2 regressions;
+- `issue108-dqn-task3-smoke.yaml`: the bounded Task 3 successor path, with
+  peaceful-agent training before coin-collector training and explicit
+  opponent-free Task 1/Task 2 regressions;
 - `task4-example.yaml`: `classic` with ordered strong opponents plus earlier-task regressions; and
 - `tasks1-3-smoke.yaml`: three one-round integration checks; and
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
@@ -282,6 +285,30 @@ Repeat the command for the untrained and frozen Task 1 plans. The workspace
 root must contain the corresponding old plan directories and their final
 workspaces; evaluation-only mode never runs training and cannot resume an
 existing output directory.
+
+### Issue #97 staged-curriculum comparison for Task 2 DQN
+
+**Direct arm completed; staged comparison still open.** Issue #86 rejected
+`framework_legal` masking and retained the unmasked arm, so only one
+direct-classic plan was needed:
+`issue97-dqn-task2-direct-classic-unmasked.yaml` (the masked variant was
+deleted). See `experiments/2026-09-06-dqn-task2-curriculum/README.md` for
+the full protocol, the direct arm's own result, and what completing the
+staged comparison still needs.
+
+```bash
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml --dry-run
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml
+```
+
+Reproduce the compact (direct-arm-only, pending #86's raw archive for the
+full comparison) result with:
+
+```bash
+python -m training.analyze_issue97_dqn_task2_curriculum \
+  --direct-plan-root training_outputs/run-plans \
+  --output training_outputs/issue97-analysis
+```
 
 #### Plan output and resume records
 

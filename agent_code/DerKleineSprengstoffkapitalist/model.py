@@ -56,19 +56,24 @@ class QTable:
         *,
         epsilon: float,
         rng: np.random.Generator,
+        action_mask: np.ndarray | None = None,
     ) -> str:
         """Select an action using epsilon-greedy exploration."""
 
         if not 0.0 <= epsilon <= 1.0:
             raise ValueError("Epsilon must be in [0, 1].")
 
+        legal = _validate_action_mask(action_mask)
+        legal_indices = np.flatnonzero(legal)
+
         if rng.random() < epsilon:
-            action_index = int(rng.integers(len(ACTIONS)))
-            return ACTIONS[action_index]
+            selected_index = int(rng.choice(legal_indices))
+            return ACTIONS[selected_index]
 
         values = self.q_values(state)
-        maximum = np.max(values)
-        best_indices = np.flatnonzero(values == maximum)
+        masked_values = np.where(legal, values, -np.inf)
+        maximum = np.max(masked_values)
+        best_indices = np.flatnonzero(masked_values == maximum)
 
         selected_index = int(rng.choice(best_indices))
         return ACTIONS[selected_index]
@@ -81,6 +86,7 @@ class QTable:
         reward: float,
         next_state: StateFeatures | None,
         terminal: bool,
+        next_action_mask: np.ndarray | None = None,
     ) -> float:
         """Update one Q-value and return its temporal difference."""
 
@@ -99,7 +105,12 @@ class QTable:
         else:
             assert next_state is not None
 
-            target = reward + self.discount_factor * float(np.max(self.q_values(next_state)))
+            legal = _validate_action_mask(next_action_mask)
+            next_values = self.q_values(next_state)
+            masked_next_values = np.where(legal, next_values, -np.inf)
+            maximum_next_value = float(np.max(masked_next_values))
+
+            target = reward + self.discount_factor * maximum_next_value
 
         td_error = target - current_value
 
@@ -186,3 +197,22 @@ class QTable:
             copied[state] = values.copy()
 
         return copied
+
+
+def _validate_action_mask(
+    action_mask: np.ndarray | None,
+) -> np.ndarray:
+    """Validate an optional action mask in ACTIONS order."""
+
+    if action_mask is None:
+        return np.ones(len(ACTIONS), dtype=np.bool_)
+
+    mask = np.asarray(action_mask)
+
+    if mask.shape != (len(ACTIONS),) or mask.dtype != np.bool_:
+        raise ValueError("action_mask must be a boolean vector in ACTIONS order.")
+
+    if not np.any(mask):
+        raise ValueError("action_mask must retain at least one legal action.")
+
+    return mask.copy()

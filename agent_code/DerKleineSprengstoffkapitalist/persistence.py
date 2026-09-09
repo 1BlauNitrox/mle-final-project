@@ -37,6 +37,7 @@ class LoadedModel:
     epsilon: float
     completed_episodes: int
     parent_model_sha256: str
+    action_masking: str
 
 
 def save_model(
@@ -44,6 +45,7 @@ def save_model(
     *,
     epsilon: float,
     completed_episodes: int,
+    action_masking: str = "none",
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -54,6 +56,9 @@ def save_model(
 
     if completed_episodes < 0:
         raise ValueError("Completed episodes must be non-negative.")
+
+    if action_masking not in {"none", "framework_legal"}:
+        raise ValueError("Invalid action-masking mode.")
 
     parent_prior = load_parent_prior(parent_path)
     states, q_values = _serialize_q_table(q_table)
@@ -72,6 +77,7 @@ def save_model(
         "rewards": REWARDS,
         "parent_model_sha256": parent_prior.sha256,
         "bomb_prior_margin": BOMB_PRIOR_MARGIN,
+        "action_masking": action_masking,
     }
 
     path = Path(path)
@@ -141,6 +147,9 @@ def load_model(
 
         metadata = json.loads(metadata_text)
 
+        if "action_masking" not in metadata:
+            metadata = {**metadata, "action_masking": "none"}
+
     except (
         OSError,
         ValueError,
@@ -184,6 +193,7 @@ def load_model(
         epsilon=float(metadata["epsilon"]),
         completed_episodes=int(metadata["completed_episodes"]),
         parent_model_sha256=parent_prior.sha256,
+        action_masking=str(metadata["action_masking"]),
     )
 
 
@@ -294,7 +304,11 @@ def _validate_metadata(metadata: Any) -> None:
         "rewards",
         "parent_model_sha256",
         "bomb_prior_margin",
+        "action_masking",
     }
+
+    if metadata["action_masking"] not in {"none", "framework_legal"}:
+        raise ValueError("Stored action-masking mode is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")

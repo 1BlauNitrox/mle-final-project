@@ -240,6 +240,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
+        "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",

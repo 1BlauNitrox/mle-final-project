@@ -77,6 +77,7 @@ def test_documentation_and_quality_only_paths_skip_optional_jobs(path: str) -> N
     ("path", "expected"),
     [
         ("agent_code/DagobertDuckDQN/callbacks.py", DQN_COMPONENTS),
+        ("agent_code/DagobertDuckDQNTask3/features/opponents.py", DQN_COMPONENTS),
         (
             "agent_code/DerKleineVermoegensumverteiler/train.py",
             TABULAR_COMPONENT,
