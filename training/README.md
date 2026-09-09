@@ -151,6 +151,7 @@ following fields control execution:
 | `agent` | string | none | Required existing directory below `agent_code/`. |
 | `artifact_path` | string or null | `null` | Relative file path inside the staged agent. Required for training; absolute paths and `..` are rejected. |
 | `action_masking` | string | `none` | Task-2 DQN treatment selector: `none` or `framework_legal`; recorded in every job and protected by the plan fingerprint. |
+| `useful_bomb_reward` | number | `0.0` | Tabular Task-2 treatment selector: `0.0` or `1.0`; exposed to the agent, recorded in every job, and protected by the plan fingerprint. |
 | `reward_variant` | string | `control` | Task-2 DQN reward-configuration selector: `control`, `survival_rebalance`, or `safety_bomb` (issue #103); recorded in every job and protected by the plan fingerprint. |
 | `escape_continuations` | string | `off` | Task-2 DQN #87 feature selector: `off` or `on`; recorded in every job and protected by the plan fingerprint. |
 | `replay_treatment` | string | `uniform` | Task-2 DQN #88 replay selector: `uniform` or `protected_task1`; recorded in every job and protected by the plan fingerprint. |

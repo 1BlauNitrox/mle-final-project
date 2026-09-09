@@ -1,0 +1,90 @@
+{
+  "classic_crates_destroyed_candidate_minus_control": {
+    "ci_lower": 5.11,
+    "ci_upper": 6.695,
+    "mean_difference": 5.895,
+    "paired_models": 5,
+    "paired_seeds_per_model": 40,
+    "resampler_seed": 114,
+    "resamples": 10000
+  },
+  "classic_self_kill_rates": {
+    "candidate": 0.595,
+    "control": 0.145
+  },
+  "comparisons": {
+    "classic": {
+      "ci_lower": -0.0016666666666666666,
+      "ci_upper": 0.009444444444444445,
+      "mean_difference": 0.0033333333333333335,
+      "paired_models": 5,
+      "paired_seeds_per_model": 40,
+      "resampler_seed": 114,
+      "resamples": 10000
+    },
+    "coin-heaven": {
+      "ci_lower": 0.0,
+      "ci_upper": 0.0,
+      "mean_difference": 0.0,
+      "paired_models": 5,
+      "paired_seeds_per_model": 40,
+      "resampler_seed": 114,
+      "resamples": 10000
+    },
+    "loot-crate": {
+      "ci_lower": -0.0005,
+      "ci_upper": 0.0026,
+      "mean_difference": 0.0011,
+      "paired_models": 5,
+      "paired_seeds_per_model": 40,
+      "resampler_seed": 114,
+      "resamples": 10000
+    }
+  },
+  "criteria": {
+    "at_least_four_replicas_improve": false,
+    "classic_ci_lower_above_zero": false,
+    "classic_crates_destroyed_increase": true,
+    "classic_mean_above_zero": true,
+    "classic_self_kill_within_margin": false,
+    "deterministic_repeats": true,
+    "diagnostic_replay_models_match": true,
+    "task1_retention_ci_lower_above_margin": true,
+    "timing_within_limits": true,
+    "useful_bombs_increase": true
+  },
+  "decision": "reject_useful_bomb_reward_for_this_configuration",
+  "diagnostic_replay_model_hash_match": {
+    "candidate": {
+      "r1": true,
+      "r2": true,
+      "r3": true,
+      "r4": true,
+      "r5": true
+    },
+    "control": {
+      "r1": true,
+      "r2": true,
+      "r3": true,
+      "r4": true,
+      "r5": true
+    }
+  },
+  "issue": 114,
+  "mean_useful_bombs_per_training_episode": {
+    "candidate": 1.72198,
+    "control": 1.34866
+  },
+  "primary_evaluation_episodes": 1200,
+  "replicas_improving_classic": 3,
+  "schema_version": 1,
+  "task1_retention_candidate_minus_frozen": {
+    "ci_lower": 0.0,
+    "ci_upper": 0.0,
+    "mean_difference": 0.0,
+    "paired_models": 5,
+    "paired_seeds_per_model": 40,
+    "resampler_seed": 115,
+    "resamples": 10000
+  }
+}

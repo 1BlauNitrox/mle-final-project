@@ -226,6 +226,7 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         agent_statistics = make_agent_statistics(
             learning_metrics={
                 "shaped_reward": -2.5,
+                "useful_bombs": 2,
                 "epsilon": 0.25,
                 "q_table_size": 42,
                 "replay_size": 256,
@@ -247,6 +248,7 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         row = rows[0]
         self.assertEqual("training", row["mode"])
         self.assertEqual(-2.5, row["shaped_reward"])
+        self.assertEqual(2, row["useful_bombs"])
         self.assertEqual(0.25, row["epsilon"])
         self.assertEqual(42, row["q_table_size"])
         self.assertEqual(256, row["replay_size"])

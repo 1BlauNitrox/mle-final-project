@@ -1,0 +1,9 @@
+arm,stage,episodes,mean_useful_bombs,total_useful_bombs
+control,classic-crates,30000,1.7632666666666668,52898.0
+control,dense-crates,10000,1.4535,14535.0
+control,visible-coins,10000,0.0,0.0
+control,all,50000,1.34866,67433.0
+candidate,classic-crates,30000,2.3713333333333333,71140.0
+candidate,dense-crates,10000,1.4959,14959.0
+candidate,visible-coins,10000,0.0,0.0
+candidate,all,50000,1.72198,86099.0

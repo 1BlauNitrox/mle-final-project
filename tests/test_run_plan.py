@@ -21,6 +21,7 @@ def _plan_data() -> dict[str, object]:
         "plan_id": "test-matrix",
         "agent": "DerKleineSprengstoffkapitalist",
         "artifact_path": "model.npz",
+        "useful_bomb_reward": 1.0,
         "escape_continuations": "off",
         "max_parallel_training": 2,
         "replicas": [
@@ -81,6 +82,7 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[5].opponents == ("peaceful_agent", "coin_collector_agent")
     assert first.jobs[0].world_seed != first.jobs[2].world_seed
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
+    assert first.useful_bomb_reward == pytest.approx(1.0)
 
 
 def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path) -> None:
@@ -151,6 +153,10 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
             lambda plan: plan.update(artifact_path="../model.npz"),
             "unambiguous path",
         ),
+        "useful bomb reward": (
+            lambda plan: plan.update(useful_bomb_reward=0.5),
+            "useful_bomb_reward",
+        ),
         "reward variant": (
             lambda plan: plan.update(reward_variant="unknown"),
             "reward_variant must be one of",
@@ -208,9 +214,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
 
     with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
         with pytest.raises(RuntimeError, match="planned failure"):
-            run_plan.execute_plan(
-                plan, output_root=output_root, process_monitor=process_monitor
-            )
+            run_plan.execute_plan(plan, output_root=output_root, process_monitor=process_monitor)
 
         plan_directory = output_root / plan.plan_id
         failed_status = json.loads((plan_directory / "status.json").read_text())
@@ -239,6 +243,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["metadata_extra"]["run_plan"]["campaign"] == campaign
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
+        "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": "1.0",
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",

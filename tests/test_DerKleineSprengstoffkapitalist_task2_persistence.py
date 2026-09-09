@@ -86,6 +86,7 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.epsilon == pytest.approx(0.8)
     assert loaded.completed_episodes == 3
     assert loaded.parent_model_sha256 == EXPECTED_PARENT_SHA256
+    assert loaded.useful_bomb_reward == pytest.approx(0.0)
     assert len(loaded.q_table) == 1
     assert loaded.action_masking == "framework_legal"
 
@@ -93,6 +94,21 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
         loaded.q_table.q_values(TEST_STATE),
         q_table.q_values(TEST_STATE),
     )
+
+
+def test_useful_bomb_reward_round_trip(tmp_path: Path) -> None:
+    parent = load_parent_prior()
+    model_path = tmp_path / "model.npz"
+
+    save_model(
+        QTable(parent_values=parent.values),
+        epsilon=1.0,
+        completed_episodes=0,
+        useful_bomb_reward=1.0,
+        path=model_path,
+    )
+
+    assert load_model(model_path).useful_bomb_reward == pytest.approx(1.0)
 
 
 def test_empty_model_remains_sparse_after_loading(

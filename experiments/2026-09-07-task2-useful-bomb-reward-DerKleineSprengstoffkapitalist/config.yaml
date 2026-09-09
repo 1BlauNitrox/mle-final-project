@@ -1,0 +1,124 @@
+schema_version: 1
+issue: 114
+status: completed_negative
+agent: DerKleineSprengstoffkapitalist
+owner: LiliWestermann
+reviewer: null
+execution_authorization: user_directed_without_recorded_peer_approval
+
+revisions:
+  registration_base: "933a8fe"
+  experiment_commit: "eb215172b16146772dd543ae90813f852ad041e4"
+  framework_revision: "0f55c1d"
+
+artifacts:
+  task2_untrained:
+    path: agent_code/DerKleineSprengstoffkapitalist/model.npz
+    sha256: "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb"
+    size_bytes: 1150
+    model_schema: 3
+    feature_schema: 2
+  task1_frozen:
+    path: agent_code/DerKleineVermoegensumverteiler/model.npz
+    sha256: "4e1da63a819ef8f51b112ffaf422ab251b853915375fe486538be8595b988307"
+    size_bytes: 6845
+    model_schema: 2
+    feature_schema: 1
+
+treatments:
+  control:
+    useful_bomb_reward: 0.0
+    action_masking: none
+    run_plan: training/run_plans/issue114-tabular-task2-control.yaml
+  candidate:
+    useful_bomb_reward: 1.0
+    action_masking: none
+    run_plan: training/run_plans/issue114-tabular-task2-useful-bomb-reward.yaml
+  task1_reference:
+    run_plan: training/run_plans/issue114-tabular-task1-frozen.yaml
+
+controlled:
+  alpha: 0.05
+  gamma: 0.9
+  initial_epsilon: 1.0
+  epsilon_decay: 0.99
+  minimum_epsilon: 0.1
+  replicas: 5
+  episodes_per_replica: 10000
+  training_seeds:
+    - {id: r1, world_seed: 101001, agent_seed: 201001}
+    - {id: r2, world_seed: 101002, agent_seed: 201002}
+    - {id: r3, world_seed: 101003, agent_seed: 201003}
+    - {id: r4, world_seed: 101004, agent_seed: 201004}
+    - {id: r5, world_seed: 101005, agent_seed: 201005}
+  curriculum:
+    - {scenario: coin-heaven, rounds: 2000}
+    - {scenario: loot-crate, rounds: 2000}
+    - {scenario: classic, rounds: 6000}
+
+evaluation:
+  rounds_per_seed: 1
+  deterministic_repeat: true
+  classic_world_seeds: {start: 102001, stop_inclusive: 102040}
+  coin_heaven_world_seeds: {start: 103001, stop_inclusive: 103040}
+  loot_crate_world_seeds: {start: 104001, stop_inclusive: 104040}
+  confirmation_seeds_used: false
+
+criteria:
+  classic_candidate_minus_control_mean_strictly_above: 0.0
+  classic_paired_ci_lower_strictly_above: 0.0
+  replicas_improving_min: 4
+  useful_bombs_per_training_episode_increase: true
+  classic_crates_destroyed_per_episode_increase: true
+  classic_self_kill_rate_maximum_increase: 0.02
+  task1_retention_ci_lower_strictly_above: -0.05
+  deterministic_repeat: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+
+analysis:
+  bootstrap_resamples: 10000
+  collection_resampler_seed: 114
+  retention_resampler_seed: 115
+
+compute_budget:
+  maximum_training_episodes: 100000
+  maximum_evaluation_episodes: 2480
+  maximum_cpu_hours: 36
+  paid_resources: false
+
+outputs:
+  commit:
+    - README.md
+    - config.yaml
+    - evidence.csv
+    - training-summary.csv
+    - summary.csv
+    - result.json
+    - figures/
+  external:
+    - evaluated_models
+    - resolved_plans
+    - statuses
+    - evaluation_metadata
+
+results:
+  decision: reject_useful_bomb_reward_for_this_configuration
+  classic_collection_difference: 0.0033333333333333335
+  classic_collection_ci_95: [-0.0016666666666666666, 0.009444444444444445]
+  replicas_improving_classic: 3
+  useful_bombs_per_training_episode: {control: 1.34866, candidate: 1.72198}
+  classic_crates_destroyed_per_episode: {control: 1.175, candidate: 7.07}
+  classic_self_kill_rate: {control: 0.145, candidate: 0.595}
+  task1_retention_difference: 0.0
+  task1_retention_ci_95: [0.0, 0.0]
+  deterministic_repeats: true
+  diagnostic_replay_models_match: true
+  confirmation_seeds_used: false
+
+evidence_release:
+  tag: issue114-evidence-v1
+  asset: issue114-evidence-v1.tar.gz
+  size_bytes: 13349397
+  sha256: "855f9e5bf00b478ce9993e5107deb45a515536e345fdf8cb51723139dba05554"
+  manifest_entries: 5060

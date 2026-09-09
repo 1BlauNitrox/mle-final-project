@@ -80,6 +80,13 @@ def test_bomb_placement_has_no_direct_reward() -> None:
     assert reward_from_events(["BOMB_EXPLODED"]) == 0.0
 
 
+def test_useful_bomb_reward_is_an_explicit_treatment() -> None:
+    events = ["BOMB_DROPPED", "USEFUL_BOMB_PLACED"]
+
+    assert reward_from_events(events) == 0.0
+    assert reward_from_events(events, useful_bomb_reward=1.0) == 1.0
+
+
 def test_unknown_events_have_zero_reward() -> None:
     assert reward_from_events(["UNKNOWN_EVENT"]) == 0.0
 
