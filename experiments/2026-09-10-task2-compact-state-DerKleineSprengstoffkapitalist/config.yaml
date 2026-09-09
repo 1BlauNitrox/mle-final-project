@@ -8,7 +8,7 @@ reviewer: null
 
 revisions:
   registration_base: "8927781"
-  experiment_commit: null
+  experiment_commit: "693d152412e61fbdd37ee5011336a53248569574"
   framework_revision: "0f55c1d"
 
 treatments:
