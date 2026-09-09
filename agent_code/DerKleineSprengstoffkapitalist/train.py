@@ -195,6 +195,9 @@ def end_of_round(
         "epsilon": completed_episode_epsilon,
         "q_table_size": len(self.q_table),
         "mean_abs_td_error": float(mean_abs_td_error),
+        "total_state_visits": self.q_table.total_state_visits,
+        "mean_visits_per_state": self.q_table.mean_visits_per_state,
+        "singleton_state_fraction": self.q_table.singleton_state_fraction,
     }
 
     for event_name, metric_name in DIAGNOSTIC_EVENT_METRICS.items():

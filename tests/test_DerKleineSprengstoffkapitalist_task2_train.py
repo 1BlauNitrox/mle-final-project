@@ -701,6 +701,14 @@ def test_end_of_round_returns_complete_episode_metrics(
     assert agent.episode_event_counts == Counter()
     assert model_path.is_file()
 
+    assert "total_state_visits" in metrics
+    assert "mean_visits_per_state" in metrics
+    assert "singleton_state_fraction" in metrics
+
+    assert metrics["total_state_visits"] >= 1
+    assert metrics["mean_visits_per_state"] >= 1.0
+    assert 0.0 <= metrics["singleton_state_fraction"] <= 1.0
+
 
 def test_invalid_actions_are_counted(
     model_path: Path,
