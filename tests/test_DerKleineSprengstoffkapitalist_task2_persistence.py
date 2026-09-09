@@ -100,6 +100,7 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.initialization == PARENT_PRIOR_INITIALIZATION
     assert loaded.q_table.feature_count == 17
     assert loaded.q_table.initialization == PARENT_PRIOR_INITIALIZATION
+    assert loaded.q_table.total_state_visits == 1
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(TEST_STATE),
@@ -142,6 +143,8 @@ def test_compact_zero_initialized_model_round_trip(
     assert loaded.q_table.feature_count == 5
     assert loaded.q_table.initialization == ZERO_INITIALIZATION
     assert len(loaded.q_table) == 1
+    assert loaded.q_table.total_state_visits == 1
+    assert loaded.q_table.singleton_state_fraction == pytest.approx(1.0)
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(compact_state),
@@ -181,6 +184,7 @@ def test_empty_model_remains_sparse_after_loading(
     loaded = load_model(model_path)
 
     assert len(loaded.q_table) == 0
+    assert loaded.q_table.total_state_visits == 0
 
 
 def test_read_only_lookup_does_not_create_state(

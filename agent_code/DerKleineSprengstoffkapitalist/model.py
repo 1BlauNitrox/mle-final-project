@@ -68,6 +68,7 @@ class QTable:
         self.initialization = initialization
         self.parent_values = self._copy_parent_values(parent_values or {})
         self.values: dict[StateFeatures, np.ndarray] = {}
+        self.visit_counts: dict[StateFeatures, int] = {}
 
     def q_values(self, state: StateFeatures) -> np.ndarray:
         """Return Q-values without creating a sparse-table entry."""
@@ -154,6 +155,40 @@ class QTable:
 
         return len(self.values)
 
+    @property
+    def total_state_visits(self) -> int:
+        """Return the number of state updates observed during training."""
+
+        return sum(self.visit_counts.values())
+
+    @property
+    def mean_visits_per_state(self) -> float:
+        """Return mean visits across materialized states."""
+
+        if not self.visit_counts:
+            return 0.0
+
+        return self.total_state_visits / len(self.visit_counts)
+
+    @property
+    def singleton_state_fraction(self) -> float:
+        """Return the fraction of states updated exactly once."""
+
+        if not self.visit_counts:
+            return 0.0
+
+        singleton_count = sum(
+            count == 1
+            for count in self.visit_counts.values()
+        )
+        return singleton_count / len(self.visit_counts)
+
+    def contains_state(self, state: StateFeatures) -> bool:
+        """Return whether training materialized the state."""
+
+        self._validate_state(state)
+        return state in self.values
+
     def _initial_values(
         self,
         state: StateFeatures,
@@ -191,6 +226,7 @@ class QTable:
         """Materialize a Task 2 state only during an update."""
 
         self._validate_state(state)
+        self.visit_counts[state] = self.visit_counts.get(state, 0) + 1
 
         if state not in self.values:
             self.values[state] = self._initial_values(state)

@@ -90,7 +90,7 @@ def save_model(
         )
 
     parent_prior = load_parent_prior(parent_path)
-    states, q_values = _serialize_q_table(
+    states, q_values, visit_counts = _serialize_q_table(
         q_table,
         representation=state_representation,
     )
@@ -135,6 +135,7 @@ def save_model(
                 states=states,
                 q_values=q_values,
                 metadata=np.array(json.dumps(metadata, sort_keys=True)),
+                visit_counts=visit_counts,
             )
 
             temporary_file.flush()
@@ -165,22 +166,52 @@ def load_model(
 
     try:
         with np.load(path, allow_pickle=False) as archive:
-            required_entries = {
+            legacy_entries = {
                 "states",
                 "q_values",
                 "metadata",
             }
+            current_entries = {
+                *legacy_entries,
+                "visit_counts",
+            }
 
-            if set(archive.files) != required_entries:
+            if set(archive.files) not in (
+                legacy_entries,
+                current_entries,
+            ):
                 raise ValueError("Model archive has unexpected entries")
 
             raw_states = np.asarray(archive["states"]).copy()
 
             raw_q_values = np.asarray(archive["q_values"]).copy()
 
+            raw_visit_counts = (
+                np.asarray(archive["visit_counts"]).copy()
+                if "visit_counts" in archive.files
+                else None
+            )
+
             metadata_text = str(archive["metadata"].item())
 
         metadata = json.loads(metadata_text)
+        stored_model_schema_version = metadata.get(
+            "model_schema_version"
+        )
+
+        if (
+            stored_model_schema_version == MODEL_SCHEMA_VERSION
+            and raw_visit_counts is None
+        ):
+            raise ValueError(
+                "Current model archive is missing visit counts"
+            )
+
+        if raw_visit_counts is None:
+            raw_visit_counts = np.zeros(
+                raw_states.shape[0],
+                dtype=np.int64,
+            )
         if "useful_bomb_reward" not in metadata:
             metadata = {**metadata, "useful_bomb_reward": 0.0}
 
@@ -214,6 +245,7 @@ def load_model(
         raw_states,
         raw_q_values,
         representation=state_representation,
+        visit_counts=raw_visit_counts,
     )
 
     parent_prior = load_parent_prior(
@@ -236,9 +268,10 @@ def load_model(
         initialization=initialization,
     )
 
-    for state_row, value_row in zip(
+    for state_row, value_row, visit_count in zip(
         states,
         q_values,
+        raw_visit_counts,
         strict=True,
     ):
         state: StateFeatures = tuple(int(value) for value in state_row)
@@ -247,6 +280,7 @@ def load_model(
             raise ValueError("Model contains a duplicate Task 2 state")
 
         q_table.values[state] = value_row.copy()
+        q_table.visit_counts[state] = int(visit_count)
 
     return LoadedModel(
         q_table=q_table,
@@ -264,11 +298,20 @@ def _serialize_q_table(
     q_table: QTable,
     *,
     representation: str,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Serialize only materialized Task 2 states."""
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Serialize materialized Task 2 states and their visit counts."""
 
     representation_contract = get_state_representation(representation)
     ordered_entries = sorted(q_table.values.items())
+
+    unknown_visit_states = (
+        set(q_table.visit_counts)
+        - set(q_table.values)
+    )
+    if unknown_visit_states:
+        raise ValueError(
+            "Visit counts contain states missing from the Q-table"
+        )
 
     if not ordered_entries:
         return (
@@ -280,10 +323,12 @@ def _serialize_q_table(
                 (0, len(ACTIONS)),
                 dtype=np.float64,
             ),
+            np.empty((0,), dtype=np.int64),
         )
 
     states: list[StateFeatures] = []
     q_values: list[np.ndarray] = []
+    visit_counts: list[int] = []
 
     for state, values in ordered_entries:
         representation_contract.validate(state)
@@ -296,12 +341,21 @@ def _serialize_q_table(
         if not np.all(np.isfinite(value_array)):
             raise ValueError("Q-values must be finite")
 
+        visit_count = q_table.visit_counts.get(state, 0)
+
+        if type(visit_count) is not int or visit_count < 0:
+            raise ValueError(
+                "State visit counts must be non-negative integers"
+            )
+
         states.append(state)
         q_values.append(value_array)
+        visit_counts.append(visit_count)
 
     return (
         np.asarray(states, dtype=np.int64),
         np.asarray(q_values, dtype=np.float64),
+        np.asarray(visit_counts, dtype=np.int64),
     )
 
 
@@ -310,6 +364,7 @@ def _validate_raw_arrays(
     q_values: np.ndarray,
     *,
     representation: str,
+    visit_counts: np.ndarray,
 ) -> None:
     """Validate arrays before converting their dtypes."""
 
@@ -331,6 +386,24 @@ def _validate_raw_arrays(
 
     if q_values.shape != expected_q_shape:
         raise ValueError("Model Q-values have an incompatible shape")
+
+    if visit_counts.ndim != 1:
+        raise ValueError("Model visit counts must be one-dimensional")
+
+    if visit_counts.shape != (states.shape[0],):
+        raise ValueError("Model visit counts have an incompatible shape")
+
+    if not np.issubdtype(visit_counts.dtype, np.number):
+        raise ValueError("Model visit counts must be numeric")
+
+    if not np.all(np.isfinite(visit_counts)):
+        raise ValueError("Model visit counts must be finite")
+
+    if not np.all(visit_counts == np.floor(visit_counts)):
+        raise ValueError("Model visit counts must be integral")
+
+    if np.any(visit_counts < 0):
+        raise ValueError("Model visit counts must be non-negative")
 
     if not np.issubdtype(states.dtype, np.number):
         raise ValueError("Model states must be numeric")

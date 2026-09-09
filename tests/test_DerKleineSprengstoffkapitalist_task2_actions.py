@@ -251,3 +251,51 @@ def test_q_table_rejects_wrong_configured_state_length() -> None:
         match="Expected 5 state values",
     ):
         q_table.q_values(TEST_STATE)
+
+
+def test_q_table_records_training_state_visits() -> None:
+    q_table = QTable()
+
+    q_table.update(
+        state=TEST_STATE,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+    q_table.update(
+        state=TEST_STATE,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    second_state_values = list(TEST_STATE)
+    second_state_values[0] = 0
+    second_state_values[10] = 14
+    second_state = tuple(second_state_values)
+    q_table.update(
+        state=second_state,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    assert q_table.total_state_visits == 3
+    assert q_table.mean_visits_per_state == pytest.approx(1.5)
+    assert q_table.singleton_state_fraction == pytest.approx(0.5)
+    assert q_table.contains_state(TEST_STATE)
+    assert q_table.contains_state(second_state)
+
+
+def test_read_only_lookup_does_not_record_state_visit() -> None:
+    q_table = QTable()
+
+    q_table.q_values(TEST_STATE)
+
+    assert q_table.total_state_visits == 0
+    assert q_table.mean_visits_per_state == pytest.approx(0.0)
+    assert q_table.singleton_state_fraction == pytest.approx(0.0)
+    assert not q_table.contains_state(TEST_STATE)
