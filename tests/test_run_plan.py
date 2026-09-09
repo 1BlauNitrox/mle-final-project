@@ -83,6 +83,16 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
 
 
+def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path) -> None:
+    default_plan = run_plan.load_plan(_write_plan(tmp_path / "default", _plan_data()))
+    assert default_plan.reward_variant == "control"
+
+    overridden = _plan_data()
+    overridden["reward_variant"] = "safety_bomb"
+    overridden_plan = run_plan.load_plan(_write_plan(tmp_path / "overridden", overridden))
+    assert overridden_plan.reward_variant == "safety_bomb"
+
+
 @pytest.mark.parametrize("literal", ["off", "on"])
 def test_unquoted_escape_treatment_literals_are_accepted(
     tmp_path: Path,
@@ -140,6 +150,10 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
         "artifact path": (
             lambda plan: plan.update(artifact_path="../model.npz"),
             "unambiguous path",
+        ),
+        "reward variant": (
+            lambda plan: plan.update(reward_variant="unknown"),
+            "reward_variant must be one of",
         ),
         "escape treatment": (
             lambda plan: plan.update(escape_continuations="invalid"),
@@ -225,6 +239,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["metadata_extra"]["run_plan"]["campaign"] == campaign
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
+        "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",

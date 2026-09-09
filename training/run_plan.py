@@ -31,6 +31,7 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
+VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
 VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
 SUPPORTED_OPPONENTS = {
@@ -99,6 +100,7 @@ class ResolvedPlan:
     agent: str
     artifact_path: str | None
     action_masking: str
+    reward_variant: str
     escape_continuations: str
     replay_treatment: str
     max_parallel_training: int
@@ -144,6 +146,9 @@ def load_plan(path: Path) -> ResolvedPlan:
     action_masking = raw.get("action_masking", "none")
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
+    reward_variant = raw.get("reward_variant", "control")
+    if reward_variant not in VALID_REWARD_VARIANTS:
+        raise ValueError(f"reward_variant must be one of {list(VALID_REWARD_VARIANTS)}")
     escape_continuations = raw.get("escape_continuations", "off")
     # PyYAML uses YAML 1.1 resolution, where bare ``off`` and ``on`` load as
     # booleans. Accept the documented unquoted plan syntax and normalize it
@@ -220,6 +225,7 @@ def load_plan(path: Path) -> ResolvedPlan:
         agent=agent,
         artifact_path=artifact_path,
         action_masking=action_masking,
+        reward_variant=reward_variant,
         escape_continuations=escape_continuations,
         replay_treatment=replay_treatment,
         max_parallel_training=max_parallel,
@@ -417,6 +423,7 @@ def _run_job(
     try:
         environment_overrides = {
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
+            "BOMBERMAN_DQN_REWARD_VARIANT": plan.reward_variant,
             "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
@@ -454,6 +461,7 @@ def _run_job(
                         artifact.name if job.kind == "evaluation" and artifact is not None else None
                     ),
                     "action_masking": plan.action_masking,
+                    "reward_variant": plan.reward_variant,
                     "escape_continuations": plan.escape_continuations,
                     "replay_treatment": plan.replay_treatment,
                     "fingerprints": plan.fingerprints,
