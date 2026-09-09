@@ -13,8 +13,13 @@ protected-replay-only, and combined cells from identical 26-feature migrated
 weights. The protocol, seed lists, gates, multiplicity handling, mechanical
 selection rule, and guarded server launcher are in
 `experiments/2026-09-07-dqn-task2-factorial/`. No Issue #107 scientific run or
-performance result is recorded yet, and compute remains unauthorized until the
-launcher receives explicit human authorization for the reviewed commit.
+performance result has been independently reproduced locally yet. The downloaded
+server analysis reports a strong classic survival improvement from escape
+features but no eligible treatment under all registered safeguards, selecting
+control A/r2 with Task 2 incomplete. See
+`experiments/2026-09-07-dqn-task2-factorial/SERVER_RESULT.md` for the partial
+record and outstanding evidence verification. Execution authorization is retained
+there; it does not authorize additional training.
 
 Issue #46 currently has an incomplete negative/mixed result. Corrected development
 evaluation passed determinism and latency checks, but failed the registered

@@ -75,3 +75,11 @@ AI output is a draft or suggestion, never experimental evidence.
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
 individually.
+
+Issue #107 server-result interpretation (2026-09-09): OpenAI Codex inspected
+the downloaded result JSON, tables, authorization and resource records, and
+documented the reported contrasts, failed safeguards and mechanical A/r2
+selection. Independent episode-level reproduction remains pending because the
+evidence transfer is incomplete. A human reviewer must verify the retained
+evidence and interpretation before accepting the result. No training was run
+and no agent default or artifact was changed.
