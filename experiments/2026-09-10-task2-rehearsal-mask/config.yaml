@@ -1,0 +1,28 @@
+schema_version: 1
+issue: 124
+status: draft_not_ready_to_execute
+owner: 1BlauNitrox
+non_author_reviewer: null
+prerequisite: 123
+agent: DagobertDuckDQNTask2
+escape_continuations: 'on'
+replay_treatment: uniform
+source_sha256: 4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60
+proposed_cells:
+  A: {practice: blocked, masking: none}
+  B: {practice: interleaved, masking: none}
+  C: {practice: blocked, masking: framework_legal}
+  D: {practice: interleaved, masking: framework_legal}
+training: {replicas_per_cell: 5, episodes_per_replica: 10000, block_episodes: 500}
+evaluation: {primary_pairs_per_scenario: 40, deterministic_repeats: true}
+absolute_gate_source: experiments/2026-09-07-dqn-task2-factorial/config.yaml
+efficacy_and_selection_ratified: false
+scope_ratified: false
+resources:
+  location: local_windows_pc
+  proposed_workers: 4
+  proposed_memory_gib: 8
+  proposed_wall_hours: 10
+  cpu_hours_max: null
+  compute_authorization: pending_exact_limits
+launch_ready: false

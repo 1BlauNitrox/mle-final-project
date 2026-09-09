@@ -1,5 +1,10 @@
 # 0006 AI Usage and Disclosure
 
+Issue #124 preparation (2026-09-10): OpenAI Codex prepared a proposed matched
+rehearsal/masking matrix, fresh seed blocks, tests and launch dependencies.
+Scope, resource limits, efficacy/selection rules and execution tooling are
+not yet ratified or complete. No scientific training or performance claim.
+
 Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
 world-seed offsets and a read-only audit of thirty retained Issue #107 replay
 snapshots. The audit distinguishes the empty-other-partition backfill rule
