@@ -8,11 +8,15 @@ import numpy as np
 import pytest
 
 from agent_code.DerKleineSprengstoffkapitalist.features import (
+    BASELINE_STATE_REPRESENTATION,
+    COMPACT_STATE_REPRESENTATION,
     FEATURE_COUNT,
     FEATURE_DOMAINS,
     FEATURE_NAMES,
     FEATURE_SCHEMA_VERSION,
     THEORETICAL_STATE_SPACE_UPPER_BOUND,
+    encode_state,
+    get_state_representation,
     state_to_features,
     validate_features,
 )
@@ -610,3 +614,36 @@ def test_validate_compact_features_rejects_invalid_value() -> None:
 def test_validate_compact_features_rejects_boolean() -> None:
     with pytest.raises(ValueError, match="must be an integer"):
         validate_compact_features((False, 0, 0, 0, 0))
+
+def test_encoder_defaults_to_baseline_representation() -> None:
+    game_state = make_game_state(coins=[(6, 4)])
+
+    assert encode_state(game_state) == state_to_features(game_state)
+
+
+def test_encoder_selects_compact_representation() -> None:
+    game_state = make_game_state(coins=[(6, 4)])
+
+    encoded = encode_state(
+        game_state,
+        COMPACT_STATE_REPRESENTATION,
+    )
+
+    assert encoded == compact_state_to_features(game_state)
+    assert encoded is not None
+    assert len(encoded) == COMPACT_FEATURE_COUNT
+
+
+def test_representation_contract_exposes_schema_metadata() -> None:
+    baseline = get_state_representation(BASELINE_STATE_REPRESENTATION)
+    compact = get_state_representation(COMPACT_STATE_REPRESENTATION)
+
+    assert baseline.feature_count == FEATURE_COUNT
+    assert baseline.feature_schema_version == FEATURE_SCHEMA_VERSION
+    assert compact.feature_count == COMPACT_FEATURE_COUNT
+    assert compact.feature_schema_version == COMPACT_FEATURE_SCHEMA_VERSION
+
+
+def test_unknown_state_representation_is_rejected() -> None:
+    with pytest.raises(ValueError, match="State representation must be one of"):
+        get_state_representation("unknown")
