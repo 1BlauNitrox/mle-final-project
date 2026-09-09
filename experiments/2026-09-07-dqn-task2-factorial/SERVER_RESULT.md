@@ -113,7 +113,8 @@ new scientific plan; it must not silently replace the registered selection.
 
 ## Evidence status and reproduction
 
-`server-analysis/` retains the downloaded analyzer outputs verbatim. These
+`server-analysis/` retains the downloaded analyzer outputs; Git normalizes CSV
+line endings to LF without changing field values. These
 aggregate files are not sufficient to reproduce confidence intervals without
 the underlying episode evidence. The server resource record reports 54,882.1
 CPU seconds (15.25 hours), 28,892.67 wall seconds (8.03 hours), peak memory
