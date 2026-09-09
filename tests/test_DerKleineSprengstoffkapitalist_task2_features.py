@@ -16,6 +16,17 @@ from agent_code.DerKleineSprengstoffkapitalist.features import (
     state_to_features,
     validate_features,
 )
+from agent_code.DerKleineSprengstoffkapitalist.features.compact import (
+    COMPACT_FEATURE_COUNT,
+    COMPACT_FEATURE_DOMAINS,
+    COMPACT_FEATURE_NAMES,
+    COMPACT_FEATURE_SCHEMA_VERSION,
+    COMPACT_STATE_SPACE_UPPER_BOUND,
+    NONE,
+    RIGHT,
+    compact_state_to_features,
+    validate_compact_features,
+)
 from agent_code.DerKleineVermoegensumverteiler.features import (
     state_to_features as parent_state_to_features,
 )
@@ -413,3 +424,189 @@ def test_validate_features_rejects_non_neutral_missing_crate() -> None:
         match="Missing crate targets",
     ):
         validate_features(tuple(invalid_features))
+
+def test_compact_none_state_produces_no_features() -> None:
+    assert compact_state_to_features(None) is None
+
+
+def test_compact_feature_schema_contract() -> None:
+    assert COMPACT_FEATURE_SCHEMA_VERSION == 1
+    assert COMPACT_FEATURE_COUNT == 5
+    assert COMPACT_FEATURE_NAMES == (
+        "danger_level",
+        "safe_directions_mask",
+        "coin_direction",
+        "crate_direction",
+        "bomb_status",
+    )
+    assert len(COMPACT_FEATURE_DOMAINS) == COMPACT_FEATURE_COUNT
+    assert COMPACT_STATE_SPACE_UPPER_BOUND == 4_800
+
+
+def test_compact_open_state_uses_neutral_targets() -> None:
+    features = compact_state_to_features(make_game_state())
+
+    assert features is not None
+    assert features == (
+        0,   # no predicted danger
+        15,  # all four directions begin a safe route
+        NONE,
+        NONE,
+        1,   # bomb available, but not useful here
+    )
+
+
+def test_compact_current_explosion_is_immediate_danger() -> None:
+    field = make_field()
+    explosion_map = np.zeros_like(field)
+    explosion_map[4, 4] = 1
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            explosion_map=explosion_map,
+        )
+    )
+
+    assert features is not None
+    assert features[0] == 2
+
+
+def test_compact_later_blast_is_future_danger() -> None:
+    features = compact_state_to_features(
+        make_game_state(
+            bombs=[((6, 4), 3)],
+        )
+    )
+
+    assert features is not None
+    assert features[0] == 1
+
+
+def test_compact_coin_direction_uses_reachable_path() -> None:
+    field = make_field()
+    field[4, 3] = -1
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            position=(4, 4),
+            coins=[(4, 2)],
+        )
+    )
+
+    assert features is not None
+
+    # The direct upward route is blocked. Deterministic BFS therefore starts
+    # by moving right around the wall.
+    assert features[2] == RIGHT
+
+
+def test_compact_unreachable_coin_uses_none_direction() -> None:
+    field = np.full((7, 7), -1, dtype=int)
+    field[3, 3] = 0
+    field[1, 1] = 0
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            position=(3, 3),
+            coins=[(1, 1)],
+        )
+    )
+
+    assert features is not None
+    assert features[2] == NONE
+
+
+def test_compact_reachable_crate_direction_is_encoded() -> None:
+    field = make_field(size=11)
+    field[8, 4] = 1
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            position=(4, 4),
+        )
+    )
+
+    assert features is not None
+    assert features[3] == RIGHT
+
+
+def test_compact_bomb_status_unavailable() -> None:
+    features = compact_state_to_features(
+        make_game_state(bomb_available=False)
+    )
+
+    assert features is not None
+    assert features[4] == 0
+
+
+def test_compact_bomb_status_safe_and_useful() -> None:
+    field = make_field()
+    field[6, 4] = 1
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            bomb_available=True,
+        )
+    )
+
+    assert features is not None
+    assert features[4] == 3
+
+
+def test_compact_bomb_status_useful_but_unsafe() -> None:
+    field = np.full((7, 7), -1, dtype=int)
+    field[3, 3] = 0
+    field[3, 2] = 1
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            position=(3, 3),
+            bomb_available=True,
+        )
+    )
+
+    assert features is not None
+    assert features[4] == 2
+
+
+def test_compact_safe_mask_rejects_dead_end_escape() -> None:
+    field = np.full((7, 7), -1, dtype=int)
+    field[3, 3] = 0
+    field[3, 2] = 0
+    field[3, 1] = 0
+
+    features = compact_state_to_features(
+        make_game_state(
+            field=field,
+            position=(3, 3),
+            bomb_available=False,
+            bombs=[((3, 3), 2)],
+        )
+    )
+
+    assert features is not None
+
+    # Moving up is initially possible, but the entire corridor lies inside
+    # the later blast and has no complete escape route.
+    assert features[1] == 0
+
+
+def test_validate_compact_features_rejects_wrong_length() -> None:
+    with pytest.raises(ValueError, match="Expected 5 compact features"):
+        validate_compact_features((0, 0, 0, 0))
+
+
+def test_validate_compact_features_rejects_invalid_value() -> None:
+    with pytest.raises(ValueError, match="danger_level has invalid value"):
+        validate_compact_features((3, 0, 0, 0, 0))
+
+
+def test_validate_compact_features_rejects_boolean() -> None:
+    with pytest.raises(ValueError, match="must be an integer"):
+        validate_compact_features((False, 0, 0, 0, 0))
