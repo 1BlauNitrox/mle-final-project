@@ -1,0 +1,153 @@
+schema_version: 1
+issue: 128
+status: registered_pending_approval
+evidence_scope: prospective_protocol
+agent: DerKleineSprengstoffkapitalist
+owner: LiliWestermann
+reviewer: null
+
+revisions:
+  registration_base: "8927781"
+  experiment_commit: null
+  framework_revision: "0f55c1d"
+
+treatments:
+  control:
+    state_representation: baseline
+    tabular_initialization: zeros
+    action_masking: none
+    useful_bomb_reward: 0.0
+    run_plan: training/run_plans/issue128-tabular-task2-baseline-state.yaml
+
+  candidate:
+    state_representation: compact_decision
+    tabular_initialization: zeros
+    action_masking: none
+    useful_bomb_reward: 0.0
+    run_plan: training/run_plans/issue128-tabular-task2-compact-state.yaml
+
+compact_features:
+  feature_count: 5
+  theoretical_state_space_upper_bound: 4800
+  direction_encoding:
+    none: 0
+    up: 1
+    right: 2
+    down: 3
+    left: 4
+  safe_direction_bits:
+    up: 1
+    right: 2
+    down: 4
+    left: 8
+  danger_level:
+    safe: 0
+    future_more_than_two_actions: 1
+    current_or_within_two_actions: 2
+  bomb_status:
+    unavailable: 0
+    available_not_useful: 1
+    useful_without_safe_escape: 2
+    useful_with_safe_escape: 3
+
+controlled:
+  algorithm: one_step_tabular_q_learning
+  learning_rate: 0.05
+  discount_factor: 0.9
+  initial_epsilon: 1.0
+  epsilon_decay: 0.99
+  minimum_epsilon: 0.1
+  q_value_initialization: zeros
+  action_masking: none
+  useful_bomb_reward: 0.0
+  opponents: []
+  checkpoint_selection: final_exact_budget
+  replicas: 5
+  episodes_per_replica: 10000
+
+training:
+  seeds:
+    - {id: r1, world_seed: 101001, agent_seed: 201001}
+    - {id: r2, world_seed: 101002, agent_seed: 201002}
+    - {id: r3, world_seed: 101003, agent_seed: 201003}
+    - {id: r4, world_seed: 101004, agent_seed: 201004}
+    - {id: r5, world_seed: 101005, agent_seed: 201005}
+  curriculum:
+    - {scenario: coin-heaven, rounds: 2000}
+    - {scenario: loot-crate, rounds: 2000}
+    - {scenario: classic, rounds: 6000}
+
+evaluation:
+  rounds_per_seed: 1
+  deterministic_repeat: true
+  classic_world_seeds:
+    start: 102001
+    stop_inclusive: 102040
+  coin_heaven_world_seeds:
+    start: 103001
+    stop_inclusive: 103040
+  loot_crate_world_seeds:
+    start: 104001
+    stop_inclusive: 104040
+  confirmation_seeds_used: false
+
+primary_metric:
+  name: classic_collection_fraction
+  contrast: candidate_minus_control
+  pairing:
+    - replica
+    - world_seed
+
+diagnostics:
+  - q_table_size
+  - total_state_visits
+  - mean_visits_per_state
+  - singleton_state_fraction
+  - evaluation_unseen_state_rate
+  - q_table_artifact_size_bytes
+
+criteria:
+  classic_mean_difference_above: 0.0
+  classic_paired_ci_lower_above: 0.0
+  replicas_improving_minimum: 4
+  evaluation_unseen_state_rate_below_control: true
+  mean_visits_per_state_above_control: true
+  classic_self_kill_rate_maximum_increase: 0.02
+  coin_heaven_retention_ci_lower_above: -0.05
+  deterministic_repeat: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+
+analysis:
+  bootstrap_resamples: 10000
+  collection_resampler_seed: 128
+  retention_resampler_seed: 129
+
+compute_budget:
+  maximum_training_episodes: 100000
+  maximum_evaluation_episodes: 2480
+  planned_evaluation_episodes: 2400
+  maximum_cpu_hours: 36
+  paid_resources: false
+
+approval:
+  required_before_training: true
+  approved_by: null
+  approved_commit: null
+
+outputs:
+  commit:
+    - README.md
+    - config.yaml
+    - summary.csv
+    - result.json
+    - figures/
+  external:
+    - trained_models
+    - resolved_plans
+    - statuses
+    - per_episode_evidence
+    - evaluation_metadata
+
+results:
+  decision: pending
