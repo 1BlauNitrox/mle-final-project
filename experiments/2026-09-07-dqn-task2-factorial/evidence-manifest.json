@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "issue": 107,
+  "release": "issue107-evidence-v1",
+  "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue107-evidence-v1/issue107-evidence-v1.tar.gz",
+  "filename": "issue107-evidence-v1.tar.gz",
+  "sha256": "ef2c0fac3db0e5b72a9ea9ce89599f726a495a7a84ba33bb9d9b3f4342fc5748",
+  "size_bytes": 36910624,
+  "execution_revision": "69e2a931e4ebfd358cc0128049516b1a12adc2a8",
+  "contents": "Campaign records, six resolved plans/status files, attempt metadata, training/evaluation episode CSVs and referenced checkpoint bytes; individual file hashes in verification.json",
+  "reproduction_instructions": "EVIDENCE.md"
+}
