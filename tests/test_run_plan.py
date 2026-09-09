@@ -156,6 +156,7 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
         "useful bomb reward": (
             lambda plan: plan.update(useful_bomb_reward=0.5),
             "useful_bomb_reward",
+        ),
         "reward variant": (
             lambda plan: plan.update(reward_variant="unknown"),
             "reward_variant must be one of",
