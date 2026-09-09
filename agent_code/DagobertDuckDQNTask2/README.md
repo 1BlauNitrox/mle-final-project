@@ -12,13 +12,12 @@ merged Issue #87 and #88 implementations. It compares control, escape-only,
 protected-replay-only, and combined cells from identical 26-feature migrated
 weights. The protocol, seed lists, gates, multiplicity handling, mechanical
 selection rule, and guarded server launcher are in
-`experiments/2026-09-07-dqn-task2-factorial/`. No Issue #107 scientific run or
-performance result has been independently reproduced locally yet. The downloaded
-server analysis reports a strong classic survival improvement from escape
-features but no eligible treatment under all registered safeguards, selecting
-control A/r2 with Task 2 incomplete. See
-`experiments/2026-09-07-dqn-task2-factorial/SERVER_RESULT.md` for the partial
-record and outstanding evidence verification. Execution authorization is retained
+`experiments/2026-09-07-dqn-task2-factorial/`. Its completed analysis has been
+independently reproduced: escape features improve classic survival, but no
+treatment meets all registered safeguards. The rule selects control A/r2,
+with Task 2 incomplete. See
+`experiments/2026-09-07-dqn-task2-factorial/SERVER_RESULT.md` for the verified
+result, limitations, and evidence reproduction. Execution authorization is retained
 there; it does not authorize additional training.
 
 Issue #46 currently has an incomplete negative/mixed result. Corrected development

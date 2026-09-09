@@ -2,8 +2,9 @@
 
 The downloaded server analysis is documented in [SERVER_RESULT.md](SERVER_RESULT.md).
 It reports no eligible treatment and selection A/r2 with Task 2 incomplete.
-Independent reproduction awaits the full evidence transfer. The prospective
-protocol below is preserved unchanged; this partial record does not close #107.
+Independent reproduction verified 5,180 jobs and all twenty final artifacts
+and exactly matched the server result. The prospective protocol below is
+preserved unchanged; review and Task 3 handoff remain under #107.
 
 > Status: prospective protocol only. No scientific training, evaluation result,
 > performance conclusion, or compute authorization is part of this change.

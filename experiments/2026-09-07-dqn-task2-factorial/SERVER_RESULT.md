@@ -1,10 +1,11 @@
-# Issue #107 server result: independent evidence verification pending
+# Issue #107 independently reproduced result
 
-This record interprets the server-generated analysis downloaded on 2026-09-09.
-The server analyzer reports `analysis_valid: true`. The complete raw evidence
-transfer is still in progress, so this record is partial and must not be treated
-as an independently reproduced completed experiment. Issue #107 remains open.
-The original prospective protocol and its thresholds remain unchanged.
+The server-generated result was independently reproduced on 2026-09-09 from
+downloaded observations using the exact execution revision. All 5,180 jobs and
+twenty final training artifacts were verified, with no failed attempts. The
+complete recomputed result equals the server JSON and reports
+`analysis_valid: true`. The prospective protocol and thresholds remain unchanged.
+Issue #107 remains open for review and the documented Task 3 handoff.
 
 ## Execution and design
 
@@ -86,8 +87,8 @@ Selected training artifact reported by the server:
 - Size: 2,382,903 bytes
 - Task 3 status: `exploratory_predecessor_task2_not_complete`
 
-The bytes and all twenty final artifacts still require independent local
-verification after transfer. No model is frozen or replaced by this record.
+The selected bytes and all twenty final artifacts passed independent checksum
+verification. No model is frozen or replaced by this record.
 
 ## Interpretation and follow-up
 
@@ -102,8 +103,8 @@ absolute requirement, its per-replica invalid-action gate fails, and its
 Task 1 gate set fails. The strong escape effect and severe retention failures
 should both be preserved in the report.
 
-Next steps are to finish transfer, reproduce the full analysis, retain compact
-per-episode evidence and artifact provenance, then obtain non-author review.
+Next steps are to review the reproduced analysis and retained per-episode
+evidence, then complete the documented parent binding for Task 3.
 The accepted roadmap proceeds to #109 using the mechanically selected
 predecessor, explicitly as exploratory if Task 2 remains incomplete. PR #120
 still needs final parent binding, numeric decision criteria, owner/reviewer
@@ -180,12 +181,22 @@ information and is intentionally rejected. A B successor needs a reviewed
 representation retaining the 26 Task 2 inputs plus the 13 opponent inputs
 (39 inputs if appended unchanged), with migration and regression tests.
 
-### Transfer status
+### Independent verification
 
-At this follow-up inspection all six plan directories were present and five
-status files reported completion. B's status file was still absent locally.
-This is a transfer limitation, not evidence of a failed server run. The full
-local analyzer remains blocked until the remaining files are available.
+All six plans and 5,180 jobs passed local verification. The verifier checks
+clean source revision, campaign authorization, plan/job fingerprints, completed
+attempts, episode counts, artifact SHA-256 values and the full registered
+analysis. Twenty final checkpoints were verified; no failed attempts were
+recorded. The recomputed result equals the complete downloaded server JSON.
+
+The original analyzer binds fingerprints to the current host's installed
+packages and path ordering. Linux and Windows order mixed-case agent filenames
+differently. `scripts/verify_issue107_download.py` reconstructs Linux directory
+ordering and uses the internally hashed, consistent execution dependency
+inventory for plan validation. It separately records the local analysis
+environment (Python 3.13.14 / NumPy 2.5.1, versus server 3.14.4 / 2.5.3).
+It changes no observations, thresholds, resampling, ranking or scientific
+decision logic; the registered analyzer runs from its clean execution checkout.
 
 `server-analysis/` retains the downloaded analyzer outputs; Git normalizes CSV
 line endings to LF without changing field values. These
@@ -193,8 +204,7 @@ aggregate files are not sufficient to reproduce confidence intervals without
 the underlying episode evidence. The server resource record reports 54,882.1
 CPU seconds (15.25 hours), 28,892.67 wall seconds (8.03 hours), peak memory
 1,689,563,136 bytes (1.57 GiB), no active roots and no recorded budget breach.
-These records are retained alongside the outputs; they are not independently
-audited here yet.
+These records passed the registered campaign checks during local reproduction.
 
 The user ran the registered command in the unchanged server checkout:
 
@@ -202,12 +212,10 @@ The user ran the registered command in the unchanged server checkout:
 python -m training.analyze_issue107_task2_factorial
 ```
 
-It reported selection A/r2 and `Analysis valid: True`. Local execution from
-the exact revision currently stops at missing control-plan `status.json`.
-Local reproduction must also account explicitly for the analyzer's execution
-dependency fingerprints; it must not bypass provenance validation to make a
-different runtime pass. Completion requires the full evidence and a durable,
-reviewer-accessible reproduction package. This partial record uses Refs #107.
+It reported selection A/r2 and `Analysis valid: True`; independent local
+reproduction matches that result exactly. See [EVIDENCE.md](EVIDENCE.md) for
+the evidence archive, checksums, and cross-platform verification command.
+This result uses Refs #107 while non-author review and Task 3 handoff remain.
 
 AI assistance: OpenAI Codex inspected the downloaded output and drafted this
 interpretation. A human reviewer must verify the result and its scope; AI
