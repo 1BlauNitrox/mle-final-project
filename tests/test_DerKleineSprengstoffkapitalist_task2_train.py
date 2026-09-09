@@ -101,6 +101,7 @@ def make_agent() -> SimpleNamespace:
         q_table=QTable(parent_values={}),
         epsilon=INITIAL_EPSILON,
         completed_episodes=0,
+        action_masking="none",
     )
 
     training.setup_training(agent)

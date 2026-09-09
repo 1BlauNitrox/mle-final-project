@@ -211,8 +211,39 @@ def test_terminal_elimination_is_recorded_once(
     )
 
     assert metrics["shaped_reward"] == pytest.approx(10.0)
+    assert metrics["event_count_killed_opponent"] == pytest.approx(1.0)
     assert metrics["update_count"] == 1
     assert agent.learner.update_steps == 1
+
+
+def test_terminal_elimination_preserves_genuine_event_multiplicity(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    agent = make_agent()
+    training.setup_training(agent)
+    monkeypatch.setattr(training, "CHECKPOINT_PATH", tmp_path / "checkpoint.pt")
+    old_state = make_state()
+    new_state = make_state(step=2)
+    kill_events = ["KILLED_OPPONENT", "KILLED_OPPONENT"]
+
+    training.game_events_occurred(
+        agent,
+        old_state,
+        "BOMB",
+        new_state,
+        kill_events,
+    )
+    metrics = training.end_of_round(
+        agent,
+        old_state,
+        "BOMB",
+        [*kill_events, "SURVIVED_ROUND"],
+    )
+
+    assert metrics["event_count_killed_opponent"] == pytest.approx(2.0)
+    assert metrics["shaped_reward"] == pytest.approx(15.0)
+    assert metrics["update_count"] == 1
 
 
 def test_task3_normalization_preserves_binary_and_signed_domains() -> None:

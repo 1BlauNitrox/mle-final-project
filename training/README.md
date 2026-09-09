@@ -306,6 +306,30 @@ root must contain the corresponding old plan directories and their final
 workspaces; evaluation-only mode never runs training and cannot resume an
 existing output directory.
 
+### Issue #97 staged-curriculum comparison for Task 2 DQN
+
+**Direct arm completed; staged comparison still open.** Issue #86 rejected
+`framework_legal` masking and retained the unmasked arm, so only one
+direct-classic plan was needed:
+`issue97-dqn-task2-direct-classic-unmasked.yaml` (the masked variant was
+deleted). See `experiments/2026-09-06-dqn-task2-curriculum/README.md` for
+the full protocol, the direct arm's own result, and what completing the
+staged comparison still needs.
+
+```bash
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml --dry-run
+python -m training.run_plan training/run_plans/issue97-dqn-task2-direct-classic-unmasked.yaml
+```
+
+Reproduce the compact (direct-arm-only, pending #86's raw archive for the
+full comparison) result with:
+
+```bash
+python -m training.analyze_issue97_dqn_task2_curriculum \
+  --direct-plan-root training_outputs/run-plans \
+  --output training_outputs/issue97-analysis
+```
+
 #### Plan output and resume records
 
 Before execution, the runner writes `resolved_plan.json` once and never mutates

@@ -78,6 +78,7 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
         epsilon=0.8,
         completed_episodes=3,
         path=model_path,
+        action_masking="framework_legal",
     )
 
     loaded = load_model(model_path)
@@ -86,6 +87,7 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.completed_episodes == 3
     assert loaded.parent_model_sha256 == EXPECTED_PARENT_SHA256
     assert len(loaded.q_table) == 1
+    assert loaded.action_masking == "framework_legal"
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(TEST_STATE),
