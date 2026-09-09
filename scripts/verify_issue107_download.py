@@ -75,6 +75,23 @@ def contained(root, relative):
     return path
 
 
+def verify_archive(path, records):
+    """Check the archived bytes, not a cached hash of their source files."""
+    seen = set()
+    with tarfile.open(path, "r:gz") as archive:
+        for member in archive:
+            if not member.isfile() or member.name in seen or member.name not in records:
+                raise ValueError(f"Unexpected archive member: {member.name}")
+            seen.add(member.name)
+            expected = records[member.name]
+            with archive.extractfile(member) as handle:
+                checksum = hashlib.file_digest(handle, "sha256").hexdigest()
+            if member.size != expected["size_bytes"] or checksum != expected["sha256"]:
+                raise ValueError(f"Archive evidence mismatch: {member.name}")
+    if seen != set(records):
+        raise ValueError("Archive is missing audited evidence")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan-root", type=Path, required=True)
@@ -206,6 +223,7 @@ def main():
         with tarfile.open(args.archive, "w:gz") as archive:
             for relative in sorted(file_records):
                 archive.add(plan_root.parent / relative, arcname=relative, recursive=False)
+        verify_archive(args.archive, file_records)
         print(
             json.dumps(
                 {

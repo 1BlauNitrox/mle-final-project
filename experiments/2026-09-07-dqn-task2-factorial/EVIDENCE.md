@@ -77,3 +77,20 @@ Its SHA-256 is
 `d571b199bc00a0419d16706cc5f7844364a184384058268b2cc8de5b79bb479d`,
 and its size is 2,382,903 bytes. It is an exploratory Task 3 predecessor;
 this release does not freeze a submission candidate.
+
+## Local data retention
+
+The published archive contains the evidence required to reproduce this result,
+including the selected checkpoint. After checking a downloaded release against
+the manifest, the bulky local server-output copy is dispensable for these
+claims. Keep the 36.9 MB archive as a convenient offline copy. Preserve the
+server originals through non-author review, particularly verbose logs and
+trajectories excluded from this compact archive: those may still help diagnose
+learning behavior, although they are not needed to recompute the reported
+statistics. This advice applies only to Issue #107 downloads, not other
+experiments, repository worktrees, or uncommitted work.
+
+The exporter verifies every finished archive member against the audit after
+packaging, rejecting altered bytes, missing files, duplicates, unexpected
+entries and links. This closes the interval between source-file auditing and
+archive creation; no archive is reported successful without that final check.

@@ -1,7 +1,9 @@
 """Integrity checks for cross-platform Issue #107 evidence verification."""
 
 import hashlib
+import io
 import json
+import tarfile
 
 import pytest
 
@@ -10,6 +12,7 @@ from scripts.verify_issue107_download import (
     contained,
     digest,
     linux_directory_digest,
+    verify_archive,
 )
 
 
@@ -52,3 +55,28 @@ def test_cached_checksum_does_not_hide_changed_file(tmp_path):
     assert digest(path) == first
     path.write_bytes(b"changed and longer")
     assert digest(path) != first
+
+
+@pytest.mark.parametrize("case", ["valid", "changed", "missing", "duplicate", "extra", "link"])
+def test_archive_checks_actual_bytes_and_exact_members(tmp_path, case):
+    path = tmp_path / "evidence.tar.gz"
+    records = {"data.csv": {"sha256": hashlib.sha256(b"data").hexdigest(), "size_bytes": 4}}
+    with tarfile.open(path, "w:gz") as archive:
+        names = [] if case == "missing" else ["data.csv"]
+        if case in {"duplicate", "extra"}:
+            names.append("data.csv" if case == "duplicate" else "extra.csv")
+        for name in names:
+            member = tarfile.TarInfo(name)
+            if case == "link":
+                member.type = tarfile.SYMTYPE
+                member.linkname = "outside"
+                archive.addfile(member)
+            else:
+                payload = b"edit" if case == "changed" else b"data"
+                member.size = len(payload)
+                archive.addfile(member, io.BytesIO(payload))
+    if case == "valid":
+        verify_archive(path, records)
+    else:
+        with pytest.raises(ValueError):
+            verify_archive(path, records)

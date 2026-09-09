@@ -85,3 +85,7 @@ dependency handling, and reproduced the server result exactly from downloaded
 episode evidence using the unchanged registered analyzer. A human reviewer must verify the retained
 evidence and interpretation before accepting the result. No training was run
 and no agent default or artifact was changed.
+The subsequent self-review added final archive-member integrity validation
+and regression tests, and documented the distinction between disposable local
+downloads and server diagnostics. This self-review does not replace approval
+by another team member.
