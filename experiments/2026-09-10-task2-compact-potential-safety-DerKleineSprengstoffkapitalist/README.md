@@ -1,6 +1,6 @@
 # Compact Task 2 potential-based safety shaping
 
-> Status: registered_pending_approval
+> Status: completed_rejected
 
 ## Metadata
 
@@ -143,8 +143,63 @@ reviewed and personally approved by another team member.
 
 ## Results
 
-Pending execution.
+Both run plans completed all 1,215 jobs. The analysis contains 1,200 primary
+and 1,200 deterministic-repeat evaluation episodes across both treatments.
+
+### Safety
+
+| Scenario | No shaping | Safety shaping |
+| --- | ---: | ---: |
+| `classic` | 0.040 | 0.050 |
+| `coin-heaven` | 0.000 | 0.010 |
+| `loot-crate` | 0.135 | 0.160 |
+
+On `classic`, the candidate-minus-control self-kill difference was `0.010`,
+with a paired 95% bootstrap interval of `[-0.040, 0.065]`. Only replica `r3`
+had a lower self-kill rate. Replicas `r2` and `r5` were unchanged, while
+replicas `r1` and `r4` were worse. Both registered safety criteria failed.
+
+### Collection performance
+
+| Scenario | No shaping | Safety shaping |
+| --- | ---: | ---: |
+| `classic` | 0.123 | 0.166 |
+| `coin-heaven` | 1.000 | 0.990 |
+| `loot-crate` | 0.224 | 0.179 |
+
+The paired candidate-minus-control `classic` collection difference was
+`0.043`, with a 95% bootstrap interval of `[-0.003, 0.093]`. The registered
+maximum collection-loss criterion passed.
+
+### Learning efficiency
+
+| Diagnostic | No shaping | Safety shaping |
+| --- | ---: | ---: |
+| Mean materialized states | 1,082.4 | 1,088.8 |
+| Mean visits per state | 665.9 | 701.7 |
+| Mean singleton-state fraction | 0.0582 | 0.0582 |
+| Mean model size | 40.4 KiB | 40.5 KiB |
+
+The candidate/control mean-visits-per-state ratio was approximately `1.054`,
+above the registered minimum of `0.90`.
+
+All deterministic repeats matched. All registered decision-time limits passed.
+
+Generated evidence:
+
+- [`summary.csv`](summary.csv);
+- [`result.json`](result.json);
+- [`figures/performance_and_safety.png`](figures/performance_and_safety.png);
+- [`figures/learning_efficiency.png`](figures/learning_efficiency.png).
 
 ## Decision
 
-Pending evaluation.
+Reject `compact_safety` potential shaping as the default. It preserved the
+compact representation's learning efficiency and did not reduce `classic`
+collection, but it failed to reduce self-kills and slightly increased the
+aggregate self-kill rate.
+
+The result suggests that this coarse state-only potential does not distinguish
+enough between genuinely safe escape progress and locally safe but ultimately
+trapped movement. A future experiment should improve the safety information or
+the potential definition rather than merely increasing the shaping magnitude.
