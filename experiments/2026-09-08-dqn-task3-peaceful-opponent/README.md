@@ -8,8 +8,8 @@ matched retention coverage and the explicit scientific launch gates.
 > #109's own acceptance criteria require an assigned owner/reviewer, fixed
 > numeric decision criteria, and explicit compute authorization before any
 > run counts as more than infrastructure validation. Both starting
-> artifacts are provisional pending Issue #107's development-predecessor
-> selection (#108's own stated dependency).
+> artifacts are provisional pending Issue #124's development-predecessor
+> selection; the verified #107 parent is available for exploratory preparation.
 
 ## Hypothesis
 
@@ -77,7 +77,7 @@ decision is reached.
   ceiling (scaled from #97's comparable single-arm estimate) is recorded
   in `config.yaml` for the owner to accept, adjust, or replace.
 - **Does not bind a final parent artifact.** Both starting checkpoints are
-  the same provisional pair used throughout #108; #107's eventual
+  the same provisional pair used throughout #108; #124's eventual
   development-predecessor selection must be bound here (new checksums,
   re-run `--dry-run` on both plans) before this stops being a provisional
   fixture.

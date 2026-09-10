@@ -8,21 +8,25 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import torch
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from agent_code.DagobertDuckDQNTask2.model import (  # noqa: E402
+    build_q_network as build_parent_network,
+)
 from agent_code.DagobertDuckDQNTask2.persistence import (  # noqa: E402
     CHECKPOINT_PATH as TASK2_CHECKPOINT_PATH,
 )
 from agent_code.DagobertDuckDQNTask2.persistence import (  # noqa: E402
     load_evaluation_checkpoint,
 )
-from agent_code.DagobertDuckDQNTask3.config import DEFAULT_CONFIG  # noqa: E402
 from agent_code.DagobertDuckDQNTask3.migration import (  # noqa: E402
     MIGRATION_INIT_SEED,
     migrate_online_network,
+    successor_config,
 )
 from agent_code.DagobertDuckDQNTask3.model import DQNLearner  # noqa: E402
 from agent_code.DagobertDuckDQNTask3.persistence import (  # noqa: E402
@@ -55,24 +59,30 @@ def main() -> None:
     if sha256_file(args.parent) != args.parent_sha256:
         parser.error("Parent SHA-256 mismatch")
     parent = load_evaluation_checkpoint(args.parent)
+    payload = torch.load(args.parent, map_location="cpu", weights_only=True)
+    target = build_parent_network(parent.config, seed=MIGRATION_INIT_SEED)
+    target.load_state_dict(payload["learner_state"]["target_network"], strict=True)
+    config = successor_config(parent.config)
     migrated_network = migrate_online_network(
         parent.network,
-        config=DEFAULT_CONFIG,
+        config=config,
         seed=MIGRATION_INIT_SEED,
     )
 
-    learner = DQNLearner(config=DEFAULT_CONFIG, seed=MIGRATION_INIT_SEED)
+    learner = DQNLearner(config=config, seed=MIGRATION_INIT_SEED)
     learner.online_network.load_state_dict(migrated_network.state_dict())
-    learner.target_network.load_state_dict(migrated_network.state_dict())
+    learner.target_network.load_state_dict(
+        migrate_online_network(target, config=config, seed=MIGRATION_INIT_SEED).state_dict()
+    )
 
     save_checkpoint(
         learner=learner,
         replay_buffer=ReplayBuffer(
-            capacity=DEFAULT_CONFIG.replay_capacity,
+            capacity=config.replay_capacity,
             seed=MIGRATION_INIT_SEED,
         ),
         action_rng=np.random.default_rng(MIGRATION_INIT_SEED),
-        epsilon=DEFAULT_CONFIG.initial_epsilon,
+        epsilon=config.initial_epsilon,
         completed_episodes=0,
         agent_seed=MIGRATION_INIT_SEED,
         path=args.output,

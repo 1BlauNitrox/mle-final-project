@@ -6,12 +6,12 @@ status: registered_pending_review
 starting_artifact:
   task3:
     path: agent_code/DagobertDuckDQNTask3/checkpoint.pt
-    sha256: 7e3ac14a88e33e43da7736ec56507d935f71af059b8ac42442d550184ae39902
-    note: "Provisional migration checkpoint (0 completed episodes). Must be rebound to #107's selected development predecessor before scientific execution, per #108/#109."
+    sha256: 3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599
+    note: "Provisional migration checkpoint (0 completed episodes). Must be rebound to #124's selected development predecessor before scientific execution, per #108/#109."
   task2_predecessor:
     path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
     sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
-    note: "Same provisional artifact Task 3 was migrated from, so the comparison isolates opponent-awareness rather than a different Task 2 predecessor. Also provisional pending #107."
+    note: "Same provisional artifact Task 3 was migrated from, so the comparison isolates opponent-awareness rather than a different Task 2 predecessor. Also provisional pending #124."
 plans:
   task3_vs_peaceful: training/run_plans/issue109-task3-vs-peaceful.yaml
   task2_predecessor_vs_peaceful: training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml
@@ -25,10 +25,10 @@ resource_ceiling_proposed:
   wall_hours: 15
   memory_gib: 8
   max_parallel_training: 2
-  note: "Proposed by Claude, scaled from Issue #97's comparable single-arm 50,000-episode estimate. Issue #109 explicitly requires the owner to set and authorize the actual ceiling; #107's budget does not extend to this issue."
+  note: "Proposed by Claude, scaled from Issue #97's comparable single-arm 50,000-episode estimate. Issue #109 explicitly requires the owner to set and authorize the actual ceiling; #124's budget does not extend to this issue."
 decision_rule: not_yet_fixed
 known_gaps:
   - "Owner/non-author reviewer not yet assigned (issue #109 acceptance criterion)."
   - "Numeric elimination/paired-score/self-kill/retention decision criteria not fixed -- issue #109 explicitly requires the owner to set these before scientific execution, not Claude."
-  - "Parent artifacts are provisional pending Issue #107's development-predecessor selection; both plans must be re-pointed and refingerprinted after that selection before this can be treated as more than a protocol registration."
+  - "Parent artifacts are provisional pending Issue #124's development-predecessor selection; both plans must be re-pointed and refingerprinted after that selection before this can be treated as more than a protocol registration."
   - "Compute not authorized; no training has been run."

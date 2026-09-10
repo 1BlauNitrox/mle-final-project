@@ -5,18 +5,28 @@
   "capability": "task1_task2_behavior_plus_public_opponent_awareness",
   "artifact": {
     "path": "checkpoint.pt",
-    "sha256": "7e3ac14a88e33e43da7736ec56507d935f71af059b8ac42442d550184ae39902",
-    "size_bytes": 61677,
+    "sha256": "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599",
+    "size_bytes": 64237,
     "note": "Fresh provisional Task 3 migration checkpoint; no scientific training or evaluation evidence."
   },
   "model_contract": {
     "algorithm": "deep_q_network",
     "checkpoint_schema_version": 1,
     "model_schema_version": 1,
-    "feature_schema_version": 3,
-    "input_dim": 34,
-    "hidden_sizes": [64, 64],
-    "action_order": ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"],
+    "feature_schema_version": 4,
+    "input_dim": 39,
+    "hidden_sizes": [
+      64,
+      64
+    ],
+    "action_order": [
+      "UP",
+      "RIGHT",
+      "DOWN",
+      "LEFT",
+      "WAIT",
+      "BOMB"
+    ],
     "forbidden_actions": []
   },
   "parent": {
@@ -25,22 +35,24 @@
     "artifact_sha256": "3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015",
     "source_commit": "933a8fe11440e0f7645254390928da6af5dad46d",
     "framework_revision": "0f55c1d",
-    "selection_status": "provisional_fixture_pending_issue_107",
+    "selection_status": "provisional_fixture_pending_issue_124",
     "task2_gate_status": "mixed_negative_issue_46; no Task 3 claim"
   },
   "migration": {
     "script": "scripts/migrate_task3_dqn_successor.py",
     "parent_input_dim": 21,
     "parent_output_dim": 6,
-    "parent_hidden_sizes": [64, 64],
-    "successor_input_dim": 34,
+    "parent_hidden_sizes": [
+      64,
+      64
+    ],
+    "successor_input_dim": 39,
     "successor_output_dim": 6,
     "seed": 44,
     "rule": [
-      "copy the parent's 21 input columns verbatim",
-      "zero the thirteen Task 3 opponent-feature columns",
-      "copy both hidden layers and all six output rows verbatim",
-      "reset optimizer, replay buffer, epsilon, and RNG state for Task 3"
+      "copy all parent input columns, hidden layers and six outputs for online and target networks",
+      "zero missing legacy escape columns and all thirteen opponent columns",
+      "preserve parent mask and escape mode; reset optimizer, replay, epsilon, RNG and update count"
     ]
   },
   "policy": {
@@ -48,6 +60,6 @@
     "opponent_features_present": true,
     "elimination_event": "KILLED_OPPONENT",
     "scientific_training_authorized": false,
-    "final_parent_binding_required_after_issue_107": true
+    "final_parent_binding_required_after_issue_124": true
   }
 }

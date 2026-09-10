@@ -232,7 +232,7 @@ python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-pea
 ```
 
 Both provisional starting artifacts, the resource ceiling, and the numeric
-decision criteria are unresolved pending owner review and Issue #107's
+decision criteria are unresolved pending owner review and Issue #124's
 development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
 not be started until the peaceful stage's outcome is decided. Full protocol,
 rationale, and exact commands are registered in

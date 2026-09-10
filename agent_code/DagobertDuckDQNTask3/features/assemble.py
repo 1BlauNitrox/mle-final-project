@@ -1,17 +1,4 @@
-"""Documented Task 3 feature ordering, typing, and normalization.
-
-Indices 0-7 are the unchanged Task 1 navigation prefix (see `navigation.py`);
-issue #43's differential tests pin their values identical to the frozen
-parent on Task 1 states. Indices 8-20 are the Task 2 additions from
-`bombs_and_crates.py`. Indices 21-33 are the public-opponent suffix from
-`opponents.py`: nearest-opponent presence/direction/distance (21-24), attack
-opportunity and its escape (25-26), per-direction opponent occupancy (27-30,
-mirroring `free_directions`' own ordering so opponents count as obstacles
-per direction rather than as one aggregate count), and second-nearest
-opponent direction/distance (31-33, zero when fewer than two opponents are
-present) so up to `classic`'s three opponents are not collapsed into a
-single nearest-only signal.
-"""
+"""Task 3 schema 4: unchanged 26-input Task 2 prefix plus 13 opponent inputs."""
 
 from __future__ import annotations
 
@@ -28,6 +15,7 @@ from .bombs_and_crates import (
     nearest_crate_features,
     safe_direction,
     safe_escape_exists,
+    surviving_continuation_after_action,
 )
 from .navigation import (
     DIRECTIONS,
@@ -42,8 +30,10 @@ StateFeatures: TypeAlias = tuple[int, ...]
 MAX_CRATES_DESTROYED_BIN = 3
 
 
-def state_to_features(game_state: dict | None) -> StateFeatures | None:
-    """Encode a framework state as the 34-element Task 3 feature tuple."""
+def state_to_features(
+    game_state: dict | None, *, include_continuation_features: bool = True
+) -> StateFeatures | None:
+    """Encode a framework state as the 39-element Task 3 feature tuple."""
     if game_state is None:
         return None
 
@@ -69,6 +59,23 @@ def state_to_features(game_state: dict | None) -> StateFeatures | None:
         int(safe_direction(field, danger_map, blocked_positions, position, direction))
         for direction in DIRECTIONS
     )
+
+    if include_continuation_features:
+        continuation_features = tuple(
+            int(
+                surviving_continuation_after_action(
+                    field,
+                    danger_map,
+                    blocked_positions,
+                    game_state.get("bombs", []),
+                    position,
+                    direction,
+                )
+            )
+            for direction in (*DIRECTIONS, (0, 0))
+        )
+    else:
+        continuation_features = (0, 0, 0, 0, 0)
 
     # A bomb placed by the current action is decremented once by the
     # framework before the next observable state.
@@ -121,6 +128,7 @@ def state_to_features(game_state: dict | None) -> StateFeatures | None:
         *crate_features,
         crates_here,
         bomb_has_useful_target,
+        *continuation_features,
         *opponent_suffix,
     )
 
@@ -134,7 +142,7 @@ def normalize_features(features: StateFeatures) -> np.ndarray:
 
     normalized = values.copy()
 
-    for index in (7, 9, 18, 19, 24, 33):
+    for index in (7, 9, 18, 19, 29, 38):
         normalized[index] /= 3.0
 
     return normalized

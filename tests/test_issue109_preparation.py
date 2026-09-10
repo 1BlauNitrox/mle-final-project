@@ -18,10 +18,18 @@ def test_migration_cli_rejects_wrong_hash_before_loading(tmp_path, monkeypatch):
     source = tmp_path / "parent.pt"
     output = tmp_path / "new.pt"
     source.write_bytes(b"not a checkpoint")
-    monkeypatch.setattr("sys.argv", [
-        "migrate", "--parent", str(source), "--output", str(output),
-        "--parent-sha256", "0" * 64,
-    ])
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "migrate",
+            "--parent",
+            str(source),
+            "--output",
+            str(output),
+            "--parent-sha256",
+            "0" * 64,
+        ],
+    )
     with pytest.raises(SystemExit) as error:
         cli.main()
     assert error.value.code == 2
@@ -34,10 +42,18 @@ def test_migration_cli_refuses_overwriting_parent(tmp_path, monkeypatch):
 
     source = tmp_path / "parent.pt"
     source.write_bytes(b"parent")
-    monkeypatch.setattr("sys.argv", [
-        "migrate", "--parent", str(source), "--output", str(source),
-        "--parent-sha256", cli.sha256_file(source),
-    ])
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "migrate",
+            "--parent",
+            str(source),
+            "--output",
+            str(source),
+            "--parent-sha256",
+            cli.sha256_file(source),
+        ],
+    )
     with pytest.raises(SystemExit) as error:
         cli.main()
     assert error.value.code == 2
@@ -54,7 +70,7 @@ def test_control_parent_migration_preserves_q_values_with_neutral_suffix():
     generator = torch.Generator().manual_seed(109)
     prefix = torch.rand((100, 21), generator=generator)
     parent_states = torch.cat((prefix, torch.zeros(100, 5)), dim=1)
-    successor_states = torch.cat((prefix, torch.rand((100, 13), generator=generator)), dim=1)
+    successor_states = torch.cat((parent_states, torch.rand((100, 13), generator=generator)), dim=1)
     with torch.no_grad():
         torch.testing.assert_close(
             parent(parent_states), successor(successor_states), atol=1e-5, rtol=0
@@ -65,8 +81,16 @@ def test_active_escape_parent_cannot_silently_lose_features():
     parent = build_q_network(
         config=replace(DEFAULT_CONFIG, escape_continuation_features=True), seed=109
     )
-    with pytest.raises(ValueError, match="active features cannot be discarded"):
-        migrate_online_network(parent)
+    successor = migrate_online_network(parent)
+    assert successor.config.escape_continuation_features
+    states = torch.rand((100, 26), generator=torch.Generator().manual_seed(125))
+    with torch.no_grad():
+        torch.testing.assert_close(
+            parent(states),
+            successor(torch.cat((states, torch.zeros(100, 13)), 1)),
+            atol=1e-5,
+            rtol=0,
+        )
 
 
 def test_frozen_predecessor_has_identical_evaluation_conditions():

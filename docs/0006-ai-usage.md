@@ -109,3 +109,13 @@ The subsequent self-review added final archive-member integrity validation
 and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
+
+Issue #125 implementation (2026-09-10): OpenAI Codex implemented the documented
+39-input successor, preserving active Task 2 escape features and parent
+masking, with online/target migration, fresh training state and explicit
+schema rejection. Codex integrated existing #109 plan templates, generated a
+reproducible provisional fixture and prepared a separately identified #107
+A/r2 exploratory baseline. Unit/regression, isolated integration and clean
+packaging checks verify implementation only; no Task 3 performance claim or
+scientific compute authorization is implied. Final #124 parent binding,
+numeric #109 decisions and scientific execution remain separate work.
