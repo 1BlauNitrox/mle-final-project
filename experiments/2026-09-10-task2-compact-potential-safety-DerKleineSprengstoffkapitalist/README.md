@@ -1,0 +1,149 @@
+# Compact Task 2 potential-based safety shaping
+
+> Status: registered_pending_approval
+
+## Metadata
+
+- Issue: #133
+- Agent: `DerKleineSprengstoffkapitalist`
+- Owner: LiliWestermann
+- Date: 2026-09-10
+- Registration base: `124e5fa`
+- Experiment commit: pending
+- Approval: pending
+
+## Research question
+
+Can potential-based safety shaping reduce the compact Task 2 agent's
+self-kill rate without materially reducing coin collection or state reuse?
+
+## Hypothesis
+
+Safety potential shaping will make transitions out of danger more attractive
+and transitions into danger less attractive. This should reduce self-kills
+while preserving the compact representation's collection performance.
+
+## Treatments
+
+- Control: compact state representation without potential shaping.
+- Candidate: compact state representation with `compact_safety` potential
+  shaping.
+
+Both treatments use zero-initialized Q-tables and differ only in the potential
+shaping mode.
+
+## Potential function
+
+The potential is:
+
+- `0` when the agent is safe;
+- `-1` when the agent is in danger and at least one safe direction exists;
+- `-2` when the agent is in danger and no safe direction exists.
+
+The additional learning reward is:
+
+```text
+F(s, s') = gamma * Phi(s') - Phi(s)
+```
+
+with `gamma = 0.9`. For terminal transitions, `Phi(s') = 0`.
+
+The shaping reward modifies only the Q-learning update. It does not filter
+actions, prescribe an action, or replace the learned policy.
+
+## Controlled variables
+
+The following remain identical between treatments:
+
+- compact five-feature state representation;
+- one-step tabular Q-learning;
+- learning rate `0.05`;
+- discount factor `0.9`;
+- epsilon schedule `1.0`, multiplied by `0.99` per episode to a minimum of
+  `0.1`;
+- zero Q-value initialization;
+- no action masking;
+- no useful-bomb bonus;
+- training curriculum and episode budget;
+- training and evaluation seeds;
+- scenarios and opponents;
+- final-checkpoint evaluation.
+
+## Training protocol
+
+Train five independent replicas per treatment:
+
+1. 2,000 `coin-heaven` episodes;
+2. 2,000 `loot-crate` episodes;
+3. 6,000 `classic` episodes.
+
+Only the checkpoint after exactly 10,000 episodes is evaluated.
+
+## Evaluation protocol
+
+Evaluate every replica on 40 paired development seeds in:
+
+- `classic`;
+- `coin-heaven`;
+- `loot-crate`.
+
+Repeat every evaluation with identical seeds to verify determinism.
+Confirmation seeds remain unused.
+
+## Primary metric
+
+Candidate-minus-control self-kill rate on `classic`, paired by replica and
+world seed.
+
+## Secondary metrics
+
+- `classic` coin collection fraction;
+- `coin-heaven` coin collection fraction;
+- `loot-crate` coin collection fraction;
+- mean visits per materialized Q-table state;
+- Q-table size;
+- evaluation unseen-state rate;
+- decision-time p95 and maximum.
+
+## Decision rule
+
+Accept the candidate only if:
+
+- its aggregate `classic` self-kill rate is below control;
+- at least four of five replicas have a lower self-kill rate;
+- its `classic` collection fraction is no more than `0.05` below control;
+- its mean-visits-per-state ratio relative to control is at least `0.90`;
+- all deterministic repeats match;
+- decision-time p95 is below `50 ms`;
+- maximum decision time is below `100 ms`.
+
+## Compute budget
+
+- maximum training episodes: 100,000;
+- planned evaluation episodes: 2,400;
+- maximum evaluation episodes: 2,480;
+- maximum CPU time: 36 CPU-hours;
+- paid resources: none.
+
+## Registered run plans
+
+```bash
+python -m training.run_plan \
+  training/run_plans/issue133-compact-task2-control.yaml \
+  --dry-run
+
+python -m training.run_plan \
+  training/run_plans/issue133-compact-task2-potential-safety.yaml \
+  --dry-run
+```
+
+No training may begin until the protocol commit and both dry runs have been
+reviewed and personally approved by another team member.
+
+## Results
+
+Pending execution.
+
+## Decision
+
+Pending evaluation.
