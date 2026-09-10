@@ -9,7 +9,8 @@
 - Owner: LiliWestermann
 - Date: 2026-09-10
 - Registration base: `124e5fa`
-- Experiment commit: pending
+- Experiment commit: `6ae0de76ae544eeae94f8ca94f32b54eabe3e8b8`
+- Framework revision: `b31c6c16cab62f47794f2600a8c3b1b677cb05d1`
 - Approval: pending
 
 ## Research question

@@ -8,8 +8,8 @@ reviewer: 1BlauNitrox
 
 revisions:
   registration_base: "124e5fa"
-  experiment_commit: pending
-  framework_revision: pending
+  experiment_commit: "6ae0de76ae544eeae94f8ca94f32b54eabe3e8b8"
+  framework_revision: "b31c6c16cab62f47794f2600a8c3b1b677cb05d1"
 
 treatments:
   control:
