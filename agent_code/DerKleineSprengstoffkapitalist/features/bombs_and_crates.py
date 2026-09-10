@@ -142,6 +142,8 @@ def safe_escape_exists(
     blocked_positions: set[Position],
     bombs: list[tuple[Position, int]],
     start: Position,
+    *,
+    required_first_direction: tuple[int, int] | None = None,
 ) -> bool:
     """Return whether a genuinely safe tile is reachable without ever stepping
     onto a tile that is lethal at the time of arrival, or entering a tile
@@ -169,7 +171,13 @@ def safe_escape_exists(
         if elapsed >= MAX_ESCAPE_SEARCH_STEPS:
             continue
 
-        for dx, dy in moves:
+        available_moves = (
+            (required_first_direction,)
+            if elapsed == 0 and required_first_direction is not None
+            else moves
+        )
+
+        for dx, dy in available_moves:
             nx, ny = x + dx, y + dy
             is_wait = (dx, dy) == (0, 0)
 
