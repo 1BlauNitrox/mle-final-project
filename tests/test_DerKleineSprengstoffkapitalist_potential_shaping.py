@@ -5,6 +5,9 @@ from __future__ import annotations
 import pytest
 
 from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
+    COMPACT_SAFETY_POTENTIAL_SHAPING,
+    NO_POTENTIAL_SHAPING,
+    apply_potential_shaping,
     potential_safety_reward,
     safety_potential,
 )
@@ -93,3 +96,42 @@ def test_discounted_shaping_rewards_telescope() -> None:
     assert discounted_total == pytest.approx(
         -safety_potential(DANGER_WITH_ESCAPE)
     )
+
+
+def test_disabled_shaping_preserves_original_reward() -> None:
+    reward = apply_potential_shaping(
+        3.0,
+        SAFE_STATE,
+        DANGER_WITH_ESCAPE,
+        terminal=False,
+        mode=NO_POTENTIAL_SHAPING,
+    )
+
+    assert reward == pytest.approx(3.0)
+
+
+def test_compact_safety_mode_adds_potential_reward() -> None:
+    reward = apply_potential_shaping(
+        3.0,
+        SAFE_STATE,
+        DANGER_WITH_ESCAPE,
+        terminal=False,
+        mode=COMPACT_SAFETY_POTENTIAL_SHAPING,
+        discount_factor=0.9,
+    )
+
+    assert reward == pytest.approx(2.1)
+
+
+def test_unknown_shaping_mode_is_rejected() -> None:
+    with pytest.raises(
+        ValueError,
+        match="Potential shaping mode",
+    ):
+        apply_potential_shaping(
+            0.0,
+            SAFE_STATE,
+            DANGER_WITH_ESCAPE,
+            terminal=False,
+            mode="unknown",
+        )

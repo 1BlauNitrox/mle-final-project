@@ -6,6 +6,14 @@ from .config import DISCOUNT_FACTOR
 from .features import StateFeatures
 from .features.compact import validate_compact_features
 
+NO_POTENTIAL_SHAPING = "none"
+COMPACT_SAFETY_POTENTIAL_SHAPING = "compact_safety"
+
+VALID_POTENTIAL_SHAPING_MODES = (
+    NO_POTENTIAL_SHAPING,
+    COMPACT_SAFETY_POTENTIAL_SHAPING,
+)
+
 
 def safety_potential(state: StateFeatures) -> float:
     """Return the registered safety potential for a compact state."""
@@ -56,4 +64,35 @@ def potential_safety_reward(
     return (
         discount_factor * next_potential
         - current_potential
+    )
+
+
+def apply_potential_shaping(
+    reward: float,
+    state: StateFeatures,
+    next_state: StateFeatures | None,
+    *,
+    terminal: bool,
+    mode: str,
+    discount_factor: float = DISCOUNT_FACTOR,
+) -> float:
+    """Add the selected potential-based shaping term to a reward."""
+
+    if mode not in VALID_POTENTIAL_SHAPING_MODES:
+        raise ValueError(
+            "Potential shaping mode must be one of "
+            f"{list(VALID_POTENTIAL_SHAPING_MODES)}."
+        )
+
+    if mode == NO_POTENTIAL_SHAPING:
+        return float(reward)
+
+    return float(
+        reward
+        + potential_safety_reward(
+            state,
+            next_state,
+            terminal=terminal,
+            discount_factor=discount_factor,
+        )
     )

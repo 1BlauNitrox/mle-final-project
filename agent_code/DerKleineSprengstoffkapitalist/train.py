@@ -14,6 +14,7 @@ from .features import StateFeatures, encode_state
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
+from .potential_shaping import apply_potential_shaping
 from .rewards import reward_from_events
 
 DIAGNOSTIC_EVENT_METRICS = {
@@ -258,16 +259,25 @@ def _apply_update(
 ) -> None:
     """Update the Q-table and record diagnostics."""
 
+    learning_reward = apply_potential_shaping(
+        reward,
+        state,
+        next_state,
+        terminal=terminal,
+        mode=self.potential_shaping,
+        discount_factor=self.q_table.discount_factor,
+    )
+
     td_error = self.q_table.update(
         state=state,
         action=action,
-        reward=reward,
+        reward=learning_reward,
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
     )
 
-    self.episode_reward += reward
+    self.episode_reward += learning_reward
     self.absolute_td_errors.append(abs(td_error))
 
 

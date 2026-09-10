@@ -21,6 +21,7 @@ from .model import (
     QTable,
 )
 from .persistence import MODEL_PATH, load_model
+from .potential_shaping import NO_POTENTIAL_SHAPING
 
 USEFUL_BOMB_REWARD_ENV = "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD"
 VALID_USEFUL_BOMB_REWARDS = (0.0, 1.0)
@@ -39,6 +40,7 @@ def setup(self) -> None:
     self.action_masking = _read_action_masking()
     self.state_representation = _read_state_representation()
     self.initialization = _read_initialization()
+    self.potential_shaping = NO_POTENTIAL_SHAPING
 
     representation = get_state_representation(
         self.state_representation
