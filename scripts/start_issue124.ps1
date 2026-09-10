@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory = $true)][string]$Python,
     [Parameter(Mandatory = $true)][string]$OutputRoot,
-    [switch]$Resume
+    [switch]$Resume,
+    [switch]$OwnerAuthorizedReviewException
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path -Parent $PSScriptRoot
@@ -13,7 +14,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve execution SHA' }
     & $pythonPath -m training.run_issue124_campaign --dry-run
     if ($LASTEXITCODE -ne 0) { throw 'Protocol validation failed' }
-    & $pythonPath -m training.run_issue124_campaign --check-review --reviewed-commit $headSha
+    $reviewArguments = @()
+    if ($OwnerAuthorizedReviewException) {
+        $reviewArguments += '--owner-authorized-review-exception'
+    }
+    & $pythonPath -m training.run_issue124_campaign --check-review --reviewed-commit $headSha @reviewArguments
     if ($LASTEXITCODE -ne 0) { throw 'Exact-commit non-author review validation failed' }
     New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
@@ -21,6 +26,7 @@ try {
     $stderrPath = Join-Path $outputPath "supervisor-$stamp.stderr.log"
     $launchArguments = @('-m', 'training.run_issue124_campaign', '--authorize-compute',
         '--reviewed-commit', $headSha, '--output-root', ('"' + $outputPath + '"'))
+    $launchArguments += $reviewArguments
     if ($Resume) { $launchArguments += '--resume' }
     $worker = Start-Process -FilePath $pythonPath -ArgumentList $launchArguments `
         -WorkingDirectory $repository -WindowStyle Hidden -PassThru `

@@ -251,13 +251,25 @@ def check_review(reviewed_commit):
     require_current_approval(review, reviewed_commit)
 
 
-def execute(output, reviewed_commit, resume=False):
+def review_authorization(reviewed_commit, owner_override=False):
+    if owner_override:
+        return {
+            "status": "owner_authorized_exception_no_peer_approval",
+            "authorized_by": "1BlauNitrox",
+            "instruction": "I want you to run it anyways!",
+            "scope": "Issue 124 execution only; no PR approval or merge",
+        }
+    check_review(reviewed_commit)
+    return {"status": "peer_approved", "commit": reviewed_commit}
+
+
+def execute(output, reviewed_commit, resume=False, owner_override=False):
     plans = validate_protocol()
     if reviewed_commit != git("rev-parse", "HEAD") or len(reviewed_commit) != 40:
         raise ValueError("Execution requires the exact reviewed HEAD SHA")
     if git("status", "--porcelain"):
         raise ValueError("Execution requires a clean worktree")
-    check_review(reviewed_commit)
+    review_record = review_authorization(reviewed_commit, owner_override)
     if psutil.virtual_memory().available < 4 * 1024**3:
         raise ValueError("At least 4 GiB free RAM is required before starting four workers")
     output = output.resolve()
@@ -283,6 +295,7 @@ def execute(output, reviewed_commit, resume=False):
         if authorization is None:
             authorization = {
                 "issue": 124,
+                "review_authorization": review_record,
                 "reviewed_commit": reviewed_commit,
                 "authorized_by": "1BlauNitrox",
                 "authorized_at": datetime.now(timezone.utc).isoformat(),
@@ -366,6 +379,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--check-review", action="store_true")
     parser.add_argument("--authorize-compute", action="store_true")
+    parser.add_argument("--owner-authorized-review-exception", action="store_true")
     parser.add_argument("--reviewed-commit")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--output-root", type=Path, default=ROOT / "training_outputs/issue124")
@@ -373,7 +387,7 @@ def main():
     if args.check_review:
         if not args.reviewed_commit:
             parser.error("--check-review requires --reviewed-commit")
-        check_review(args.reviewed_commit)
+        review_authorization(args.reviewed_commit, args.owner_authorized_review_exception)
         return
     if args.dry_run:
         plans = validate_protocol()
@@ -391,7 +405,12 @@ def main():
         return
     if not args.authorize_compute or not args.reviewed_commit:
         parser.error("Execution requires --authorize-compute and --reviewed-commit")
-    execute(args.output_root, args.reviewed_commit, args.resume)
+    execute(
+        args.output_root,
+        args.reviewed_commit,
+        args.resume,
+        args.owner_authorized_review_exception,
+    )
 
 
 if __name__ == "__main__":

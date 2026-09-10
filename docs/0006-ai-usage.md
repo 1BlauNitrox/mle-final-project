@@ -108,3 +108,11 @@ The subsequent self-review added final archive-member integrity validation
 and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
+
+### Issue #124 explicit owner execution exception
+
+On September 10, Julius explicitly instructed execution despite the missing
+peer review: "I want you to run it anyways!" Codex added a tested, opt-in
+execution exception and records it in campaign/job authorization metadata.
+This is not peer approval and does not authorize a merge. Resource limits,
+immutable source checks and analysis requirements remain unchanged.

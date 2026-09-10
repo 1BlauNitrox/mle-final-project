@@ -191,3 +191,22 @@ def test_outstanding_peer_change_request_blocks_other_approval():
     }
     with pytest.raises(ValueError, match="non-author approval"):
         require_current_approval(review, "head")
+
+
+def test_owner_exception_is_explicit_recorded_and_default_still_requires_review(monkeypatch):
+    from training import run_issue124_campaign as campaign
+
+    calls = []
+
+    def reject(commit):
+        calls.append(commit)
+        raise ValueError("missing peer review")
+
+    monkeypatch.setattr(campaign, "check_review", reject)
+    with pytest.raises(ValueError, match="missing peer review"):
+        campaign.review_authorization("head")
+    record = campaign.review_authorization("head", owner_override=True)
+    assert calls == ["head"]
+    assert record["status"] == "owner_authorized_exception_no_peer_approval"
+    assert record["authorized_by"] == "1BlauNitrox"
+    assert "no PR approval or merge" in record["scope"]

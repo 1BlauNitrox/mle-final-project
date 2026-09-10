@@ -1,7 +1,9 @@
 # Escape-enabled Task 2 rehearsal and masking preparation
 
 Refs #124; prerequisite #123. Prospective executable protocol, awaiting
-non-author review. The user confirmed four arms, four workers, 8 GiB RAM and
+non-author review. The user explicitly overrode the pre-training review gate
+on September 10 ("I want you to run it anyways!"). This execution-only
+exception does not approve or merge either PR. The user confirmed four arms, four workers, 8 GiB RAM and
 ten wall hours for local Windows execution. No scientific run has started.
 
 | Arm | Task 1 practice | Legal-action masking |
@@ -84,7 +86,13 @@ This is not a guarantee that 200,000 episodes finish within ten hours.
 
 Use the exact approved PR #131 head in a clean, dedicated worktree. The
 launcher checks GitHub non-author approval and the exact SHA, so neither these
-commands nor the recorded user authorization bypass review. Install the
+commands nor the ordinary compute authorization bypass review. For the explicit
+September 10 owner exception only, pass `-OwnerAuthorizedReviewException` to
+the PowerShell launcher (Python: `--owner-authorized-review-exception`). The
+campaign records the exception in authorization and every job's metadata;
+`reviewed_commit` remains the legacy execution-SHA field and is not a claim
+of peer approval when the exception is present. All resource and evidence
+checks remain active. Install the
 documented requirements in a separate environment. Dry-run:
 
 ```powershell
