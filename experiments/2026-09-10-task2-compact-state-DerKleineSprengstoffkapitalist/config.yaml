@@ -1,7 +1,7 @@
 schema_version: 1
 issue: 128
-status: approved
-evidence_scope: prospective_protocol
+status: completed_mixed
+evidence_scope: completed_development_experiment
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
 reviewer: 1BlauNitrox
@@ -150,4 +150,31 @@ outputs:
     - evaluation_metadata
 
 results:
-  decision: pending
+  decision: reject_as_default_due_to_safety
+  overall_pass: false
+  deterministic_repeats: true
+  primary_evaluation_episodes: 1200
+  repeat_evaluation_episodes: 1200
+  classic:
+    control_collection_fraction: 0.0
+    candidate_collection_fraction: 0.17055555555555552
+    candidate_minus_control: 0.17055555555555557
+    ci_lower: 0.11555555555555555
+    ci_upper: 0.2261111111111111
+    control_self_kill_rate: 0.005
+    candidate_self_kill_rate: 0.135
+  coin_heaven:
+    control_collection_fraction: 0.64
+    candidate_collection_fraction: 1.0
+    candidate_minus_control: 0.36
+    ci_lower: 0.2688975
+    ci_upper: 0.44100249999999996
+  learning_efficiency:
+    control_mean_q_table_size: 4465.2
+    candidate_mean_q_table_size: 1078.6
+    control_mean_visits_per_state: 164.64247067035498
+    candidate_mean_visits_per_state: 674.7341815179971
+    control_singleton_state_fraction: 0.23728085044359778
+    candidate_singleton_state_fraction: 0.062138329873755546
+    control_unseen_state_rate: 0.000031128543095244446
+    candidate_unseen_state_rate: 0.00009216646492451566

@@ -1,6 +1,6 @@
 # Tabular Task 2 compact state abstraction
 
-> Status: approved
+> Status: completed_mixed
 
 ## Metadata
 
@@ -191,8 +191,61 @@ reviewed and personally approved by another team member.
 
 ## Results
 
-Not run.
+Both run plans completed all 1,215 jobs. The analysis contains 1,200 primary
+and 1,200 deterministic-repeat evaluation episodes across both treatments.
+
+### Evaluation performance
+
+| Scenario | Control collection | Candidate collection |
+| --- | ---: | ---: |
+| `classic` | 0.000 | 0.171 |
+| `coin-heaven` | 0.640 | 1.000 |
+| `loot-crate` | 0.000 | 0.209 |
+
+The paired candidate-minus-control difference on `classic` was `0.171`, with
+a preregistered 95% bootstrap interval of `[0.116, 0.226]`. At least four of
+five replicas improved.
+
+The `coin-heaven` difference was `0.360`, with a 95% bootstrap interval of
+`[0.269, 0.441]`. The retention criterion therefore passed.
+
+### Learning efficiency
+
+| Diagnostic | Control | Candidate |
+| --- | ---: | ---: |
+| Mean materialized states | 4,465 | 1,079 |
+| Mean visits per state | 164.6 | 674.7 |
+| Mean singleton-state fraction | 0.237 | 0.062 |
+| Mean model size | 94.5 KiB | 41.3 KiB |
+| Evaluation unseen-state rate | 0.0031% | 0.0092% |
+
+The compact representation substantially increased state reuse and reduced
+the Q-table size. Its unseen-state rate was still extremely small, but it was
+not lower than the control rate and therefore failed the strict registered
+criterion.
+
+### Safety and reproducibility
+
+The aggregate `classic` self-kill rate increased from `0.005` for the control
+to `0.135` for the candidate. This exceeds the registered maximum increase of
+`0.02`.
+
+All primary and repeat outcomes were deterministic. All registered decision
+time limits passed.
+
+Generated evidence:
+
+- [`summary.csv`](summary.csv);
+- [`result.json`](result.json);
+- [`figures/performance_and_safety.png`](figures/performance_and_safety.png);
+- [`figures/learning_efficiency.png`](figures/learning_efficiency.png).
 
 ## Decision
 
-Pending.
+Reject the compact representation as the new default Task 2 state because the
+registered safety criterion and strict unseen-state criterion failed.
+
+The experiment nevertheless provides strong evidence that compact state
+abstraction improves learning efficiency and coin collection. A follow-up
+experiment should retain the compact representation while addressing bomb and
+escape safety, without changing the interpretation of this completed result.
