@@ -135,3 +135,5 @@ and unrelated I/O failures. Recovery retains the original learning source,
 completed checkpoints, failed attempts and cumulative resource accounting.
 
 - September 10, Issue #124: Codex inspected retained campaign/job/resource records, invoked the registered analyzer in analysis-only mode, and documented the system-memory interruption. No scientific performance conclusion or checkpoint selection was inferred; the compact operational snapshot is committed for review.
+
+- Issue #124 memory recovery: Codex implemented and tested an owner-authorized recovery from the system availability stop, preserving archived breach evidence and cumulative accounting. No scientific settings or budgets changed.

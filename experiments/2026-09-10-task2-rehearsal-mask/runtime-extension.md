@@ -57,3 +57,19 @@ original resume path to recover incomplete stages. Completed stages are
 skipped. Resource ledgers, interrupted attempts, the prior amendment wrapper
 and amendment metadata remain in the evidence history. The 24-hour wall,
 96 CPU-hour, four-worker and 8 GiB ceilings are unchanged.
+
+## Owner-authorized recovery after low system memory
+
+On September 10 the owner freed memory and explicitly requested continuation.
+`scripts/recover_issue124_memory.py` permits recovery only from the system-wide
+1 GiB availability-floor stop, with no active recorded workers or lock and at
+least 4 GiB currently available. It rejects exhausted CPU/wall budgets and
+campaign peak-memory breaches. It preserves the original authorization, CPU
+usage, peak memory and elapsed wall origin. The prior ledger, stopped status,
+amendment and recovery script are copied to immutable history before opening
+the resumed resource segment. Their hashes and the owner instruction are
+recorded in the amendment and included by the existing analysis manifest.
+The previous breach remains an explicit operational deviation in results;
+`limit_reached: null` describes only the recovered current segment. Future
+breaches still stop the campaign. No clock, seeds, episodes or scientific gates
+are reset. The original September 11 08:59:45 Berlin deadline remains active.
