@@ -68,3 +68,44 @@ def test_resume_normalizes_timestamp_without_resetting_consumed_cpu(tmp_path):
     )
     assert resumed._completed_cpu_seconds == 1234
     assert resumed._authorized_epoch == first._authorized_epoch
+
+
+def test_transient_resource_write_retries_without_changing_accounting():
+    from scripts.resume_issue124_amendment import resume_monitor_type
+
+    calls = []
+
+    class Monitor:
+        def _persist(self, cpu, memory):
+            calls.append((cpu, memory))
+            if len(calls) < 3:
+                raise PermissionError("temporary reader lock")
+            return "written"
+
+    instance = object.__new__(resume_monitor_type(Monitor))
+    assert instance._persist(1234, 5678) == "written"
+    assert calls == [(1234, 5678)] * 3
+
+
+def test_persistent_resource_write_failure_is_not_swallowed():
+    from scripts.resume_issue124_amendment import retry_resource_write
+
+    calls = []
+
+    def fail():
+        calls.append(1)
+        raise PermissionError("persistent")
+
+    with pytest.raises(PermissionError, match="persistent"):
+        retry_resource_write(fail, sleep=lambda delay: None)
+    assert len(calls) == 20
+
+
+def test_unrelated_resource_write_error_is_not_retried():
+    from scripts.resume_issue124_amendment import retry_resource_write
+
+    def fail():
+        raise OSError("disk full")
+
+    with pytest.raises(OSError, match="disk full"):
+        retry_resource_write(fail, sleep=lambda delay: pytest.fail("must not retry"))

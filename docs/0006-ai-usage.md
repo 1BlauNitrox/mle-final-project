@@ -125,3 +125,11 @@ checksum-bound resume wrapper, preserving the immutable training source,
 original authorization and cumulative resource ledger. The extension and
 interrupted attempts are scientific deviations to disclose, not new results.
 See the experiment's `runtime-extension.md` for effective limits and commands.
+
+### Issue #124 Windows resource-ledger recovery
+
+Codex traced B/r2 block 16's technical failure to a Windows permission error
+on atomic resource-file replacement. A bounded retry in the separately
+versioned operational resume monitor was tested with transient, persistent
+and unrelated I/O failures. Recovery retains the original learning source,
+completed checkpoints, failed attempts and cumulative resource accounting.

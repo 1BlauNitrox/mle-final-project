@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import sys
+import time
 from pathlib import Path
 
 
@@ -35,6 +36,17 @@ def validate_amendment(amendment, authorization):
         raise ValueError("Invalid Issue 124 budget-only amendment")
 
 
+def retry_resource_write(operation, sleep=time.sleep):
+    """Retry transient Windows reader/replace contention without hiding failures."""
+    for attempt in range(20):
+        try:
+            return operation()
+        except PermissionError:
+            if attempt == 19:
+                raise
+            sleep(0.1)
+
+
 def resume_monitor_type(original_monitor):
     class ResumeMonitor(original_monitor):
         def __init__(self, **kwargs):
@@ -42,6 +54,10 @@ def resume_monitor_type(original_monitor):
             # to the pinned monitor's persisted UTC spelling.
             kwargs["authorized_at"] = kwargs["authorized_at"].replace("+00:00", "Z")
             super().__init__(**kwargs)
+
+        def _persist(self, cpu_seconds, memory_bytes):
+            persist = super()._persist
+            return retry_resource_write(lambda: persist(cpu_seconds, memory_bytes))
 
     return ResumeMonitor
 

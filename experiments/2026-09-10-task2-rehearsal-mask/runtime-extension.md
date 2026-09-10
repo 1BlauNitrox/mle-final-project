@@ -42,3 +42,18 @@ python C:\path\to\issue124\resume_issue124_amendment.py --execution-root C:\path
 
 Do not launch a second supervisor while one is active. No peer approval or
 merge is implied by the owner's execution/budget exception.
+
+## Windows resource-ledger recovery
+
+A transient `PermissionError` replacing `resources.json` interrupted B/r2's
+block 16 at the first supervisor handover. The checkpoint and retained
+preceding stage were not the failing files. The operational resume monitor
+retries only `PermissionError`, up to 20 attempts separated by 0.1 seconds,
+while retaining the same CPU/memory values and monitor lock. Persistent errors
+and unrelated I/O errors remain fatal. This changes no learning code.
+
+A subsequent campaign-only supervisor restart installs this fix and uses the
+original resume path to recover incomplete stages. Completed stages are
+skipped. Resource ledgers, interrupted attempts, the prior amendment wrapper
+and amendment metadata remain in the evidence history. The 24-hour wall,
+96 CPU-hour, four-worker and 8 GiB ceilings are unchanged.
