@@ -216,6 +216,7 @@ def end_of_round(
         state_representation=self.state_representation,
         initialization=self.initialization,
         path=MODEL_PATH,
+        potential_shaping=self.potential_shaping,
     )
 
     self.episode_reward = 0.0

@@ -180,6 +180,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
         callbacks.INITIALIZATION_ENV,
         ZERO_INITIALIZATION,
     )
+    monkeypatch.setenv(
+        callbacks.POTENTIAL_SHAPING_ENV,
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+    )
 
     agent = SimpleNamespace(
         train=True,
@@ -193,6 +197,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
     assert agent.initialization == ZERO_INITIALIZATION
     assert agent.q_table.feature_count == 5
     assert agent.q_table.parent_values == {}
+    assert (
+        agent.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
 
     old_game_state = make_game_state(
         position=(3, 3),
@@ -232,6 +240,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
 
     loaded = load_model(model_path)
 
+    assert (
+        loaded.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
     assert loaded.state_representation == COMPACT_STATE_REPRESENTATION
     assert loaded.initialization == ZERO_INITIALIZATION
     assert loaded.q_table.feature_count == 5
@@ -934,3 +946,23 @@ def test_apply_update_uses_zero_terminal_potential() -> None:
     assert agent.q_table.q_values(trapped_state)[
         ACTIONS.index("WAIT")
     ] == pytest.approx(-0.4)
+
+
+def test_safety_shaping_rejects_baseline_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        callbacks.POTENTIAL_SHAPING_ENV,
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="requires the compact state representation",
+    ):
+        callbacks.setup(
+            SimpleNamespace(
+                train=True,
+                logger=Mock(),
+            )
+        )

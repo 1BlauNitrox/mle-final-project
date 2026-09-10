@@ -21,7 +21,11 @@ from .model import (
     QTable,
 )
 from .persistence import MODEL_PATH, load_model
-from .potential_shaping import NO_POTENTIAL_SHAPING
+from .potential_shaping import (
+    COMPACT_SAFETY_POTENTIAL_SHAPING,
+    NO_POTENTIAL_SHAPING,
+    VALID_POTENTIAL_SHAPING_MODES,
+)
 
 USEFUL_BOMB_REWARD_ENV = "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD"
 VALID_USEFUL_BOMB_REWARDS = (0.0, 1.0)
@@ -29,6 +33,7 @@ ACTION_MASKING_ENV = "BOMBERMAN_TABULAR_ACTION_MASKING"
 VALID_ACTION_MASKING = {"none", "framework_legal"}
 STATE_REPRESENTATION_ENV = "BOMBERMAN_TABULAR_STATE_REPRESENTATION"
 INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
+POTENTIAL_SHAPING_ENV = "BOMBERMAN_TABULAR_POTENTIAL_SHAPING"
 
 
 def setup(self) -> None:
@@ -40,7 +45,7 @@ def setup(self) -> None:
     self.action_masking = _read_action_masking()
     self.state_representation = _read_state_representation()
     self.initialization = _read_initialization()
-    self.potential_shaping = NO_POTENTIAL_SHAPING
+    self.potential_shaping = _read_potential_shaping()
 
     representation = get_state_representation(
         self.state_representation
@@ -50,6 +55,15 @@ def setup(self) -> None:
 
     self.evaluation_decisions = 0
     self.evaluation_unseen_decisions = 0
+
+    if (
+        self.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+        and self.state_representation != "compact_decision"
+    ):
+        raise ValueError(
+            "Compact safety shaping requires the compact state representation."
+        )
 
     if MODEL_PATH.is_file():
         loaded = load_model(MODEL_PATH)
@@ -77,6 +91,9 @@ def setup(self) -> None:
                 "Configured treatment does not match the stored model: "
                 + ", ".join(mismatches)
             )
+
+        if loaded.potential_shaping != self.potential_shaping:
+            mismatches.append(POTENTIAL_SHAPING_ENV)
 
         if not mismatches:
             self.q_table = loaded.q_table
@@ -251,3 +268,20 @@ def _read_initialization() -> str:
         )
 
     return initialization
+
+
+def _read_potential_shaping() -> str:
+    """Read and validate the potential-based shaping treatment."""
+
+    mode = os.environ.get(
+        POTENTIAL_SHAPING_ENV,
+        NO_POTENTIAL_SHAPING,
+    )
+
+    if mode not in VALID_POTENTIAL_SHAPING_MODES:
+        raise ValueError(
+            f"{POTENTIAL_SHAPING_ENV} must be one of "
+            f"{list(VALID_POTENTIAL_SHAPING_MODES)}."
+        )
+
+    return mode
