@@ -222,6 +222,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertIsNone(row["mean_abs_td_error"])
         self.assertIsNone(row["target_synchronizations"])
         self.assertIsNone(row["episode_target_synchronizations"])
+        self.assertIsNone(row["total_state_visits"])
+        self.assertIsNone(row["mean_visits_per_state"])
+        self.assertIsNone(row["singleton_state_fraction"])
+        self.assertIsNone(row["evaluation_decisions"])
+        self.assertIsNone(row["evaluation_unseen_decisions"])
+        self.assertIsNone(row["evaluation_unseen_state_rate"])
 
     def test_optional_metrics_are_preserved(self) -> None:
         agent_statistics = make_agent_statistics(
@@ -236,6 +242,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
                 "mean_abs_td_error": 0.125,
                 "target_synchronizations": 3,
                 "episode_target_synchronizations": 1,
+                "total_state_visits": 100,
+                "mean_visits_per_state": 2.5,
+                "singleton_state_fraction": 0.4,
+                "evaluation_decisions": 20,
+                "evaluation_unseen_decisions": 5,
+                "evaluation_unseen_state_rate": 0.25,
             },
         )
 
@@ -258,6 +270,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(0.125, row["mean_abs_td_error"])
         self.assertEqual(3, row["target_synchronizations"])
         self.assertEqual(1, row["episode_target_synchronizations"])
+        self.assertEqual(100, row["total_state_visits"])
+        self.assertEqual(2.5, row["mean_visits_per_state"])
+        self.assertEqual(0.4, row["singleton_state_fraction"])
+        self.assertEqual(20, row["evaluation_decisions"])
+        self.assertEqual(5, row["evaluation_unseen_decisions"])
+        self.assertEqual(0.25, row["evaluation_unseen_state_rate"])
 
     def test_learning_metrics_must_be_namespaced_object(self) -> None:
         agent_statistics = make_agent_statistics(
