@@ -1,6 +1,6 @@
 # Tabular Task 2 compact state abstraction
 
-> Status: registered_pending_approval
+> Status: approved
 
 ## Metadata
 
@@ -11,7 +11,7 @@
 - Registration base: `8927781`
 - Experiment commit: `693d152412e61fbdd37ee5011336a53248569574`
 - Framework revision: `0f55c1d`
-- Approval: required before training
+- Approval: verbally approved by `1BlauNitrox` for commit `f05a3e99737646afafcf9398f27d721858052ac4`
 
 ## Research question
 
@@ -196,4 +196,3 @@ Not run.
 ## Decision
 
 Pending.
-

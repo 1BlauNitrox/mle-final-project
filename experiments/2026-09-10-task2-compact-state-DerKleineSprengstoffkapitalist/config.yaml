@@ -1,10 +1,10 @@
 schema_version: 1
 issue: 128
-status: registered_pending_approval
+status: approved
 evidence_scope: prospective_protocol
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
-reviewer: null
+reviewer: 1BlauNitrox
 
 revisions:
   registration_base: "8927781"
@@ -132,8 +132,8 @@ compute_budget:
 
 approval:
   required_before_training: true
-  approved_by: null
-  approved_commit: null
+  approved_by: 1BlauNitrox
+  approved_commit: "f05a3e99737646afafcf9398f27d721858052ac4"
 
 outputs:
   commit:
