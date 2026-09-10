@@ -59,15 +59,25 @@ def test_comparisons_pair_treatments_by_replica_and_seed() -> None:
             model = f"r{model_index + 1}"
 
             for world_seed in (1, 2):
-                rows.append(
-                    {
-                        "treatment": treatment,
-                        "model": model,
-                        "scenario": "classic",
-                        "world_seed": world_seed,
-                        "collection_fraction": collection_fraction,
-                        "self_kills": self_kills,
-                    }
+                rows.extend(
+                    [
+                        {
+                            "treatment": treatment,
+                            "model": model,
+                            "scenario": "classic",
+                            "world_seed": world_seed,
+                            "collection_fraction": collection_fraction,
+                            "self_kills": self_kills,
+                        },
+                        {
+                            "treatment": treatment,
+                            "model": model,
+                            "scenario": "coin-heaven",
+                            "world_seed": world_seed,
+                            "collection_fraction": collection_fraction,
+                            "self_kills": 0,
+                        },
+                    ]
                 )
 
     comparisons = _comparisons(rows)
@@ -77,6 +87,9 @@ def test_comparisons_pair_treatments_by_replica_and_seed() -> None:
     ]["mean_difference"] == pytest.approx(-1.0)
     assert comparisons[
         "classic_collection_candidate_minus_control"
+    ]["mean_difference"] == pytest.approx(0.25)
+    assert comparisons[
+        "coin_heaven_retention_candidate_minus_control"
     ]["mean_difference"] == pytest.approx(0.25)
 
 
@@ -98,9 +111,14 @@ def test_all_registered_criteria_can_pass() -> None:
     comparisons = {
         "classic_self_kill_candidate_minus_control": {
             "mean_difference": -0.10,
+            "ci_upper": -0.01,
         },
         "classic_collection_candidate_minus_control": {
             "mean_difference": -0.04,
+            "ci_lower": -0.04,
+        },
+        "coin_heaven_retention_candidate_minus_control": {
+            "ci_lower": 0.0,
         },
     }
 
@@ -122,7 +140,7 @@ def test_registered_safety_performance_and_reuse_failures() -> None:
             treatment,
             f"r{model_index + 1}",
             collection_fraction=(
-                0.30 if treatment == "candidate" else 0.40
+                0.0 if treatment == "candidate" else 0.40
             ),
             self_kill_rate=0.20,
         )
@@ -132,9 +150,14 @@ def test_registered_safety_performance_and_reuse_failures() -> None:
     comparisons = {
         "classic_self_kill_candidate_minus_control": {
             "mean_difference": 0.0,
+            "ci_upper": 0.05,
         },
         "classic_collection_candidate_minus_control": {
             "mean_difference": -0.10,
+            "ci_lower": -0.06,
+        },
+        "coin_heaven_retention_candidate_minus_control": {
+            "ci_lower": -0.06,
         },
     }
 
@@ -152,6 +175,11 @@ def test_registered_safety_performance_and_reuse_failures() -> None:
     assert not criteria["classic_collection_decrease_within_0_05"]
     assert not criteria[
         "mean_visits_per_state_ratio_at_least_0_90"
+    ]
+    assert not criteria["classic_self_kill_ci_upper_below_zero"]
+    assert not criteria["candidate_classic_collection_positive"]
+    assert not criteria[
+        "coin_heaven_retention_ci_lower_above_minus_0_05"
     ]
 
 
@@ -173,9 +201,14 @@ def test_determinism_and_latency_failures_are_reported() -> None:
     comparisons = {
         "classic_self_kill_candidate_minus_control": {
             "mean_difference": -0.10,
+            "ci_upper": -0.01,
         },
         "classic_collection_candidate_minus_control": {
             "mean_difference": 0.0,
+            "ci_lower": 0.0,
+        },
+        "coin_heaven_retention_candidate_minus_control": {
+            "ci_lower": 0.0,
         },
     }
 
@@ -191,3 +224,7 @@ def test_determinism_and_latency_failures_are_reported() -> None:
     assert not criteria["deterministic_repeats"]
     assert not criteria["primary_latency_within_limits"]
     assert not criteria["repeat_latency_within_limits"]
+    assert criteria["classic_self_kill_ci_upper_below_zero"]
+    assert criteria[
+        "coin_heaven_retention_ci_lower_above_minus_0_05"
+    ]

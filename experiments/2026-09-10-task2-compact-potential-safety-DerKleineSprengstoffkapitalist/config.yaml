@@ -67,9 +67,12 @@ primary_metric:
     - world_seed
 
 criteria:
-  classic_self_kill_rate_below_control: true
-  classic_collection_fraction_maximum_decrease: 0.05
+  classic_self_kill_mean_difference_below: 0.0
+  classic_self_kill_ci_upper_below: 0.0
   replicas_with_lower_self_kill_minimum: 4
+  classic_collection_retention_ci_lower_above: -0.05
+  candidate_classic_collection_mean_above: 0.0
+  coin_heaven_retention_ci_lower_above: -0.05
   mean_visits_per_state_candidate_control_ratio_minimum: 0.90
   deterministic_repeat: true
   decision_time_p95_ms_max_exclusive: 50
@@ -79,7 +82,7 @@ analysis:
   bootstrap_resamples: 10000
   safety_resampler_seed: 133
   collection_resampler_seed: 134
-  learning_resampler_seed: 135
+  coin_heaven_retention_resampler_seed: 135
 
 compute_budget:
   maximum_training_episodes: 100000
@@ -131,6 +134,9 @@ results:
     candidate_collection_fraction: 0.9905
     control_self_kill_rate: 0.0
     candidate_self_kill_rate: 0.01
+    collection_candidate_minus_control: -0.0095
+    collection_ci_lower: -0.0378
+    collection_ci_upper: 0.0
 
   loot_crate:
     control_collection_fraction: 0.224

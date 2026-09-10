@@ -110,9 +110,13 @@ world seed.
 
 Accept the candidate only if:
 
-- its aggregate `classic` self-kill rate is below control;
+- the mean paired `classic` self-kill difference is below zero;
+- the paired 95% bootstrap CI upper bound for the self-kill difference is
+  below zero;
 - at least four of five replicas have a lower self-kill rate;
-- its `classic` collection fraction is no more than `0.05` below control;
+- the `classic` collection-retention CI lower bound is above `-0.05`;
+- the candidate has a positive mean `classic` collection fraction;
+- the `coin-heaven` retention CI lower bound is above `-0.05`;
 - its mean-visits-per-state ratio relative to control is at least `0.90`;
 - all deterministic repeats match;
 - decision-time p95 is below `50 ms`;
@@ -157,7 +161,14 @@ and 1,200 deterministic-repeat evaluation episodes across both treatments.
 On `classic`, the candidate-minus-control self-kill difference was `0.010`,
 with a paired 95% bootstrap interval of `[-0.040, 0.065]`. Only replica `r3`
 had a lower self-kill rate. Replicas `r2` and `r5` were unchanged, while
-replicas `r1` and `r4` were worse. Both registered safety criteria failed.
+replicas `r1` and `r4` were worse. All three registered safety criteria
+failed: the mean difference was not below zero, the CI upper bound was not
+below zero, and fewer than four replicas improved.
+
+The candidate retained a positive mean `classic` collection fraction. Its
+`coin-heaven` candidate-minus-control difference was `-0.0095`, with a paired
+95% bootstrap interval of `[-0.0378, 0.0000]`. Both registered collection
+guards therefore passed.
 
 ### Collection performance
 

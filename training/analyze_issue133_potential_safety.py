@@ -408,6 +408,11 @@ def _comparisons(
             collection[("control", "classic")],
             resampler_seed=134,
         ).as_dict(),
+        "coin_heaven_retention_candidate_minus_control": paired_bootstrap(
+            collection[("candidate", "coin-heaven")],
+            collection[("control", "coin-heaven")],
+            resampler_seed=135,
+        ).as_dict(),
     }
 
 
@@ -427,8 +432,20 @@ def _criteria(
     collection_comparison = comparisons[
         "classic_collection_candidate_minus_control"
     ]
+    coin_heaven_comparison = comparisons[
+        "coin_heaven_retention_candidate_minus_control"
+    ]
 
     replica_self_kill_rates: dict[str, dict[str, float]] = defaultdict(dict)
+
+    candidate_classic_collection = fmean(
+        summary["mean_collection_fraction"]
+        for summary in summaries
+        if (
+            summary["treatment"] == "candidate"
+            and summary["scenario"] == "classic"
+        )
+    )
 
     for summary in summaries:
         if summary["scenario"] == "classic":
@@ -482,7 +499,7 @@ def _criteria(
             replicas_with_lower_self_kill >= 4
         ),
         "classic_collection_decrease_within_0_05": (
-            collection_comparison["mean_difference"] >= -0.05
+            collection_comparison["ci_lower"] >= -0.05
         ),
         "mean_visits_per_state_ratio_at_least_0_90": (
             mean_visits["candidate"] / mean_visits["control"] >= 0.90
@@ -490,6 +507,15 @@ def _criteria(
         "deterministic_repeats": deterministic,
         "primary_latency_within_limits": latency_ok,
         "repeat_latency_within_limits": repeat_latency_ok,
+        "classic_self_kill_ci_upper_below_zero": (
+            self_kill_comparison["ci_upper"] < 0.0
+        ),
+        "candidate_classic_collection_positive": (
+            candidate_classic_collection > 0.0
+        ),
+        "coin_heaven_retention_ci_lower_above_minus_0_05": (
+            coin_heaven_comparison["ci_lower"] > -0.05
+        ),
     }
 
 

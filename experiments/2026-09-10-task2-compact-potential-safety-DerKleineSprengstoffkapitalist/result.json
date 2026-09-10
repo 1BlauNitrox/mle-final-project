@@ -17,12 +17,24 @@
       "paired_seeds_per_model": 40,
       "resampler_seed": 133,
       "resamples": 10000
+    },
+    "coin_heaven_retention_candidate_minus_control": {
+      "ci_lower": -0.0378,
+      "ci_upper": 0.0,
+      "mean_difference": -0.0095,
+      "paired_models": 5,
+      "paired_seeds_per_model": 40,
+      "resampler_seed": 135,
+      "resamples": 10000
     }
   },
   "criteria": {
     "at_least_four_replicas_lower_self_kill": false,
+    "candidate_classic_collection_positive": true,
     "classic_collection_decrease_within_0_05": true,
+    "classic_self_kill_ci_upper_below_zero": false,
     "classic_self_kill_rate_below_control": false,
+    "coin_heaven_retention_ci_lower_above_minus_0_05": true,
     "deterministic_repeats": true,
     "mean_visits_per_state_ratio_at_least_0_90": true,
     "primary_latency_within_limits": true,
