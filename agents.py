@@ -30,6 +30,15 @@ AGENT_API = {
     }
 }
 
+OPTIONAL_CALLBACK_API = {
+    "end_of_round": [
+        "self",
+        "last_game_state: dict",
+        "last_action: str",
+        "events: List[str]",
+    ],
+}
+
 EVENT_STAT_MAP = {
     e.KILLED_OPPONENT: 'kills',
     e.KILLED_SELF: 'suicides',
@@ -285,14 +294,35 @@ class AgentRunner:
         self.fake_self.logger.addHandler(handler)
 
     def process_event(self, event_name, *event_args):
-        module_name = None
-        for module_candidate in AGENT_API:
-            if event_name in AGENT_API[module_candidate]:
-                module_name = module_candidate
-                break
-        if module_name is None:
-            raise ValueError(f"No information on event {event_name!r} is available")
-        module = getattr(self, module_name)
+        if event_name == "end_of_round" and not hasattr(self, "train"):
+            callback = getattr(self.callbacks, event_name, None)
+
+            if callback is None:
+                self.result_queue.put((event_name, 0, None))
+                return
+
+            expected_arg_count = len(OPTIONAL_CALLBACK_API[event_name])
+
+            if len(signature(callback).parameters) != expected_arg_count:
+                raise TypeError(
+                    f"Optional callback {event_name!r} has an invalid signature"
+                )
+
+            module = self.callbacks
+        else:
+            module_name = None
+
+            for module_candidate in AGENT_API:
+                if event_name in AGENT_API[module_candidate]:
+                    module_name = module_candidate
+                    break
+
+            if module_name is None:
+                raise ValueError(
+                    f"No information on event {event_name!r} is available"
+                )
+
+            module = getattr(self, module_name)
 
         try:
             self.wlogger.debug(f"Calling {event_name} on callback.")
