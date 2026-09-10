@@ -9,7 +9,10 @@ from agent_code.DerKleineSprengstoffkapitalist.config import (
     ACTION_TO_INDEX,
     ACTIONS,
 )
-from agent_code.DerKleineSprengstoffkapitalist.model import QTable
+from agent_code.DerKleineSprengstoffkapitalist.model import (
+    ZERO_INITIALIZATION,
+    QTable,
+)
 
 TEST_STATE = (
     1,
@@ -176,3 +179,123 @@ def test_unknown_action_is_rejected() -> None:
             next_state=None,
             terminal=True,
         )
+
+def test_compact_state_supports_zero_initialization() -> None:
+    compact_state = (0, 15, 2, 0, 1)
+    q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+
+    values = q_table.q_values(compact_state)
+
+    np.testing.assert_array_equal(
+        values,
+        np.zeros(len(ACTIONS)),
+    )
+    assert len(q_table) == 0
+
+
+def test_zero_initialized_compact_state_can_be_updated() -> None:
+    compact_state = (0, 15, 2, 0, 1)
+    q_table = QTable(
+        learning_rate=0.5,
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+
+    td_error = q_table.update(
+        state=compact_state,
+        action="BOMB",
+        reward=2.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    assert td_error == pytest.approx(2.0)
+    assert q_table.q_values(compact_state)[ACTION_TO_INDEX["BOMB"]] == pytest.approx(1.0)
+
+
+def test_zero_initialization_rejects_parent_values() -> None:
+    parent_values = {
+        (0,) * 8: np.zeros(5),
+    }
+
+    with pytest.raises(
+        ValueError,
+        match="cannot receive parent Q-values",
+    ):
+        QTable(
+            feature_count=5,
+            initialization=ZERO_INITIALIZATION,
+            parent_values=parent_values,
+        )
+
+
+def test_parent_prior_rejects_compact_feature_count() -> None:
+    with pytest.raises(
+        ValueError,
+        match="requires at least 8 features",
+    ):
+        QTable(feature_count=5)
+
+
+def test_q_table_rejects_wrong_configured_state_length() -> None:
+    q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="Expected 5 state values",
+    ):
+        q_table.q_values(TEST_STATE)
+
+
+def test_q_table_records_training_state_visits() -> None:
+    q_table = QTable()
+
+    q_table.update(
+        state=TEST_STATE,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+    q_table.update(
+        state=TEST_STATE,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    second_state_values = list(TEST_STATE)
+    second_state_values[0] = 0
+    second_state_values[10] = 14
+    second_state = tuple(second_state_values)
+    q_table.update(
+        state=second_state,
+        action="WAIT",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    assert q_table.total_state_visits == 3
+    assert q_table.mean_visits_per_state == pytest.approx(1.5)
+    assert q_table.singleton_state_fraction == pytest.approx(0.5)
+    assert q_table.contains_state(TEST_STATE)
+    assert q_table.contains_state(second_state)
+
+
+def test_read_only_lookup_does_not_record_state_visit() -> None:
+    q_table = QTable()
+
+    q_table.q_values(TEST_STATE)
+
+    assert q_table.total_state_visits == 0
+    assert q_table.mean_visits_per_state == pytest.approx(0.0)
+    assert q_table.singleton_state_fraction == pytest.approx(0.0)
+    assert not q_table.contains_state(TEST_STATE)

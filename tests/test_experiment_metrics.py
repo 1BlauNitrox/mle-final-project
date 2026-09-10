@@ -8,11 +8,12 @@ import tempfile
 import unittest
 from collections import defaultdict
 from pathlib import Path
+from queue import SimpleQueue
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
-from agents import _normalize_learning_metrics
-from environment import GenericWorld
+from agents import AgentRunner, _normalize_learning_metrics
+from environment import BombeRLeWorld, GenericWorld
 from training.metrics import (
     normalize_episode_rows,
     normalize_framework_statistics,
@@ -221,6 +222,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertIsNone(row["mean_abs_td_error"])
         self.assertIsNone(row["target_synchronizations"])
         self.assertIsNone(row["episode_target_synchronizations"])
+        self.assertIsNone(row["total_state_visits"])
+        self.assertIsNone(row["mean_visits_per_state"])
+        self.assertIsNone(row["singleton_state_fraction"])
+        self.assertIsNone(row["evaluation_decisions"])
+        self.assertIsNone(row["evaluation_unseen_decisions"])
+        self.assertIsNone(row["evaluation_unseen_state_rate"])
 
     def test_optional_metrics_are_preserved(self) -> None:
         agent_statistics = make_agent_statistics(
@@ -235,6 +242,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
                 "mean_abs_td_error": 0.125,
                 "target_synchronizations": 3,
                 "episode_target_synchronizations": 1,
+                "total_state_visits": 100,
+                "mean_visits_per_state": 2.5,
+                "singleton_state_fraction": 0.4,
+                "evaluation_decisions": 20,
+                "evaluation_unseen_decisions": 5,
+                "evaluation_unseen_state_rate": 0.25,
             },
         )
 
@@ -257,6 +270,12 @@ class EpisodeMetricNormalizationTests(unittest.TestCase):
         self.assertEqual(0.125, row["mean_abs_td_error"])
         self.assertEqual(3, row["target_synchronizations"])
         self.assertEqual(1, row["episode_target_synchronizations"])
+        self.assertEqual(100, row["total_state_visits"])
+        self.assertEqual(2.5, row["mean_visits_per_state"])
+        self.assertEqual(0.4, row["singleton_state_fraction"])
+        self.assertEqual(20, row["evaluation_decisions"])
+        self.assertEqual(5, row["evaluation_unseen_decisions"])
+        self.assertEqual(0.25, row["evaluation_unseen_state_rate"])
 
     def test_learning_metrics_must_be_namespaced_object(self) -> None:
         agent_statistics = make_agent_statistics(
@@ -465,6 +484,92 @@ class FrameworkStepMetricTests(unittest.TestCase):
         self.assertEqual(0, recorded["bombs_dropped"])
         self.assertEqual(0, recorded["self_kills"])
         self.assertIsInstance(recorded["initially_available_coins"], int)
+
+
+class EvaluationLearningMetricTests(unittest.TestCase):
+    def test_evaluation_metrics_are_recorded_at_round_end(self) -> None:
+        metrics = {
+            "evaluation_decisions": 4,
+            "evaluation_unseen_state_rate": 0.25,
+        }
+        agent = SimpleNamespace(
+            name="evaluation_agent",
+            train=False,
+            round_ended=Mock(return_value=metrics),
+        )
+
+        world = object.__new__(BombeRLeWorld)
+        world.round = 1
+        world.round_id = "Round 01"
+        world.agents = [agent]
+        world.active_agents = []
+        world.round_statistics = {
+            "Round 01": {
+                "agents": {
+                    "evaluation_agent": {},
+                },
+            },
+        }
+        world.args = SimpleNamespace(save_replay=False)
+        world.logger = Mock()
+
+        with patch.object(GenericWorld, "end_round"):
+            BombeRLeWorld.end_round(world)
+
+        recorded = world.round_statistics["Round 01"]["agents"][
+            "evaluation_agent"
+        ]
+
+        self.assertEqual(metrics, recorded["learning_metrics"])
+        agent.round_ended.assert_called_once_with()
+
+    def test_runner_calls_optional_evaluation_callback(self) -> None:
+        def end_of_round(
+            self,
+            last_game_state: dict | None,
+            last_action: str | None,
+            events: list[str],
+        ) -> dict[str, float]:
+            return {"evaluation_unseen_state_rate": 0.25}
+
+        runner = object.__new__(AgentRunner)
+        runner.callbacks = SimpleNamespace(end_of_round=end_of_round)
+        runner.result_queue = SimpleQueue()
+        runner.fake_self = SimpleNamespace()
+        runner.wlogger = Mock()
+
+        runner.process_event(
+            "end_of_round",
+            None,
+            None,
+            [],
+        )
+
+        event_name, _, result = runner.result_queue.get()
+
+        self.assertEqual("end_of_round", event_name)
+        self.assertEqual(
+            {"evaluation_unseen_state_rate": 0.25},
+            result,
+        )
+
+    def test_runner_allows_missing_evaluation_callback(self) -> None:
+        runner = object.__new__(AgentRunner)
+        runner.callbacks = SimpleNamespace()
+        runner.result_queue = SimpleQueue()
+
+        runner.process_event(
+            "end_of_round",
+            None,
+            None,
+            [],
+        )
+
+        event_name, duration, result = runner.result_queue.get()
+
+        self.assertEqual("end_of_round", event_name)
+        self.assertEqual(0, duration)
+        self.assertIsNone(result)
 
 
 class AgentLearningMetricInterfaceTests(unittest.TestCase):

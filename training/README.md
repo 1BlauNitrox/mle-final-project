@@ -895,6 +895,12 @@ The following agent-specific learning metrics are optional:
 | `shaped_reward` | number | Cumulative shaped reward for the episode. |
 | `epsilon` | number | Exploration probability associated with the episode. |
 | `q_table_size` | integer | Number of represented states or state-action entries, as defined by the agent. |
+| `total_state_visits` | integer | Cumulative number of Q-table state updates. |
+| `mean_visits_per_state` | number | Mean number of updates per materialized state. |
+| `singleton_state_fraction` | number | Fraction of materialized states updated exactly once. |
+| `evaluation_decisions` | integer | Number of encoded decisions during the evaluation episode. |
+| `evaluation_unseen_decisions` | integer | Evaluation decisions whose state was absent from the trained Q-table. |
+| `evaluation_unseen_state_rate` | number or empty | `evaluation_unseen_decisions / evaluation_decisions`; empty when no state was encoded. |
 | `replay_size` | integer | Number of transitions currently stored in experience replay. |
 | `update_count` | integer | Cumulative optimizer-update count. |
 | `mean_loss` | number | Mean optimizer loss for updates in the episode. |
