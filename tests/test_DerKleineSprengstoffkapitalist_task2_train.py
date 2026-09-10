@@ -35,6 +35,10 @@ from agent_code.DerKleineSprengstoffkapitalist.persistence import (
     load_model,
     save_model,
 )
+from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
+    COMPACT_SAFETY_POTENTIAL_SHAPING,
+    NO_POTENTIAL_SHAPING,
+)
 from agent_code.DerKleineSprengstoffkapitalist.rewards import (
     reward_from_events,
 )
@@ -111,6 +115,7 @@ def make_agent() -> SimpleNamespace:
         action_masking="none",
         state_representation=BASELINE_STATE_REPRESENTATION,
         initialization=PARENT_PRIOR_INITIALIZATION,
+        potential_shaping=NO_POTENTIAL_SHAPING,
     )
 
     training.setup_training(agent)
@@ -175,6 +180,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
         callbacks.INITIALIZATION_ENV,
         ZERO_INITIALIZATION,
     )
+    monkeypatch.setenv(
+        callbacks.POTENTIAL_SHAPING_ENV,
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+    )
 
     agent = SimpleNamespace(
         train=True,
@@ -188,6 +197,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
     assert agent.initialization == ZERO_INITIALIZATION
     assert agent.q_table.feature_count == 5
     assert agent.q_table.parent_values == {}
+    assert (
+        agent.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
 
     old_game_state = make_game_state(
         position=(3, 3),
@@ -227,6 +240,10 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
 
     loaded = load_model(model_path)
 
+    assert (
+        loaded.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
     assert loaded.state_representation == COMPACT_STATE_REPRESENTATION
     assert loaded.initialization == ZERO_INITIALIZATION
     assert loaded.q_table.feature_count == 5
@@ -876,3 +893,76 @@ def test_evaluation_end_of_round_returns_and_resets_coverage_metrics() -> None:
     }
     assert agent.evaluation_decisions == 0
     assert agent.evaluation_unseen_decisions == 0
+
+
+def test_apply_update_adds_non_terminal_potential_shaping() -> None:
+    safe_state = (0, 15, 1, 2, 1)
+    danger_state = (2, 1, 0, 2, 2)
+    agent = make_agent()
+    agent.q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    agent.potential_shaping = (
+        COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
+
+    training._apply_update(
+        agent,
+        state=safe_state,
+        action="WAIT",
+        reward=0.0,
+        next_state=danger_state,
+        terminal=False,
+    )
+
+    assert agent.episode_reward == pytest.approx(-0.9)
+    assert agent.q_table.q_values(safe_state)[
+        ACTIONS.index("WAIT")
+    ] == pytest.approx(-0.045)
+
+
+def test_apply_update_uses_zero_terminal_potential() -> None:
+    trapped_state = (2, 0, 0, 2, 2)
+    agent = make_agent()
+    agent.q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    agent.potential_shaping = (
+        COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
+
+    training._apply_update(
+        agent,
+        state=trapped_state,
+        action="WAIT",
+        reward=-10.0,
+        next_state=None,
+        terminal=True,
+    )
+
+    assert agent.episode_reward == pytest.approx(-8.0)
+    assert agent.q_table.q_values(trapped_state)[
+        ACTIONS.index("WAIT")
+    ] == pytest.approx(-0.4)
+
+
+def test_safety_shaping_rejects_baseline_state(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        callbacks.POTENTIAL_SHAPING_ENV,
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="requires the compact state representation",
+    ):
+        callbacks.setup(
+            SimpleNamespace(
+                train=True,
+                logger=Mock(),
+            )
+        )

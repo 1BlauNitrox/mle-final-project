@@ -85,6 +85,7 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.useful_bomb_reward == pytest.approx(1.0)
     assert first.state_representation == "baseline"
     assert first.tabular_initialization == "parent_prior"
+    assert first.potential_shaping == "none"
 
 
 def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path) -> None:
@@ -182,6 +183,17 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
             ),
             "compact_decision requires",
         ),
+        "potential shaping": (
+            lambda plan: plan.update(potential_shaping="unknown"),
+            "potential_shaping must be one of",
+        ),
+        "potential shaping representation": (
+            lambda plan: plan.update(
+                state_representation="baseline",
+                potential_shaping="compact_safety",
+            ),
+            "compact_safety potential shaping requires",
+        ),
     }
     for name, (mutate, message) in mutations.items():
         data = _plan_data()
@@ -264,6 +276,7 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_TABULAR_STATE_REPRESENTATION": "baseline",
+        "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
         "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
@@ -368,11 +381,13 @@ def test_tabular_state_treatment_can_be_selected(
     data = _plan_data()
     data["state_representation"] = "compact_decision"
     data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "compact_safety"
 
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
 
     assert plan.state_representation == "compact_decision"
     assert plan.tabular_initialization == "zeros"
+    assert plan.potential_shaping == "compact_safety"
 
 
 def test_zero_initialization_removes_only_the_initial_source_model(
