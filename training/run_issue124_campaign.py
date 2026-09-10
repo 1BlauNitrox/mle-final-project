@@ -209,12 +209,30 @@ def existing_authorization(output, reviewed_commit, resume):
     return authorization
 
 
-def execute(output, reviewed_commit, resume=False):
-    plans = validate_protocol()
-    if reviewed_commit != git("rev-parse", "HEAD") or len(reviewed_commit) != 40:
-        raise ValueError("Execution requires the exact reviewed HEAD SHA")
-    if git("status", "--porcelain"):
-        raise ValueError("Execution requires a clean worktree")
+def require_current_approval(review, reviewed_commit):
+    """Verify actual non-author reviews, including unprotected stacked bases."""
+    if review.get("headRefOid") != reviewed_commit:
+        raise ValueError("Execution SHA differs from PR #131 head")
+    latest = {}
+    for item in sorted(review.get("reviews", []), key=lambda item: item.get("submittedAt") or ""):
+        login = (item.get("author") or {}).get("login")
+        if (
+            login
+            and login != review["author"]["login"]
+            and item["state"] in {"APPROVED", "CHANGES_REQUESTED", "DISMISSED"}
+        ):
+            latest[login] = item
+    approved = any(
+        item["state"] == "APPROVED" and item.get("commit", {}).get("oid") == reviewed_commit
+        for item in latest.values()
+    )
+    if not approved or any(item["state"] == "CHANGES_REQUESTED" for item in latest.values()):
+        raise ValueError(
+            "PR #131 needs non-author approval on this exact commit; resolve change requests"
+        )
+
+
+def check_review(reviewed_commit):
     review = json.loads(
         subprocess.check_output(
             [
@@ -225,13 +243,21 @@ def execute(output, reviewed_commit, resume=False):
                 "--repo",
                 "1BlauNitrox/mle-final-project",
                 "--json",
-                "headRefOid,reviewDecision",
+                "headRefOid,author,reviews",
             ],
             text=True,
         )
     )
-    if review.get("headRefOid") != reviewed_commit or review.get("reviewDecision") != "APPROVED":
-        raise ValueError("PR #131 needs non-author approval on this exact commit")
+    require_current_approval(review, reviewed_commit)
+
+
+def execute(output, reviewed_commit, resume=False):
+    plans = validate_protocol()
+    if reviewed_commit != git("rev-parse", "HEAD") or len(reviewed_commit) != 40:
+        raise ValueError("Execution requires the exact reviewed HEAD SHA")
+    if git("status", "--porcelain"):
+        raise ValueError("Execution requires a clean worktree")
+    check_review(reviewed_commit)
     if psutil.virtual_memory().available < 4 * 1024**3:
         raise ValueError("At least 4 GiB free RAM is required before starting four workers")
     output = output.resolve()
@@ -338,11 +364,17 @@ def execute(output, reviewed_commit, resume=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--check-review", action="store_true")
     parser.add_argument("--authorize-compute", action="store_true")
     parser.add_argument("--reviewed-commit")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--output-root", type=Path, default=ROOT / "training_outputs/issue124")
     args = parser.parse_args()
+    if args.check_review:
+        if not args.reviewed_commit:
+            parser.error("--check-review requires --reviewed-commit")
+        check_review(args.reviewed_commit)
+        return
     if args.dry_run:
         plans = validate_protocol()
         print(

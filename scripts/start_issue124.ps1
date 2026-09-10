@@ -13,12 +13,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve execution SHA' }
     & $pythonPath -m training.run_issue124_campaign --dry-run
     if ($LASTEXITCODE -ne 0) { throw 'Protocol validation failed' }
-    $reviewText = gh pr view 131 --repo 1BlauNitrox/mle-final-project --json headRefOid,reviewDecision
-    if ($LASTEXITCODE -ne 0) { throw 'Cannot verify non-author review' }
-    $review = $reviewText | ConvertFrom-Json
-    if ($review.headRefOid -ne $headSha -or $review.reviewDecision -ne 'APPROVED') {
-        throw 'PR #131 requires non-author approval on this exact SHA before launch'
-    }
+    & $pythonPath -m training.run_issue124_campaign --check-review --reviewed-commit $headSha
+    if ($LASTEXITCODE -ne 0) { throw 'Exact-commit non-author review validation failed' }
     New-Item -ItemType Directory -Force -Path $outputPath | Out-Null
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
     $stdoutPath = Join-Path $outputPath "supervisor-$stamp.stdout.log"

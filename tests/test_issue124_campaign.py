@@ -12,6 +12,7 @@ from training.run_issue124_campaign import (
     LIMITS,
     LocalMonitor,
     existing_authorization,
+    require_current_approval,
     run_phases,
     sha256,
     validate_protocol,
@@ -152,3 +153,41 @@ def test_invalid_resource_evidence_is_rejected(field, value):
     record[field] = value
     with pytest.raises(ValueError):
         verify_resources(record)
+
+
+@pytest.mark.parametrize(
+    "state,commit,author,valid",
+    [
+        ("APPROVED", "head", "peer", True),
+        ("APPROVED", "old", "peer", False),
+        ("APPROVED", "head", "owner", False),
+        ("CHANGES_REQUESTED", "head", "peer", False),
+        ("DISMISSED", "head", "peer", False),
+    ],
+)
+def test_review_requires_non_author_approval_on_execution_commit(state, commit, author, valid):
+    review = {
+        "headRefOid": "head",
+        "author": {"login": "owner"},
+        "reviews": [{"state": state, "author": {"login": author}, "commit": {"oid": commit}}],
+    }
+    if valid:
+        require_current_approval(review, "head")
+        with pytest.raises(ValueError, match="differs"):
+            require_current_approval(review, "different")
+    else:
+        with pytest.raises(ValueError, match="non-author approval"):
+            require_current_approval(review, "head")
+
+
+def test_outstanding_peer_change_request_blocks_other_approval():
+    review = {
+        "headRefOid": "head",
+        "author": {"login": "owner"},
+        "reviews": [
+            {"state": "APPROVED", "author": {"login": "peer"}, "commit": {"oid": "head"}},
+            {"state": "CHANGES_REQUESTED", "author": {"login": "peer2"}},
+        ],
+    }
+    with pytest.raises(ValueError, match="non-author approval"):
+        require_current_approval(review, "head")
