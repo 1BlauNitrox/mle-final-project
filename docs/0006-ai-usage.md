@@ -116,3 +116,12 @@ peer review: "I want you to run it anyways!" Codex added a tested, opt-in
 execution exception and records it in campaign/job authorization metadata.
 This is not peer approval and does not authorize a merge. Resource limits,
 immutable source checks and analysis requirements remain unchanged.
+
+### Issue #124 owner-authorized runtime extension
+
+Julius requested longer execution on September 10 after the observed runtime
+exceeded the original estimate. Codex implemented and tested a separate,
+checksum-bound resume wrapper, preserving the immutable training source,
+original authorization and cumulative resource ledger. The extension and
+interrupted attempts are scientific deviations to disclose, not new results.
+See the experiment's `runtime-extension.md` for effective limits and commands.
