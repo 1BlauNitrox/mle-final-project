@@ -276,6 +276,35 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     }
 
 
+def test_training_only_can_resume_evaluation_without_retraining(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["replicas"] = [data["replicas"][0]]
+    data["training_stages"] = [data["training_stages"][0]]
+    data["evaluation_suites"] = [data["evaluation_suites"][0]]
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    calls = []
+
+    def fake_runner(**kwargs):
+        calls.append(kwargs["mode"])
+        directory = Path(kwargs["output_root"]) / kwargs["run_id"]
+        directory.mkdir(parents=True)
+        (directory / "metadata.json").write_text("{}")
+        artifact = run_plan.REPOSITORY_ROOT / "agent_code" / kwargs["agent"] / "model.npz"
+        if kwargs["mode"] == "training":
+            artifact.write_bytes(b"trained")
+        else:
+            assert artifact.read_bytes() == b"trained"
+        return directory
+
+    with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
+        directory = run_plan.execute_plan(plan, output_root=tmp_path / "out", training_only=True)
+        status = json.loads((directory / "status.json").read_text())
+        assert status["status"] == "training_complete"
+        assert calls == ["training"]
+        run_plan.execute_plan(plan, output_root=tmp_path / "out", resume=True)
+    assert calls == ["training", "evaluation"]
+
+
 def test_resume_rejects_every_protected_fingerprint(tmp_path: Path) -> None:
     data = _plan_data()
     data["training_stages"] = []

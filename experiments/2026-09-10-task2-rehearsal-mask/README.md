@@ -1,7 +1,8 @@
 # Escape-enabled Task 2 rehearsal and masking preparation
 
-Refs #124; prerequisite #123. **Draft, not ready to execute.** The user requested
-local Windows execution on September 10. No scientific run has started.
+Refs #124; prerequisite #123. Prospective executable protocol, awaiting
+non-author review. The user confirmed four arms, four workers, 8 GiB RAM and
+ten wall hours for local Windows execution. No scientific run has started.
 
 | Arm | Task 1 practice | Legal-action masking |
 | --- | --- | --- |
@@ -15,7 +16,7 @@ optimizer, epsilon schedule and source weights are fixed. This does not adopt
 masking: #86 rejected it; the combination with active escape inputs is a new
 hypothesis. #107's negative protected-replay result remains unchanged.
 
-## Concrete proposed matrix
+## Registered matrix
 
 Each arm has five paired replicas and twenty 500-episode blocks: 2,000
 coin-heaven, 2,000 loot-crate and 6,000 classic episodes per replica. Blocked
@@ -32,42 +33,90 @@ world/agent ranges are 324001-324040 / 424001-424040 (classic),
 325001-325040 / 425001-425040 (coin-heaven), and
 326001-326040 / 426001-426040 (loot-crate). Repeats reuse these pairs and are
 not independent observations. Frozen Task 1 and untrained migration references
-receive matching suites. Final and confirmation seeds stay unopened.
+receive matching suites. The untrained reference retains its pinned disabled
+escape setting; its five added input weights are zero. All four trained arms
+enable escape inputs. Final and confirmation seeds stay unopened.
 
-Total proposal: 200,000 training and 5,120 evaluation episodes, 400 training
+Total budget: 200,000 training and 5,120 evaluation episodes, 400 training
 stage jobs. Select only the final-budget checkpoint. The new control is a
 fresh matched run, not a claim that the reblocked curriculum equals historical
 #107 execution. The source is the committed fresh 26-input migration,
 SHA-256 `4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60`.
 
-## Decision and launch work still required
+## Prospective decision
 
-- Confirm four arms or reduce to A/B before execution, with a correspondingly
-  revised prospective budget and multiplicity family.
-- Carry every #107 absolute Task 1/2 gate unchanged. Ratify the new efficacy,
-  non-regression, multiplicity, ranking and fallback rules; implement and test
-  their analyzer before training. Existing #107 factor-specific analyzer must
-  not be run on these newly defined treatments.
-- Confirm wall/CPU/RAM ceilings and reviewer. The PC has 16 logical CPUs and
-  about 16 GiB RAM, but only about 2 GiB was free during setup. Do not assume
-  four workers fit without a fresh memory check. Proposed ceiling: four
-  workers, 8 GiB campaign RAM, ten wall hours; not yet ratified.
-- Implement a campaign-wide resource monitor and detached Windows supervisor
-  with persistent PID/status/log paths, clean reviewed SHA checks and resume
-  validation. Enforce one global worker limit; do not run all four plans with
-  four workers each. Keep scientific evaluation serial and uncontended.
-- Validate a short isolated integration smoke and all CI; obtain non-author
-  review. No training defaults or final agent artifact are replaced.
+The four primary contrasts are rehearsal B-A and D-C on coin-heaven collection,
+and masking C-A and D-B on classic collection. Each requires at least +0.10
+fractional improvement and a strictly positive 98.75% bootstrap lower bound.
+The 10-point threshold keeps the previous practical collection-effect scale;
+it is a prospective choice, not evidence that this effect will occur. Use the
+same hierarchical paired bootstrap as #107, 10,000 resamples, and a four-test
+Bonferroni efficacy family. Report 95% intervals descriptively as well.
 
-Only a dry-run command is currently valid:
+B/C additionally require all collection and survival non-regression intervals
+against A to have 95% lower bounds strictly above -0.05. D requires both
+conditional efficacies and those guards against A, B and C. Zero invalid
+actions alone never makes masking successful. Report D-B-C+A interactions
+descriptively; they do not override the decision rule.
+
+Every absolute Task 1, Task 2 and latency/determinism gate from #107 remains
+unchanged. Rank eligible treatments by overall pass, Task 2 pass, Task 1 pass,
+classic collection, lower classic self-kills, coin-heaven collection and cell
+ID. If none is eligible, choose A. Choose the third of five replicas ordered
+by classic collection and replica ID. Failing absolute gates always means an
+exploratory Task 3 predecessor. Incomplete evidence has no scientific selection.
+
+The new analyzer reuses #107's statistical primitives and absolute gates, not
+its factor-specific interpretation. It verifies registered plan bytes,
+metadata, episode counts, artifacts, repeats and resource bounds before
+returning a result. It retains per-file evidence hashes and failed attempts.
+
+## Local execution
+
+The whole campaign, including evaluations/analysis, has a ten-hour wall limit,
+a derived 40 CPU-hour ceiling and 8 GiB aggregate process RAM. One worker per
+arm trains concurrently (four total); all training completes before serial
+evaluation. The monitor includes supervisor memory and CPU. It samples every
+second and stops this campaign's workers on breach. At least 4 GiB free RAM is
+required at startup; dropping below 1 GiB system availability also stops work.
+Resource accounting and the original wall-clock deadline survive resume.
+This is not a guarantee that 200,000 episodes finish within ten hours.
+
+Use the exact approved PR #131 head in a clean, dedicated worktree. The
+launcher checks GitHub non-author approval and the exact SHA, so neither these
+commands nor the recorded user authorization bypass review. Install the
+documented requirements in a separate environment. Dry-run:
 
 ```powershell
-python -m training.run_plan training/run_plans/issue124-cell-a.yaml --dry-run
+python -m training.run_issue124_campaign --dry-run
 ```
 
-Do not omit `--dry-run`: the generic runner does not enforce the proposed
-shared campaign budget. A detached launch command will be recorded only after
-the missing runner/analyzer and resource decisions are complete.
+Detached launch from that worktree (replace the two absolute paths):
+
+```powershell
+.\scripts\start_issue124.ps1 -Python C:\path\to\.venv\Scripts\python.exe -OutputRoot C:\path\to\issue124-output
+Get-Content C:\path\to\issue124-output\campaign-status.json
+Get-Content C:\path\to\issue124-output\resources.json
+```
+
+The hidden supervisor remains independent of the invoking terminal. Timestamped
+stdout/stderr and launcher PID records live in the output directory. Keep the
+machine powered and awake; no startup command changes Windows power settings.
+For a technically interrupted run, use the same command with `-Resume` after
+checking that its previous workers have stopped. A breached ceiling cannot
+be reset through resume. Do not edit the running worktree or its environment.
+
+The supervisor writes `completed` only after analysis; failures/limits write
+`stopped_incomplete`. A complete run can still have `analysis_valid: false` or
+fail every Task 2 gate. Reproduce analysis without playing games:
+
+```powershell
+python -m training.analyze_issue124_campaign --campaign-root C:\path\to\issue124-output
+```
+
+Keep all outputs until the result is reviewed and required evidence is
+published with retrievable bytes. Do not use the generic per-plan launcher to
+bypass aggregate limits. No agent default or submitted checkpoint is replaced.
 
 ## Deadline priorities
 

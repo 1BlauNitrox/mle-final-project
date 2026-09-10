@@ -525,7 +525,7 @@ evaluation_suites:
   - 326038
   - 326039
   - 326040
-max_parallel_training: 4
+max_parallel_training: 1
 plan_id: issue124-cell-c
 replay_treatment: uniform
 replicas:

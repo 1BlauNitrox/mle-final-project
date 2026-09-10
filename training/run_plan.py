@@ -241,10 +241,13 @@ def execute_plan(
     output_root: Path,
     resume: bool = False,
     evaluation_only: bool = False,
+    training_only: bool = False,
     workspace_root: Path | None = None,
     process_monitor: Any | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if training_only and evaluation_only:
+        raise ValueError("Training-only and evaluation-only are mutually exclusive")
     if evaluation_only:
         plan = replace(
             plan,
@@ -312,7 +315,7 @@ def execute_plan(
                 future.result()
 
         for job in plan.jobs:
-            if job.kind == "evaluation":
+            if job.kind == "evaluation" and not training_only:
                 _run_job(
                     plan,
                     job,
@@ -331,7 +334,7 @@ def execute_plan(
         _discard_staging_aliases(plan)
         raise
 
-    status["status"] = "completed"
+    status["status"] = "training_complete" if training_only else "completed"
     status["error"] = None
     status["updated_at"] = _timestamp()
     _write_json_atomic(status_path, status)
