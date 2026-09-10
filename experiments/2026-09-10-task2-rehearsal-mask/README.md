@@ -4,7 +4,7 @@ Refs #124; prerequisite #123. Prospective executable protocol, awaiting
 non-author review. The user explicitly overrode the pre-training review gate
 on September 10 ("I want you to run it anyways!"). This execution-only
 exception does not approve or merge either PR. The user confirmed four arms, four workers, 8 GiB RAM and
-ten wall hours for local Windows execution. No scientific run has started.
+ten wall hours for local Windows execution. Execution started and stopped incomplete on September 10; see [INTERRUPTION.md](INTERRUPTION.md) for retained evidence and remaining work.
 
 | Arm | Task 1 practice | Legal-action masking |
 | --- | --- | --- |
@@ -75,8 +75,8 @@ returning a result. It retains per-file evidence hashes and failed attempts.
 
 ## Local execution
 
-The whole campaign, including evaluations/analysis, has a ten-hour wall limit,
-a derived 40 CPU-hour ceiling and 8 GiB aggregate process RAM. One worker per
+The original campaign authorization, including evaluations/analysis, had a ten-hour wall limit,
+a derived 40 CPU-hour ceiling and 8 GiB aggregate process RAM. The documented runtime amendment extended time to 24 wall hours / 96 CPU-hours; all memory safeguards remained active. One worker per
 arm trains concurrently (four total); all training completes before serial
 evaluation. The monitor includes supervisor memory and CPU. It samples every
 second and stops this campaign's workers on breach. At least 4 GiB free RAM is

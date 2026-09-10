@@ -133,3 +133,5 @@ on atomic resource-file replacement. A bounded retry in the separately
 versioned operational resume monitor was tested with transient, persistent
 and unrelated I/O failures. Recovery retains the original learning source,
 completed checkpoints, failed attempts and cumulative resource accounting.
+
+- September 10, Issue #124: Codex inspected retained campaign/job/resource records, invoked the registered analyzer in analysis-only mode, and documented the system-memory interruption. No scientific performance conclusion or checkpoint selection was inferred; the compact operational snapshot is committed for review.
