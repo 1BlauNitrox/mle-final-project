@@ -20,6 +20,13 @@ The full versioned feature, reward, attribution, and migration contract is in
 
 ## Parent and migration status
 
+The migration tool also accepts a 26-input Task 2 control parent whose
+`escape_continuation_features` is false. Its five neutral continuation inputs
+are removed without changing inherited Q-values; active continuation parents
+are rejected. Explicit source/output paths and a required source checksum
+prepare the verified #107 handoff without replacing the provisional artifact.
+See the #109 experiment's `PREPARATION.md` for remaining launch gates.
+
 The predecessor is provisionally the corrected Task 2 migration artifact from
 issue #85:
 

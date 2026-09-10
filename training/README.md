@@ -218,6 +218,27 @@ Example plans are in `training/run_plans/`:
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
 
+### Issue #109 Task 3 peaceful-opponent comparison
+
+Issue #109 pairs five freshly-trained Task 3 replicas (`classic` against
+`peaceful_agent`) against one frozen Task 2 predecessor evaluated on the same
+seeds, plus the standard opponent-free retention battery. A third plan against
+`coin_collector_agent` is prepared but gated on the peaceful-stage decision.
+Validate the full matrix, seed populations, and budgets without starting a run:
+
+```bash
+python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml --dry-run
+python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
+```
+
+Both provisional starting artifacts, the resource ceiling, and the numeric
+decision criteria are unresolved pending owner review and Issue #107's
+development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
+not be started until the peaceful stage's outcome is decided. Full protocol,
+rationale, and exact commands are registered in
+`experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
+integration validation only and produces no performance evidence.
+
 ### Issue #107 Task 2 factorial campaign
 
 Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1
