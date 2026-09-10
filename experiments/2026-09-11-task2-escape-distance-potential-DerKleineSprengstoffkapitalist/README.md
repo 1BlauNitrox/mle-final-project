@@ -10,7 +10,7 @@
 - Date: 2026-09-11
 - Registration base: `34c6a67`
 - Implementation commit: `3bc9411`
-- Experiment commit: pending
+- Experiment commit: `579d7878a3aaa318558b4b46560fa84e427cb6e4`
 - Framework revision: `34c6a67`
 - Approval: intermediate peer approval explicitly waived by the owner for this run
 
