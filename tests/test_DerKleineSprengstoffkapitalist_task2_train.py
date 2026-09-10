@@ -818,3 +818,61 @@ def test_callbacks_reject_state_representation_mismatch(
                 logger=Mock(),
             )
         )
+
+
+def test_evaluation_tracks_unseen_state_decisions() -> None:
+    game_state = make_game_state(
+        position=(4, 4),
+        coins=[(5, 4)],
+    )
+    state = state_to_features(game_state)
+
+    assert state is not None
+
+    q_table = QTable(parent_values={})
+    q_table.values[state] = np.zeros(len(ACTIONS))
+
+    agent = SimpleNamespace(
+        train=False,
+        q_table=q_table,
+        rng=np.random.default_rng(128),
+        epsilon=0.0,
+        action_masking="none",
+        state_representation=BASELINE_STATE_REPRESENTATION,
+        evaluation_decisions=0,
+        evaluation_unseen_decisions=0,
+    )
+
+    callbacks.act(agent, game_state)
+
+    unseen_game_state = make_game_state(
+        position=(4, 4),
+        coins=[(4, 5)],
+    )
+
+    callbacks.act(agent, unseen_game_state)
+
+    assert agent.evaluation_decisions == 2
+    assert agent.evaluation_unseen_decisions == 1
+
+
+def test_evaluation_end_of_round_returns_and_resets_coverage_metrics() -> None:
+    agent = SimpleNamespace(
+        evaluation_decisions=4,
+        evaluation_unseen_decisions=1,
+    )
+
+    metrics = callbacks.end_of_round(
+        agent,
+        None,
+        None,
+        [],
+    )
+
+    assert metrics == {
+        "evaluation_decisions": 4,
+        "evaluation_unseen_decisions": 1,
+        "evaluation_unseen_state_rate": pytest.approx(0.25),
+    }
+    assert agent.evaluation_decisions == 0
+    assert agent.evaluation_unseen_decisions == 0

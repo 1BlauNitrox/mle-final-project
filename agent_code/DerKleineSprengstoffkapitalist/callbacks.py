@@ -46,6 +46,9 @@ def setup(self) -> None:
 
     self.rng = np.random.default_rng(agent_seed)
 
+    self.evaluation_decisions = 0
+    self.evaluation_unseen_decisions = 0
+
     if MODEL_PATH.is_file():
         loaded = load_model(MODEL_PATH)
         is_fresh_model = (
@@ -123,6 +126,12 @@ def act(self, game_state: dict) -> str:
     if state is None:
         return "WAIT"
 
+    if not self.train:
+        self.evaluation_decisions += 1
+
+        if not self.q_table.contains_state(state):
+            self.evaluation_unseen_decisions += 1
+
     epsilon = self.epsilon if self.train else 0.0
 
     action_mask = (
@@ -137,6 +146,35 @@ def act(self, game_state: dict) -> str:
         rng=self.rng,
         action_mask=action_mask,
     )
+
+
+def end_of_round(
+    self,
+    last_game_state: dict | None,
+    last_action: str | None,
+    events: list[str],
+) -> dict[str, float | int | None]:
+    """Return state-coverage diagnostics for one evaluation episode."""
+
+    del last_game_state, last_action, events
+
+    decisions = self.evaluation_decisions
+    unseen_decisions = self.evaluation_unseen_decisions
+
+    metrics: dict[str, float | int | None] = {
+        "evaluation_decisions": decisions,
+        "evaluation_unseen_decisions": unseen_decisions,
+        "evaluation_unseen_state_rate": (
+            unseen_decisions / decisions
+            if decisions > 0
+            else None
+        ),
+    }
+
+    self.evaluation_decisions = 0
+    self.evaluation_unseen_decisions = 0
+
+    return metrics
 
 
 def _read_agent_seed() -> int:
