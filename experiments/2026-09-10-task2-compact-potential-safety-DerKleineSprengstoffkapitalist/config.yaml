@@ -90,8 +90,8 @@ compute_budget:
 
 approval:
   required_before_training: true
-  approved_by: pending
-  approved_commit: pending
+  approved_by: 1BlauNitrox
+  approved_commit: "d8b8148"
 
 outputs:
   commit:
