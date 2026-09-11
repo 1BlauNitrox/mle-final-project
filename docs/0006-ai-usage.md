@@ -139,3 +139,5 @@ completed checkpoints, failed attempts and cumulative resource accounting.
 - Issue #124 memory recovery: Codex implemented and tested an owner-authorized recovery from the system availability stop, preserving archived breach evidence and cumulative accounting. No scientific settings or budgets changed.
 
 - September 11, Issue #124: Codex verified the second system-memory interruption against retained statuses and ledgers, reran analysis-only validation, and documented 395 completed training blocks with zero evaluation episodes. No scientific conclusion was inferred.
+
+- September 11, Issue #124: Codex prepared the user-authorized reduced evaluation amendment and serial launcher, with pinned final artifacts, no training, unchanged evaluation suites and tests rejecting corruption/incomplete included replicas. D/r5 remains excluded and D exploratory; no outcome informed this amendment.

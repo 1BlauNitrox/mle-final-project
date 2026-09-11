@@ -1,0 +1,89 @@
+{
+  "claims": "A/B/C five-replica comparisons; no original full-matrix completion claim",
+  "decision": "Original metrics, gates and four-test correction retained; D exploratory",
+  "evaluation_episodes": 4880,
+  "excluded": "D/r5 incomplete; retain all four completed D replicas as exploratory",
+  "issue": 124,
+  "limits": {
+    "cpu_seconds": 28800,
+    "memory_bytes": 2147483648,
+    "wall_seconds": 28800
+  },
+  "owner_instruction": "Start the evaluation now",
+  "plans": [
+    {
+      "artifacts": {
+        "r1": "7288e515747516464bf57ca5dac516bb26e4d88f2c00482b42d4b4f968a3c1ae",
+        "r2": "4f078a645ac1209ab3ac3143e02d530e81e505a2fa01b3c8b89e27bc989cabe6",
+        "r3": "dbf25abf8b924ba1b6cce601755744d2abe53fe34e54f4fa03a41f2b7bd8beab",
+        "r4": "21c8c449d8f64ba0d6358ef9a75f7bc7bf906530120c442e8a324a2e16b06686",
+        "r5": "370c1a2c66aac5d9e02c5599006f8d8f3648ff987e00865daa84ad266f516a54"
+      },
+      "cell": "A",
+      "episodes": 1200,
+      "path": "A.yaml",
+      "sha256": "279b232153f4cabc4ffb156ec78dea889326f5712fb4585453acadd630daf868"
+    },
+    {
+      "artifacts": {
+        "r1": "5699c8fe6ef51027345ab6607ced0b6e887e509670ba14a1d1267e39a79d3eef",
+        "r2": "236c9a88ad9ffb5a7a57a7835611ca2dc4286b5fbd513c1e2c22cbe11f386d60",
+        "r3": "2949cab69dd1c340ff74a99f6fe37ce00230c348a02189168d93824d9d6598d3",
+        "r4": "1b62c6674acdc06d19b7f6b20617503064b8f38e6d1c437705078cf2e22558a5",
+        "r5": "b9cdd34e33214ec180e2d5d8e3be8606186ba0c920de16dc58ddd7540c2e0189"
+      },
+      "cell": "B",
+      "episodes": 1200,
+      "path": "B.yaml",
+      "sha256": "90d743284da6e1e9a552d7b0c4617e7e00a29edcc3933ee0bc2d616ffd2590a5"
+    },
+    {
+      "artifacts": {
+        "r1": "5beefe51e5e7d121b2d6d1c36c110ab0295c39e8df76c2b5e962602bc0b8befa",
+        "r2": "4fa1bc67734cb852158c9d8ae95c18a19ce8bf005919a61a9f100e235b3e0531",
+        "r3": "1244f10560747e21c8e769f84af87d110f1fd53b8635810fbde3e66a2f47571a",
+        "r4": "f79c6f2b9c0a20e56209d00d43cb3880949f5f2348f97b1be49a5c6bbc6db432",
+        "r5": "9cdc6d944490b43c38f0cf7b749018d3c810859c15737adcb244c706ae24f3c1"
+      },
+      "cell": "C",
+      "episodes": 1200,
+      "path": "C.yaml",
+      "sha256": "2c3f4b2503526cf5bfb52e97208a9fff272c3d0cb1f7e5d8e467b22cfccb416e"
+    },
+    {
+      "artifacts": {
+        "r1": "4768094f01d3aabf9bfdfaacb432ab1f12c951e1155abb65c964580b39cefd9c",
+        "r2": "88fa815568ebbd10dbb77f9aebbc92f3133992277c2477f8e6a41d6341168a2f",
+        "r3": "81d45d09b72f6f44da3b496bf77ae73ab6456e22032c264bb62dbf5c03c07682",
+        "r4": "7c841482f82f76ab1f6475d60fe4912b72abb4603a61c105fb06b281291ab338"
+      },
+      "cell": "D",
+      "episodes": 960,
+      "path": "D.yaml",
+      "sha256": "c0ef27221dbdd18837106f8466b7f55d59030b30d43781b3abf9e44efcd39f43"
+    },
+    {
+      "artifacts": {
+        "migration": "4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60"
+      },
+      "cell": "untrained",
+      "episodes": 240,
+      "path": "untrained.yaml",
+      "sha256": "86cd71d1b78980070fc5cb5ab484f62642e64137f532445c63513bbfd95f6a82"
+    },
+    {
+      "artifacts": {
+        "frozen": "eb08e3f67b620ac2a253a2af4db3d5b4c6ea9e667a2aaf1d91e3fccf4ba8b05e"
+      },
+      "cell": "frozen_task1",
+      "episodes": 80,
+      "path": "frozen_task1.yaml",
+      "sha256": "ef21cb590fa0098e742624623150a117b99e2a8c1c1777985d8a9bbed1ead929"
+    }
+  ],
+  "runner_sha256": "5f8eafebd455549d302e72152ee316e75b0e8580973820065bfab5377cce2aaa",
+  "scope": "reduced_evaluation_after_technical_interruption",
+  "source": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue124",
+  "source_resources_sha256": "b8f7daf285de288e441fa2aa88e4451b0e402124185024c50ee10b6ae37a0dd8",
+  "training_episodes": 0
+}
