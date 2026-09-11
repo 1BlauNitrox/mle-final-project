@@ -95,3 +95,5 @@ The subsequent self-review added final archive-member integrity validation
 and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
+
+- September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.

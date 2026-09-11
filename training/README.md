@@ -956,3 +956,15 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+## Issue #91 discount-horizon server comparison
+
+`python -m training.run_issue91 --prepare --output-root <new-directory>`
+binds two fresh gamma configurations to unchanged initial network weights and
+generates matched five-replica plans. `--dry-run` validates source/artifact
+fingerprints, seed inventories and matrix expansion without training.
+Scientific execution requires the reviewed clean commit, explicit authorizer
+and hardware flags, and the registered shared resource budget. Training has
+two workers; evaluation is serial and followed by `training.analyze_issue91`.
+See `experiments/2026-09-11-task2-discount-horizon/README.md` for exact commands,
+criteria and limitations; no performance improvement is claimed by this tooling.

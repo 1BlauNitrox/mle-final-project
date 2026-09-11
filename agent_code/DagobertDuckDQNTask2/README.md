@@ -495,3 +495,14 @@ Parent imports are permitted only in repository-level differential tests.
 Issue #107 is the registered prospective four-cell campaign for the escape and
 protected-replay interaction. No performance conclusion is made by this
 implementation issue.
+
+## Prospective discount-horizon comparison
+
+Issue #91 prepares a matched gamma 0.90 versus 0.97 comparison with active
+escape features and unchanged rewards, replay, masking and curriculum.
+`training.run_issue91` creates fresh separate checkpoints with identical
+network weights; no committed default or candidate is replaced. The protocol,
+server commands, safeguards and analysis are in
+`experiments/2026-09-11-task2-discount-horizon/README.md`. No scientific result
+or benefit is established by preparation. Selected Task 3 parent binding remains
+a separate decision after the full cumulative gates are evaluated.
