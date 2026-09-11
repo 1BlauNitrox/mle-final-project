@@ -1,6 +1,6 @@
 # Time-aware escape-distance potential shaping
 
-> Status: registered_execution_authorized
+> Status: completed_mixed
 
 ## Metadata
 
@@ -100,8 +100,81 @@ metrics or decision criteria.
 
 ## Results
 
-Pending execution.
+Both plans completed all 1,215 jobs. The retained evidence contains 1,200
+primary and 1,200 deterministic-repeat evaluation episodes across both
+treatments.
+
+### Safety
+
+| Scenario | No shaping | Escape-distance shaping |
+| --- | ---: | ---: |
+| `classic` | 0.055 | 0.015 |
+| `coin-heaven` | 0.000 | 0.000 |
+| `loot-crate` | 0.195 | 0.120 |
+
+The paired candidate-minus-control `classic` self-kill difference was
+`-0.040`, with a 95% nested-bootstrap interval of `[-0.085, 0.000]`. Four of
+five replicas improved (`r1`, `r2`, `r4`, `r5`); `r3` remained at zero. The
+mean and replica-count safety gates passed, but the strict CI gate failed
+because its upper bound was exactly zero rather than below zero.
+
+### Collection
+
+| Scenario | No shaping | Escape-distance shaping |
+| --- | ---: | ---: |
+| `classic` | 0.132 | 0.048 |
+| `coin-heaven` | 0.977 | 1.000 |
+| `loot-crate` | 0.172 | 0.118 |
+
+The `classic` collection difference was `-0.0839`, with a 95% interval of
+`[-0.1328, -0.0167]`. This exceeds the registered maximum loss of `0.05`, so
+the performance guard failed. Coin Heaven performance was retained, while
+Loot Crate collection also decreased.
+
+### Learning efficiency
+
+| Diagnostic | No shaping | Escape-distance shaping |
+| --- | ---: | ---: |
+| Mean materialized states | 1,075.2 | 1,067.2 |
+| Mean visits per state | 657.7 | 830.8 |
+| Mean singleton-state fraction | 0.0608 | 0.0627 |
+| Evaluation unseen-state rate | 0.0074% | 0.0051% |
+
+The mean-visits ratio was `1.263`, comfortably above the registered `0.90`
+minimum. State reuse was therefore preserved.
+
+### Reproducibility and latency
+
+All primary and repeated outcomes matched deterministically. Decision-time
+p95 passed with a worst primary value of approximately `1.70 ms`. The strict
+maximum-time gate failed because one candidate Loot Crate decision reached
+`197.68 ms`; other aggregate latency results remained well below the limit.
+
+Generated evidence:
+
+- [`summary.csv`](summary.csv);
+- [`result.json`](result.json);
+- [`figures/performance_and_safety.png`](figures/performance_and_safety.png);
+- [`figures/learning_efficiency.png`](figures/learning_efficiency.png).
 
 ## Decision
 
-Pending evaluation.
+Reject `escape_distance` shaping as the new default because three registered
+gates failed: the safety CI upper bound, Classic collection retention and
+maximum decision time.
+
+The treatment nevertheless produced the strongest safety signal observed in
+this experiment sequence: aggregate Classic self-kills fell by 72.7%, four
+replicas improved, and Loot Crate self-kills also decreased. The accompanying
+collection loss suggests that the `-5` no-route potential or the coarse
+distance buckets make the policy too conservative. A follow-up should preserve
+the time-aware progress signal while reducing its magnitude or separating bomb
+placement risk from post-placement escape progress.
+
+## AI assistance
+
+AI assistance was used for implementation, test design, experiment
+registration, execution monitoring, analysis scaffolding, plotting and result
+interpretation. All changes were validated locally with Ruff, pytest and the
+registered deterministic experiment protocol. The owner explicitly authorized
+execution without the normal intermediate approval pause.
