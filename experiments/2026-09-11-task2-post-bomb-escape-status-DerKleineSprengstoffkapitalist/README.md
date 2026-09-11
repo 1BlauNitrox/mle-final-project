@@ -10,7 +10,7 @@
 - Date: 2026-09-11
 - Registration base: `08ca233`
 - Implementation commit: `c849077e9a2782f284029edca1e3cd0705c202c1`
-- Experiment commit: pending registration commit
+- Experiment commit: `e928dc31e50177fabedc5af49ef2ff7a43f6fb01`
 - Approval: intermediate peer approval explicitly waived by the owner
 
 ## Research question and hypothesis

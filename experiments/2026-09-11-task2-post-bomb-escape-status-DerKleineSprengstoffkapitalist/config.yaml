@@ -8,7 +8,7 @@ owner: LiliWestermann
 revisions:
   registration_base: "08ca233"
   implementation_commit: "c849077e9a2782f284029edca1e3cd0705c202c1"
-  experiment_commit: pending
+  experiment_commit: "e928dc31e50177fabedc5af49ef2ff7a43f6fb01"
   framework_revision: "08ca233"
 
 treatments:
