@@ -164,6 +164,30 @@ Recompute without playing games:
 .venv/bin/python -m training.analyze_issue91 --campaign-root "$PWD/training_outputs/issue91"
 ```
 
+## Recovery from the pre-job launcher API failure
+
+The original launcher passed `training_only=True` to an API that did not yet
+support it. This failed before any training job started. The runner now supports
+training-only execution while retaining the full registered plan: evaluation
+jobs stay pending and a subsequent resume evaluates without retraining.
+The integration test exercises both phases and checks unchanged training attempts.
+
+For this exact failure only, update to the fixed reviewed commit, then run:
+
+```bash
+git pull --ff-only
+.venv/bin/python -m training.run_issue91 --recover-startup-from "$PWD/training_outputs/issue91" --output-root "$PWD/training_outputs/issue91-fixed"
+.venv/bin/python -m training.run_issue91 --dry-run --output-root "$PWD/training_outputs/issue91-fixed"
+```
+
+Use the normal launch command with `--resume` and the new `issue91-fixed` output
+root. Recovery leaves the previous folder untouched, copies the original records
+into the new folder, and carries forward the original authorization time, CPU
+usage and resource limits. It refuses existing jobs, locks, resource breaches or
+any other failure. It starts no games. Retain both folders with the result;
+`startup-recovery.json` identifies the preserved history and checksums. The code
+fix changes source fingerprints, so resuming the old prepared folder is invalid.
+
 AI assistance: Codex proposed and implemented this controlled protocol and
 verification tooling. Tests and primary/code evidence support correctness;
 only the future experiment can support an improvement claim.

@@ -156,24 +156,14 @@ def load_plan(path: Path) -> ResolvedPlan:
     useful_bomb_reward = raw.get("useful_bomb_reward", 0.0)
     state_representation = raw.get("state_representation", "baseline")
     if state_representation not in VALID_STATE_REPRESENTATIONS:
-        raise ValueError(
-            "state_representation must be one of "
-            f"{list(VALID_STATE_REPRESENTATIONS)}"
-        )
+        raise ValueError(f"state_representation must be one of {list(VALID_STATE_REPRESENTATIONS)}")
     potential_shaping = raw.get("potential_shaping", "none")
     if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
-        raise ValueError(
-            "potential_shaping must be one of "
-            f"{list(VALID_POTENTIAL_SHAPING_MODES)}"
-        )
+        raise ValueError(f"potential_shaping must be one of {list(VALID_POTENTIAL_SHAPING_MODES)}")
 
-    if (
-        potential_shaping == "compact_safety"
-        and state_representation != "compact_decision"
-    ):
+    if potential_shaping == "compact_safety" and state_representation != "compact_decision":
         raise ValueError(
-            "compact_safety potential shaping requires "
-            "state_representation=compact_decision"
+            "compact_safety potential shaping requires state_representation=compact_decision"
         )
 
     tabular_initialization = raw.get(
@@ -182,17 +172,11 @@ def load_plan(path: Path) -> ResolvedPlan:
     )
     if tabular_initialization not in VALID_TABULAR_INITIALIZATIONS:
         raise ValueError(
-            "tabular_initialization must be one of "
-            f"{list(VALID_TABULAR_INITIALIZATIONS)}"
+            f"tabular_initialization must be one of {list(VALID_TABULAR_INITIALIZATIONS)}"
         )
 
-    if (
-        state_representation == "compact_decision"
-        and tabular_initialization != "zeros"
-    ):
-        raise ValueError(
-            "compact_decision requires tabular_initialization=zeros"
-        )
+    if state_representation == "compact_decision" and tabular_initialization != "zeros":
+        raise ValueError("compact_decision requires tabular_initialization=zeros")
     if (
         isinstance(useful_bomb_reward, bool)
         or not isinstance(useful_bomb_reward, (int, float))
@@ -222,13 +206,8 @@ def load_plan(path: Path) -> ResolvedPlan:
     if not raw_replicas:
         raise ValueError("replicas must contain at least one replica")
     replicas = tuple(_parse_replica(item, plan_path.parent) for item in raw_replicas)
-    if (
-        tabular_initialization == "zeros"
-        and any(replica.parent_artifact for replica in replicas)
-    ):
-        raise ValueError(
-            "Zero initialization cannot use replica parent artifacts"
-        )
+    if tabular_initialization == "zeros" and any(replica.parent_artifact for replica in replicas):
+        raise ValueError("Zero initialization cannot use replica parent artifacts")
     _require_unique([replica.replica_id for replica in replicas], "replica IDs")
     if artifact_path is None and any(replica.parent_artifact for replica in replicas):
         raise ValueError("artifact_path is required when a parent_artifact is present")
@@ -296,10 +275,13 @@ def execute_plan(
     output_root: Path,
     resume: bool = False,
     evaluation_only: bool = False,
+    training_only: bool = False,
     workspace_root: Path | None = None,
     process_monitor: Any | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if training_only and evaluation_only:
+        raise ValueError("Training-only and evaluation-only modes are mutually exclusive")
     if evaluation_only:
         plan = replace(
             plan,
@@ -367,7 +349,7 @@ def execute_plan(
                 future.result()
 
         for job in plan.jobs:
-            if job.kind == "evaluation":
+            if job.kind == "evaluation" and not training_only:
                 _run_job(
                     plan,
                     job,
@@ -386,7 +368,7 @@ def execute_plan(
         _discard_staging_aliases(plan)
         raise
 
-    status["status"] = "completed"
+    status["status"] = "training_completed" if training_only else "completed"
     status["error"] = None
     status["updated_at"] = _timestamp()
     _write_json_atomic(status_path, status)

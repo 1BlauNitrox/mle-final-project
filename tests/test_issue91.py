@@ -102,7 +102,28 @@ def test_staged_training_and_evaluation_keep_gamma_and_parent_immutable(tmp_path
     ]
     path = tmp_path / "smoke.yaml"
     path.write_text(yaml.safe_dump(spec))
-    result = execute_plan(load_plan(path), output_root=tmp_path / "outputs")
+    import json
+
+    plan = load_plan(path)
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        execute_plan(
+            plan, output_root=tmp_path / "outputs", training_only=True, evaluation_only=True
+        )
+    result = execute_plan(plan, output_root=tmp_path / "outputs", training_only=True)
+    status = json.loads((result / "status.json").read_text())
+    assert status["status"] == "training_completed"
+    for job in plan.jobs:
+        assert status["jobs"][job.run_id]["status"] == (
+            "completed" if job.kind == "training" else "pending"
+        )
+    training_records = {
+        j.run_id: status["jobs"][j.run_id] for j in plan.jobs if j.kind == "training"
+    }
+    execute_plan(plan, output_root=tmp_path / "outputs", resume=True)
+    resumed = json.loads((result / "status.json").read_text())
+    assert resumed["status"] == "completed"
+    assert all(record["status"] == "completed" for record in resumed["jobs"].values())
+    assert all(resumed["jobs"][key] == value for key, value in training_records.items())
     loaded = load_training_checkpoint(result / "artifacts/r1/coin/checkpoint.pt")
     assert loaded.config.discount_factor == 0.97
     assert loaded.completed_episodes == 1
@@ -125,3 +146,53 @@ def test_technical_cancellation_does_not_mark_resource_budget_exhausted():
     assert stopped == [[]]
     with pytest.raises(RuntimeError, match="Technical I/O"):
         monitor.check()
+
+
+def test_startup_recovery_preserves_budget_and_rejects_existing_jobs(tmp_path, monkeypatch):
+    from training import run_issue91 as runner
+
+    old, new = tmp_path / "old", tmp_path / "new"
+    old.mkdir()
+    protocol = {"config_sha256": runner.sha(runner.CONFIG), "source_sha256": runner.SOURCE_HASH}
+    runner.write(old / "protocol.json", protocol)
+    runner.write(
+        old / "status.json",
+        {
+            "status": "stopped_incomplete",
+            "error": "execute_plan() got an unexpected keyword argument 'training_only'",
+        },
+    )
+    auth = {
+        "authorized_at": "2026-09-11T06:00:00Z",
+        "limits": vars(runner.LIMITS),
+        "protocol_sha256": runner.sha(old / "protocol.json"),
+        "reviewed_commit": "old",
+    }
+    runner.write(old / "authorization.json", auth)
+    resources = {
+        "authorized_at": auth["authorized_at"],
+        "limits": vars(runner.LIMITS),
+        "cpu_seconds_consumed": 17,
+        "active_root_pids": [],
+        "limit_reached": None,
+    }
+    runner.write(old / "resources.json", resources)
+    originals = {p.name: p.read_bytes() for p in old.iterdir()}
+
+    def prepare_stub(root):
+        root.mkdir()
+        runner.write(root / "protocol.json", dict(protocol, prepared_commit="fixed"))
+
+    monkeypatch.setattr(runner, "prepare", prepare_stub)
+    monkeypatch.setattr(runner, "git", lambda *args: "fixed")
+    runner.recover_startup(new, old)
+    assert runner.read(new / "resources.json") == resources
+    assert runner.read(new / "authorization.json")["authorized_at"] == auth["authorized_at"]
+    assert runner.read(new / "authorization.json")["reviewed_commit"] == "fixed"
+    assert {p.name: p.read_bytes() for p in old.iterdir()} == originals
+    for name, data in originals.items():
+        assert (new / "startup-failure-history" / name).read_bytes() == data
+    (old / "run-plans" / "A").mkdir(parents=True)
+    with pytest.raises(ValueError, match="existing job records"):
+        runner.recover_startup(tmp_path / "rejected", old)
+    assert not (tmp_path / "rejected").exists()

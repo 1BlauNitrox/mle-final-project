@@ -968,3 +968,9 @@ and hardware flags, and the registered shared resource budget. Training has
 two workers; evaluation is serial and followed by `training.analyze_issue91`.
 See `experiments/2026-09-11-task2-discount-horizon/README.md` for exact commands,
 criteria and limitations; no performance improvement is claimed by this tooling.
+
+The `execute_plan` Python API supports `training_only=True` for campaign phase
+separation. It retains the full resolved plan and pending evaluation jobs; resume
+without this flag evaluates after skipping completed training. It cannot be
+combined with `evaluation_only=True`. A training-only return has status
+`training_completed`, not campaign completion.

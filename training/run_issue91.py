@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import platform
+import shutil
 import subprocess
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -174,6 +175,61 @@ def prepare(root):
     write(root / "protocol.json", manifest)
     validate(root)
     return manifest
+
+
+def recover_startup(root, previous):
+    """Reprepare only the known pre-job API failure, retaining its budget ledger."""
+    root, previous = Path(root).resolve(), Path(previous).resolve()
+    if root == previous or previous in root.parents or root in previous.parents:
+        raise ValueError("Recovery directories must be separate")
+    if (previous / "campaign.lock").exists():
+        raise ValueError("Inspect existing campaign lock before recovery")
+    if (previous / "run-plans").exists() and any((previous / "run-plans").iterdir()):
+        raise ValueError("Startup recovery cannot migrate any existing job records")
+    status = read(previous / "status.json")
+    if status.get("status") != "stopped_incomplete" or status.get("error") != (
+        "execute_plan() got an unexpected keyword argument 'training_only'"
+    ):
+        raise ValueError("Recovery only supports the known pre-job training_only failure")
+    auth = read(previous / "authorization.json")
+    resources = read(previous / "resources.json")
+    protocol = read(previous / "protocol.json")
+    if auth["protocol_sha256"] != sha(previous / "protocol.json"):
+        raise ValueError("Previous protocol does not match authorization")
+    if (
+        resources.get("active_root_pids")
+        or resources.get("limit_reached")
+        or resources["limits"] != vars(LIMITS)
+        or auth["limits"] != vars(LIMITS)
+        or resources["authorized_at"] != auth["authorized_at"]
+        or protocol["config_sha256"] != sha(CONFIG)
+        or protocol["source_sha256"] != SOURCE_HASH
+    ):
+        raise ValueError("Previous resources or protocol are not eligible for startup recovery")
+    prepare(root)
+    history = root / "startup-failure-history"
+    history.mkdir()
+    for name in ("protocol.json", "authorization.json", "resources.json", "status.json"):
+        shutil.copyfile(previous / name, history / name)
+    recovered = dict(
+        auth, reviewed_commit=git("rev-parse", "HEAD"), protocol_sha256=sha(root / "protocol.json")
+    )
+    write(root / "authorization.json", recovered)
+    shutil.copyfile(previous / "resources.json", root / "resources.json")
+    write(
+        root / "startup-recovery.json",
+        {
+            "previous_output": str(previous),
+            "reason": status["error"],
+            "budget": "Original start, CPU usage, limits and failures retained",
+            "history": {
+                p.name: {"sha256": sha(p), "size_bytes": p.stat().st_size}
+                for p in history.iterdir()
+            },
+        },
+    )
+    write(root / "status.json", {"status": "prepared_recovery", "training_started": False})
+    return {"output": str(root), "resume_required": True}
 
 
 def validate(root):
@@ -364,6 +420,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--prepare", action="store_true")
+    parser.add_argument("--recover-startup-from", type=Path)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--authorize-compute", action="store_true")
@@ -371,7 +428,9 @@ def main():
     parser.add_argument("--authorized-by")
     parser.add_argument("--hardware-description")
     args = parser.parse_args()
-    if args.prepare:
+    if args.recover_startup_from:
+        print(json.dumps(recover_startup(args.output_root, args.recover_startup_from), indent=2))
+    elif args.prepare:
         print(json.dumps(prepare(args.output_root), indent=2))
     elif args.dry_run:
         plans = validate(args.output_root)

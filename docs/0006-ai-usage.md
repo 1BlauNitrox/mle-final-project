@@ -97,3 +97,10 @@ downloads and server diagnostics. This self-review does not replace approval
 by another team member.
 
 - September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.
+
+- 2026-09-11, Issue #91 / PR #136: Codex corrected the missing training-only
+  runner API after an actual server startup failure. The integration test now
+  runs both phases and verifies no repeated training. Added a tested, narrowly
+  scoped pre-job recovery preserving original resource accounting and failures.
+  Earlier green tests did not cover the campaign call; they were insufficient
+  evidence for that execution path. No scientific improvement is claimed.
