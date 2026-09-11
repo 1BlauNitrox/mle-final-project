@@ -31,7 +31,11 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
-VALID_STATE_REPRESENTATIONS = ("baseline", "compact_decision")
+VALID_STATE_REPRESENTATIONS = (
+    "baseline",
+    "compact_decision",
+    "compact_post_bomb_escape",
+)
 VALID_POTENTIAL_SHAPING_MODES = (
     "none",
     "compact_safety",
@@ -192,11 +196,11 @@ def load_plan(path: Path) -> ResolvedPlan:
         )
 
     if (
-        state_representation == "compact_decision"
+        state_representation in {"compact_decision", "compact_post_bomb_escape"}
         and tabular_initialization != "zeros"
     ):
         raise ValueError(
-            "compact_decision requires tabular_initialization=zeros"
+            "compact state representations require tabular_initialization=zeros"
         )
     if (
         isinstance(useful_bomb_reward, bool)
