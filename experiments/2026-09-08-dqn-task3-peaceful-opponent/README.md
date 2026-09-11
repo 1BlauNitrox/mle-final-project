@@ -1,9 +1,13 @@
-# Issue #109: prospective peaceful-opponent Task 3 experiment
+# Issue #109: peaceful-opponent Task 3 experiment
 
-Status: preparation only; no scientific execution or result. The user approved
-these gates and 40 development pairs per suite on 2026-09-11. Owner:
-1BlauNitrox; review requested from LiliWestermann, not yet approved. PR #120
-integrates #125 / PR #130's 39-input migration. See [SERVER.md](SERVER.md).
+Status: completed exploratory mixed/negative campaign from #91 A/r3;
+no replica selected and no automatic coin-collector continuation.
+See [RESULTS.md](RESULTS.md) for evidence, reproduction and next decisions.
+The user approved these gates and 40 development pairs per suite before
+execution on 2026-09-11. Source 0c9b0c1 was reviewed; the new result requires
+fresh peer review. Owner: 1BlauNitrox. PR #120 integrates #125 / PR #130's
+39-input migration. [SERVER.md](SERVER.md) preserves the launch procedure;
+it is not authorization to rerun or continue after this failed gate.
 
 ## Hypothesis and controls
 
@@ -34,12 +38,12 @@ The exact model contract is [0008](../../docs/0008-task-3-opponent-awareness-con
 ## Parent and scientific scope
 
 Task 2 completion is not required for this explicitly exploratory study.
-Verified historical #107 A/r2 is available now; its failed Task 2 gates remain
-explicit. The [migration record](../2026-09-10-task3-escape-migration/README.md)
-provides its durable source, SHA-256, size and producing commit. A later
-mechanically selected Task 2 checkpoint is configurable through the same
-binding command. Preserve its source/selection evidence and use a new binding
-and campaign directory; never silently replace a parent after Task 3 results.
+Historical #107 A/r2 was replaced prospectively by #91 A/r3 with the owner's
+explicit permission to use its uploaded evidence before PR #136 peer review.
+The executed binding and exact provenance are retained in [RESULTS.md](RESULTS.md).
+A later mechanically selected Task 2 checkpoint remains configurable through
+the same binding command. Preserve its source/selection evidence and use a new
+binding and campaign directory; never silently replace a parent after results.
 An exploratory pass or retention of a weak predecessor does not complete
 Task 2, #46 or #51. Frozen parent bytes are never modified.
 
@@ -123,4 +127,4 @@ sizes), and result.json (gates, intervals, summaries, resources and provenance).
 Failed raw attempts stay in the campaign directory. Publish required evidence
 durably with hashes, sizes and retrieval commands before making a result claim;
 a local path alone is not evidence. Synthetic tests and isolated smokes validate
-infrastructure only. No scientific result is in scope.
+infrastructure only. The completed scientific result is in [RESULTS.md](RESULTS.md).

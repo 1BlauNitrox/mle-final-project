@@ -1,7 +1,16 @@
 # DagobertDuckDQNTask3
 
-Status: schema-4 implementation and provisional compatibility fixture under
-#125 / PR #130. No Task 3 scientific training result is claimed.
+Status: schema-4 implementation under #125 / PR #130; the completed #109
+exploratory campaign failed the peaceful-stage gates. No trained Task 3
+replica is selected. The committed checkpoint remains a compatibility fixture.
+See the [result and durable evidence](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+
+Five 10,000-episode replicas from explicitly authorized provisional #91 A/r3
+achieved 20.5% elimination (parent 17.5%; paired improvement 95% CI
+[-12.5, 18.5] percentage points), below the required 60%. Self-kills were
+11.5%, invalid actions 6.79%, and classic collection retention failed.
+The registered decision prohibits coin-collector continuation. Runtime passed;
+this neither completes Task 2 nor establishes tournament readiness.
 
 ## Model and hypothesis
 
