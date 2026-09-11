@@ -1,6 +1,6 @@
 # Half-strength escape-distance potential shaping
 
-> Status: registered and ready to run
+> Status: completed; candidate rejected
 
 ## Metadata
 
@@ -11,6 +11,7 @@
 - Registration base: `974fa7c`
 - Implementation commit: `b46a54984d25cd4e15096eebbfa876614257590b`
 - Experiment commit: `698c031893528dfad850b82251583fcb522a47a2`
+- Analysis commit: `2c59feca1cdd9309900a3ce1b9ff5ce8116283d9`
 - Approval: intermediate peer approval explicitly waived by the owner
 
 ## Research question and hypothesis
@@ -74,11 +75,83 @@ or criteria.
 
 ## Results
 
-Pending execution.
+Both plans completed all 1,215 jobs without retries. The retained evidence
+contains 1,200 primary and 1,200 deterministic-repeat evaluation episodes.
+
+### Performance and safety
+
+| Scenario | Metric | Full strength | Half strength |
+| --- | --- | ---: | ---: |
+| Classic | Collection fraction | 0.0472 | 0.1344 |
+| Classic | Self-kill rate | 0.010 | 0.070 |
+| Coin Heaven | Collection fraction | 1.000 | 1.000 |
+| Coin Heaven | Self-kill rate | 0.000 | 0.000 |
+| Loot Crate | Collection fraction | 0.1005 | 0.1633 |
+| Loot Crate | Self-kill rate | 0.090 | 0.195 |
+
+The paired half-minus-full Classic collection difference was `+0.0872`, with
+a 95% nested-bootstrap interval of `[+0.0294, +0.1439]`. Both registered
+collection-improvement gates therefore passed.
+
+Half strength did not retain the registered historical safety guard. Its
+Classic self-kill rate was `0.070`, above the Issue #135 no-shaping reference
+of `0.055`. Replica rates were `0.050`, `0.075`, `0.050`, `0.125` and `0.050`,
+so only three of five were strictly below the historical limit.
+
+### Learning efficiency and latency
+
+| Diagnostic | Full strength | Half strength |
+| --- | ---: | ---: |
+| Mean materialized states | 1,072.2 | 1,087.8 |
+| Mean visits per state | 798.5 | 737.8 |
+| Mean singleton-state fraction | 0.0710 | 0.0601 |
+| Evaluation unseen-state rate | 0.0022% | 0.0083% |
+
+The visits-per-state ratio was `0.924`, above the registered `0.90` minimum.
+All primary and repeat outcomes matched deterministically. The worst primary
+p95 was `1.71 ms`; the largest primary decision was `10.70 ms`. Both latency
+gates passed.
+
+Committed evidence and products:
+
+- `evidence.csv`: 1,200 treatment/model/scenario/seed observations plus repeat
+  equality and latency evidence;
+- `summary.csv`: per-replica aggregates;
+- `result.json`: bootstrap result, criteria and diagnostics;
+- `figures/performance_and_safety.png`;
+- `figures/learning_efficiency.png`.
+
+Reproduce the analysis and figures with:
+
+```bash
+python -m training.analyze_issue139_half_strength \
+  --plan-root training_outputs/run-plans
+python -m training.plot_issue139_half_strength
+```
 
 ## Interpretation and decision
 
-Pending execution.
+Reject half-strength shaping as the new default because both registered safety
+criteria failed, despite a statistically supported collection improvement.
+
+The result supports a genuine strength trade-off. Halving the potential
+restored Classic collection to approximately the historical no-shaping level
+from Issue #135 and improved Loot Crate collection, but also removed the safety
+advantage and more than doubled Loot Crate self-kills relative to full
+strength. This is not evidence that half strength is globally worse: it is
+evidence that it does not satisfy the prospectively required combination of
+collection and safety.
+
+The fresh full-strength control also differed from Issue #135's full-strength
+result, which shows that point estimates remain sensitive to trained replicas
+and evaluation populations. The paired within-experiment collection result is
+therefore the defensible causal comparison; the Issue #135 no-shaping value is
+used only for the preregistered absolute guard.
+
+A further scalar interpolation such as `0.75` could continue the sweep, but a
+more informative follow-up would separate the strong penalty for having no
+complete escape route from ordinary distance-progress shaping. That isolates
+catastrophic bomb-placement risk without suppressing all productive movement.
 
 ## AI assistance
 

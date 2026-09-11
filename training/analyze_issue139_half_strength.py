@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from collections import defaultdict
@@ -45,6 +46,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []
+    evidence_rows: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
     deterministic = True
     repeat_p95_ok = True
@@ -75,10 +77,11 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                         for name in DETERMINISTIC_COLUMNS
                     ):
                         raise ValueError("Missing deterministic evidence")
-                    deterministic &= all(
+                    repeat_match = all(
                         primary.get(name) == repeat.get(name)
                         for name in DETERMINISTIC_COLUMNS
                     )
+                    deterministic &= repeat_match
                     repeat_p95_ok &= repeat["decision_time_p95_ms"] < 50
                     repeat_max_ok &= repeat["decision_time_max_ms"] < 100
                     available = primary.get("initially_available_coins")
@@ -91,6 +94,37 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
                             "model": replica,
                             "scenario": scenario,
                             "collection_fraction": primary["coins_collected"] / available,
+                        }
+                    )
+                    evidence_rows.append(
+                        {
+                            "treatment": treatment,
+                            "model": replica,
+                            "scenario": scenario,
+                            "world_seed": primary["world_seed"],
+                            "coins_collected": primary["coins_collected"],
+                            "initially_available_coins": available,
+                            "collection_fraction": primary["coins_collected"] / available,
+                            "self_kills": primary["self_kills"],
+                            "evaluation_decisions": primary["evaluation_decisions"],
+                            "evaluation_unseen_decisions": primary[
+                                "evaluation_unseen_decisions"
+                            ],
+                            "decision_time_p95_ms": primary["decision_time_p95_ms"],
+                            "decision_time_max_ms": primary["decision_time_max_ms"],
+                            "action_sequence_sha256": primary[
+                                "executed_action_sequence_sha256"
+                            ],
+                            "repeat_match": repeat_match,
+                            "repeat_decision_time_p95_ms": repeat[
+                                "decision_time_p95_ms"
+                            ],
+                            "repeat_decision_time_max_ms": repeat[
+                                "decision_time_max_ms"
+                            ],
+                            "repeat_action_sequence_sha256": repeat[
+                                "executed_action_sequence_sha256"
+                            ],
                         }
                     )
 
@@ -124,11 +158,20 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     }
     output.mkdir(parents=True, exist_ok=True)
     _write_summary(output / "summary.csv", summaries)
+    _write_evidence(output / "evidence.csv", evidence_rows)
     (output / "result.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     return result
+
+
+def _write_evidence(path: Path, rows: list[dict[str, Any]]) -> None:
+    """Write compact paired seed-level evidence for every reported claim."""
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def _classic_collection_comparison(rows: list[dict[str, Any]]) -> dict[str, Any]:
