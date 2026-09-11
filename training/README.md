@@ -245,6 +245,16 @@ rationale, and exact commands are registered in
 `experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
 integration validation only and produces no performance evidence.
 
+### Issue #137 exploratory Task 3 coin-collector continuation
+
+The separately tracked exploratory coin-collector continuation in #137 reuses
+the Task 3 launcher/analyzer with `--protocol coincollector`. Its preparation
+helper requires a verified passing peaceful result and exactly its selected
+training checkpoint. Run `python -m training.run_task3_campaign --protocol
+coincollector --dry-run` to inspect the future matrix without running a game.
+Commands and prerequisites are in
+`experiments/2026-09-11-task3-coincollector/README.md`. #51 remains unchanged.
+
 ### Issue #107 Task 2 factorial campaign
 
 Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1

@@ -53,8 +53,10 @@ Task 2 completion. The [#109 protocol](../../experiments/2026-09-08-dqn-task3-pe
 registers user-approved numerical gates, five 10,000-episode replicas, matched
 40-pair peaceful/classic/coin-heaven/loot-crate evaluations with repeats, a
 paired analyzer and guarded launcher. Fresh review and separate compute
-authorization remain required. #137 prepares exploratory coin-collector
-continuation after its peaceful decision; #51 retains its validated-parent scope.
+authorization remain required. The [#137 continuation](../../experiments/2026-09-11-task3-coincollector/README.md)
+requires the passing peaceful decision and its mechanically selected training
+checkpoint, retains both networks, and resets training state. It uses the common
+launcher/analyzer with `--protocol coincollector`; #51 retains its validated-parent scope.
 
 Unit/contract tests cover prefix equivalence, active-feature Q preservation,
 separate online/target weights, masking consistency, reward attribution,
