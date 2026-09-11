@@ -1,10 +1,15 @@
 # Escape-enabled Task 2 rehearsal and masking preparation
 
-Refs #124; prerequisite #123. Prospective executable protocol, awaiting
-non-author review. The user explicitly overrode the pre-training review gate
-on September 10 ("I want you to run it anyways!"). This execution-only
-exception does not approve or merge either PR. The user confirmed four arms, four workers, 8 GiB RAM and
-ten wall hours for local Windows execution. Execution started and stopped incomplete on September 10; see [SECOND-INTERRUPTION.md](SECOND-INTERRUPTION.md) for the current state and [INTERRUPTION.md](INTERRUPTION.md) for the first stop.
+Refs #124; prerequisite #123. The reduced laptop evaluation is complete and
+verified. See [RESULTS.md](RESULTS.md) for evidence, decisions and reproduction.
+Neither rehearsal nor masking qualifies for adoption under the registered rule;
+no DQN candidate passes cumulative Task 1/2 gates. The original full four-arm
+scope remains incomplete because D/r5 lacks five training blocks.
+
+The following matrix and decision rules are the prospectively registered design.
+The owner authorized execution on September 10; operational interruption history
+is retained separately. The [reduced amendment](REDUCED-EVALUATION.md) fixes the
+scope of the completed result before evaluation.
 
 | Arm | Task 1 practice | Legal-action masking |
 | --- | --- | --- |

@@ -146,3 +146,9 @@ completed checkpoints, failed attempts and cumulative resource accounting.
 - September 11, Issue #124: Codex prepared the user-authorized reduced evaluation amendment and serial launcher, with pinned final artifacts, no training, unchanged evaluation suites and tests rejecting corruption/incomplete included replicas. D/r5 remains excluded and D exploratory; no outcome informed this amendment.
 
 - September 11, Issue #124 evaluation extension: Codex implemented and tested explicit owner-authorized runtime limits with preserved original registration, plus process-scoped Windows wakefulness. Throughput alone informed the extension; no evaluation performance conclusions were used.
+
+- 2026-09-11, #124 / PR #131: Codex verified the returned Windows laptop evidence,
+  implemented a reduced-scope analyzer and rejection tests, retained per-episode
+  observations and final-training provenance, published checkpoint evidence, and
+  documented negative rehearsal / inconclusive masking results. No default model
+  changed and no Task 2 completion claim is made. Human review remains required.

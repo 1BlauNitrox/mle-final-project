@@ -962,3 +962,9 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.
