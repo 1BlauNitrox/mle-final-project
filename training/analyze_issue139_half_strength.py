@@ -159,11 +159,89 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
     output.mkdir(parents=True, exist_ok=True)
     _write_summary(output / "summary.csv", summaries)
     _write_evidence(output / "evidence.csv", evidence_rows)
+    _write_summary(output / "training_diagnostics.csv", diagnostics)
     (output / "result.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
     return result
+
+
+def verify_from_evidence(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
+    """Recompute the registered decision from committed compact evidence."""
+    output = Path(output).resolve()
+    with (output / "evidence.csv").open(encoding="utf-8", newline="") as handle:
+        evidence = list(csv.DictReader(handle))
+    with (output / "training_diagnostics.csv").open(
+        encoding="utf-8", newline=""
+    ) as handle:
+        diagnostics = list(csv.DictReader(handle))
+    if len(evidence) != 1200 or len(diagnostics) != 10:
+        raise ValueError("Committed evidence has an unexpected row count")
+
+    numeric_evidence = []
+    for row in evidence:
+        numeric_evidence.append(
+            {
+                **row,
+                "world_seed": int(row["world_seed"]),
+                "collection_fraction": float(row["collection_fraction"]),
+                "self_kills": int(row["self_kills"]),
+                "decision_time_p95_ms": float(row["decision_time_p95_ms"]),
+                "decision_time_max_ms": float(row["decision_time_max_ms"]),
+                "repeat_decision_time_p95_ms": float(
+                    row["repeat_decision_time_p95_ms"]
+                ),
+                "repeat_decision_time_max_ms": float(
+                    row["repeat_decision_time_max_ms"]
+                ),
+                "repeat_match": row["repeat_match"] == "True",
+            }
+        )
+    numeric_diagnostics = [
+        {
+            **row,
+            "mean_visits_per_state": float(row["mean_visits_per_state"]),
+        }
+        for row in diagnostics
+    ]
+    grouped: dict[tuple[str, str, str], list[dict[str, Any]]] = defaultdict(list)
+    for row in numeric_evidence:
+        grouped[(row["treatment"], row["model"], row["scenario"])].append(row)
+    summaries = [
+        {
+            "treatment": key[0],
+            "model": key[1],
+            "scenario": key[2],
+            "mean_collection_fraction": fmean(
+                row["collection_fraction"] for row in group
+            ),
+            "self_kill_rate": fmean(row["self_kills"] for row in group),
+            "decision_time_p95_ms": max(
+                row["decision_time_p95_ms"] for row in group
+            ),
+            "decision_time_max_ms": max(
+                row["decision_time_max_ms"] for row in group
+            ),
+        }
+        for key, group in sorted(grouped.items())
+    ]
+    comparison = _classic_collection_comparison(numeric_evidence)
+    criteria = _criteria(
+        summaries,
+        comparison,
+        numeric_diagnostics,
+        all(row["repeat_match"] for row in numeric_evidence),
+        all(row["repeat_decision_time_p95_ms"] < 50 for row in numeric_evidence),
+        all(row["repeat_decision_time_max_ms"] < 100 for row in numeric_evidence),
+    )
+    committed = _read_json(output / "result.json")
+    expected_comparison = committed["comparisons"][
+        "classic_collection_candidate_minus_control"
+    ]
+    if comparison != expected_comparison or criteria != committed["criteria"]:
+        raise ValueError("Recomputed evidence does not match committed result.json")
+    return {"comparison": comparison, "criteria": criteria, "passed": all(criteria.values())}
 
 
 def _write_evidence(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -261,13 +339,18 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plan-root", type=Path, default=PLAN_ROOT)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--verify-from-evidence", action="store_true")
     return parser.parse_args(argv)
 
 
 def main(argv: list[str] | None = None) -> int:
     arguments = parse_arguments(argv)
     try:
-        result = analyze(arguments.plan_root, arguments.output)
+        result = (
+            verify_from_evidence(arguments.output)
+            if arguments.verify_from_evidence
+            else analyze(arguments.plan_root, arguments.output)
+        )
     except Exception as error:
         print(f"Analysis failed: {error}", file=sys.stderr)
         return 1

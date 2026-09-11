@@ -116,6 +116,7 @@ Committed evidence and products:
 
 - `evidence.csv`: 1,200 treatment/model/scenario/seed observations plus repeat
   equality and latency evidence;
+- `training_diagnostics.csv`: final learning diagnostics for all ten models;
 - `summary.csv`: per-replica aggregates;
 - `result.json`: bootstrap result, criteria and diagnostics;
 - `figures/performance_and_safety.png`;
@@ -125,7 +126,7 @@ Reproduce the analysis and figures with:
 
 ```bash
 python -m training.analyze_issue139_half_strength \
-  --plan-root training_outputs/run-plans
+  --verify-from-evidence
 python -m training.plot_issue139_half_strength
 ```
 

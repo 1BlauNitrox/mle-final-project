@@ -103,7 +103,7 @@ approval:
   authorized_implementation_commit: "b46a54984d25cd4e15096eebbfa876614257590b"
 
 outputs:
-  commit: [README.md, config.yaml, evidence.csv, summary.csv, result.json, figures/]
+  commit: [README.md, config.yaml, evidence.csv, training_diagnostics.csv, summary.csv, result.json, figures/]
   external: [trained_models, resolved_plans, statuses, per_episode_evidence, evaluation_metadata]
 
 results:

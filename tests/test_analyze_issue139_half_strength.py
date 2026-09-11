@@ -7,6 +7,7 @@ import pytest
 from training.analyze_issue139_half_strength import (
     _classic_collection_comparison,
     _criteria,
+    verify_from_evidence,
 )
 
 
@@ -93,3 +94,11 @@ def test_every_registered_failure_is_reported() -> None:
     )
     assert len(criteria) == 9
     assert not any(criteria.values())
+
+
+def test_committed_evidence_reproduces_result() -> None:
+    result = verify_from_evidence()
+    assert result["comparison"]["mean_difference"] == pytest.approx(
+        0.08722222222222223
+    )
+    assert not result["passed"]
