@@ -34,6 +34,7 @@ from agent_code.DerKleineSprengstoffkapitalist.persistence import (
 )
 from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
+    ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 
@@ -345,8 +346,16 @@ def test_compact_representation_rejects_baseline_q_table(
         )
 
 
+@pytest.mark.parametrize(
+    "potential_shaping",
+    (
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+        ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    ),
+)
 def test_potential_shaping_mode_round_trip(
     tmp_path: Path,
+    potential_shaping: str,
 ) -> None:
     compact_state = (0, 15, 2, 0, 1)
     q_table = QTable(
@@ -368,13 +377,10 @@ def test_potential_shaping_mode_round_trip(
         completed_episodes=1,
         state_representation=COMPACT_STATE_REPRESENTATION,
         initialization=ZERO_INITIALIZATION,
-        potential_shaping=COMPACT_SAFETY_POTENTIAL_SHAPING,
+        potential_shaping=potential_shaping,
         path=model_path,
     )
 
     loaded = load_model(model_path)
 
-    assert (
-        loaded.potential_shaping
-        == COMPACT_SAFETY_POTENTIAL_SHAPING
-    )
+    assert loaded.potential_shaping == potential_shaping
