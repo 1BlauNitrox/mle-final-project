@@ -22,7 +22,6 @@ from .model import (
 )
 from .persistence import MODEL_PATH, load_model
 from .potential_shaping import (
-    COMPACT_SAFETY_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
     VALID_POTENTIAL_SHAPING_MODES,
 )
@@ -57,8 +56,7 @@ def setup(self) -> None:
     self.evaluation_unseen_decisions = 0
 
     if (
-        self.potential_shaping
-        == COMPACT_SAFETY_POTENTIAL_SHAPING
+        self.potential_shaping != NO_POTENTIAL_SHAPING
         and self.state_representation != "compact_decision"
     ):
         raise ValueError(
@@ -86,14 +84,14 @@ def setup(self) -> None:
         if loaded.initialization != self.initialization:
             mismatches.append(INITIALIZATION_ENV)
 
+        if loaded.potential_shaping != self.potential_shaping:
+            mismatches.append(POTENTIAL_SHAPING_ENV)
+
         if mismatches and (not is_fresh_model or not self.train):
             raise ValueError(
                 "Configured treatment does not match the stored model: "
                 + ", ".join(mismatches)
             )
-
-        if loaded.potential_shaping != self.potential_shaping:
-            mismatches.append(POTENTIAL_SHAPING_ENV)
 
         if not mismatches:
             self.q_table = loaded.q_table

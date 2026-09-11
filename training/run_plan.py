@@ -32,7 +32,12 @@ RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
 VALID_STATE_REPRESENTATIONS = ("baseline", "compact_decision")
-VALID_POTENTIAL_SHAPING_MODES = ("none", "compact_safety")
+VALID_POTENTIAL_SHAPING_MODES = (
+    "none",
+    "compact_safety",
+    "escape_distance",
+    "escape_distance_half",
+)
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
@@ -161,9 +166,13 @@ def load_plan(path: Path) -> ResolvedPlan:
     if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
         raise ValueError(f"potential_shaping must be one of {list(VALID_POTENTIAL_SHAPING_MODES)}")
 
-    if potential_shaping == "compact_safety" and state_representation != "compact_decision":
+    if (
+        potential_shaping != "none"
+        and state_representation != "compact_decision"
+    ):
         raise ValueError(
-            "compact_safety potential shaping requires state_representation=compact_decision"
+            "potential shaping requires "
+            "state_representation=compact_decision"
         )
 
     tabular_initialization = raw.get(

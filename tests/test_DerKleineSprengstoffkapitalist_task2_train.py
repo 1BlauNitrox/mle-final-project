@@ -37,6 +37,8 @@ from agent_code.DerKleineSprengstoffkapitalist.persistence import (
 )
 from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
+    ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 from agent_code.DerKleineSprengstoffkapitalist.rewards import (
@@ -948,12 +950,114 @@ def test_apply_update_uses_zero_terminal_potential() -> None:
     ] == pytest.approx(-0.4)
 
 
+def test_apply_update_adds_escape_distance_potential() -> None:
+    state = (2, 1, 0, 2, 2)
+    next_state = (2, 1, 0, 2, 2)
+    agent = make_agent()
+    agent.q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    agent.potential_shaping = ESCAPE_DISTANCE_POTENTIAL_SHAPING
+
+    training._apply_update(
+        agent,
+        state=state,
+        action="WAIT",
+        reward=0.0,
+        next_state=next_state,
+        terminal=False,
+        current_external_potential=-2.0,
+        next_external_potential=-1.0,
+    )
+
+    assert agent.episode_reward == pytest.approx(1.1)
+    assert agent.q_table.q_values(state)[
+        ACTIONS.index("WAIT")
+    ] == pytest.approx(0.055)
+
+
+def test_pending_transition_retains_escape_distance_potentials() -> None:
+    agent = make_agent()
+    agent.state_representation = COMPACT_STATE_REPRESENTATION
+    agent.initialization = ZERO_INITIALIZATION
+    agent.potential_shaping = ESCAPE_DISTANCE_POTENTIAL_SHAPING
+    agent.q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    old_game_state = make_game_state(
+        position=(4, 5),
+        bombs=[((4, 4), 3)],
+        step=1,
+    )
+    new_game_state = make_game_state(
+        position=(5, 5),
+        bombs=[((4, 4), 2)],
+        step=2,
+    )
+
+    training.game_events_occurred(
+        agent,
+        old_game_state,
+        "RIGHT",
+        new_game_state,
+        [],
+    )
+
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.current_external_potential == pytest.approx(-1.0)
+    assert agent.pending_transition.next_external_potential == pytest.approx(0.0)
+
+
+def test_pending_transition_scales_half_escape_distance_potentials() -> None:
+    agent = make_agent()
+    agent.state_representation = COMPACT_STATE_REPRESENTATION
+    agent.initialization = ZERO_INITIALIZATION
+    agent.potential_shaping = HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING
+    agent.q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    old_game_state = make_game_state(
+        position=(4, 5),
+        bombs=[((4, 4), 3)],
+        step=1,
+    )
+    new_game_state = make_game_state(
+        position=(5, 5),
+        bombs=[((4, 4), 2)],
+        step=2,
+    )
+
+    training.game_events_occurred(
+        agent,
+        old_game_state,
+        "RIGHT",
+        new_game_state,
+        [],
+    )
+
+    assert agent.pending_transition is not None
+    assert agent.pending_transition.current_external_potential == pytest.approx(-0.5)
+    assert agent.pending_transition.next_external_potential == pytest.approx(0.0)
+
+
+@pytest.mark.parametrize(
+    "potential_shaping",
+    (
+        COMPACT_SAFETY_POTENTIAL_SHAPING,
+        ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    ),
+)
 def test_safety_shaping_rejects_baseline_state(
     monkeypatch: pytest.MonkeyPatch,
+    potential_shaping: str,
 ) -> None:
     monkeypatch.setenv(
         callbacks.POTENTIAL_SHAPING_ENV,
-        COMPACT_SAFETY_POTENTIAL_SHAPING,
+        potential_shaping,
     )
 
     with pytest.raises(

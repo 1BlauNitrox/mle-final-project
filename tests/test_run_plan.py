@@ -192,7 +192,7 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
                 state_representation="baseline",
                 potential_shaping="compact_safety",
             ),
-            "compact_safety potential shaping requires",
+            "potential shaping requires",
         ),
     }
     for name, (mutate, message) in mutations.items():
@@ -381,13 +381,24 @@ def test_tabular_state_treatment_can_be_selected(
     data = _plan_data()
     data["state_representation"] = "compact_decision"
     data["tabular_initialization"] = "zeros"
-    data["potential_shaping"] = "compact_safety"
+    data["potential_shaping"] = "escape_distance"
 
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
 
     assert plan.state_representation == "compact_decision"
     assert plan.tabular_initialization == "zeros"
-    assert plan.potential_shaping == "compact_safety"
+    assert plan.potential_shaping == "escape_distance"
+
+
+def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "escape_distance_half"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.potential_shaping == "escape_distance_half"
 
 
 def test_zero_initialization_removes_only_the_initial_source_model(
