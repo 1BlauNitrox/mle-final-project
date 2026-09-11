@@ -142,6 +142,8 @@ def safe_escape_exists(
     blocked_positions: set[Position],
     bombs: list[tuple[Position, int]],
     start: Position,
+    *,
+    required_first_direction: tuple[int, int] | None = None,
 ) -> bool:
     """Return whether a genuinely safe tile is reachable without ever stepping
     onto a tile that is lethal at the time of arrival, or entering a tile
@@ -155,6 +157,36 @@ def safe_escape_exists(
     added): a bomb tile stays non-enterable until the framework actually
     removes it, including after waits and detours, not just for one step.
     """
+    return shortest_safe_escape_distance(
+        field,
+        danger_map,
+        blocked_positions,
+        bombs,
+        start,
+        required_first_direction=required_first_direction,
+        accept_safe_start=False,
+    ) is not None
+
+
+def shortest_safe_escape_distance(
+    field: np.ndarray,
+    danger_map: DangerMap,
+    blocked_positions: set[Position],
+    bombs: list[tuple[Position, int]],
+    start: Position,
+    *,
+    required_first_direction: tuple[int, int] | None = None,
+    accept_safe_start: bool = True,
+) -> int | None:
+    """Return the shortest time-aware route length to persistent safety.
+
+    The search uses the same movement, bomb-occupancy and arrival-time rules
+    as :func:`safe_escape_exists`. A safe destination is outside every
+    predicted lethal interval, rather than merely safe at one instant.
+    """
+    if accept_safe_start and start not in danger_map:
+        return 0
+
     bomb_occupied_until = _bomb_occupied_until(bombs)
     moves = (*DIRECTIONS, (0, 0))
     visited = {(start, 0)}
@@ -164,12 +196,18 @@ def safe_escape_exists(
         (x, y), elapsed = queue.popleft()
 
         if elapsed > 0 and (x, y) not in danger_map:
-            return True
+            return elapsed
 
         if elapsed >= MAX_ESCAPE_SEARCH_STEPS:
             continue
 
-        for dx, dy in moves:
+        available_moves = (
+            (required_first_direction,)
+            if elapsed == 0 and required_first_direction is not None
+            else moves
+        )
+
+        for dx, dy in available_moves:
             nx, ny = x + dx, y + dy
             is_wait = (dx, dy) == (0, 0)
 
@@ -197,7 +235,7 @@ def safe_escape_exists(
             visited.add(state)
             queue.append(state)
 
-    return False
+    return None
 
 
 def crates_destroyed_by_bomb_at(position: Position, field: np.ndarray) -> int:

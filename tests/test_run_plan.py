@@ -107,6 +107,9 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.jobs[0].world_seed != first.jobs[2].world_seed
     assert first.jobs[0].agent_seed != first.jobs[2].agent_seed
     assert first.useful_bomb_reward == pytest.approx(1.0)
+    assert first.state_representation == "baseline"
+    assert first.tabular_initialization == "parent_prior"
+    assert first.potential_shaping == "none"
 
 
 def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path) -> None:
@@ -189,6 +192,32 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
             lambda plan: plan.update(escape_continuations="invalid"),
             "escape_continuations",
         ),
+                "state representation": (
+            lambda plan: plan.update(state_representation="unknown"),
+            "state_representation must be one of",
+        ),
+        "tabular initialization": (
+            lambda plan: plan.update(tabular_initialization="unknown"),
+            "tabular_initialization must be one of",
+        ),
+        "compact parent prior": (
+            lambda plan: plan.update(
+                state_representation="compact_decision",
+                tabular_initialization="parent_prior",
+            ),
+            "compact_decision requires",
+        ),
+        "potential shaping": (
+            lambda plan: plan.update(potential_shaping="unknown"),
+            "potential_shaping must be one of",
+        ),
+        "potential shaping representation": (
+            lambda plan: plan.update(
+                state_representation="baseline",
+                potential_shaping="compact_safety",
+            ),
+            "potential shaping requires",
+        ),
     }
     for name, (mutate, message) in mutations.items():
         data = _plan_data()
@@ -270,6 +299,9 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": "1.0",
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
+        "BOMBERMAN_TABULAR_STATE_REPRESENTATION": "baseline",
+        "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
+        "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
@@ -394,3 +426,89 @@ def test_existing_single_run_accepts_deterministic_id_and_plan_metadata(
     metadata = json.loads((directory / "metadata.json").read_text())
     assert directory.name == "attempt-001"
     assert metadata["run_plan"] == {"job_id": "example"}
+
+
+def test_tabular_state_treatment_can_be_selected(
+    tmp_path: Path,
+) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "escape_distance"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.state_representation == "compact_decision"
+    assert plan.tabular_initialization == "zeros"
+    assert plan.potential_shaping == "escape_distance"
+
+
+def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "escape_distance_half"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.potential_shaping == "escape_distance_half"
+
+
+def test_zero_initialization_removes_only_the_initial_source_model(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    base_plan = run_plan.load_plan(
+        _write_plan(tmp_path / "plan", _plan_data())
+    )
+    plan = replace(
+        base_plan,
+        tabular_initialization="zeros",
+    )
+    replica = plan.replicas[0]
+
+    fake_repository = tmp_path / "repository"
+    source_agent = (
+        fake_repository
+        / "agent_code"
+        / plan.agent
+    )
+    source_agent.mkdir(parents=True)
+    (source_agent / "callbacks.py").write_text(
+        "# test agent\n",
+        encoding="utf-8",
+    )
+    (source_agent / "model.npz").write_bytes(b"checked-in model")
+
+    monkeypatch.setattr(
+        run_plan,
+        "REPOSITORY_ROOT",
+        fake_repository,
+    )
+
+    plan_directory = tmp_path / "outputs" / plan.plan_id
+
+    first_alias = run_plan._prepare_replica_workspace(
+        plan,
+        replica,
+        plan_directory,
+    )
+    workspace = run_plan._workspace_directory(
+        plan_directory,
+        replica.replica_id,
+    )
+
+    assert not (workspace / "model.npz").exists()
+    assert not (first_alias / "model.npz").exists()
+
+    # Simulate the model created by the first completed training stage.
+    (workspace / "model.npz").write_bytes(b"trained model")
+
+    second_alias = run_plan._prepare_replica_workspace(
+        plan,
+        replica,
+        plan_directory,
+    )
+
+    assert (workspace / "model.npz").read_bytes() == b"trained model"
+    assert (second_alias / "model.npz").read_bytes() == b"trained model"

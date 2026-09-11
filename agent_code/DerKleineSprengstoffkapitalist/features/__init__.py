@@ -10,6 +10,14 @@ from .assemble import (
     state_to_features,
     validate_features,
 )
+from .representations import (
+    BASELINE_STATE_REPRESENTATION,
+    COMPACT_STATE_REPRESENTATION,
+    VALID_STATE_REPRESENTATIONS,
+    StateRepresentation,
+    encode_state,
+    get_state_representation,
+)
 
 __all__ = [
     "FEATURE_COUNT",
@@ -20,4 +28,10 @@ __all__ = [
     "StateFeatures",
     "state_to_features",
     "validate_features",
+    "BASELINE_STATE_REPRESENTATION",
+    "COMPACT_STATE_REPRESENTATION",
+    "VALID_STATE_REPRESENTATIONS",
+    "StateRepresentation",
+    "encode_state",
+    "get_state_representation",
 ]

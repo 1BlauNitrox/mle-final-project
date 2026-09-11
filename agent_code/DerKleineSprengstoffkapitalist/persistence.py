@@ -13,19 +13,29 @@ import numpy as np
 
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON, REWARDS
 from .features import (
-    FEATURE_COUNT,
-    FEATURE_SCHEMA_VERSION,
+    BASELINE_STATE_REPRESENTATION,
     StateFeatures,
-    validate_features,
+    get_state_representation,
 )
 from .migration import (
     EXPECTED_PARENT_SHA256,
     PARENT_MODEL_PATH,
     load_parent_prior,
 )
-from .model import BOMB_PRIOR_MARGIN, QTable
+from .model import (
+    BOMB_PRIOR_MARGIN,
+    PARENT_PRIOR_INITIALIZATION,
+    VALID_INITIALIZATIONS,
+    QTable,
+)
+from .potential_shaping import (
+    NO_POTENTIAL_SHAPING,
+    VALID_POTENTIAL_SHAPING_MODES,
+)
 
-MODEL_SCHEMA_VERSION = 3
+MODEL_SCHEMA_VERSION = 5
+LEGACY_MODEL_SCHEMA_VERSION = 3
+PREVIOUS_MODEL_SCHEMA_VERSION = 4
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -39,6 +49,9 @@ class LoadedModel:
     parent_model_sha256: str
     useful_bomb_reward: float
     action_masking: str
+    state_representation: str
+    initialization: str
+    potential_shaping: str
 
 
 def save_model(
@@ -48,6 +61,9 @@ def save_model(
     completed_episodes: int,
     useful_bomb_reward: float = 0.0,
     action_masking: str = "none",
+    state_representation: str = BASELINE_STATE_REPRESENTATION,
+    initialization: str = PARENT_PRIOR_INITIALIZATION,
+    potential_shaping: str = NO_POTENTIAL_SHAPING,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -65,13 +81,37 @@ def save_model(
     if action_masking not in {"none", "framework_legal"}:
         raise ValueError("Invalid action-masking mode.")
 
+    representation = get_state_representation(state_representation)
+
+    if initialization not in VALID_INITIALIZATIONS:
+        raise ValueError("Invalid Q-table initialization mode.")
+
+    if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
+        raise ValueError("Invalid potential-shaping mode.")
+
+    if q_table.feature_count != representation.feature_count:
+        raise ValueError(
+            "Q-table feature count does not match the state representation."
+        )
+
+    if q_table.initialization != initialization:
+        raise ValueError(
+            "Q-table initialization does not match the stored mode."
+        )
+
     parent_prior = load_parent_prior(parent_path)
-    states, q_values = _serialize_q_table(q_table)
+    states, q_values, visit_counts = _serialize_q_table(
+        q_table,
+        representation=state_representation,
+    )
 
     metadata = {
         "model_schema_version": MODEL_SCHEMA_VERSION,
-        "feature_schema_version": FEATURE_SCHEMA_VERSION,
-        "feature_count": FEATURE_COUNT,
+        "feature_schema_version": representation.feature_schema_version,
+        "feature_count": representation.feature_count,
+        "state_representation": state_representation,
+        "initialization": initialization,
+        "potential_shaping": potential_shaping,
         "actions": list(ACTIONS),
         "learning_rate": q_table.learning_rate,
         "discount_factor": q_table.discount_factor,
@@ -106,6 +146,7 @@ def save_model(
                 states=states,
                 q_values=q_values,
                 metadata=np.array(json.dumps(metadata, sort_keys=True)),
+                visit_counts=visit_counts,
             )
 
             temporary_file.flush()
@@ -136,27 +177,78 @@ def load_model(
 
     try:
         with np.load(path, allow_pickle=False) as archive:
-            required_entries = {
+            legacy_entries = {
                 "states",
                 "q_values",
                 "metadata",
             }
+            current_entries = {
+                *legacy_entries,
+                "visit_counts",
+            }
 
-            if set(archive.files) != required_entries:
+            if set(archive.files) not in (
+                legacy_entries,
+                current_entries,
+            ):
                 raise ValueError("Model archive has unexpected entries")
 
             raw_states = np.asarray(archive["states"]).copy()
 
             raw_q_values = np.asarray(archive["q_values"]).copy()
 
+            raw_visit_counts = (
+                np.asarray(archive["visit_counts"]).copy()
+                if "visit_counts" in archive.files
+                else None
+            )
+
             metadata_text = str(archive["metadata"].item())
 
         metadata = json.loads(metadata_text)
+        stored_model_schema_version = metadata.get(
+            "model_schema_version"
+        )
+
+        if (
+            stored_model_schema_version == MODEL_SCHEMA_VERSION
+            and raw_visit_counts is None
+        ):
+            raise ValueError(
+                "Current model archive is missing visit counts"
+            )
+
+        if raw_visit_counts is None:
+            raw_visit_counts = np.zeros(
+                raw_states.shape[0],
+                dtype=np.int64,
+            )
         if "useful_bomb_reward" not in metadata:
             metadata = {**metadata, "useful_bomb_reward": 0.0}
 
         if "action_masking" not in metadata:
             metadata = {**metadata, "action_masking": "none"}
+
+        if "potential_shaping" not in metadata:
+            metadata = {
+                **metadata,
+                "potential_shaping": NO_POTENTIAL_SHAPING,
+            }
+
+        stored_schema_version = metadata.get("model_schema_version")
+
+        if stored_schema_version == LEGACY_MODEL_SCHEMA_VERSION:
+            metadata = {
+                **metadata,
+                "model_schema_version": MODEL_SCHEMA_VERSION,
+                "state_representation": BASELINE_STATE_REPRESENTATION,
+                "initialization": PARENT_PRIOR_INITIALIZATION,
+            }
+        elif stored_schema_version == PREVIOUS_MODEL_SCHEMA_VERSION:
+            metadata = {
+                **metadata,
+                "model_schema_version": MODEL_SCHEMA_VERSION,
+            }
 
     except (
         OSError,
@@ -168,7 +260,17 @@ def load_model(
         raise ValueError(f"Could not load model archive: {path}") from error
 
     _validate_metadata(metadata)
-    _validate_raw_arrays(raw_states, raw_q_values)
+
+    state_representation = str(metadata["state_representation"])
+    initialization = str(metadata["initialization"])
+    representation = get_state_representation(state_representation)
+
+    _validate_raw_arrays(
+        raw_states,
+        raw_q_values,
+        representation=state_representation,
+        visit_counts=raw_visit_counts,
+    )
 
     parent_prior = load_parent_prior(
         parent_path,
@@ -181,12 +283,19 @@ def load_model(
     q_table = QTable(
         learning_rate=float(metadata["learning_rate"]),
         discount_factor=float(metadata["discount_factor"]),
-        parent_values=parent_prior.values,
+        parent_values=(
+            parent_prior.values
+            if initialization == PARENT_PRIOR_INITIALIZATION
+            else None
+        ),
+        feature_count=representation.feature_count,
+        initialization=initialization,
     )
 
-    for state_row, value_row in zip(
+    for state_row, value_row, visit_count in zip(
         states,
         q_values,
+        raw_visit_counts,
         strict=True,
     ):
         state: StateFeatures = tuple(int(value) for value in state_row)
@@ -195,6 +304,7 @@ def load_model(
             raise ValueError("Model contains a duplicate Task 2 state")
 
         q_table.values[state] = value_row.copy()
+        q_table.visit_counts[state] = int(visit_count)
 
     return LoadedModel(
         q_table=q_table,
@@ -203,33 +313,50 @@ def load_model(
         parent_model_sha256=parent_prior.sha256,
         useful_bomb_reward=float(metadata["useful_bomb_reward"]),
         action_masking=str(metadata["action_masking"]),
+        state_representation=state_representation,
+        initialization=initialization,
+        potential_shaping=str(metadata["potential_shaping"]),
     )
 
 
 def _serialize_q_table(
     q_table: QTable,
-) -> tuple[np.ndarray, np.ndarray]:
-    """Serialize only materialized Task 2 states."""
+    *,
+    representation: str,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Serialize materialized Task 2 states and their visit counts."""
 
+    representation_contract = get_state_representation(representation)
     ordered_entries = sorted(q_table.values.items())
+
+    unknown_visit_states = (
+        set(q_table.visit_counts)
+        - set(q_table.values)
+    )
+    if unknown_visit_states:
+        raise ValueError(
+            "Visit counts contain states missing from the Q-table"
+        )
 
     if not ordered_entries:
         return (
             np.empty(
-                (0, FEATURE_COUNT),
+                (0, representation_contract.feature_count),
                 dtype=np.int64,
             ),
             np.empty(
                 (0, len(ACTIONS)),
                 dtype=np.float64,
             ),
+            np.empty((0,), dtype=np.int64),
         )
 
     states: list[StateFeatures] = []
     q_values: list[np.ndarray] = []
+    visit_counts: list[int] = []
 
     for state, values in ordered_entries:
-        validate_features(state)
+        representation_contract.validate(state)
 
         value_array = np.asarray(values, dtype=np.float64)
 
@@ -239,25 +366,39 @@ def _serialize_q_table(
         if not np.all(np.isfinite(value_array)):
             raise ValueError("Q-values must be finite")
 
+        visit_count = q_table.visit_counts.get(state, 0)
+
+        if type(visit_count) is not int or visit_count < 0:
+            raise ValueError(
+                "State visit counts must be non-negative integers"
+            )
+
         states.append(state)
         q_values.append(value_array)
+        visit_counts.append(visit_count)
 
     return (
         np.asarray(states, dtype=np.int64),
         np.asarray(q_values, dtype=np.float64),
+        np.asarray(visit_counts, dtype=np.int64),
     )
 
 
 def _validate_raw_arrays(
     states: np.ndarray,
     q_values: np.ndarray,
+    *,
+    representation: str,
+    visit_counts: np.ndarray,
 ) -> None:
     """Validate arrays before converting their dtypes."""
+
+    representation_contract = get_state_representation(representation)
 
     if states.ndim != 2:
         raise ValueError("Model states must be two-dimensional")
 
-    if states.shape[1] != FEATURE_COUNT:
+    if states.shape[1] != representation_contract.feature_count:
         raise ValueError("Model states have an incompatible feature count")
 
     if q_values.ndim != 2:
@@ -270,6 +411,24 @@ def _validate_raw_arrays(
 
     if q_values.shape != expected_q_shape:
         raise ValueError("Model Q-values have an incompatible shape")
+
+    if visit_counts.ndim != 1:
+        raise ValueError("Model visit counts must be one-dimensional")
+
+    if visit_counts.shape != (states.shape[0],):
+        raise ValueError("Model visit counts have an incompatible shape")
+
+    if not np.issubdtype(visit_counts.dtype, np.number):
+        raise ValueError("Model visit counts must be numeric")
+
+    if not np.all(np.isfinite(visit_counts)):
+        raise ValueError("Model visit counts must be finite")
+
+    if not np.all(visit_counts == np.floor(visit_counts)):
+        raise ValueError("Model visit counts must be integral")
+
+    if np.any(visit_counts < 0):
+        raise ValueError("Model visit counts must be non-negative")
 
     if not np.issubdtype(states.dtype, np.number):
         raise ValueError("Model states must be numeric")
@@ -287,7 +446,7 @@ def _validate_raw_arrays(
 
     for state_row in integer_states:
         state: StateFeatures = tuple(int(value) for value in state_row)
-        validate_features(state)
+        representation_contract.validate(state)
 
 
 def _validate_metadata(metadata: Any) -> None:
@@ -303,6 +462,8 @@ def _validate_metadata(metadata: Any) -> None:
         "model_schema_version",
         "feature_schema_version",
         "feature_count",
+        "state_representation",
+        "initialization",
         "actions",
         "learning_rate",
         "discount_factor",
@@ -315,7 +476,14 @@ def _validate_metadata(metadata: Any) -> None:
         "bomb_prior_margin",
         "useful_bomb_reward",
         "action_masking",
+        "potential_shaping",
     }
+
+    if (
+        metadata["potential_shaping"]
+        not in VALID_POTENTIAL_SHAPING_MODES
+    ):
+        raise ValueError("Stored potential-shaping mode is invalid")
 
     if metadata["action_masking"] not in {"none", "framework_legal"}:
         raise ValueError("Stored action-masking mode is invalid")
@@ -323,10 +491,20 @@ def _validate_metadata(metadata: Any) -> None:
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")
 
-    if metadata["feature_schema_version"] != FEATURE_SCHEMA_VERSION:
+    representation = get_state_representation(
+        str(metadata["state_representation"])
+    )
+
+    if metadata["initialization"] not in VALID_INITIALIZATIONS:
+        raise ValueError("Stored Q-table initialization mode is invalid")
+
+    if (
+        metadata["feature_schema_version"]
+        != representation.feature_schema_version
+    ):
         raise ValueError("Feature schema version mismatch")
 
-    if metadata["feature_count"] != FEATURE_COUNT:
+    if metadata["feature_count"] != representation.feature_count:
         raise ValueError("Feature count mismatch")
 
     if metadata["actions"] != list(ACTIONS):

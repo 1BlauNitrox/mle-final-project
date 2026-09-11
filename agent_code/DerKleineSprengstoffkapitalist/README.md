@@ -308,5 +308,13 @@ The agent still:
 
 Potential-based reward shaping and further reward tuning must be evaluated as
 separate controlled experiments.
+
+Issue #135 found that full-strength time-aware escape-distance shaping reduced
+Classic self-kills but caused an unacceptable collection loss. Issue #139 then
+tested half strength against a newly trained full-strength control. Half
+strength significantly improved Classic collection but failed the registered
+safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
+limit), so neither escape-distance treatment is the default. Both modes remain
+available for reproducibility of the experiment lineage.
 - retains inherited non-potential-based movement shaping;
 - can select actions that are framework-legal but tactically unsafe.
