@@ -28,9 +28,14 @@ from .model import (
     VALID_INITIALIZATIONS,
     QTable,
 )
+from .potential_shaping import (
+    NO_POTENTIAL_SHAPING,
+    VALID_POTENTIAL_SHAPING_MODES,
+)
 
-MODEL_SCHEMA_VERSION = 4
+MODEL_SCHEMA_VERSION = 5
 LEGACY_MODEL_SCHEMA_VERSION = 3
+PREVIOUS_MODEL_SCHEMA_VERSION = 4
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -46,6 +51,7 @@ class LoadedModel:
     action_masking: str
     state_representation: str
     initialization: str
+    potential_shaping: str
 
 
 def save_model(
@@ -57,6 +63,7 @@ def save_model(
     action_masking: str = "none",
     state_representation: str = BASELINE_STATE_REPRESENTATION,
     initialization: str = PARENT_PRIOR_INITIALIZATION,
+    potential_shaping: str = NO_POTENTIAL_SHAPING,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -78,6 +85,9 @@ def save_model(
 
     if initialization not in VALID_INITIALIZATIONS:
         raise ValueError("Invalid Q-table initialization mode.")
+
+    if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
+        raise ValueError("Invalid potential-shaping mode.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -101,6 +111,7 @@ def save_model(
         "feature_count": representation.feature_count,
         "state_representation": state_representation,
         "initialization": initialization,
+        "potential_shaping": potential_shaping,
         "actions": list(ACTIONS),
         "learning_rate": q_table.learning_rate,
         "discount_factor": q_table.discount_factor,
@@ -218,12 +229,25 @@ def load_model(
         if "action_masking" not in metadata:
             metadata = {**metadata, "action_masking": "none"}
 
-        if metadata.get("model_schema_version") == LEGACY_MODEL_SCHEMA_VERSION:
+        if "potential_shaping" not in metadata:
+            metadata = {
+                **metadata,
+                "potential_shaping": NO_POTENTIAL_SHAPING,
+            }
+
+        stored_schema_version = metadata.get("model_schema_version")
+
+        if stored_schema_version == LEGACY_MODEL_SCHEMA_VERSION:
             metadata = {
                 **metadata,
                 "model_schema_version": MODEL_SCHEMA_VERSION,
                 "state_representation": BASELINE_STATE_REPRESENTATION,
                 "initialization": PARENT_PRIOR_INITIALIZATION,
+            }
+        elif stored_schema_version == PREVIOUS_MODEL_SCHEMA_VERSION:
+            metadata = {
+                **metadata,
+                "model_schema_version": MODEL_SCHEMA_VERSION,
             }
 
     except (
@@ -291,6 +315,7 @@ def load_model(
         action_masking=str(metadata["action_masking"]),
         state_representation=state_representation,
         initialization=initialization,
+        potential_shaping=str(metadata["potential_shaping"]),
     )
 
 
@@ -451,7 +476,14 @@ def _validate_metadata(metadata: Any) -> None:
         "bomb_prior_margin",
         "useful_bomb_reward",
         "action_masking",
+        "potential_shaping",
     }
+
+    if (
+        metadata["potential_shaping"]
+        not in VALID_POTENTIAL_SHAPING_MODES
+    ):
+        raise ValueError("Stored potential-shaping mode is invalid")
 
     if metadata["action_masking"] not in {"none", "framework_legal"}:
         raise ValueError("Stored action-masking mode is invalid")

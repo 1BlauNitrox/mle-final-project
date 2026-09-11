@@ -32,6 +32,10 @@ from agent_code.DerKleineSprengstoffkapitalist.persistence import (
     load_model,
     save_model,
 )
+from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
+    COMPACT_SAFETY_POTENTIAL_SHAPING,
+    NO_POTENTIAL_SHAPING,
+)
 
 TEST_STATE = (
     1,
@@ -58,8 +62,8 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_model_schema_version_is_four() -> None:
-    assert MODEL_SCHEMA_VERSION == 4
+def test_model_schema_version_is_five() -> None:
+    assert MODEL_SCHEMA_VERSION == 5
 
 
 def test_parent_artifact_has_expected_checksum() -> None:
@@ -101,6 +105,7 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.q_table.feature_count == 17
     assert loaded.q_table.initialization == PARENT_PRIOR_INITIALIZATION
     assert loaded.q_table.total_state_visits == 1
+    assert loaded.potential_shaping == NO_POTENTIAL_SHAPING
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(TEST_STATE),
@@ -185,6 +190,7 @@ def test_empty_model_remains_sparse_after_loading(
 
     assert len(loaded.q_table) == 0
     assert loaded.q_table.total_state_visits == 0
+    assert loaded.potential_shaping == NO_POTENTIAL_SHAPING
 
 
 def test_read_only_lookup_does_not_create_state(
@@ -337,3 +343,38 @@ def test_compact_representation_rejects_baseline_q_table(
             state_representation=COMPACT_STATE_REPRESENTATION,
             path=tmp_path / "invalid.npz",
         )
+
+
+def test_potential_shaping_mode_round_trip(
+    tmp_path: Path,
+) -> None:
+    compact_state = (0, 15, 2, 0, 1)
+    q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    q_table.update(
+        state=compact_state,
+        action="WAIT",
+        reward=0.0,
+        next_state=None,
+        terminal=True,
+    )
+    model_path = tmp_path / "potential-model.npz"
+
+    save_model(
+        q_table,
+        epsilon=1.0,
+        completed_episodes=1,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        potential_shaping=COMPACT_SAFETY_POTENTIAL_SHAPING,
+        path=model_path,
+    )
+
+    loaded = load_model(model_path)
+
+    assert (
+        loaded.potential_shaping
+        == COMPACT_SAFETY_POTENTIAL_SHAPING
+    )
