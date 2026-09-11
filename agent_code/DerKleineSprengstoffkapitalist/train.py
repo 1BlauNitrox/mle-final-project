@@ -15,7 +15,7 @@ from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
 from .potential_shaping import (
-    ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    ESCAPE_DISTANCE_POTENTIAL_SCALES,
     apply_potential_shaping,
     escape_distance_potential,
 )
@@ -303,10 +303,11 @@ def _apply_update(
 
 def _external_potential(self, game_state: dict) -> float | None:
     """Compute raw-state potential only for the registered distance treatment."""
-    if self.potential_shaping != ESCAPE_DISTANCE_POTENTIAL_SHAPING:
+    scale = ESCAPE_DISTANCE_POTENTIAL_SCALES.get(self.potential_shaping)
+    if scale is None:
         return None
 
-    return escape_distance_potential(game_state)
+    return escape_distance_potential(game_state, scale=scale)
 
 
 def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
