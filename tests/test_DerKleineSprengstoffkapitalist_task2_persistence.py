@@ -36,6 +36,7 @@ from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 
@@ -353,6 +354,7 @@ def test_compact_representation_rejects_baseline_q_table(
         COMPACT_SAFETY_POTENTIAL_SHAPING,
         ESCAPE_DISTANCE_POTENTIAL_SHAPING,
         HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     ),
 )
 def test_potential_shaping_mode_round_trip(

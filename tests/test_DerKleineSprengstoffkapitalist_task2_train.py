@@ -39,6 +39,7 @@ from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 from agent_code.DerKleineSprengstoffkapitalist.rewards import (
@@ -1043,12 +1044,28 @@ def test_pending_transition_scales_half_escape_distance_potentials() -> None:
     assert agent.pending_transition.next_external_potential == pytest.approx(0.0)
 
 
+def test_full_no_route_profile_preserves_catastrophic_penalty() -> None:
+    agent = make_agent()
+    agent.potential_shaping = HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING
+    trapped = make_game_state(
+        position=(2, 2),
+        bombs=[((2, 2), 3)],
+        step=1,
+    )
+    trapped["field"] = np.full((5, 5), -1, dtype=int)
+    trapped["field"][2, 2] = 0
+    trapped["explosion_map"] = np.zeros((5, 5), dtype=int)
+
+    assert training._external_potential(agent, trapped) == pytest.approx(-5.0)
+
+
 @pytest.mark.parametrize(
     "potential_shaping",
     (
         COMPACT_SAFETY_POTENTIAL_SHAPING,
         ESCAPE_DISTANCE_POTENTIAL_SHAPING,
         HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     ),
 )
 def test_safety_shaping_rejects_baseline_state(
