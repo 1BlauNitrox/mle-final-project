@@ -1,5 +1,11 @@
 # 0006 AI Usage and Disclosure
 
+Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
+world-seed offsets and a read-only audit of thirty retained Issue #107 replay
+snapshots. The audit distinguishes the empty-other-partition backfill rule
+from the later 16/48 quota; it cannot reconstruct historical minibatches.
+Human review is required before using the runner in a new scientific campaign.
+
 ## Course rule
 
 AI may be used to brainstorm, assist with code, and draft report text. The final

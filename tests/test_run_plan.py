@@ -61,6 +61,30 @@ def _write_plan(tmp_path: Path, data: dict[str, object]) -> Path:
     return path
 
 
+def test_training_stage_offsets_are_resolved_without_resetting_agent_seed(tmp_path):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = 1000
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    assert (plan.jobs[0].world_seed, plan.jobs[1].world_seed) == (101, 1101)
+    assert plan.jobs[0].agent_seed == plan.jobs[1].agent_seed == 201
+    assert plan.to_dict()["jobs"][1]["world_seed"] == 1101
+
+
+@pytest.mark.parametrize("offset", [-1, True, 1.5, "100", 2**32])
+def test_invalid_training_stage_offsets_are_rejected(tmp_path, offset):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = offset
+    with pytest.raises(ValueError):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
+def test_offset_training_seed_cannot_overlap_evaluation(tmp_path):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = 200
+    with pytest.raises(ValueError, match="overlap"):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
 def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) -> None:
     path = _write_plan(tmp_path, _plan_data())
 
