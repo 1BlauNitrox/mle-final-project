@@ -211,6 +211,7 @@ def validate(root):
 
 class Monitor(CampaignResourceMonitor):
     def __init__(self, **kwargs):
+        self.cancelled = None
         self.supervisor = psutil.Process()
         times = self.supervisor.cpu_times()
         self.cpu_origin = times.user + times.system
@@ -222,6 +223,21 @@ class Monitor(CampaignResourceMonitor):
         memory += self.supervisor.memory_info().rss
         self._peak_memory_bytes = max(self._peak_memory_bytes, memory)
         return cpu + max(0, times.user + times.system - self.cpu_origin), memory
+
+    def cancel(self, reason):
+        """Stop technical failures without turning them into resource exhaustion."""
+        with self._lock:
+            self.cancelled = reason
+            processes = self._processes_locked()
+        self._terminate(processes)
+
+    def check(self):
+        if self.cancelled:
+            with self._lock:
+                processes = self._processes_locked()
+            self._terminate(processes)
+            raise RuntimeError(self.cancelled)
+        super().check()
 
     def abort(self, reason):
         with self._lock:
@@ -296,7 +312,7 @@ def execute(root, reviewed_commit, authorized_by, hardware, resume):
                 )
             except BaseException:
                 with suppress(Exception):
-                    monitor.abort(f"Training arm {cell} failed")
+                    monitor.cancel(f"Training arm {cell} failed")
                 raise
 
         with ThreadPoolExecutor(max_workers=2) as pool:
@@ -326,6 +342,16 @@ def execute(root, reviewed_commit, authorized_by, hardware, resume):
         write(root / "analysis/evidence-files.json", evidence)
         write(root / "status.json", {"status": "completed", "decision": result["decision"]})
     except BaseException as error:
+        result_path = root / "analysis/result.json"
+        if result_path.exists():
+            invalid = read(result_path)
+            invalid.update(
+                analysis_valid=False,
+                selection=None,
+                decision="invalid_execution",
+                campaign_error=str(error),
+            )
+            write(result_path, invalid)
         write(root / "status.json", {"status": "stopped_incomplete", "error": str(error)})
         raise
     finally:

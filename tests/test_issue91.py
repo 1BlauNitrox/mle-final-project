@@ -107,3 +107,21 @@ def test_staged_training_and_evaluation_keep_gamma_and_parent_immutable(tmp_path
     assert loaded.config.discount_factor == 0.97
     assert loaded.completed_episodes == 1
     assert sha(parent) == before
+
+
+def test_technical_cancellation_does_not_mark_resource_budget_exhausted():
+    import threading
+
+    from training.run_issue91 import Monitor
+
+    monitor = Monitor.__new__(Monitor)
+    monitor._lock = threading.RLock()
+    monitor._limit_reached = None
+    monitor._processes_locked = lambda: []
+    stopped = []
+    monitor._terminate = lambda processes: stopped.append(processes)
+    monitor.cancel("Technical I/O failure")
+    assert monitor._limit_reached is None
+    assert stopped == [[]]
+    with pytest.raises(RuntimeError, match="Technical I/O"):
+        monitor.check()
