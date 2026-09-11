@@ -260,6 +260,7 @@ def execute(args):
             )
         campaign = {
             "issue": 109,
+            "opponent_seed_policy": "task3_per_slot_v1",
             "authorization_sha256": sha256(auth_path),
             "reviewed_commit": args.reviewed_commit,
         }

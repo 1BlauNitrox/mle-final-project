@@ -249,6 +249,7 @@ def load_evidence(root, binding_directory):
     )
     campaign = {
         "issue": 109,
+        "opponent_seed_policy": "task3_per_slot_v1",
         "authorization_sha256": sha256(root / "authorization.json"),
         "reviewed_commit": identity["reviewed_commit"],
     }
@@ -275,6 +276,10 @@ def load_evidence(root, binding_directory):
             )
             run = relative_file(directory, record["attempts"][-1]["output"])
             meta = read_json(run / "metadata.json")
+            require(
+                meta.get("opponent_seed_policy") == "task3_per_slot_v1",
+                "Missing reproducible opponent RNG control",
+            )
             require(
                 meta["status"] == "completed"
                 and meta["return_code"] == 0
