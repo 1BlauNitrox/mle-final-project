@@ -1,5 +1,11 @@
 # Training Orchestration
 
+The proposed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/README.md)
+reuses the guarded campaign executor and raw evidence checks with an explicit
+issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
+provides prepare, dry-run, run/resume, analyze, verify and compact export.
+Its new protocol and compute budget require separate approval before execution.
+
 The completed #109 peaceful campaign is an exploratory negative result; its
 registered selection rule blocks automatic coin-collector continuation.
 See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).

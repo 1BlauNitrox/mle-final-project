@@ -205,8 +205,8 @@ def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
-def execute(args):
-    config, plans, report = validate_protocol(args.binding_dir)
+def execute(args, *, validator=None, issue=109, plan_order=None):
+    config, plans, report = (validator or validate_protocol)(args.binding_dir)
     require(args.authorize_compute, "Execution requires --authorize-compute")
     require(args.binding_dir is not None, "Execution requires --binding-dir")
     require(args.reviewed_commit == git("rev-parse", "HEAD"), "Reviewed commit must equal HEAD")
@@ -229,7 +229,7 @@ def execute(args):
     try:
         auth_path = root / "authorization.json"
         identity = {
-            "issue": 109,
+            "issue": issue,
             "reviewed_commit": args.reviewed_commit,
             "authorized_by": args.authorized_by,
             "hardware_description": args.hardware_description,
@@ -259,7 +259,7 @@ def execute(args):
                 json.dumps(report, indent=2) + "\n", encoding="utf-8"
             )
         campaign = {
-            "issue": 109,
+            "issue": issue,
             "opponent_seed_policy": "task3_per_slot_v1",
             "authorization_sha256": sha256(auth_path),
             "reviewed_commit": args.reviewed_commit,
@@ -275,7 +275,7 @@ def execute(args):
             campaign_metadata=campaign,
         )
         # Serial plans share a monitor; only candidate training uses up to two workers.
-        for name in ("reference", "candidate"):
+        for name in plan_order or ("reference", "candidate"):
             monitor.check()
             plan = plans[name]
             execute_plan(

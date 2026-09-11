@@ -1,5 +1,13 @@
 # 0006 AI Usage and Disclosure
 
+Issue #147 preparation (2026-09-12): OpenAI Codex proposed the matched Task 3
+legal-mask follow-up from #109's failed invalid-action/hunting/retention gates
+and the limitations of #124. It reused existing policy code, added explicit
+single-flag initialization checks, paired analysis and shared execution/export
+tooling, and drafted server instructions. Synthetic tests and isolated smokes
+validate mechanics only. No new scientific compute or efficacy claim is made;
+the owner must approve the proposed protocol/budget and a teammate must review.
+
 Issue #109 result analysis (2026-09-12): OpenAI Codex verified the owner's
 download hash, retained source/checkpoint identity and complete campaign
 observations, and reproduced the preregistered negative decision. Codex fixed

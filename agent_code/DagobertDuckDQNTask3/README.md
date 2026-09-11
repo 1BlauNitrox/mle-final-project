@@ -1,5 +1,11 @@
 # DagobertDuckDQNTask3
 
+The proposed [Issue 147 follow-up](../../experiments/2026-09-12-task3-legal-mask/README.md)
+compares this existing model's consistent legal masking off/on during fresh
+peaceful-opponent training. It changes no default or committed checkpoint.
+Preparation tests do not establish efficacy; owner approval and review precede
+the new experiment. The #109 negative result and its no-selection decision remain.
+
 Status: schema-4 implementation under #125 / PR #130; the completed #109
 exploratory campaign failed the peaceful-stage gates. No trained Task 3
 replica is selected. The committed checkpoint remains a compatibility fixture.
