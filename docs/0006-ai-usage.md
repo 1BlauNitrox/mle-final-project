@@ -97,3 +97,15 @@ The subsequent self-review added final archive-member integrity validation
 and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
+
+## September 11, 2026: DQN development closeout and deadline plan
+
+OpenAI Codex reread the complete assignment handout, inspected current GitHub
+issues/PRs and local worktree/process state, and drafted the #106 Task 2 closeout
+and September 21 delivery plan at Julius's request. The record distinguishes
+ending optimization from passing cumulative capability gates, preserves negative
+results and running-campaign constraints, and defers #98/PR #100. Future
+experiment suggestions are hypotheses requiring their own reviewed protocols,
+not scientific evidence or compute authorization. No model or training code was
+changed and no scientific run was launched. Julius and a non-author reviewer
+must verify the plan and own the final experiment and submission decisions.
