@@ -974,3 +974,8 @@ separation. It retains the full resolved plan and pending evaluation jobs; resum
 without this flag evaluates after skipping completed training. It cannot be
 combined with `evaluation_only=True`. A training-only return has status
 `training_completed`, not campaign completion.
+
+Completed #91 server evidence can be verified portably with
+`python -m training.verify_issue91_results --campaign-root <extracted-issue91-fixed> --output <verification.json>`.
+It checks all required bytes, models, registered conditions, diagnostics, repeats
+and statistics without playing games. See the experiment RESULTS.md for retrieval.

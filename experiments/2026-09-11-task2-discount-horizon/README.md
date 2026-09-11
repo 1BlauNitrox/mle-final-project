@@ -20,10 +20,10 @@ fixes. #124 separately tests rehearsal and masking, so this study holds both
 fixed rather than repeat that factorial design. Its incomplete evaluation is
 not used to select a treatment, starting replica, thresholds or seeds here.
 
-This work reactivates existing #91 at the user's request. Owner: 1BlauNitrox;
-requested reviewer: Waffelmanufaktur. This PR is prospective tooling/protocol
-only. No scientific run, improvement or submission-ready model is in scope.
-A non-author review of this exact protocol must precede scientific execution.
+The completed comparison rejects gamma 0.97 for this setup. See [RESULTS.md](RESULTS.md)
+for verified observations, uncertainty, artifact retrieval and the disclosed
+review-timing deviation. Neither arm completes cumulative Task 1/2 gates.
+The following design and thresholds are the prospectively registered protocol.
 
 ## Controlled design
 
@@ -103,9 +103,9 @@ required to start, stop below 1 GiB system availability. These are ceilings,
 not duration forecasts. Parallel server work must leave these resources free;
 do not compete with the interrupted #124 evaluation for the same allocation.
 
-The user requested implementation and server instructions, not an automatic
-server launch. The execution command explicitly records the human authorizer,
-actual hardware and reviewed commit. No training has been started by this PR.
+The user subsequently launched the server campaign; the results record contains
+its exact execution and recovery history. The execution command explicitly records the human authorizer,
+actual hardware and reviewed commit. The registered campaign has now completed; do not rerun it as a setup check.
 Resume preserves start time, completed stages and all failed attempts; it does
 not clear a resource breach. A stale lock after an external kill needs inspection.
 

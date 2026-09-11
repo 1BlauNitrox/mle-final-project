@@ -106,3 +106,9 @@ by another team member.
   scoped pre-job recovery preserving original resource accounting and failures.
   Earlier green tests did not cover the campaign call; they were insufficient
   evidence for that execution path. No scientific improvement is claimed.
+
+- 2026-09-11, #91 / PR #136: Codex independently checked all 32 checkpoints,
+  reproduced server metrics/uncertainty and Q diagnostics, implemented portable
+  evidence verification and corruption/missing-file tests, published complete
+  evidence and documented the negative gamma result and review-timing deviation.
+  No new scientific run, model promotion or Task 2 completion is claimed.

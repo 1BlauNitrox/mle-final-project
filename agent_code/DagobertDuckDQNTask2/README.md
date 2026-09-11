@@ -506,3 +506,14 @@ server commands, safeguards and analysis are in
 `experiments/2026-09-11-task2-discount-horizon/README.md`. No scientific result
 or benefit is established by preparation. Selected Task 3 parent binding remains
 a separate decision after the full cumulative gates are evaluated.
+
+## Discount horizon evidence (#91)
+
+The [completed five-pair gamma comparison](../../experiments/2026-09-11-task2-discount-horizon/RESULTS.md)
+rejects gamma 0.97: classic collection fell from 33.44% to 19.06% (B-A -14.39
+points, 95% interval -23.00 to -4.83). Navigation also worsened (16.21% to 6.81%
+coin-heaven collection). Both arms fail cumulative Task 1/2 gates. Keep gamma
+0.90; no default or committed checkpoint changes. A/r3 is only the registered
+exploratory fallback. Higher Q-values did not indicate improved behavior. Further
+work must address retention and invalid actions without assuming this gamma
+change or #124's tested rehearsal schedule solves them.
