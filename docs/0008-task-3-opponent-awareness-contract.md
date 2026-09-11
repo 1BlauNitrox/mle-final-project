@@ -72,11 +72,14 @@ Task 2 result. Its current checksum and size are in the Task 3 artifact manifest
 
 ## Scientific boundary
 
-Issue #124's mechanical selection will bind the next Task 3 campaign parent.
-If Task 2 gates fail, label the continuation exploratory; it does not finish
-Task 2. The verified historical #107 A/r2 parent can support an explicitly
-separate exploratory baseline before that binding, never a silent substitution.
-Issue #109 / PR #120 remains the single peaceful-opponent protocol. Its numeric
-criteria, analyzer and explicit compute budget must be finalized before a
-scientific run. The coin-collector experiment remains downstream of the
-peaceful-stage decision. No result or final tournament readiness is claimed.
+The Task 2 parent is configurable through an explicit checksum/source binding.
+The verified historical #107 A/r2 parent can support exploratory #109 before
+Task 2 completes. A later mechanically selected Task 2 checkpoint requires a
+new binding and campaign; it never silently replaces the predecessor. Failed
+Task 2 gates remain explicit and no Task 3 result completes Task 2.
+Issue #109 / PR #120 registers the user-approved peaceful-stage numerical gates,
+40-pair regression suites, paired analyzer and shared compute ceiling. Fresh
+peer review and separate compute authorization are still required. Exploratory
+coin-collector continuation is tracked by #137 after the peaceful-stage decision;
+#51 retains its validated-predecessor requirements. No result or final tournament
+readiness is claimed.

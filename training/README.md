@@ -231,10 +231,16 @@ python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml -
 python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
 ```
 
-Both provisional starting artifacts, the resource ceiling, and the numeric
-decision criteria are unresolved pending owner review and Issue #124's
-development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
-not be started until the peaceful stage's outcome is decided. Full protocol,
+The user-approved numerical gates and 40-pair development suites are registered.
+The parent remains explicitly configurable: historical #107 A/r2 can support
+exploratory work before Task 2 completes, while a later selected Task 2 artifact
+requires a new binding. Use `python -m training.run_task3_campaign --dry-run`
+for matrix/seed preflight, the same launcher with a binding and separate human
+authorization for budget-enforced execution, and
+`python -m training.analyze_task3_campaign` for verified paired analysis.
+Fresh peer review and server compute authorization remain required. The
+coin-collector template is gated on the peaceful decision under exploratory
+#137; #51 retains its validated-predecessor scope. Full protocol,
 rationale, and exact commands are registered in
 `experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
 integration validation only and produces no performance evidence.

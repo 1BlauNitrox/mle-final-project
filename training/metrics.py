@@ -19,11 +19,6 @@ CSV_COLUMNS = (
     "episode_steps",
     "survival_steps",
     "score",
-    "opponents_eliminated",
-    "opponent_count",
-    "score_margin",
-    "first_place",
-    "tied_first",
     "coins_collected",
     "initially_available_coins",
     "coins_found",
@@ -62,6 +57,11 @@ CSV_COLUMNS = (
     "mean_abs_td_error",
     "target_synchronizations",
     "episode_target_synchronizations",
+    "opponents_eliminated",
+    "opponent_count",
+    "score_margin",
+    "first_place",
+    "tied_first",
 )
 
 REQUIRED_AGENT_FIELDS = (

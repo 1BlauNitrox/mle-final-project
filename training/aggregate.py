@@ -69,6 +69,7 @@ INTEGER_COLUMNS = (
 
 OPTIONAL_FLOAT_COLUMNS = (
     "score_margin",
+    "useful_bombs",
     "invalid_action_rate",
     "decision_time_median_ms",
     "decision_time_p95_ms",
