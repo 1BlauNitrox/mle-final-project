@@ -14,7 +14,11 @@ from .features import StateFeatures, encode_state
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
 from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
-from .potential_shaping import apply_potential_shaping
+from .potential_shaping import (
+    ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    apply_potential_shaping,
+    escape_distance_potential,
+)
 from .rewards import reward_from_events
 
 DIAGNOSTIC_EVENT_METRICS = {
@@ -40,6 +44,8 @@ class PendingTransition:
     next_action_mask: np.ndarray | None
     reward: float
     diagnostic_events: tuple[str, ...]
+    current_external_potential: float | None = None
+    next_external_potential: float | None = None
 
 
 def setup_training(self) -> None:
@@ -131,6 +137,8 @@ def game_events_occurred(
             else None
         ),
         diagnostic_events=tuple(events),
+        current_external_potential=_external_potential(self, old_game_state),
+        next_external_potential=_external_potential(self, new_game_state),
     )
 
 
@@ -166,6 +174,7 @@ def end_of_round(
             reward=reward_from_events(events),
             next_state=None,
             terminal=True,
+            current_external_potential=pending.current_external_potential,
         )
     else:
         _count_diagnostic_events(self, events)
@@ -185,6 +194,10 @@ def end_of_round(
                     reward=reward_from_events(events),
                     next_state=None,
                     terminal=True,
+                    current_external_potential=_external_potential(
+                        self,
+                        last_game_state,
+                    ),
                 )
 
     completed_episode_epsilon = float(self.epsilon)
@@ -243,6 +256,8 @@ def _finalize_pending_transition(self) -> None:
         next_state=pending.next_state,
         terminal=False,
         next_action_mask=pending.next_action_mask,
+        current_external_potential=pending.current_external_potential,
+        next_external_potential=pending.next_external_potential,
     )
 
     self.pending_transition = None
@@ -257,6 +272,8 @@ def _apply_update(
     next_state: StateFeatures | None,
     terminal: bool,
     next_action_mask: np.ndarray | None = None,
+    current_external_potential: float | None = None,
+    next_external_potential: float | None = None,
 ) -> None:
     """Update the Q-table and record diagnostics."""
 
@@ -267,6 +284,8 @@ def _apply_update(
         terminal=terminal,
         mode=self.potential_shaping,
         discount_factor=self.q_table.discount_factor,
+        current_external_potential=current_external_potential,
+        next_external_potential=next_external_potential,
     )
 
     td_error = self.q_table.update(
@@ -280,6 +299,14 @@ def _apply_update(
 
     self.episode_reward += learning_reward
     self.absolute_td_errors.append(abs(td_error))
+
+
+def _external_potential(self, game_state: dict) -> float | None:
+    """Compute raw-state potential only for the registered distance treatment."""
+    if self.potential_shaping != ESCAPE_DISTANCE_POTENTIAL_SHAPING:
+        return None
+
+    return escape_distance_potential(game_state)
 
 
 def _transition_identity(game_state: dict | None) -> tuple[Any, Any] | None:
