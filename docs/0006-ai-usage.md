@@ -28,6 +28,13 @@ AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
 
+2026-09-11, Issue #109: OpenAI Codex added Task 3 metric retention and tests,
+then prepared the prospective analysis and execution path. The user approved
+the recommended peaceful-stage numerical gates and 40 development seed pairs
+per suite before scientific execution. No scientific run is authorized by this
+preparation. Human ownership, non-author review and explicit server compute
+authorization remain required.
+
 2026-09-11, Issue #125: OpenAI Codex reviewed the current migration against its
 contract and added tested refusal of existing successor outputs, explicit
 evaluation-only-parent rejection, and corrected the opponent-distance index

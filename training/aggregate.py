@@ -68,6 +68,7 @@ INTEGER_COLUMNS = (
 )
 
 OPTIONAL_FLOAT_COLUMNS = (
+    "score_margin",
     "invalid_action_rate",
     "decision_time_median_ms",
     "decision_time_p95_ms",
@@ -82,6 +83,10 @@ OPTIONAL_FLOAT_COLUMNS = (
 )
 
 OPTIONAL_INTEGER_COLUMNS = (
+    "opponents_eliminated",
+    "opponent_count",
+    "first_place",
+    "tied_first",
     "initially_available_coins",
     "q_table_size",
     "replay_size",

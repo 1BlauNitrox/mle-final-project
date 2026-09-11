@@ -19,6 +19,11 @@ CSV_COLUMNS = (
     "episode_steps",
     "survival_steps",
     "score",
+    "opponents_eliminated",
+    "opponent_count",
+    "score_margin",
+    "first_place",
+    "tied_first",
     "coins_collected",
     "initially_available_coins",
     "coins_found",
@@ -144,6 +149,7 @@ def normalize_episode_rows(
                 f"Statistics for round {round_number} are missing 'agents'"
             )
 
+        round_rows = []
         for agent_name, agent_statistics in sorted(agents.items()):
             if not isinstance(agent_name, str):
                 raise ValueError(
@@ -156,7 +162,7 @@ def normalize_episode_rows(
                     f"{round_number} must be an object"
                 )
 
-            rows.append(
+            round_rows.append(
                 _normalize_agent_episode(
                     round_number=round_number,
                     agent_name=agent_name,
@@ -164,6 +170,17 @@ def normalize_episode_rows(
                     statistics=agent_statistics,
                 )
             )
+
+        for row in round_rows:
+            other_scores = [other["score"] for other in round_rows
+                            if other["agent"] != row["agent"]]
+            row["opponent_count"] = len(other_scores)
+            # Opponent-free episodes have no match outcome. Ties are not wins.
+            margin = row["score"] - max(other_scores) if other_scores else None
+            row["score_margin"] = margin
+            row["first_place"] = int(margin > 0) if margin is not None else None
+            row["tied_first"] = int(margin == 0) if margin is not None else None
+        rows.extend(round_rows)
 
     return rows
 
@@ -303,6 +320,12 @@ def _normalize_agent_episode(
         "coins_collected": _non_negative_int(
             statistics["coins"],
             field="coins",
+            round_number=round_number,
+            agent_name=agent_name,
+        ),
+        "opponents_eliminated": _optional_non_negative_int(
+            statistics.get("kills"),
+            field="kills",
             round_number=round_number,
             agent_name=agent_name,
         ),

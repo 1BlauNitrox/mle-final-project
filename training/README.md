@@ -629,6 +629,17 @@ error.
 
 ## Metric interpretation
 
+### Task 3 match outcomes
+
+The optional CSV fields `opponents_eliminated` (native attributable `kills`),
+`opponent_count`, `score_margin`, `first_place` and `tied_first` retain match
+outcomes for each participant. `score_margin` is own score minus the highest
+other score. `first_place` means strictly greater score than every opponent;
+ties at the highest score are recorded separately in `tied_first`. Opponent-free
+episodes have no match outcome (empty fields), and historical missing kill
+counts remain unavailable rather than becoming zero. An observed-agent analyzer
+must filter by `metadata.json`'s `observed_agent`, not aggregate opponent rows.
+
 ### Invalid-action rate
 
 The per-episode rate is:
