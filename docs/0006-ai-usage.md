@@ -1,5 +1,11 @@
 # 0006 AI Usage and Disclosure
 
+Issue #126 preparation (2026-09-12): OpenAI Codex drafted the independent fixed
+strong-opponent versus fixed-mixture protocol, matched regression matrices and
+tested statistical decision. The parent and execution adapter remain blocked;
+numeric thresholds and compute require owner ratification. No training or Task 4
+result is claimed. The proposal preserves the roadmap's evidence and freeze windows.
+
 Issue #147 preparation (2026-09-12): OpenAI Codex proposed the matched Task 3
 legal-mask follow-up from #109's failed invalid-action/hunting/retention gates
 and the limitations of #124. It reused existing policy code, added explicit

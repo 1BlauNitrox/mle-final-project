@@ -1,0 +1,73 @@
+issue: 126
+status: proposal_parent_and_owner_approval_required
+plans:
+  strong: training/run_plans/issue126-strong.yaml
+  mixture: training/run_plans/issue126-mixture.yaml
+  reference: training/run_plans/issue126-reference.yaml
+replicas: 5
+pairs: 40
+training_episodes: 50000
+evaluation_episodes: 7920
+parent_policy: 'Only mechanically selected passing reviewed #137 parent; absent parent
+  blocks execution. Any exploratory exception requires new registration and owner
+  decision.'
+scientific_training_authorized: false
+bootstrap:
+  seed: 126
+  samples: 10000
+resources:
+  cpu_hours: 24
+  wall_hours: 10
+  memory_gib: 8
+  max_parallel_training: 2
+gates:
+  primary_score_improvement_min: 1.0
+  strong_three_first_place_min: 0.35
+  strong_three_score_margin_min_exclusive: 0.0
+  self_kill_max: 0.1
+  invalid_action_max_exclusive: 0.01
+  task1_collection_margin: 0.02
+  task2_collection_margin: 0.03
+  survival_margin: 0.05
+  self_kill_increase_margin: 0.02
+  crates_relative_margin: 0.1
+  hunting_elimination_margin: 0.05
+  decision_p95_ms_max_exclusive: 50.0
+  decision_max_ms_max_exclusive: 100.0
+protected_seed_ranges:
+- - 12601141
+  - 12601150
+- - 12601241
+  - 12601250
+- - 12601341
+  - 12601350
+- - 12601441
+  - 12601450
+- - 12601541
+  - 12601550
+- - 12601641
+  - 12601650
+- - 12601741
+  - 12601750
+- - 12601841
+  - 12601850
+- - 12601941
+  - 12601950
+- - 22601141
+  - 22601150
+- - 22601241
+  - 22601250
+- - 22601341
+  - 22601350
+- - 22601441
+  - 22601450
+- - 22601541
+  - 22601550
+- - 22601641
+  - 22601650
+- - 22601741
+  - 22601750
+- - 22601841
+  - 22601850
+- - 22601941
+  - 22601950

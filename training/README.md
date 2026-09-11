@@ -1,5 +1,10 @@
 # Training Orchestration
 
+[Issue 126 Task 4 preparation](../experiments/2026-09-12-task4-opponent-distribution/README.md)
+has matched strong/mixed/reference matrices and a statistics-only decision
+function. `python -m training.task4_protocol --dry-run` reports concrete blockers;
+it cannot authorize a run or substitute for verified raw evidence and parent binding.
+
 The proposed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/README.md)
 reuses the guarded campaign executor and raw evidence checks with an explicit
 issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
