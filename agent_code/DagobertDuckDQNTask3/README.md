@@ -34,10 +34,12 @@ Its SHA-256, byte size and lineage are in `artifact.json` and
 `parent-artifact.json`. Regenerate in an isolated worktree:
 
 ```powershell
-python scripts/migrate_task3_dqn_successor.py --parent-sha256 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
+python scripts/migrate_task3_dqn_successor.py --parent-sha256 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015 --output training_outputs/task3-fixture-check.pt
 ```
 
-Migration supports 21 and 26 parent inputs, including active escape features.
+Migration supports resumable checkpoints with 21 and 26 parent inputs, including
+active escape features. Existing outputs are refused; evaluation-only exports
+cannot supply the inherited target network and are rejected explicitly.
 All available columns and both online/target networks are preserved; new
 columns are zero. Old 34-input Task 3 artifacts require explicit migration or
 regeneration and cannot be loaded under the new schema.

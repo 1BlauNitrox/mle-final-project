@@ -28,6 +28,12 @@ AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
 
+2026-09-11, Issue #125: OpenAI Codex reviewed the current migration against its
+contract and added tested refusal of existing successor outputs, explicit
+evaluation-only-parent rejection, and corrected the opponent-distance index
+reference. No checkpoint or scientific result changed. Human review of the
+implementation remains required; the earlier documentation approval is stale.
+
 | Date | Scope | Tool | Human verification and refinement |
 | --- | --- | --- | --- |
 | 2026-07-25 | Initial repository structure, workflow, requirements summary, AGENTS.md, and documentation drafts | OpenAI Codex | Team must review course-summary accuracy, adapt wording and ownership, run CI, and approve through PR review before merge. |

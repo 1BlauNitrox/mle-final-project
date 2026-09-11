@@ -83,3 +83,32 @@ def test_evaluation_rejects_explicit_mode_mismatch(monkeypatch):
     monkeypatch.setenv(callbacks.ACTION_MASKING_ENV, "none")
     with pytest.raises(ValueError, match="does not match"):
         callbacks.setup(SimpleNamespace(train=False, logger=Mock()))
+
+
+def test_cli_preserves_existing_candidate(tmp_path, monkeypatch):
+    parent = tmp_path / "parent.pt"
+    output = tmp_path / "candidate.pt"
+    parent.write_bytes(b"parent")
+    output.write_bytes(b"valuable candidate")
+    monkeypatch.setattr("sys.argv", ["migrate", "--parent", str(parent),
+                                    "--output", str(output), "--parent-sha256",
+                                    cli.sha256_file(parent)])
+    with pytest.raises(SystemExit):
+        cli.main()
+    assert output.read_bytes() == b"valuable candidate"
+    assert parent.read_bytes() == b"parent"
+
+
+def test_cli_explains_missing_target_in_evaluation_export(tmp_path, monkeypatch, capsys):
+    from agent_code.DagobertDuckDQNTask2.persistence import export_evaluation_checkpoint
+
+    source = Path(__file__).resolve().parents[1] / "agent_code/DagobertDuckDQNTask2/checkpoint.pt"
+    parent = export_evaluation_checkpoint(source, tmp_path / "evaluation.pt")
+    output = tmp_path / "successor.pt"
+    monkeypatch.setattr("sys.argv", ["migrate", "--parent", str(parent),
+                                    "--output", str(output), "--parent-sha256",
+                                    cli.sha256_file(parent)])
+    with pytest.raises(SystemExit):
+        cli.main()
+    assert "resumable parent" in capsys.readouterr().err
+    assert not output.exists()

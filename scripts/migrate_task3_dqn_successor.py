@@ -56,10 +56,15 @@ def main() -> None:
     args = parser.parse_args()
     if args.parent.resolve() == args.output.resolve():
         parser.error("Parent and output must be different files")
+    if args.output.exists():
+        parser.error("Output already exists; choose a new path to preserve existing checkpoints")
     if sha256_file(args.parent) != args.parent_sha256:
         parser.error("Parent SHA-256 mismatch")
     parent = load_evaluation_checkpoint(args.parent)
     payload = torch.load(args.parent, map_location="cpu", weights_only=True)
+    if "learner_state" not in payload:
+        parser.error("Migration requires the resumable parent with its target network; "
+                     "an evaluation-only export cannot preserve that network")
     target = build_parent_network(parent.config, seed=MIGRATION_INIT_SEED)
     target.load_state_dict(payload["learner_state"]["target_network"], strict=True)
     config = successor_config(parent.config)

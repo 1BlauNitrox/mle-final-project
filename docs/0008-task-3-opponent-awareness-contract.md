@@ -31,7 +31,7 @@ default. The default fixture retains disabled escape and masking.
 | 35 | `opponent_adjacent_left` | `1` when a public opponent occupies the tile one step left |
 | 36 | `second_opponent_dx` | Sign of second-nearest opponent x-coordinate minus own x-coordinate; `0` when fewer than two opponents are present |
 | 37 | `second_opponent_dy` | Sign of second-nearest opponent y-coordinate minus own y-coordinate; `0` when fewer than two opponents are present |
-| 38 | `second_opponent_distance_bin` | Manhattan distance to the second-nearest opponent, same bins as index 24; `0` when fewer than two opponents are present |
+| 38 | `second_opponent_distance_bin` | Manhattan distance to the second-nearest opponent, same bins as index 29; `0` when fewer than two opponents are present |
 
 Nearest and second-nearest opponents are ordered by Manhattan distance, then
 x/y coordinates. Only public positions are used. Opponents remain obstacles
@@ -63,7 +63,9 @@ are rejected, rather than silently reinterpreted.
 Start a new optimizer, empty replay, initial epsilon, fresh seed streams and
 zero Task 3 episode/update counts. Parent replay/optimizer state is not loaded
 into the new schema. The migration CLI requires the parent SHA-256 and rejects
-source overwrite. The committed fixture is a reproducible migration of
+source overwrite and an existing output. Supply the resumable parent checkpoint:
+an evaluation-only export has no target network to preserve and is rejected.
+The committed fixture is a reproducible migration of
 `checkpoint-issue85-zero-suffix.pt` (SHA-256
 `3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015`), not a selected
 Task 2 result. Its current checksum and size are in the Task 3 artifact manifest.
