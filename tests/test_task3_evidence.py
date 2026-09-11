@@ -84,6 +84,7 @@ def evidence(tmp_path, monkeypatch):
             write_episodes_csv(normalize_episode_rows(raw, j.kind), run / "episodes.csv")
             meta = {
                 "observed_agent": "observed",
+                "opponent_seed_policy": "task3_per_slot_v1",
                 "status": "completed",
                 "return_code": 0,
                 "git_dirty": False,
@@ -97,6 +98,7 @@ def evidence(tmp_path, monkeypatch):
                 "run_plan": {
                     "campaign": {
                         "issue": 109,
+                        "opponent_seed_policy": "task3_per_slot_v1",
                         "authorization_sha256": campaign.sha256(root / "authorization.json"),
                         "reviewed_commit": "a" * 40,
                     },

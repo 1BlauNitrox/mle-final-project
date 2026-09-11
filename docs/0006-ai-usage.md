@@ -37,6 +37,13 @@ are unchanged. No scientific execution occurred. Human review of the prospective
 protocol and later peaceful result, plus separate compute authorization, remain
 required.
 
+2026-09-11, Issue #109 reproducibility review: OpenAI Codex identified entropy
+reseeding in the unchanged supplied opponents, added experiment-only isolated
+per-slot NumPy/Python streams, and bound that policy into campaign evidence.
+Unit tests and paired one-round integration checks verify repeatability without
+changing supplied policies or learned-agent runtime dependencies. Human review
+and separate scientific compute authorization remain required.
+
 2026-09-11, Issue #109: OpenAI Codex added Task 3 metric retention and tests,
 then prepared the prospective analysis and execution path. The user approved
 the recommended peaceful-stage numerical gates and 40 development seed pairs

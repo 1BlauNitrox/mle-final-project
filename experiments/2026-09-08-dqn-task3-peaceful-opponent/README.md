@@ -21,6 +21,14 @@ six actions, rewards, hidden sizes and inherited applicable hyperparameters,
 masking and escape modes. Reset optimizer/replay/exploration/RNG/counters;
 preserve online and target networks independently and zero the opponent suffix.
 Evaluation is greedy, immutable, self-contained and single-threaded.
+The experiment-only `training.seeded_framework` wrapper controls both NumPy and
+Python global RNGs independently for each supplied opponent. Derive streams
+with `SeedSequence([agent_seed, command_slot, 0x5441534B])`: the first uint32
+word seeds NumPy and the next two form the Python seed. Intercept setup's
+`seed(None)` entropy requests and restore other agents' global RNG state after
+each callback. Record `task3_per_slot_v1` in every job. Supplied policy files
+and learned-agent runtime imports are unchanged. World and learner seeds alone
+are insufficient because the supplied opponents reseed from system entropy.
 The exact model contract is [0008](../../docs/0008-task-3-opponent-awareness-contract.md).
 
 ## Parent and scientific scope

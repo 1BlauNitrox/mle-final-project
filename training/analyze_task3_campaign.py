@@ -255,6 +255,7 @@ def load_evidence(root, binding_directory, protocol="peaceful"):
     )
     campaign = {
         "issue": config["issue"],
+        "opponent_seed_policy": "task3_per_slot_v1",
         "authorization_sha256": sha256(root / "authorization.json"),
         "reviewed_commit": identity["reviewed_commit"],
     }
@@ -281,6 +282,10 @@ def load_evidence(root, binding_directory, protocol="peaceful"):
             )
             run = relative_file(directory, record["attempts"][-1]["output"])
             meta = read_json(run / "metadata.json")
+            require(
+                meta.get("opponent_seed_policy") == "task3_per_slot_v1",
+                "Missing reproducible opponent RNG control",
+            )
             require(
                 meta["status"] == "completed"
                 and meta["return_code"] == 0
@@ -464,6 +469,16 @@ def verify_compact(directory, protocol="peaceful"):
     )
     with gzip.open(path, "rt", encoding="utf-8") as file:
         observations = json.load(file)
+    if result.get("selected_replica") is not None:
+        selected_hashes = {
+            row["artifact_sha256"]
+            for row in observations["evaluation"]
+            if row["arm"] == "candidate" and row["replica"] == result["selected_replica"]
+        }
+        require(
+            len(selected_hashes) == 1 and result.get("selected_artifact_sha256") in selected_hashes,
+            "Selected artifact does not match retained replica observations",
+        )
     computed = decide(observations["evaluation"], config)
     require(all(result[k] == value for k, value in computed.items()), "Compact result mismatch")
     return {"verified": True, "status": result["status"], "task2_complete": False}
