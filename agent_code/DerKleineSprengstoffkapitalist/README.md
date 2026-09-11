@@ -316,5 +316,14 @@ strength significantly improved Classic collection but failed the registered
 safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
 limit), so neither escape-distance treatment is the default. Both modes remain
 available for reproducibility of the experiment lineage.
+
+Issue #142 isolated the no-route bucket by comparing uniform half strength
+against half-strength progress with the original `-5` no-route potential. The
+candidate reduced mean Classic self-kills from `0.115` to `0.045`, with four of
+five replicas improving, but its paired 95% interval still crossed zero and
+Classic collection fell by `0.0678`, beyond the registered `0.05` guard. A
+single deterministic-repeat mismatch also produced a maximum-latency outlier.
+The candidate was rejected, the default remains unchanged, and the mode is
+retained only for reproducibility.
 - retains inherited non-potential-based movement shaping;
 - can select actions that are framework-legal but tactically unsafe.

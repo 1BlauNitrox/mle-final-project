@@ -1,6 +1,6 @@
 # Full no-route penalty with half-strength escape progress
 
-> Status: registered and ready to run
+> Status: completed; candidate rejected
 
 ## Metadata
 
@@ -67,11 +67,52 @@ or criteria.
 
 ## Results
 
-Pending execution.
+Both plans completed all 1,215 jobs, for 100,000 training episodes and 2,400
+evaluation episodes in total. The full no-route candidate reduced mean Classic
+self-kill rate from `0.115` to `0.045` (candidate minus control `-0.070`), and
+four of five paired replicas improved. The paired 95% bootstrap interval was
+`[-0.165, 0.020]`, however, so the registered upper-bound gate did not pass.
+
+Mean Classic collection decreased from `0.1811` to `0.1133`, a difference of
+`-0.0678` with 95% interval `[-0.1595, 0.0161]`; this exceeded the allowed
+`0.05` loss. Coin Heaven collection remained `1.000` in both arms. The
+candidate/control mean-visits-per-state ratio was `1.0149`.
+
+Five of nine criteria passed and four failed. The failed criteria were the strict self-kill confidence
+interval, Classic collection retention, deterministic repeats and maximum
+decision latency. One of 1,200 deterministic comparisons differed (control
+`r4`, Loot Crate seed `154033`). Its repeat also contained a `1240.2 ms`
+decision-time outlier, while all primary maxima were below `11 ms`; this single
+event caused the registered `100 ms` maximum gate to fail. It is retained as
+observed rather than rerun post hoc.
+
+The complete seed-level inputs to these claims are in `evidence.csv`;
+`training_diagnostics.csv`, `summary.csv` and `result.json` retain the derived
+values. The decision can be reproduced without the raw run tree via:
+
+```bash
+python -m training.analyze_issue142_full_no_route --verify-from-evidence
+```
+
+![Performance and safety](figures/performance_and_safety.png)
+
+![Learning efficiency](figures/learning_efficiency.png)
 
 ## Interpretation and decision
 
-Pending execution.
+The result supports the narrower mechanistic hypothesis descriptively: keeping
+the stronger penalty only for no-route states coincided with substantially
+fewer Classic self-kills than uniform half strength. The paired uncertainty is
+still too wide to establish the registered confirmatory safety improvement,
+and the treatment again sacrifices too much Classic collection. Therefore the
+candidate is rejected as the default, and the current default remains
+unchanged.
+
+The isolated repeat mismatch and latency outlier also mean the complete
+protocol did not reproduce deterministically under this execution. Because the
+scientific decision already fails the safety-CI and collection gates, rerunning
+that completed observation would not rescue the candidate and would violate
+the prospective comparison. No confirmation seeds were used.
 
 ## AI assistance
 
