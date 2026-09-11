@@ -51,3 +51,21 @@ and per-job provenance. `evaluation_completed` is not scientific analysis or
 Task 2 completion. A separate reduced-scope analysis must verify retained
 observations and apply the rules above; the original full-matrix analyzer must
 not be made to accept missing original data.
+
+## Owner-authorized runtime extension
+
+On September 11, after inspecting throughput but before interpreting outcomes,
+the owner requested that evaluation not stop early. Effective limits become
+24 wall hours from the original evaluation start (September 12 08:21 Berlin)
+and 32 cumulative CPU-hours; aggregate RAM remains 2 GiB, with one worker and
+the existing system-memory safeguard. The original eight-hour registration and
+authorization remain immutable; `runtime-extension.json` identifies the original
+and replacement runner hashes, limits, owner instruction and history snapshots.
+The handover preserves completed episodes, cumulative CPU and peak RAM, and
+original wall origin; at most the currently incomplete episode is repeated.
+A conservative CPU padding covers the final unsampled interval. No seeds,
+artifacts, observation counts or scientific decision rules change.
+
+The replacement supervisor requests Windows wakefulness while alive and clears
+that request on normal exit; permanent power settings are unchanged. Power loss,
+manual shutdown and external memory exhaustion cannot be guaranteed away.

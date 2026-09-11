@@ -44,3 +44,22 @@ def test_rejects_checkpoint_corruption(tmp_path):
     (tmp_path / "checkpoint.pt").write_bytes(b"changed")
     with pytest.raises(ValueError, match="checksum"):
         evaluation_spec(raw, "A", status, tmp_path)
+
+
+def test_budget_extension_preserves_registration_and_rejects_other_changes():
+    from scripts.evaluate_issue124_reduced import effective_limits
+
+    protocol = {"runner_sha256": "old", "limits": {
+        "cpu_seconds": 28800, "wall_seconds": 28800, "memory_bytes": 2 * 1024**3}}
+    extension = {"original_runner_sha256": "old", "runner_sha256": "new",
+                 "original_limits": dict(protocol["limits"]), "limits": {
+                     "cpu_seconds": 115200, "wall_seconds": 86400,
+                     "memory_bytes": 2 * 1024**3}}
+    assert effective_limits(protocol, extension, "new") == extension["limits"]
+    assert effective_limits(protocol, None, "old") == protocol["limits"]
+    assert protocol["limits"]["wall_seconds"] == 28800
+    with pytest.raises(ValueError):
+        effective_limits(protocol, extension, "other")
+    with pytest.raises(ValueError):
+        effective_limits(protocol, {**extension, "limits": {
+            **extension["limits"], "memory_bytes": 8 * 1024**3}}, "new")

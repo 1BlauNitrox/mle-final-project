@@ -42,6 +42,21 @@ def evaluation_spec(raw, cell, status, source):
     return raw
 
 
+def effective_limits(protocol, extension, runner_digest):
+    """Accept only the recorded owner extension; preserve original registration."""
+    if extension is None:
+        if protocol["runner_sha256"] != runner_digest:
+            raise ValueError("Registered evaluation runner changed")
+        return protocol["limits"]
+    expected = {"cpu_seconds": 115200, "wall_seconds": 86400,
+                "memory_bytes": 2 * 1024**3}
+    if (extension["original_runner_sha256"] != protocol["runner_sha256"]
+            or extension["runner_sha256"] != runner_digest
+            or extension["original_limits"] != protocol["limits"]
+            or extension["limits"] != expected):
+        raise ValueError("Invalid owner evaluation extension")
+    return expected
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--execution-root", type=Path, required=True)
@@ -103,8 +118,9 @@ def main():
             "runner_sha256": digest(__file__), "plans": plans,
         })
     protocol = campaign.read_json(protocol_path)
-    if protocol["runner_sha256"] != digest(__file__) or protocol["limits"] != vars(limits):
-        raise ValueError("Registered evaluation runner or limits changed")
+    extension_path = output / "runtime-extension.json"
+    extension = campaign.read_json(extension_path) if extension_path.exists() else None
+    limits = campaign.CampaignLimits(**effective_limits(protocol, extension, digest(__file__)))
     plans = []
     for record in protocol["plans"]:
         path = output / record["path"]
@@ -132,7 +148,12 @@ def main():
     auth = campaign.read_json(authorization)
     monitor = resume_monitor_type(campaign.LocalMonitor)(
         state_path=output / "resources.json", authorized_at=auth["authorized_at"],
-        limits=limits, campaign_metadata={"reduced_evaluation": protocol, "authorization": auth})
+        limits=limits, campaign_metadata={"reduced_evaluation": protocol, "authorization": auth,
+                                         "runtime_extension": extension})
+    # Request wakefulness only for this supervisor's lifetime; do not change power settings.
+    if sys.platform == "win32":
+        import ctypes
+        ctypes.windll.kernel32.SetThreadExecutionState(0x80000001)
     stop = threading.Event()
 
     def watch():
@@ -167,6 +188,8 @@ def main():
         stop.set()
         watcher.join(timeout=5)
         (output / "evaluation.lock").unlink(missing_ok=True)
+        if sys.platform == "win32":
+            ctypes.windll.kernel32.SetThreadExecutionState(0x80000000)
 
 
 if __name__ == "__main__":
