@@ -36,7 +36,7 @@ must reflect the owner's actual decision; it is not granted by copying docs:
 export REVIEWED="FULL_REVIEWED_SHA_FROM_PR_HANDOFF"
 export TASK147_AUTHORIZED=yes
 command -v tmux
-tmux new-session -d -s task3-147 "bash '$TASK147/repo/scripts/run_issue147_server.sh' '$TASK147' '$REVIEWED' > '$TASK147/supervisor.log' 2>&1"
+tmux new-session -d -s task3-147 "TASK147_AUTHORIZED='$TASK147_AUTHORIZED' TASK147_PYTHON='$TASK147_PYTHON' bash '$TASK147/repo/scripts/run_issue147_server.sh' '$TASK147' '$REVIEWED' > '$TASK147/supervisor.log' 2>&1"
 tail -n 30 "$TASK147/supervisor.log"
 ```
 
@@ -60,7 +60,7 @@ hardware record and budget. Do not resume concurrently or change a running
 campaign's source, seeds or parent:
 
 ```bash
-tmux new-session -d -s task3-147-resume "bash '$TASK147/repo/scripts/run_issue147_server.sh' '$TASK147' '$REVIEWED' --resume >> '$TASK147/supervisor.log' 2>&1"
+tmux new-session -d -s task3-147-resume "TASK147_AUTHORIZED='$TASK147_AUTHORIZED' TASK147_PYTHON='$TASK147_PYTHON' bash '$TASK147/repo/scripts/run_issue147_server.sh' '$TASK147' '$REVIEWED' --resume >> '$TASK147/supervisor.log' 2>&1"
 ```
 
 A retained `.task3-campaign.lock` after a crash requires verifying the original
