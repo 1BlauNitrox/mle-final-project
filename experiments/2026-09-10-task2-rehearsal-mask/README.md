@@ -1,10 +1,10 @@
-# Escape-enabled Task 2 rehearsal and masking preparation
+﻿# Escape-enabled Task 2 rehearsal and masking preparation
 
 Refs #124; prerequisite #123. Prospective executable protocol, awaiting
 non-author review. The user explicitly overrode the pre-training review gate
 on September 10 ("I want you to run it anyways!"). This execution-only
 exception does not approve or merge either PR. The user confirmed four arms, four workers, 8 GiB RAM and
-ten wall hours for local Windows execution. Execution started and stopped incomplete on September 10; see [INTERRUPTION.md](INTERRUPTION.md) for retained evidence and remaining work.
+ten wall hours for local Windows execution. Execution started and stopped incomplete on September 10; see [SECOND-INTERRUPTION.md](SECOND-INTERRUPTION.md) for the current state and [INTERRUPTION.md](INTERRUPTION.md) for the first stop.
 
 | Arm | Task 1 practice | Legal-action masking |
 | --- | --- | --- |
@@ -135,3 +135,4 @@ Task 3 work on September 10-12, Task 4 (#126) on September 13-16, optional
 compatibility on September 17, candidate freeze by September 19, and final
 verification/submission (#127) before September 21 at 21:00 Europe/Berlin.
 These are targets, not a promise of completed learning milestones.
+
