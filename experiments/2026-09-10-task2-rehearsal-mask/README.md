@@ -1,4 +1,4 @@
-﻿# Escape-enabled Task 2 rehearsal and masking preparation
+# Escape-enabled Task 2 rehearsal and masking preparation
 
 Refs #124; prerequisite #123. Prospective executable protocol, awaiting
 non-author review. The user explicitly overrode the pre-training review gate
@@ -135,4 +135,3 @@ Task 3 work on September 10-12, Task 4 (#126) on September 13-16, optional
 compatibility on September 17, candidate freeze by September 19, and final
 verification/submission (#127) before September 21 at 21:00 Europe/Berlin.
 These are targets, not a promise of completed learning milestones.
-
