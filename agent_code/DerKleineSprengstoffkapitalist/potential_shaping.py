@@ -14,12 +14,19 @@ from .features.navigation import _blocked_positions
 NO_POTENTIAL_SHAPING = "none"
 COMPACT_SAFETY_POTENTIAL_SHAPING = "compact_safety"
 ESCAPE_DISTANCE_POTENTIAL_SHAPING = "escape_distance"
+HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING = "escape_distance_half"
 
 VALID_POTENTIAL_SHAPING_MODES = (
     NO_POTENTIAL_SHAPING,
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
 )
+
+ESCAPE_DISTANCE_POTENTIAL_SCALES = {
+    ESCAPE_DISTANCE_POTENTIAL_SHAPING: 1.0,
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING: 0.5,
+}
 
 
 def escape_distance_potential_from_distance(distance: int | None) -> float:
@@ -42,8 +49,11 @@ def escape_distance_potential_from_distance(distance: int | None) -> float:
     return -3.0
 
 
-def escape_distance_potential(game_state: dict) -> float:
+def escape_distance_potential(game_state: dict, *, scale: float = 1.0) -> float:
     """Return the time-aware escape-distance potential for a game state."""
+    if not 0.0 < scale <= 1.0:
+        raise ValueError("Escape-distance potential scale must be in (0, 1].")
+
     field = game_state["field"]
     position = game_state["self"][3]
     bombs = game_state.get("bombs", [])
@@ -59,7 +69,7 @@ def escape_distance_potential(game_state: dict) -> float:
         bombs,
         position,
     )
-    return escape_distance_potential_from_distance(distance)
+    return scale * escape_distance_potential_from_distance(distance)
 
 
 def potential_reward_from_values(
@@ -158,7 +168,7 @@ def apply_potential_shaping(
     if mode == NO_POTENTIAL_SHAPING:
         return float(reward)
 
-    if mode == ESCAPE_DISTANCE_POTENTIAL_SHAPING:
+    if mode in ESCAPE_DISTANCE_POTENTIAL_SCALES:
         if current_external_potential is None:
             raise ValueError(
                 "Escape-distance shaping requires the current potential."
