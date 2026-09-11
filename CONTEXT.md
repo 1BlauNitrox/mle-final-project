@@ -145,7 +145,7 @@ new compute; do not bypass the gate or claim #51 completion.
 
 1. Review/merge Task 2 result records; preserve failed gates and historical data.
 2. Finish/analyze current #109; prepare/review #137 in parallel, execute only if
-   its predecessor gate passes. Diagnose reported loops on development data;
+   its predecessor gate passes. Diagnose reported loops under #146 on development data;
    a learned cycle is not automatically a code defect.
 3. Prepare #126 Task 4 control/treatment/analyzer now. Main candidate idea:
    strong-opponent-only versus fixed opponent-mixture training under matched

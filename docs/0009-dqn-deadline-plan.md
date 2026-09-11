@@ -97,8 +97,8 @@ Snapshot September 11; refresh before acting:
   after #130 merges, revalidate. #140: green, awaiting review, stacked on #120.
   Merge order #130 -> #120 -> #140; merging is separate from training permission.
 - #100: closed without merge as deferred scope. It only records an underspecified
-  safety-constrained-exploration proposal, has changes requested, and wrongly
-  says `Closes #98`. The reference is now `Refs #98`; the branch and review
+  safety-constrained-exploration proposal, had changes requested and an incorrect
+  `Closes #98` reference. The reference is now `Refs #98`; the branch and review
   history are preserved. Keep #98 open as deferred backlog, not a failed scientific experiment.
 - #89/#90/#98 and broad Task 2 sweeps are off the default critical path. #90 may
   be reconsidered only after a diagnosis supports its mechanism and a new
@@ -191,7 +191,7 @@ measured jobs per minute on that exact workload, with recovery margin.
    existing five-replica 10,000-episode campaigns with 1,920 evaluation episodes
    each. Their registered conditions and criteria stay unchanged. These are the
    immediate source of evidence, not a reason to launch another baseline.
-2. **Loop diagnosis**: capture exact development seed, checkpoint/source hash,
+2. **Loop diagnosis** (#146): capture exact development seed, checkpoint/source hash,
    repeated positions, feature vectors, Q-values, selected/valid actions and
    rewards. Distinguish deliberate safe waiting from no-progress cycles. Define
    a stall statistic before comparing treatments; never count GUI impressions
