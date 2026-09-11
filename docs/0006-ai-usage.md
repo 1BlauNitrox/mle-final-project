@@ -1,5 +1,14 @@
 # 0006 AI Usage and Disclosure
 
+Issue #109 result analysis (2026-09-12): OpenAI Codex verified the owner's
+download hash, retained source/checkpoint identity and complete campaign
+observations, and reproduced the preregistered negative decision. Codex fixed
+the tested round-identity latency lookup defect and added portable historical
+source/dependency verification. It prepared result tables, durable evidence,
+documentation and PR updates. No scientific games were launched, gates changed,
+replicas discarded or trained model selected. Human review must verify the
+interpretation and evidence before accepting the result.
+
 Issue #125 preparation (2026-09-10): OpenAI Codex drafted the 26-plus-13 input
 migration requirements and regression checklist from the verified Issue #107
 limitations. This is a proposed design, not implemented or validated behavior;

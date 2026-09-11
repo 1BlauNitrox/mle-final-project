@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from training.aggregate import read_episodes_csv
-from training.metrics import normalize_episode_rows
+from training.metrics import _parse_round_number, normalize_episode_rows
 from training.run_task3_campaign import (
     CONFIG,
     portable_plan,
@@ -23,6 +23,13 @@ from training.run_task3_campaign import (
 
 LATENCY = ("decision_time_median_ms", "decision_time_p95_ms", "decision_time_max_ms")
 SUITES = ("classic-peaceful", "classic-retention", "coin-heaven-retention", "loot-crate-retention")
+
+
+def index_rounds(raw):
+    """Identify numeric and timestamped framework round keys independently of JSON order."""
+    indexed = {_parse_round_number(key): value for key, value in raw["by_round"].items()}
+    require(len(indexed) == len(raw["by_round"]), "Duplicate normalized round keys")
+    return indexed
 
 
 def crossed_interval(candidate, reference, *, seed=109, samples=10000, reference_scale=1.0):
@@ -321,15 +328,14 @@ def load_evidence(root, binding_directory):
             require(
                 len(selected) == len(normalized) == job.rounds, "Missing observed-agent episodes"
             )
-            raw_rounds = list(raw["by_round"].values())
+            raw_rounds = index_rounds(raw)
             for row, source in zip(selected, normalized, strict=True):
                 require(
                     all(row.get(k) == v for k, v in source.items()), "CSV/raw observation mismatch"
                 )
                 require(row["opponents_eliminated"] is not None, "Missing attributable kills")
                 require(row["opponent_count"] == len(job.opponents), "Opponent count mismatch")
-                # Raw round order matches the framework insertion order; find by normalized round.
-                times = raw_rounds[row["round"] - 1]["agents"][observed]["decision_times_ms"]
+                times = raw_rounds[row["round"]]["agents"][observed]["decision_times_ms"]
                 require(
                     times and all(np.isfinite(t) and t >= 0 for t in times),
                     "Missing/nonfinite latency evidence",
