@@ -174,6 +174,14 @@ def test_compact_export_recomputes_and_rejects_tampering(tmp_path, monkeypatch):
     output = tmp_path / "analysis"
     analysis.analyze(tmp_path, tmp_path, output)
     assert analysis.verify_compact(output)["verified"]
+    result_path = output / "result.json"
+    result = campaign.read_json(result_path)
+    result["selected_artifact_sha256"] = "b" * 64
+    result_path.write_text(__import__("json").dumps(result))
+    with pytest.raises(ValueError, match="Selected artifact"):
+        analysis.verify_compact(output)
+    result["selected_artifact_sha256"] = "a" * 64
+    result_path.write_text(__import__("json").dumps(result))
     path = output / "observations.json.gz"
     path.write_bytes(path.read_bytes() + b"tampered")
     with pytest.raises(ValueError, match="hash/size"):

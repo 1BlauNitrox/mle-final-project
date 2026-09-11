@@ -456,6 +456,16 @@ def verify_compact(directory):
     )
     with gzip.open(path, "rt", encoding="utf-8") as file:
         observations = json.load(file)
+    if result.get("selected_replica") is not None:
+        selected_hashes = {
+            row["artifact_sha256"]
+            for row in observations["evaluation"]
+            if row["arm"] == "candidate" and row["replica"] == result["selected_replica"]
+        }
+        require(
+            len(selected_hashes) == 1 and result.get("selected_artifact_sha256") in selected_hashes,
+            "Selected artifact does not match retained replica observations",
+        )
     computed = decide(observations["evaluation"], config)
     require(all(result[k] == value for k, value in computed.items()), "Compact result mismatch")
     return {"verified": True, "status": result["status"], "task2_complete": False}
