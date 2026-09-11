@@ -218,6 +218,33 @@ Example plans are in `training/run_plans/`:
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
 
+### Issue #109 Task 3 peaceful-opponent comparison
+
+Issue #109 pairs five freshly-trained Task 3 replicas (`classic` against
+`peaceful_agent`) against one frozen Task 2 predecessor evaluated on the same
+seeds, plus the standard opponent-free retention battery. A third plan against
+`coin_collector_agent` is prepared but gated on the peaceful-stage decision.
+Validate the full matrix, seed populations, and budgets without starting a run:
+
+```bash
+python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml --dry-run
+python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
+```
+
+The user-approved numerical gates and 40-pair development suites are registered.
+The parent remains explicitly configurable: historical #107 A/r2 can support
+exploratory work before Task 2 completes, while a later selected Task 2 artifact
+requires a new binding. Use `python -m training.run_task3_campaign --dry-run`
+for matrix/seed preflight, the same launcher with a binding and separate human
+authorization for budget-enforced execution, and
+`python -m training.analyze_task3_campaign` for verified paired analysis.
+Fresh peer review and server compute authorization remain required. The
+coin-collector template is gated on the peaceful decision under exploratory
+#137; #51 retains its validated-predecessor scope. Full protocol,
+rationale, and exact commands are registered in
+`experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
+integration validation only and produces no performance evidence.
+
 ### Issue #107 Task 2 factorial campaign
 
 Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1
@@ -607,6 +634,17 @@ diagnostics such as epsilon, Q-table size, and mean absolute temporal-difference
 error.
 
 ## Metric interpretation
+
+### Task 3 match outcomes
+
+The optional CSV fields `opponents_eliminated` (native attributable `kills`),
+`opponent_count`, `score_margin`, `first_place` and `tied_first` retain match
+outcomes for each participant. `score_margin` is own score minus the highest
+other score. `first_place` means strictly greater score than every opponent;
+ties at the highest score are recorded separately in `tied_first`. Opponent-free
+episodes have no match outcome (empty fields), and historical missing kill
+counts remain unavailable rather than becoming zero. An observed-agent analyzer
+must filter by `metadata.json`'s `observed_agent`, not aggregate opponent rows.
 
 ### Invalid-action rate
 

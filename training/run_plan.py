@@ -540,6 +540,10 @@ def _run_job(
                 }
             },
             process_monitor=process_monitor,
+            seed_opponents=(getattr(process_monitor, "campaign_metadata", None) or {}).get(
+                "opponent_seed_policy"
+            )
+            == "task3_per_slot_v1",
         )
         if job.kind == "evaluation":
             artifact_after = _sha256_file(artifact) if artifact and artifact.is_file() else None

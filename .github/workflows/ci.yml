@@ -921,7 +921,7 @@ jobs:
           test -s agent_code/DagobertDuckDQNTask3/artifact.json
           test -s agent_code/DagobertDuckDQNTask3/parent-artifact.json
           echo \
-            "7e3ac14a88e33e43da7736ec56507d935f71af059b8ac42442d550184ae39902  agent_code/DagobertDuckDQNTask3/checkpoint.pt" \
+            "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599  agent_code/DagobertDuckDQNTask3/checkpoint.pt" \
             | sha256sum --check
           python -m pytest \
             tests/test_DagobertDuckDQNTask3_opponents.py \
