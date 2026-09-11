@@ -21,7 +21,7 @@ from training.run_issue124_campaign import (
 
 
 def test_finalized_protocol_loads_all_six_plans():
-    plans = validate_protocol()
+    plans = validate_protocol(historical=True)
     assert len(plans) == 6
     assert all(plan.max_parallel_training == 1 for plan in plans.values())
 
@@ -210,3 +210,8 @@ def test_owner_exception_is_explicit_recorded_and_default_still_requires_review(
     assert record["status"] == "owner_authorized_exception_no_peer_approval"
     assert record["authorized_by"] == "1BlauNitrox"
     assert "no PR approval or merge" in record["scope"]
+
+
+def test_current_seed_audit_still_rejects_later_overlap():
+    with pytest.raises(ValueError, match="Seed collision"):
+        validate_protocol()

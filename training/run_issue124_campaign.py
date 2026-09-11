@@ -72,7 +72,7 @@ def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
-def validate_protocol():
+def validate_protocol(*, historical=False):
     config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
     if config["status"] != "prospective_protocol" or config["issue"] != 124:
         raise ValueError("Issue #124 protocol is not finalized")
@@ -96,6 +96,18 @@ def validate_protocol():
     if len(evaluation) != 5120:
         raise ValueError("Evaluation matrix differs from registered budget")
     seeds = {seed for job in training + evaluation for seed in (job.world_seed, job.agent_seed)}
+    if historical:
+        inventory_path = CONFIG.parent / "registered-seed-inventory.json"
+        if (
+            sha256(inventory_path)
+            != "62469b447715ae9ef1a9965e46ba62acefdc2f1130b1ec0e2cf031162c1f42c5"
+        ):
+            raise ValueError("Registered seed inventory changed")
+        inventory = read_json(inventory_path)
+        for name, record in inventory["files"].items():
+            if seeds.intersection(record["seeds"]):
+                raise ValueError(f"Historical seed collision with {name}")
+        return plans
     for path in list((ROOT / "training/run_plans").glob("*.yaml")) + list(
         (ROOT / "experiments").glob("*/config.yaml")
     ):

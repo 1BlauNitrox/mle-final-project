@@ -1,9 +1,9 @@
 """Verify the proposed matched schedule without authorizing execution."""
 
+import json
 from collections import Counter
 from pathlib import Path
 
-from training.run_issue107_campaign import _seed_values_from_path
 from training.run_plan import load_plan
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,9 +57,11 @@ def test_new_job_seeds_do_not_overlap_prior_registered_seed_values():
     for path in (ROOT / "training/run_plans").glob("issue124-*.yaml"):
         plan = load_plan(path)
         registered.update(seed for job in plan.jobs for seed in (job.world_seed, job.agent_seed))
-    candidates = list((ROOT / "training/run_plans").glob("*.yaml"))
-    candidates += list((ROOT / "experiments").glob("*/config.yaml"))
-    for path in candidates:
-        if "issue124" in path.name or path.parent.name == "2026-09-10-task2-rehearsal-mask":
-            continue
-        assert not registered.intersection(_seed_values_from_path(path)), path
+    inventory = json.loads(
+        (
+            ROOT / "experiments/2026-09-10-task2-rehearsal-mask/registered-seed-inventory.json"
+        ).read_text()
+    )
+    assert inventory["commit"] == "1ce18c8736b6a50773b60b95ec0f11dd4c901028"
+    for name, record in inventory["files"].items():
+        assert not registered.intersection(record["seeds"]), name
