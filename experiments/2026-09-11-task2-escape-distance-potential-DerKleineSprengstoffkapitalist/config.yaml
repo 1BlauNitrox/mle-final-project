@@ -1,0 +1,157 @@
+schema_version: 1
+issue: 135
+status: completed_mixed
+evidence_scope: completed_development_experiment
+agent: DerKleineSprengstoffkapitalist
+owner: LiliWestermann
+
+revisions:
+  registration_base: "34c6a67"
+  implementation_commit: "3bc9411"
+  experiment_commit: "579d7878a3aaa318558b4b46560fa84e427cb6e4"
+  framework_revision: "34c6a67"
+
+treatments:
+  control:
+    state_representation: compact_decision
+    potential_shaping: none
+    tabular_initialization: zeros
+    run_plan: training/run_plans/issue135-compact-task2-control.yaml
+  candidate:
+    state_representation: compact_decision
+    potential_shaping: escape_distance
+    tabular_initialization: zeros
+    run_plan: training/run_plans/issue135-compact-task2-escape-distance.yaml
+
+potential:
+  safe: 0.0
+  persistent_safety_distance_1: -1.0
+  persistent_safety_distance_2: -2.0
+  persistent_safety_distance_3_or_more: -3.0
+  no_complete_safe_route: -5.0
+  formula: gamma_phi_next_minus_phi_current
+  discount_factor: 0.9
+  terminal_next_potential: 0.0
+  maximum_search_steps: 10
+
+controlled:
+  algorithm: one_step_tabular_q_learning
+  learning_rate: 0.05
+  discount_factor: 0.9
+  initial_epsilon: 1.0
+  epsilon_decay: 0.99
+  minimum_epsilon: 0.1
+  action_masking: none
+  useful_bomb_reward: 0.0
+  state_representation: compact_decision
+  q_value_initialization: zeros
+  opponents: []
+  checkpoint_selection: final_exact_budget
+  replicas: 5
+  episodes_per_replica: 10000
+
+training:
+  seeds:
+    - {id: r1, world_seed: 121001, agent_seed: 221001}
+    - {id: r2, world_seed: 121002, agent_seed: 221002}
+    - {id: r3, world_seed: 121003, agent_seed: 221003}
+    - {id: r4, world_seed: 121004, agent_seed: 221004}
+    - {id: r5, world_seed: 121005, agent_seed: 221005}
+  curriculum:
+    - {scenario: coin-heaven, rounds: 2000}
+    - {scenario: loot-crate, rounds: 2000}
+    - {scenario: classic, rounds: 6000}
+
+evaluation:
+  rounds_per_seed: 1
+  deterministic_repeat: true
+  classic_world_seeds: {start: 122001, stop_inclusive: 122040}
+  coin_heaven_world_seeds: {start: 123001, stop_inclusive: 123040}
+  loot_crate_world_seeds: {start: 124001, stop_inclusive: 124040}
+  confirmation_seeds_used: false
+
+primary_metric:
+  name: classic_self_kill_rate
+  contrast: candidate_minus_control
+  pairing: [replica, world_seed]
+
+criteria:
+  classic_self_kill_mean_difference_below: 0.0
+  classic_self_kill_ci_upper_below: 0.0
+  replicas_with_lower_self_kill_minimum: 4
+  classic_collection_mean_difference_minimum: -0.05
+  mean_visits_per_state_candidate_control_ratio_minimum: 0.90
+  deterministic_repeat: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+
+analysis:
+  bootstrap_resamples: 10000
+  self_kill_resampler_seed: 135
+  classic_collection_resampler_seed: 136
+
+compute_budget:
+  maximum_training_episodes: 100000
+  planned_evaluation_episodes: 2400
+  maximum_evaluation_episodes: 2480
+  maximum_cpu_hours: 36
+  paid_resources: false
+
+approval:
+  required_before_training: false
+  waived_by: LiliWestermann
+  reason: explicit_instruction_to_execute_without_intermediate_approval
+  authorized_implementation_commit: "3bc9411"
+
+outputs:
+  commit: [README.md, config.yaml, summary.csv, result.json, figures/]
+  external:
+    - trained_models
+    - resolved_plans
+    - statuses
+    - per_episode_evidence
+    - evaluation_metadata
+
+results:
+  decision: reject_as_default_due_to_registered_failures
+  overall_pass: false
+  deterministic_repeats: true
+  primary_evaluation_episodes: 1200
+  repeat_evaluation_episodes: 1200
+  classic:
+    control_self_kill_rate: 0.055
+    candidate_self_kill_rate: 0.015
+    self_kill_candidate_minus_control: -0.04
+    self_kill_ci_lower: -0.085
+    self_kill_ci_upper: 0.0
+    replicas_with_lower_self_kill: 4
+    control_collection_fraction: 0.1322222222222222
+    candidate_collection_fraction: 0.04833333333333333
+    collection_candidate_minus_control: -0.08388888888888889
+    collection_ci_lower: -0.13277777777777777
+    collection_ci_upper: -0.016666666666666666
+  coin_heaven:
+    control_collection_fraction: 0.9769
+    candidate_collection_fraction: 1.0
+    control_self_kill_rate: 0.0
+    candidate_self_kill_rate: 0.0
+  loot_crate:
+    control_collection_fraction: 0.1718
+    candidate_collection_fraction: 0.1182
+    control_self_kill_rate: 0.195
+    candidate_self_kill_rate: 0.12
+  learning_efficiency:
+    control_mean_q_table_size: 1075.2
+    candidate_mean_q_table_size: 1067.2
+    control_mean_visits_per_state: 657.690598707494
+    candidate_mean_visits_per_state: 830.8467429928107
+    candidate_control_visits_ratio: 1.2632790321552512
+    control_singleton_state_fraction: 0.06075977569518286
+    candidate_singleton_state_fraction: 0.06267077939335015
+    control_unseen_state_rate: 0.000074178896674503
+    candidate_unseen_state_rate: 0.000050776026945144964
+  latency:
+    maximum_primary_p95_ms: 1.7013549804687493
+    maximum_candidate_decision_ms: 197.68381118774414
+    p95_within_limit: true
+    maximum_within_limit: false
