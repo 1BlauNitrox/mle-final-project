@@ -1,5 +1,12 @@
 # Training Orchestration
 
+For the interrupted, pinned Issue #150 server campaign, use the external
+[timestamp resume adapter](../experiments/2026-09-12-task3-resume-recovery/README.md)
+after storage recovery. It preserves original authorization and resource limits
+while handling equivalent UTC timestamp spellings in memory. It is restricted
+to completing evaluations after all ten training jobs have finished; do not
+pull new source into an existing campaign checkout.
+
 Repeated training blocks can set `world_seed_offset` in a run-plan stage.
 The runner adds it to each replica's world seed and checks the resolved seed
 against evaluation populations and the NumPy seed range. Omission preserves
