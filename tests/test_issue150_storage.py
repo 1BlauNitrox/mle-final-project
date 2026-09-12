@@ -210,4 +210,3 @@ def test_runner_rejects_low_storage_before_copying_workspace(tmp_path, monkeypat
         )
     assert status["jobs"]["j"] == {"status": "pending", "attempts": []}
     assert not (tmp_path / "plan").exists()
-
