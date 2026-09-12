@@ -1,0 +1,29 @@
+{
+  "evidence_scope": "locally_verified_result_external_publication_pending",
+  "publication_status": "blocked_pending_exact_archive_publication_approval",
+  "intended_release": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue150-evidence-v1",
+  "execution_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+  "protocol_sha256": "69bff393fb2637d8be2d678cdec3d66aa7c8286e570b3e0b4c19c03b28fe8e27",
+  "main_archive": "issue150-evidence.tar.gz",
+  "main_archive_sha256": "c40f4b934fc77607c6f6f0a05a139f96818943671dc82040c2a710495a73da4f",
+  "main_archive_size_bytes": 123938950,
+  "manifest": "issue150-evidence.tar.gz.manifest.json",
+  "manifest_size_bytes": 2491340,
+  "recovery_archive": "issue150-recovery.tar.gz",
+  "recovery_archive_sha256": "a958a7856dcb3fdf0787699817ff2f85d218397b1df7c521ea82ddad2531b980",
+  "recovery_archive_size_bytes": 28654,
+  "contents": "Main: all retained attempts/raw statistics/CSV, final/live artifacts, binding, authorization/resources, server analysis. Recovery: two helpers and two journals.",
+  "raw_verification_command": "python scripts/verify_issue150_results.py --archive issue150-evidence.tar.gz --manifest issue150-evidence.tar.gz.manifest.json --recovery issue150-recovery.tar.gz --output verification-new",
+  "source_retrieval_command": "git fetch origin 6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+  "required_human_work": [
+    "Read, verify and manually modify the uncommitted README draft; confirm authorship edits before staging.",
+    "Manually add material assistance to docs/0006-ai-usage.md.",
+    "Update Task 3 agent card and stale campaign status in the preparation worktree."
+  ],
+  "excluded_from_committed_csv": "Raw per-decision latency arrays and per-episode training observations remain in the pending external archive; full pooled latency reproduction requires that archive.",
+  "verification_tool_commit": "ca88bd77ccdd88fea103dc7626fb10db94d753f2",
+  "verification_tool_sha256": "928526f93f2386f7d18d3e37cd49c0dc2710f8fd8949b97321fce822415eeeca",
+  "manifest_sha256": "419f0d2e4be4b5bf974341bb28b33d7ee91d6969bb69badc4e1b9f6ec994e599",
+  "storage_helper_source": "d508f425a3c6febe9b38671cf1d85b6078164718",
+  "resume_helper_source": "6128eef069aaf11d8af1dc9a1283a6da4a72db74"
+}

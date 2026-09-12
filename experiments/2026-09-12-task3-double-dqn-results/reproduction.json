@@ -1,0 +1,36 @@
+{
+  "execution_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+  "analysis_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+  "raw_observations_equal": true,
+  "registered_result_equal": true,
+  "source_manifest_equal": true,
+  "execution_dependencies": {
+    "python": "3.13.15",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.3",
+    "psutil": "7.2.2",
+    "pygame": "2.6.1",
+    "pytest": "9.1.1",
+    "PyYAML": "6.0.3",
+    "ruff": "0.16.7",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "torch": "2.13.0+cpu",
+    "tqdm": "4.70.1"
+  },
+  "analysis_python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+  "analysis_numpy": "2.5.1",
+  "training_episodes": 100000,
+  "evaluation_episodes": 3520,
+  "decision": {
+    "status": "exploratory_mixed_or_negative",
+    "selected_arm": null,
+    "selected_replica": null
+  },
+  "registered_bootstrap": {
+    "samples": 10000,
+    "seed": 150,
+    "confidence": 0.95,
+    "method": "Crossed replica/world-pair percentile bootstrap; resample replicas and common seed-pair indices independently, reuse each reference observation across candidates."
+  }
+}
