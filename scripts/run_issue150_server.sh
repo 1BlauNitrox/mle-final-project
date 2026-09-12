@@ -11,7 +11,8 @@ PYTHON="${TASK150_PYTHON:-$HOME/task3-issue109/repo/.venv/bin/python}"
 [[ "$(git rev-parse HEAD)" == "$SOURCE" ]] || { echo 'Source differs from pinned commit.'; exit 2; }
 [[ -z "$(git status --porcelain)" ]] || { echo 'Source must be clean.'; exit 2; }
 if [[ ! -e "$ROOT/run-completed" ]]; then
-  "$PYTHON" -c 'import psutil,shutil; assert psutil.virtual_memory().available >= 8*1024**3, "Need 8 GiB free RAM"; assert shutil.disk_usage(".").free >= 8*1024**3, "Need 8 GiB free disk for compact logging"'
+  "$PYTHON" -c 'import psutil; assert psutil.virtual_memory().available >= 8*1024**3, "Need 8 GiB free RAM"'
+  "$PYTHON" -m training.task3_double_campaign storage-check --binding-dir "$ROOT/binding" --output-root "$ROOT/runs"
   if [[ ! -e "$ROOT/hardware.txt" ]]; then
     { uname -a; lscpu; free -h; "$PYTHON" --version; printf '%s\n' "${TASK150_REVIEW_NOTE:-Review/owner execution decision recorded on Issue 150}"; } > "$ROOT/hardware.txt"
   fi

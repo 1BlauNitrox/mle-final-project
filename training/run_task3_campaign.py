@@ -205,7 +205,7 @@ def git(*args):
     return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
 
 
-def execute(args, *, validator=None, issue=109, plan_order=None):
+def execute(args, *, validator=None, issue=109, plan_order=None, monitor_factory=None):
     config, plans, report = (validator or validate_protocol)(args.binding_dir)
     require(args.authorize_compute, "Execution requires --authorize-compute")
     require(args.binding_dir is not None, "Execution requires --binding-dir")
@@ -264,7 +264,7 @@ def execute(args, *, validator=None, issue=109, plan_order=None):
             "authorization_sha256": sha256(auth_path),
             "reviewed_commit": args.reviewed_commit,
         }
-        monitor = CampaignResourceMonitor(
+        monitor = (monitor_factory or CampaignResourceMonitor)(
             state_path=root / "resources.json",
             authorized_at=auth["authorized_at"],
             limits=CampaignLimits(

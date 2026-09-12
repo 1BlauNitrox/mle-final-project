@@ -214,7 +214,10 @@ def test_protected_replay_requires_initial_coin_heaven_stage(tmp_path: Path) -> 
         run_plan.load_plan(_write_plan(tmp_path, data))
 
 
-def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> None:
+@pytest.mark.parametrize("storage_guard", [False, True])
+def test_execution_preserves_failures_and_resumes_exactly(
+    tmp_path: Path, storage_guard: bool
+) -> None:
     data = _plan_data()
     data["max_parallel_training"] = 1
     data["replicas"] = [data["replicas"][0]]
@@ -225,6 +228,15 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     calls: list[dict[str, object]] = []
     campaign = {"reviewed_commit": "a" * 40, "cpu_hours_max": 48}
     process_monitor = SimpleNamespace(campaign_metadata=campaign)
+    guard_events = []
+    if storage_guard:
+        def begin(job, alias, attempt):
+            assert not attempt.exists()
+            guard_events.append(("begin", job.run_id))
+
+        process_monitor.begin_job = begin
+        process_monitor.check = lambda: guard_events.append(("check", None))
+        process_monitor.end_job = lambda job: guard_events.append(("end", job.run_id))
 
     def fake_runner(**kwargs: object) -> Path:
         calls.append(kwargs)
@@ -270,6 +282,10 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
     assert calls[-1]["metadata_extra"]["run_plan"]["artifact_writable"] is False
     assert calls[-1]["metadata_extra"]["run_plan"]["replay_treatment"] == "uniform"
     assert calls[-1]["metadata_extra"]["run_plan"]["campaign"] == campaign
+    if storage_guard:
+        assert [event for event, _ in guard_events] == [
+            "begin", "end", "begin", "check", "end", "begin", "check", "end"
+        ]
     assert calls[-1]["environment_overrides"] == {
         "BOMBERMAN_DQN_ACTION_MASKING": "none",
         "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": "1.0",

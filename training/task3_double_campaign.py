@@ -7,6 +7,7 @@ import gzip
 import json
 import os
 import tarfile
+from functools import partial
 from pathlib import Path
 
 import torch
@@ -16,6 +17,7 @@ from scripts.prepare_task3_baseline import prepare as migrate
 from training import analyze_task3_campaign as analysis
 from training import run_task3_campaign as campaign
 from training import task3_mask_campaign as previous
+from training.issue150_storage import StorageMonitor, preflight, storage_budget
 from training.run_issue107_campaign import _seed_values_from_path
 from training.run_plan import load_plan
 
@@ -211,6 +213,7 @@ def validate(directory=None):
             "parent_bound": directory is not None,
             "seed_audit": audit,
             "compute_authorized": False,
+            "storage": storage_budget(plans),
         },
     )
 
@@ -356,7 +359,16 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "action",
-        choices=["prepare", "dry-run", "run", "analyze", "verify", "export", "export-incomplete"],
+        choices=[
+            "prepare",
+            "dry-run",
+            "storage-check",
+            "run",
+            "analyze",
+            "verify",
+            "export",
+            "export-incomplete",
+        ],
     )
     for name in ("parent", "binding-dir", "output-root", "analysis-dir", "archive"):
         parser.add_argument("--" + name, type=Path)
@@ -372,13 +384,27 @@ def main():
         value = prepare(args.parent, args.binding_dir)
     elif args.action == "dry-run":
         value = validate(args.binding_dir)[2]
+    elif args.action == "storage-check":
+        value = preflight(validate(args.binding_dir)[1], args.output_root, ROOT)
     elif args.action == "run":
         require(
             args.allocation_hours is not None and args.allocation_hours >= 11,
             "Reserve campaign plus export allocation",
         )
         os.environ["BOMBERMAN_COMPACT_LOGS"] = "1"
-        campaign.execute(args, validator=validate, issue=150, plan_order=ARMS)
+
+        def validated_storage(directory):
+            config, plans, report = validate(directory)
+            report["storage"] = preflight(plans, args.output_root, ROOT)
+            return config, plans, report
+
+        campaign.execute(
+            args,
+            validator=validated_storage,
+            issue=150,
+            plan_order=ARMS,
+            monitor_factory=partial(StorageMonitor, source_root=ROOT),
+        )
         value = {"completed": True}
     elif args.action == "analyze":
         value = analyze(args.output_root, args.binding_dir, args.analysis_dir)
