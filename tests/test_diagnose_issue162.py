@@ -71,8 +71,10 @@ def test_registered_matrix_and_pins(monkeypatch):
     assert [r["replica"] for r in config["replicas"]] == [f"r{i}" for i in range(1, 6)]
     assert [c["world_seed"] for c in config["cases"]] == [1501101, 1501102, 1501201]
     assert config["wall_seconds"] == config["cpu_seconds"] == 1800
-    original = (b"world_seed in {1460001, 1460002} and agent_seed == world_seed + 1000000\n"
-                b"Diagnostic altered checkpoint")
+    original = (
+        b"world_seed in {1460001, 1460002} and agent_seed == world_seed + 1000000\n"
+        b"Diagnostic altered checkpoint"
+    )
     monkeypatch.setattr(
         "scripts.diagnose_issue162.subprocess.check_output", lambda *a, **k: original
     )

@@ -166,6 +166,7 @@ def run(evidence, output):
                     "MKL_NUM_THREADS": "1",
                 }
                 job_start, cpu = time.monotonic(), 0.0
+                cpu_by_pid = {}
                 with (output / f"{name}.log").open("w", encoding="utf-8") as log:
                     child = subprocess.Popen(
                         command,
@@ -178,9 +179,17 @@ def run(evidence, output):
                         process = psutil.Process(child.pid)
                         while child.poll() is None:
                             try:
-                                times = process.cpu_times()
-                                cpu = max(cpu, times.user + times.system)
-                                memory = process.memory_info().rss
+                                memory = 0
+                                for item in [process, *process.children(recursive=True)]:
+                                    try:
+                                        times = item.cpu_times()
+                                        cpu_by_pid[item.pid] = max(
+                                            cpu_by_pid.get(item.pid, 0), times.user + times.system
+                                        )
+                                        memory += item.memory_info().rss
+                                    except psutil.NoSuchProcess:
+                                        continue
+                                cpu = sum(cpu_by_pid.values())
                                 report["peak_memory_bytes"] = max(
                                     report["peak_memory_bytes"], memory
                                 )
@@ -198,7 +207,11 @@ def run(evidence, output):
                             raise RuntimeError(f"Diagnostic failed; retained log: {name}")
                     finally:
                         if child.poll() is None:
-                            child.kill()
+                            for item in reversed([process, *process.children(recursive=True)]):
+                                try:
+                                    item.kill()
+                                except psutil.NoSuchProcess:
+                                    pass
                             child.wait()
                         report["cpu_seconds"] += cpu
                 if digest(checkpoint) != r["sha256"]:
