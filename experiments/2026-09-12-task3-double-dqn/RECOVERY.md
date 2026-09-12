@@ -62,8 +62,9 @@ are skipped and the abandoned evaluation gets a retained new attempt. If the
 budget is no longer sufficient, preserve/export partial evidence and register
 a separate owner-approved completion protocol; do not silently extend this run.
 
-Validation: five unit tests cover dry-run, byte/path/attribute preservation,
-idempotence, hash mismatch, active locks/workers, path escape and link failures.
+Validation: six unit tests cover dry-run, byte/path/attribute preservation,
+idempotence, hash mismatch, damaged live checkpoints, active locks/workers, path
+escape and link failures.
 A disposable copy of real 26-episode smoke outputs retained all 1,104 files'
 hashes, sizes, modes and mtimes after 21 replacements; estimated savings were
 17,616,375 bytes. Original smoke outputs were untouched. This validates storage
