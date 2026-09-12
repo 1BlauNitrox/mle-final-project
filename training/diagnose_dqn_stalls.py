@@ -85,7 +85,7 @@ def diagnose(*, agent, checkpoint, world_seed, agent_seed, opponent, output):
         False,
         True,
         str(output),
-        None,
+        str(output / "framework_stats.json"),
         "issue146-diagnostic",
         world_seed,
         False,
