@@ -492,3 +492,34 @@ The danger model cannot predict an opponent's future bomb placement. Escape
 search remains bounded to 10 arrivals. Keep earlier-task regression evidence in
 all later studies, preserve frozen predecessors, and do not launch more broad
 Task 2 sweeps solely to claim completion before the deadline.
+- No scientific Task 2 training or evaluation has been run; every reward,
+  hyperparameter, and feature choice here is an implementation default.
+- The danger model does not account for an opponent placing a new bomb,
+  matching the opponent-free Task 2 curriculum; it will need revisiting for
+  Task 3.
+- Escape search is bounded to 10 arrivals. Continuation indicators require a
+  safe trajectory through the full bound, while the pre-existing escape
+  feature retains its own destination-safe semantics.
+- The curriculum mixing `coin-heaven`/`loot-crate`/`classic` is not yet
+  implemented in `training/` orchestration.
+- `KILLED_SELF`/`GOT_KILLED`/`SURVIVED_ROUND` reward magnitudes and the
+  epsilon/learning-rate/target-interval/replay-warmup revision are all
+  untested defaults pending a registered experiment.
+
+Issue #107 is the registered prospective four-cell campaign for the escape and
+protected-replay interaction. No performance conclusion is made by this
+implementation issue.
+
+## Rehearsal and escape-enabled masking evidence (#124)
+
+The [reduced five-replica A/B/C evaluation](../../experiments/2026-09-10-task2-rehearsal-mask/RESULTS.md)
+rejects the tested interleaved rehearsal schedule: coin-heaven collection fell
+from 21.68% to 4.69%. Masking with escape inputs achieved 34.89% classic collection
+and 0.5% self-kills, but its +5.33-point collection contrast failed the registered
+adoption threshold and uncertainty guard. It passes Task 2-specific gates but
+fails Task 1 retention (42.68% versus the frozen reference's 74.80%) and no-bombs.
+No default or committed checkpoint changes. Mechanical fallback A/r5 remains
+exploratory; Task 2 is not complete for this DQN. D has four replicas and is not
+eligible for confirmatory selection. Do not infer tournament strength from these
+opponent-free evaluations. Prioritize navigation retention and use the independent
+#91 gamma result before committing to another training intervention.
