@@ -94,3 +94,13 @@ def test_incomplete_export_preserves_failure_without_claiming_analysis(tmp_path)
         assert "campaign/jobs/failed/attempt-001/metadata.json" in tar.getnames()
         assert "handoff/supervisor.log" in tar.getnames()
         assert not any(n.startswith("analysis/") for n in tar.getnames())
+    second = tmp_path / "second.tar.gz"
+    old_manifest = second.with_suffix(".gz.manifest.json")
+    old_manifest.write_text("Retained previous manifest")
+    with pytest.raises(ValueError, match="previous export"):
+        campaign.export_files(root, binding, None, second)
+    assert old_manifest.read_text() == "Retained previous manifest"
+    lock = root / ".task3-campaign.lock"
+    lock.write_text("Owned by running process")
+    with pytest.raises(ValueError, match="still active"):
+        campaign.export_files(root, binding, None, tmp_path / "active.tar.gz")

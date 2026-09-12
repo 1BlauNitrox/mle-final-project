@@ -297,7 +297,12 @@ def export(root, binding, analysis_dir, output):
 
 def export_files(root, binding, analysis_dir, output):
     """Preserve compact bytes; absent analysis explicitly means unanalyzed evidence."""
-    require(not output.exists(), "Preserve previous export")
+    require(root.is_dir() and binding.is_dir(), "Missing evidence/binding directory")
+    require(not (root / ".task3-campaign.lock").exists(), "Campaign is still active")
+    require(
+        not output.exists() and not output.with_suffix(output.suffix + ".manifest.json").exists(),
+        "Preserve previous export",
+    )
     names = {
         "authorization.json",
         "resources.json",
