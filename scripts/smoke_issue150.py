@@ -48,8 +48,10 @@ def main():
     report.update(
         training_episodes=2, evaluation_episodes=24, evidence_scope="implementation_smoke_only"
     )
+
     def validator(_):
         return config, plans, report
+
     args.authorize_compute = True
     args.reviewed_commit = double.campaign.git("rev-parse", "HEAD")
     args.authorized_by = "Julius-authorized-short-setup-smoke"
@@ -91,11 +93,16 @@ def main():
     else:
         raise AssertionError("Incomplete smoke must not produce a scientific decision")
     double.write_json(output / "source-manifest.json", manifest)
-    double.write_json(output / "mechanics.json", {
-        "scope": "implementation_smoke_only", "episodes": 26,
-        "scientific_analyzer_rejects_incomplete_matrix": True,
-        "authorization": auth, "resources": resources,
-    })
+    double.write_json(
+        output / "mechanics.json",
+        {
+            "scope": "implementation_smoke_only",
+            "episodes": 26,
+            "scientific_analyzer_rejects_incomplete_matrix": True,
+            "authorization": auth,
+            "resources": resources,
+        },
+    )
     print(
         json.dumps(
             {

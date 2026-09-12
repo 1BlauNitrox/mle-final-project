@@ -76,3 +76,21 @@ def test_export_keeps_failures_models_and_checked_observations(tmp_path):
     campaign.write_json(analysis / "result.json", result)
     with pytest.raises(ValueError, match="Decision mismatch"):
         campaign.verify(analysis)
+
+
+def test_incomplete_export_preserves_failure_without_claiming_analysis(tmp_path):
+    root, binding = tmp_path / "runs", tmp_path / "binding"
+    root.mkdir()
+    binding.mkdir()
+    failure = root / "jobs/failed/attempt-001/metadata.json"
+    failure.parent.mkdir(parents=True)
+    failure.write_text('{"status":"failed"}')
+    (tmp_path / "supervisor.log").write_text("Recorded failure trace")
+    archive = tmp_path / "partial.tar.gz"
+    campaign.export_files(root, binding, None, archive)
+    manifest = campaign.read_json(archive.with_suffix(".gz.manifest.json"))
+    assert manifest["evidence_scope"] == "partial_unanalyzed"
+    with tarfile.open(archive) as tar:
+        assert "campaign/jobs/failed/attempt-001/metadata.json" in tar.getnames()
+        assert "handoff/supervisor.log" in tar.getnames()
+        assert not any(n.startswith("analysis/") for n in tar.getnames())

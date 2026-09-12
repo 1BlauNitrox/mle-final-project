@@ -112,3 +112,19 @@ Share the hash after download. Keep the server originals until review verifies
 all required evidence. The previous same-sized campaign's compact archive was
 126 MB (874 MB extracted); warning-only logging targets roughly 1-2 GB total useful
 outputs plus staging/transfer headroom, not a guaranteed storage upper bound.
+
+## Incomplete campaign or failed analysis
+
+After the campaign has exited, export partial raw evidence without inventing a
+scientific decision. This command refuses an active campaign lock and labels the
+manifest `partial_unanalyzed`; it does not require or claim a passing analysis.
+Preserve the original failure and never remove an active process's lock.
+
+```bash
+"$PY" -m training.task3_double_campaign export-incomplete --binding-dir "$ROOT/binding" --output-root "$ROOT/runs" --archive "$ROOT/issue150-partial.tar.gz"
+sha256sum "$ROOT/issue150-partial.tar.gz"
+```
+
+Download the partial archive and adjacent `.manifest.json` in the same way as
+the complete export. Both export paths retain available supervisor/hardware
+records for diagnosis. Do not delete originals after either export.

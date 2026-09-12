@@ -286,13 +286,18 @@ def analyze(root, binding, output):
 
 def export(root, binding, analysis_dir, output):
     verify(analysis_dir)
-    require(not output.exists(), "Preserve previous export")
     for name, record in read_json(analysis_dir / "source-manifest.json").items():
         path = campaign.relative_file(root, name)
         require(
             sha256(path) == record["sha256"] and path.stat().st_size == record["size_bytes"],
             "Evidence changed after analysis",
         )
+    return export_files(root, binding, analysis_dir, output)
+
+
+def export_files(root, binding, analysis_dir, output):
+    """Preserve compact bytes; absent analysis explicitly means unanalyzed evidence."""
+    require(not output.exists(), "Preserve previous export")
     names = {
         "authorization.json",
         "resources.json",
@@ -320,13 +325,24 @@ def export(root, binding, analysis_dir, output):
         for p in binding.rglob("*")
         if p.is_file()
     ]
-    files += [(p, "analysis/" + p.name) for p in analysis_dir.iterdir() if p.is_file()]
+    if analysis_dir is not None:
+        files += [(p, "analysis/" + p.name) for p in analysis_dir.iterdir() if p.is_file()]
+    files += [
+        (root.parent / name, "handoff/" + name)
+        for name in ("supervisor.log", "hardware.txt", "run-completed")
+        if (root.parent / name).is_file()
+    ]
     manifest = {name: {"sha256": sha256(p), "size_bytes": p.stat().st_size} for p, name in files}
     require(len(manifest) == len(files), "Duplicate export member")
     with tarfile.open(output, "x:gz") as archive:
         for path, name in files:
             archive.add(path, arcname=name, recursive=False)
-    record = {"sha256": sha256(output), "size_bytes": output.stat().st_size, "files": manifest}
+    record = {
+        "sha256": sha256(output),
+        "size_bytes": output.stat().st_size,
+        "files": manifest,
+        "evidence_scope": "analyzed" if analysis_dir is not None else "partial_unanalyzed",
+    }
     write_json(output.with_suffix(output.suffix + ".manifest.json"), record)
     return {k: record[k] for k in ("sha256", "size_bytes")}
 
@@ -334,7 +350,8 @@ def export(root, binding, analysis_dir, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "action", choices=["prepare", "dry-run", "run", "analyze", "verify", "export"]
+        "action",
+        choices=["prepare", "dry-run", "run", "analyze", "verify", "export", "export-incomplete"],
     )
     for name in ("parent", "binding-dir", "output-root", "analysis-dir", "archive"):
         parser.add_argument("--" + name, type=Path)
@@ -362,6 +379,12 @@ def main():
         value = analyze(args.output_root, args.binding_dir, args.analysis_dir)
     elif args.action == "verify":
         value = verify(args.analysis_dir)
+    elif args.action == "export-incomplete":
+        require(
+            not (args.output_root / ".task3-campaign.lock").exists(),
+            "Wait for campaign exit before exporting changing files",
+        )
+        value = export_files(args.output_root, args.binding_dir, None, args.archive)
     else:
         value = export(args.output_root, args.binding_dir, args.analysis_dir, args.archive)
     print(json.dumps(value, indent=2))

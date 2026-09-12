@@ -95,6 +95,8 @@ and efficacy/latency evaluation on the server; the existing launcher does not
 support moving its resume state across hosts. Task 4 training still needs a
 registered available parent and its separate owner decision; PR149 is preparation.
 
+See [DEVICES.md](DEVICES.md) for exact independent PC/laptop commands.
+
 ## Execution and evidence
 
 [SERVER.md](SERVER.md) provides preparation, preflight, detached launch, progress,
@@ -103,7 +105,8 @@ the existing resource monitor and raw analyzer; it also verifies the exact
 Double DQN flag on every final checkpoint before accepting results.
 The compact export preserves every failed attempt, all final/reference artifacts,
 raw statistics/timings, episode CSVs and metadata/bindings/authorization/resources.
-Duplicate staged source and verbose logs are omitted. Retain originals until
+Duplicate staged source and verbose logs are omitted. Incomplete campaigns have a separately labeled `export-incomplete` path.
+Retain originals until
 review and publish the archive/manifest with any resulting scientific claim.
 
 The owner authorized setup and short diagnostic tests. No long run was launched
@@ -114,3 +117,32 @@ to start a different unreviewed run.
 
 AI assistance: Codex prepared the tested target, protocol, tooling and commands.
 Tests/smokes establish mechanics only. Human review is required.
+
+## Preparation validation
+
+The bounded 26-episode smoke verifies actual fresh-parent training in both modes,
+all four evaluation suites, exact repeats, raw statistics/CSV consistency, hashes,
+resource accounting and warning-only metadata. Its separate mechanics seeds are
+not the scientific evaluation seeds. The production analyzer rejects the reduced
+matrix; no scientific selection is reported. Compact verification/export is
+tested separately with complete synthetic observations, including tampering,
+failed attempts and refusal to overwrite an archive.
+
+Executed smoke source: `1a959a2604b43d0962a4d4cb2272fd949f0c3228`.
+Measured 152.36 s wall, 130.14 CPU s, peak process-tree RSS 296,054,784 bytes.
+The first 26-game attempt completed raw checks but its harness incorrectly
+requested a scientific decision from one replica. That rejected postprocessing
+and all original outputs are preserved; the corrected harness expects rejection.
+One additional frozen evaluation with normal logging matched every non-latency
+episode field of the warning-only run. These checks establish mechanics only.
+
+A fixed synthetic batch benchmark used three repeats of 500 updates per mode,
+25 warmup updates, one CPU thread and alternating order. [timing.json](timing.json)
+retains observations/environment: median standard 2.012 ms/update, Double 2.132 ms,
+ratio 1.060. It excludes game simulation, startup, replay sampling and changing
+policy trajectories, so it does not certify a full-run duration. The 7?9-hour
+server estimate remains provisional; reserve the complete 12-hour allocation.
+Reproduce with `python scripts/benchmark_issue150.py` in an isolated checkout;
+no checkpoint is written. Run the integration check using
+`python scripts/smoke_issue150.py --binding-dir <prepared-binding> --output-root <new-smoke-root>`.
+The smoke cap is 15 minutes / 0.25 CPUh / 4 GiB, serial.
