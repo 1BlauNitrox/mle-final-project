@@ -83,6 +83,18 @@ def prepare(parent: Path, parent_sha256: str, output: Path, source_commit: str) 
             "input_dim": 39,
         },
         "modes": modes,
+        "preparation_source": {
+            "commit": subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+            ).strip(),
+            "files": {
+                path.relative_to(ROOT).as_posix(): sha256_file(path)
+                for path in [
+                    ROOT / "scripts/migrate_task3_dqn_successor.py",
+                    *sorted((ROOT / "agent_code/DagobertDuckDQNTask3").rglob("*.py")),
+                ]
+            },
+        },
         "plans": plans,
         "warning": ("Historical exploratory baseline only; "
                     "do not substitute for Issue 124 selection"),

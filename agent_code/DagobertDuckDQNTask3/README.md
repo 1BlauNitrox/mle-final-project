@@ -1,7 +1,16 @@
 # DagobertDuckDQNTask3
 
-Status: schema-4 implementation and provisional compatibility fixture under
-#125 / PR #130. No Task 3 scientific training result is claimed.
+Status: schema-4 implementation under #125 / PR #130; the completed #109
+exploratory campaign failed the peaceful-stage gates. No trained Task 3
+replica is selected. The committed checkpoint remains a compatibility fixture.
+See the [result and durable evidence](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+
+Five 10,000-episode replicas from explicitly authorized provisional #91 A/r3
+achieved 20.5% elimination (parent 17.5%; paired improvement 95% CI
+[-12.5, 18.5] percentage points), below the required 60%. Self-kills were
+11.5%, invalid actions 6.79%, and classic collection retention failed.
+The registered decision prohibits coin-collector continuation. Runtime passed;
+this neither completes Task 2 nor establishes tournament readiness.
 
 ## Model and hypothesis
 
@@ -46,13 +55,15 @@ regeneration and cannot be loaded under the new schema.
 
 ## Baselines and next steps
 
-The next scientific parent comes from #124's registered selection, with failed
-Task 2 gates retained explicitly. A historical #107 A/r2 exploratory baseline
-can be prepared separately; it does not certify Task 2 completion or replace
-#124 selection. Existing #109/#120 provides matched peaceful, classic,
-coin-heaven and loot-crate evaluation templates, followed later by #51's
-coin-collector study. Numeric decisions and compute authorization remain
-scientific launch requirements.
+The Task 2 parent is explicitly configurable. Historical #107 A/r2 can support
+the exploratory #109 study now; a later registered Task 2 selection requires
+a new binding, with failed gates retained explicitly. Neither choice certifies
+Task 2 completion. The [#109 protocol](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md)
+registers user-approved numerical gates, five 10,000-episode replicas, matched
+40-pair peaceful/classic/coin-heaven/loot-crate evaluations with repeats, a
+paired analyzer and guarded launcher. Fresh review and separate compute
+authorization remain required. #137 prepares exploratory coin-collector
+continuation after its peaceful decision; #51 retains its validated-parent scope.
 
 Unit/contract tests cover prefix equivalence, active-feature Q preservation,
 separate online/target weights, masking consistency, reward attribution,

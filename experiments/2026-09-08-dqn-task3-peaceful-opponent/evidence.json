@@ -1,0 +1,12 @@
+{
+  "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue109-evidence-v1/issue109-parent91-evidence-v1.tar.gz",
+  "sha256": "82aec2585bd504685a063fe5873a7dfacd52af45013846944af9b623c4616953",
+  "size_bytes": 63694414,
+  "retained_files": 5801,
+  "retained_bytes": 422192899,
+  "execution_commit": "0c9b0c1add52e53269646a1b2ef2aec96fb297dd",
+  "original_download": {
+    "sha256": "ce3c66bd9e3ba417abe3eaed16e5044dbde4a029e5da742d7860c3d2c6991a3b",
+    "size_bytes": 567494690
+  }
+}

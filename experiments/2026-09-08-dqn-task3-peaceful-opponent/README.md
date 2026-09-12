@@ -1,117 +1,130 @@
-# Issue #109 peaceful-opponent Task 3 comparison
+# Issue #109: peaceful-opponent Task 3 experiment
 
-See [PREPARATION.md](PREPARATION.md) for the current parent-migration path,
-matched retention coverage and the explicit scientific launch gates.
+Status: completed exploratory mixed/negative campaign from #91 A/r3;
+no replica selected and no automatic coin-collector continuation.
+See [RESULTS.md](RESULTS.md) for evidence, reproduction and next decisions.
+The user approved these gates and 40 development pairs per suite before
+execution on 2026-09-11. Source 0c9b0c1 was reviewed; the new result requires
+fresh peer review. Owner: 1BlauNitrox. PR #120 integrates #125 / PR #130's
+39-input migration. [SERVER.md](SERVER.md) preserves the launch procedure;
+it is not authorization to rerun or continue after this failed gate.
 
-> Status: **Registered protocol, not ready for scientific execution.** Run
-> plans dry-run cleanly and are ready to launch mechanically, but issue
-> #109's own acceptance criteria require an assigned owner/reviewer, fixed
-> numeric decision criteria, and explicit compute authorization before any
-> run counts as more than infrastructure validation. Both starting
-> artifacts are provisional pending Issue #124's development-predecessor
-> selection; the verified #107 parent is available for exploratory preparation.
+## Hypothesis and controls
 
-## Hypothesis
+Opponent-aware training improves elimination and paired match outcome against
+exactly one unchanged peaceful_agent while retaining Task 1 navigation and
+Task 2 collection, crate destruction and survival. Five Task 3 replicas start
+from one checksum-bound migration and train exactly 10,000 classic episodes
+each. The frozen Task 2 parent is the single untrained reference. Learner is
+command slot 0, opponent slot 1; world seeds determine starting corners.
 
-Does opponent-aware training (`DagobertDuckDQNTask3`, issue #108) improve
-`classic` peaceful-opponent elimination and paired score relative to its
-opponent-blind Task 2 predecessor, under identical seeds and opponent
-slots, while retaining Task 1 navigation and Task 2 collection/survival
-behavior?
+The main variable is the existing Task 3 extension as a whole (opponent
+features, native elimination reward and opponent training). This study does
+not isolate their individual effects. Freeze the 39-input feature schema,
+six actions, rewards, hidden sizes and inherited applicable hyperparameters,
+masking and escape modes. Reset optimizer/replay/exploration/RNG/counters;
+preserve online and target networks independently and zero the opponent suffix.
+Evaluation is greedy, immutable, self-contained and single-threaded.
+The experiment-only `training.seeded_framework` wrapper controls both NumPy and
+Python global RNGs independently for each supplied opponent. Derive streams
+with `SeedSequence([agent_seed, command_slot, 0x5441534B])`: the first uint32
+word seeds NumPy and the next two form the Python seed. Intercept setup's
+`seed(None)` entropy requests and restore other agents' global RNG state after
+each callback. Record `task3_per_slot_v1` in every job. Supplied policy files
+and learned-agent runtime imports are unchanged. World and learner seeds alone
+are insufficient because the supplied opponents reseed from system entropy.
+The exact model contract is [0008](../../docs/0008-task-3-opponent-awareness-contract.md).
 
-## Comparison
+## Parent and scientific scope
 
-Two arms, paired by evaluation seed (not by replica -- see "Why one frozen
-reference, not five" below):
+Task 2 completion is not required for this explicitly exploratory study.
+Historical #107 A/r2 was replaced prospectively by #91 A/r3 with the owner's
+explicit permission to use its uploaded evidence before PR #136 peer review.
+The executed binding and exact provenance are retained in [RESULTS.md](RESULTS.md).
+A later mechanically selected Task 2 checkpoint remains configurable through
+the same binding command. Preserve its source/selection evidence and use a new
+binding and campaign directory; never silently replace a parent after results.
+An exploratory pass or retention of a weak predecessor does not complete
+Task 2, #46 or #51. Frozen parent bytes are never modified.
 
-- **Task 3** (`issue109-task3-vs-peaceful.yaml`): 5 replicas, each trained
-  10,000 episodes of `classic` against exactly one `peaceful_agent`, from
-  the same provisional Task 3 migration checkpoint (0 completed episodes).
-- **Task 2 predecessor** (`issue109-task2-predecessor-vs-peaceful.yaml`):
-  the frozen provisional Task 2 artifact
-  (`checkpoint-issue85-zero-suffix.pt`, the same artifact Task 3 was
-  migrated from), evaluated as-is -- no training stage -- against the same
-  `classic` + `peaceful_agent` seeds. This agent has no opponent features
-  at all, so it is a genuine opponent-blind baseline, not a weaker version
-  of Task 3.
+## Seeds and budget
 
-Both arms are evaluated on the identical 10 development seed pairs
-(`world_seed` 109101-109110, `agent_seed` 209101-209110) for `classic` +
-`peaceful_agent` (primary + repeat, for the determinism check), so Task 3's
-5 replicas can each be paired against the same single Task 2 reference
-point.
+Training pairs: world 109001..109005, agent 209001..209005.
+Each suite has 40 development pairs, one episode per pair, and an exact repeat:
 
-Both plans additionally evaluate the standard opponent-free
-retention battery (`classic`, `coin-heaven`, `loot-crate`, reusing the same
-development seed pairs established in #86/#97/#103 for cross-experiment
-comparability), per issue #109's explicit requirement to report absolute
-Task 1/2 performance alongside retention, not just the peaceful-opponent
-result.
+| Suite | World seeds | Agent seeds | Opponents |
+| --- | --- | --- | --- |
+| classic-peaceful | 1091101..1091140 | 2091101..2091140 | peaceful_agent |
+| classic-retention | 1091201..1091240 | 2091201..2091240 | none |
+| coin-heaven-retention | 1091301..1091340 | 2091301..2091340 | none |
+| loot-crate-retention | 1091401..1091440 | 2091401..2091440 | none |
 
-### Why one frozen reference, not five paired replicas
+The next ten values after each range are reserved confirmation seeds and never
+executed here. Final held-out populations remain unopened. Preflight checks
+committed run-plan YAML and experiment configurations for collisions and records
+the inspected hashes. The owner must also confirm no unregistered remote use;
+a repository audit cannot prove that. These replace the old ten-pair templates.
 
-Unlike #86/#97/#103 (which pair freshly-trained replicas against each
-other under matching seeds), the Task 2 side here is a single frozen,
-already-evaluated artifact -- there is nothing to retrain five independent
-copies of. This mirrors Issue #107's own `frozen_task1`/`untrained` plans
-(one replica each, compared against multiple trained replicas), not its
-paired treatment-vs-control cells.
+Budget: 50,000 training episodes; 1,600 candidate plus 320 reference evaluation
+episodes including repeats. Candidate: 1,605 jobs; reference: 320 jobs. Select
+only the final checkpoint after exactly 10,000 episodes, never a best checkpoint.
 
-## Transition to `coin_collector_agent`
+Registered ceiling: 24 CPU-hours, 15 wall-hours, 8 GiB aggregate framework-process
+RAM, two training workers and serial evaluation. These are ceilings, not a
+runtime prediction or compute authorization. One monitor covers both plans,
+run sequentially, and persists usage on resume; wall time includes interruptions.
+A breach stops only this campaign's registered process trees and preserves
+failures. Do not reuse Task 2 resources or run on the RAM-constrained PC.
 
-`issue109-task3-vs-coincollector.yaml` is prepared with the same structure
-(fresh seeds, same retention battery) but **must not be executed** until a
-peaceful-stage decision is made, per issue #109's own explicit gating. It
-is registered now so the team is not blocked waiting on it once that
-decision is reached.
+## Metrics and conjunctive gates
 
-## What this registration does NOT do (per issue #109's own requirements)
+Elimination is the fraction of episodes with at least one native attributable
+kill, not the mean event count. First place means strictly higher score than
+the opponent; ties are separate. Score margin is own minus opponent score.
+Filter by metadata's observed_agent; never pool opponent rows into observations.
 
-- **Does not fix numeric decision criteria.** Issue #109 explicitly
-  requires the owner to set elimination, paired-score/first-place,
-  self-kill, and retention thresholds before scientific execution, and
-  explicitly warns against silently reusing #51's coin-collector
-  thresholds as peaceful-agent criteria. None are proposed here.
-- **Does not assign an owner or non-author reviewer.**
-- **Does not authorize compute or fix a resource ceiling.** A *proposed*
-  ceiling (scaled from #97's comparable single-arm estimate) is recorded
-  in `config.yaml` for the owner to accept, adjust, or replace.
-- **Does not bind a final parent artifact.** Both starting checkpoints are
-  the same provisional pair used throughout #108; #124's eventual
-  development-predecessor selection must be bound here (new checksums,
-  re-run `--dry-run` on both plans) before this stops being a provisional
-  fixture.
+| Gate | Requirement |
+| --- | --- |
+| Elimination | Rate >=0.60; candidate-minus-parent >=0.20 and 95% lower bound >0 |
+| First place | Rate >=0.60 and candidate-minus-parent 95% lower bound >0 |
+| Score margin | Mean >0 and candidate-minus-parent 95% lower bound >0 |
+| Peaceful self-kill | Fraction of episodes with own self-kill <=0.10 |
+| Invalid actions | Ratio of totals <0.01 for every candidate replica and aggregate in every suite |
+| Task 1 collection | Coin-heaven collection-fraction difference 95% lower bound >-0.02 |
+| Task 2 collection | Classic and loot-crate collection difference 95% lower bounds >-0.03 |
+| Retention survival | Each retention-suite difference 95% lower bound >=-0.05 |
+| Retention self-kill | Each retention-suite difference 95% upper bound <=0.02 |
+| Task 2 crates | Each Task 2 suite: 95% lower bound of candidate - 0.9 * parent >=0 |
+| Runtime | Every primary/repeat episode p95 <50 ms, max <100 ms; resource ceilings, immutable artifacts and exact deterministic repeats pass |
 
-## Execution (once the above is resolved)
+The crate difference avoids division by zero for a zero-crate parent. Report
+absolute earlier-task results too; matching a poor parent is not capability.
 
-```bash
-python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml --dry-run
-python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
-```
+For every contrast use 10,000 crossed bootstrap resamples, seed 109: independently
+resample five replica indices and 40 common world/agent-pair indices, reuse each
+reference observation across sampled candidates, and take the 2.5/97.5 percentiles
+of the mean contrast. Do not treat 200 candidate episodes or repeated copies of
+the reference as independent replicas. Intervals condition on the fixed parent.
 
-Then, once owner/reviewer/criteria/ceiling/authorization are all in place:
+Report per-model/aggregate score, elimination, coins and collection fraction,
+crates, bombs, survival/steps, self-kills, invalid actions, action counts and
+global decision-time median/p95/max from per-call times. Retain training episode
+learning diagnostics, every zero-kill/death episode and all failed attempts.
 
-```bash
-tmux new -s issue109-task3-peaceful
-python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml 2>&1 | tee logs/issue109-task3-peaceful.log
-```
+## Decision and evidence
 
-```bash
-tmux new -s issue109-task2-predecessor
-python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml 2>&1 | tee logs/issue109-task2-predecessor.log
-```
+All gates must pass. Only then select the median replica by primary peaceful
+elimination rate, ties ordered by replica ID. Otherwise record mixed/negative
+exploratory results and stop; no automatic fallback or coin-collector launch.
+Issue #137 tracks exploratory continuation after the peaceful decision; #51
+retains its validated-predecessor requirements and remains open.
 
-(`--evaluation-only` is a different mechanism -- reusing an artifact
-already produced by a separate plan's training stage -- and is not needed
-here: this plan already has no training stages, so `run_plan.py` runs only
-its evaluation jobs by default, exactly like #107's `frozen_task1` plan.)
-
-The two can run concurrently (independent plan directories, no shared
-state); `issue109-task3-vs-coincollector.yaml` must wait for the peaceful
-stage's decision regardless of available compute.
-
-5 replicas × (1 training stage + 8 evaluation suites × 10 seed pairs) = 405
-jobs, 50,000 training episodes, for the Task 3 arm. 1 replica × 8
-evaluation suites × 10 seed pairs = 80 jobs for the frozen Task 2
-predecessor. Proposed ceiling: 24 CPU-hours / 15 wall-hours / 8 GiB / two
-training workers (owner must accept or replace, per issue #109).
+The analyzer rejects incomplete matrices, changed metadata/model bytes, CSV/raw
+mismatches, missing kills/latencies, differing repeated actions/outcomes and
+unbound resources. It writes observations.json.gz (evaluation observations,
+per-call times and training diagnostics), source-manifest.json (input hashes and
+sizes), and result.json (gates, intervals, summaries, resources and provenance).
+Failed raw attempts stay in the campaign directory. Publish required evidence
+durably with hashes, sizes and retrieval commands before making a result claim;
+a local path alone is not evidence. Synthetic tests and isolated smokes validate
+infrastructure only. The completed scientific result is in [RESULTS.md](RESULTS.md).
