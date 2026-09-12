@@ -1,34 +1,70 @@
-schema_version: 1
+schema_version: 2
 issue: 109
-owner: null
-reviewer: null
-status: registered_pending_review
-starting_artifact:
-  task3:
-    path: agent_code/DagobertDuckDQNTask3/checkpoint.pt
-    sha256: 3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599
-    note: "Provisional migration checkpoint (0 completed episodes). Must be rebound to #124's selected development predecessor before scientific execution, per #108/#109."
-  task2_predecessor:
-    path: agent_code/DagobertDuckDQNTask2/checkpoint-issue85-zero-suffix.pt
-    sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
-    note: "Same provisional artifact Task 3 was migrated from, so the comparison isolates opponent-awareness rather than a different Task 2 predecessor. Also provisional pending #124."
+owner: 1BlauNitrox
+reviewer: LiliWestermann
+reviewer_status: review_requested_not_approved
+status: prospective_protocol_no_scientific_execution
+registration: User approved peaceful gates and 40 development pairs on 2026-09-11.
+hypothesis: Opponent-aware training improves peaceful-opponent elimination and paired
+  match outcome while retaining Task 1/2 behavior.
+task2_complete: false
+parent_policy: 'Explicit checksum binding; historical #107 A/r2 permitted only as
+  exploratory. Final Task 2 selection remains configurable; no automatic substitution.'
 plans:
-  task3_vs_peaceful: training/run_plans/issue109-task3-vs-peaceful.yaml
-  task2_predecessor_vs_peaceful: training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml
-  task3_vs_coincollector: training/run_plans/issue109-task3-vs-coincollector.yaml
-execution_order:
-  - "task3_vs_peaceful and task2_predecessor_vs_peaceful may run together (or in either order); task3_vs_coincollector must not be started until the peaceful-stage decision is made, per issue #109's own gating."
+  candidate: training/run_plans/issue109-task3-vs-peaceful.yaml
+  reference: training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml
 replicas: 5
-training_episodes_peaceful_plan: 50000
-resource_ceiling_proposed:
+training_episodes: 50000
+evaluation_episodes: 1920
+evaluation_pairs_per_suite: 40
+checkpoint_rule: Final checkpoint after exactly 10000 episodes for every replica;
+  no early/best checkpoint selection.
+selection_rule: 'Only if every gate passes: median replica by primary elimination
+  rate, ties ordered by replica id. Otherwise stop and retain all results; no automatic
+  coin-collector launch.'
+bootstrap:
+  samples: 10000
+  seed: 109
+  confidence: 0.95
+  method: Crossed replica/world-pair percentile bootstrap; resample replicas and common
+    seed-pair indices independently, reuse each reference observation across candidates.
+gates:
+  elimination_min: 0.6
+  elimination_improvement_min: 0.2
+  first_place_min: 0.6
+  score_margin_min_exclusive: 0.0
+  efficacy_ci_lower_min_exclusive: 0.0
+  self_kill_max: 0.1
+  invalid_action_max_exclusive: 0.01
+  task1_collection_margin: 0.02
+  task2_collection_margin: 0.03
+  survival_margin: 0.05
+  crates_relative_margin: 0.1
+  self_kill_increase_margin: 0.02
+  decision_p95_ms_max_exclusive: 50.0
+  decision_max_ms_max_exclusive: 100.0
+resources:
   cpu_hours: 24
   wall_hours: 15
   memory_gib: 8
   max_parallel_training: 2
-  note: "Proposed by Claude, scaled from Issue #97's comparable single-arm 50,000-episode estimate. Issue #109 explicitly requires the owner to set and authorize the actual ceiling; #124's budget does not extend to this issue."
-decision_rule: not_yet_fixed
-known_gaps:
-  - "Owner/non-author reviewer not yet assigned (issue #109 acceptance criterion)."
-  - "Numeric elimination/paired-score/self-kill/retention decision criteria not fixed -- issue #109 explicitly requires the owner to set these before scientific execution, not Claude."
-  - "Parent artifacts are provisional pending Issue #124's development-predecessor selection; both plans must be re-pointed and refingerprinted after that selection before this can be treated as more than a protocol registration."
-  - "Compute not authorized; no training has been run."
+  evaluation_workers: 1
+  status: registered_ceiling_execution_requires_separate_authorization
+protected_seed_ranges:
+- - 1091141
+  - 1091150
+- - 2091141
+  - 2091150
+- - 1091241
+  - 1091250
+- - 2091241
+  - 2091250
+- - 1091341
+  - 1091350
+- - 2091341
+  - 2091350
+- - 1091441
+  - 1091450
+- - 2091441
+  - 2091450
+scientific_training_authorized: false

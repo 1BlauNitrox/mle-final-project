@@ -1,0 +1,15 @@
+contrast,mean,lower,upper
+classic-peaceful/elimination,0.03,-0.125,0.185
+classic-peaceful/first_place,0.045,-0.08,0.175
+classic-peaceful/score_margin,0.715,-0.665,2.17
+classic-retention/collection,-0.1361111111111111,-0.2472222222222222,-0.03331944444444464
+classic-retention/survival,0.025,-0.15,0.175
+classic-retention/self_kill,-0.025,-0.175,0.15
+classic-retention/crates_destroyed,-11.097500000000002,-24.8003125,1.1554374999999935
+coin-heaven-retention/collection,0.0712,-0.11169999999999998,0.29419999999999996
+coin-heaven-retention/survival,0.025,0.0,0.075
+coin-heaven-retention/self_kill,-0.025,-0.075,0.0
+loot-crate-retention/collection,0.0391,-0.049805,0.12230249999999997
+loot-crate-retention/survival,0.305,0.075,0.5151249999999982
+loot-crate-retention/self_kill,-0.305,-0.5151249999999999,-0.075
+loot-crate-retention/crates_destroyed,4.522499999999999,-6.260624999999999,14.650125

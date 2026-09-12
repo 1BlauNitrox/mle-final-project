@@ -390,6 +390,17 @@ def test_tabular_state_treatment_can_be_selected(
     assert plan.potential_shaping == "escape_distance"
 
 
+def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "escape_distance_half"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.potential_shaping == "escape_distance_half"
+
+
 def test_zero_initialization_removes_only_the_initial_source_model(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

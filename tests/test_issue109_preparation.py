@@ -106,4 +106,4 @@ def test_frozen_predecessor_has_identical_evaluation_conditions():
         ]
 
     assert conditions(candidate, "r1") == conditions(reference, "frozen")
-    assert len(conditions(reference, "frozen")) == 80
+    assert len(conditions(reference, "frozen")) == 320

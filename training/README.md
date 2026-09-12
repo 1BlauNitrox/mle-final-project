@@ -1,5 +1,13 @@
 # Training Orchestration
 
+The completed #109 peaceful campaign is an exploratory negative result; its
+registered selection rule blocks automatic coin-collector continuation.
+See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+`python -m training.verify_task3_results` verifies the historical server campaign
+against its executed Git source and recorded dependencies without launching
+games or changing original bindings. `training.analyze_task3_campaign
+--verify-evidence` recomputes decisions from portable lossless observations.
+
 This directory is for tooling shared across experiments and agents:
 
 - curriculum launchers;
@@ -231,10 +239,16 @@ python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml -
 python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
 ```
 
-Both provisional starting artifacts, the resource ceiling, and the numeric
-decision criteria are unresolved pending owner review and Issue #124's
-development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
-not be started until the peaceful stage's outcome is decided. Full protocol,
+The user-approved numerical gates and 40-pair development suites are registered.
+The parent remains explicitly configurable: historical #107 A/r2 can support
+exploratory work before Task 2 completes, while a later selected Task 2 artifact
+requires a new binding. Use `python -m training.run_task3_campaign --dry-run`
+for matrix/seed preflight, the same launcher with a binding and separate human
+authorization for budget-enforced execution, and
+`python -m training.analyze_task3_campaign` for verified paired analysis.
+Fresh peer review and server compute authorization remain required. The
+coin-collector template is gated on the peaceful decision under exploratory
+#137; #51 retains its validated-predecessor scope. Full protocol,
 rationale, and exact commands are registered in
 `experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
 integration validation only and produces no performance evidence.
@@ -628,6 +642,17 @@ diagnostics such as epsilon, Q-table size, and mean absolute temporal-difference
 error.
 
 ## Metric interpretation
+
+### Task 3 match outcomes
+
+The optional CSV fields `opponents_eliminated` (native attributable `kills`),
+`opponent_count`, `score_margin`, `first_place` and `tied_first` retain match
+outcomes for each participant. `score_margin` is own score minus the highest
+other score. `first_place` means strictly greater score than every opponent;
+ties at the highest score are recorded separately in `tied_first`. Opponent-free
+episodes have no match outcome (empty fields), and historical missing kill
+counts remain unavailable rather than becoming zero. An observed-agent analyzer
+must filter by `metadata.json`'s `observed_agent`, not aggregate opponent rows.
 
 ### Invalid-action rate
 
