@@ -1,5 +1,11 @@
 # Training Orchestration
 
+Repeated training blocks can set `world_seed_offset` in a run-plan stage.
+The runner adds it to each replica's world seed and checks the resolved seed
+against evaluation populations and the NumPy seed range. Omission preserves
+historical behavior. Keep the agent seed stable for checkpoint continuation;
+pair offsets by scenario occurrence when comparing reordered curricula.
+
 This directory is for tooling shared across experiments and agents:
 
 - curriculum launchers;
@@ -973,9 +979,15 @@ The `execute_plan` Python API supports `training_only=True` for campaign phase
 separation. It retains the full resolved plan and pending evaluation jobs; resume
 without this flag evaluates after skipping completed training. It cannot be
 combined with `evaluation_only=True`. A training-only return has status
-`training_completed`, not campaign completion.
+`training_complete`, not campaign completion.
 
 Completed #91 server evidence can be verified portably with
 `python -m training.verify_issue91_results --campaign-root <extracted-issue91-fixed> --output <verification.json>`.
 It checks all required bytes, models, registered conditions, diagnostics, repeats
 and statistics without playing games. See the experiment RESULTS.md for retrieval.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.

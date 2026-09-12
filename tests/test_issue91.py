@@ -111,7 +111,7 @@ def test_staged_training_and_evaluation_keep_gamma_and_parent_immutable(tmp_path
         )
     result = execute_plan(plan, output_root=tmp_path / "outputs", training_only=True)
     status = json.loads((result / "status.json").read_text())
-    assert status["status"] == "training_completed"
+    assert status["status"] == "training_complete"
     for job in plan.jobs:
         assert status["jobs"][job.run_id]["status"] == (
             "completed" if job.kind == "training" else "pending"

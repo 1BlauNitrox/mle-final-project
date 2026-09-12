@@ -517,3 +517,17 @@ coin-heaven collection). Both arms fail cumulative Task 1/2 gates. Keep gamma
 exploratory fallback. Higher Q-values did not indicate improved behavior. Further
 work must address retention and invalid actions without assuming this gamma
 change or #124's tested rehearsal schedule solves them.
+
+## Rehearsal and escape-enabled masking evidence (#124)
+
+The [reduced five-replica A/B/C evaluation](../../experiments/2026-09-10-task2-rehearsal-mask/RESULTS.md)
+rejects the tested interleaved rehearsal schedule: coin-heaven collection fell
+from 21.68% to 4.69%. Masking with escape inputs achieved 34.89% classic collection
+and 0.5% self-kills, but its +5.33-point collection contrast failed the registered
+adoption threshold and uncertainty guard. It passes Task 2-specific gates but
+fails Task 1 retention (42.68% versus the frozen reference's 74.80%) and no-bombs.
+No default or committed checkpoint changes. Mechanical fallback A/r5 remains
+exploratory; Task 2 is not complete for this DQN. D has four replicas and is not
+eligible for confirmatory selection. Do not infer tournament strength from these
+opponent-free evaluations. Prioritize navigation retention and use the independent
+#91 gamma result before committing to another training intervention.
