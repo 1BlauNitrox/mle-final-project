@@ -5,24 +5,24 @@ artifact_path: checkpoint.pt
 max_parallel_training: 1
 replicas:
 - id: r1
-  world_seed: 163001
-  agent_seed: 263001
+  world_seed: 1630001
+  agent_seed: 2630001
   parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
 - id: r2
-  world_seed: 163002
-  agent_seed: 263002
+  world_seed: 1630002
+  agent_seed: 2630002
   parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
 - id: r3
-  world_seed: 163003
-  agent_seed: 263003
+  world_seed: 1630003
+  agent_seed: 2630003
   parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
 - id: r4
-  world_seed: 163004
-  agent_seed: 263004
+  world_seed: 1630004
+  agent_seed: 2630004
   parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
 - id: r5
-  world_seed: 163005
-  agent_seed: 263005
+  world_seed: 1630005
+  agent_seed: 2630005
   parent_artifact: ../../agent_code/DagobertDuckDQNTask3/checkpoint.pt
 training_stages:
 - id: classic-peaceful

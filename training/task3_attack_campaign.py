@@ -170,6 +170,11 @@ def validate(directory=None):
     seeds = {s for p in templates.values() for j in p.jobs for s in (j.world_seed, j.agent_seed)}
     protected = {s for a, b in config["protected_seed_ranges"] for s in range(a, b + 1)}
     require(not seeds & protected, "Reserved seed used")
+    ledger_path = CONFIG.parent / "external-seed-ledger.json"
+    ledger = read_json(ledger_path)
+    require(
+        not (seeds | protected) & set(ledger["seeds"]), "Seed collision with external registration"
+    )
     own = {CONFIG, *(ROOT / p for p in config["plans"].values())}
     audit = {}
     for path in [
@@ -222,6 +227,7 @@ def validate(directory=None):
             "protocol_sha256": sha256(CONFIG),
             "parent_bound": directory is not None,
             "seed_audit": audit,
+            "external_seed_ledger_sha256": sha256(ledger_path),
             "compute_authorized": False,
             "storage": storage_budget(plans),
         },

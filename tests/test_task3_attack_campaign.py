@@ -31,7 +31,7 @@ def test_matrix_modes_budget_and_seeds():
     assert not report["compute_authorized"]
     assert config["bootstrap"]["seed"] == 163
     assert plans["control"].action_masking == plans["neutral"].action_masking == "framework_legal"
-    assert plans["control"].replicas[0].world_seed == 163001
+    assert plans["control"].replicas[0].world_seed == 1630001
 
 
 def test_selection_requires_treatment_benefit_and_every_guard():
@@ -114,3 +114,26 @@ def test_incomplete_export_preserves_failure_without_claiming_analysis(tmp_path)
     lock.write_text("Owned by running process")
     with pytest.raises(ValueError, match="still active"):
         campaign.export_files(root, binding, None, tmp_path / "active.tar.gz")
+
+
+def test_new_training_roots_avoid_current_main_tabular_evaluation_seeds():
+    config, plans, report = campaign.validate()
+    ledger = campaign.read_json(campaign.CONFIG.parent / "external-seed-ledger.json")
+    assert 163001 in ledger["seeds"] and 263001 in ledger["seeds"]
+    assert plans["control"].replicas[0].world_seed == 1630001
+    assert plans["control"].replicas[0].agent_seed == 2630001
+    assert report["external_seed_ledger_sha256"]
+
+
+def test_external_collision_is_rejected(monkeypatch):
+    original = campaign.read_json
+
+    def collision(path):
+        value = original(path)
+        if path.name == "external-seed-ledger.json":
+            value["seeds"].append(1630001)
+        return value
+
+    monkeypatch.setattr(campaign, "read_json", collision)
+    with pytest.raises(ValueError, match="external registration"):
+        campaign.validate()
