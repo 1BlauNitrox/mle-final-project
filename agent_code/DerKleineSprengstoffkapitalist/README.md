@@ -316,5 +316,12 @@ strength significantly improved Classic collection but failed the registered
 safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
 limit), so neither escape-distance treatment is the default. Both modes remain
 available for reproducibility of the experiment lineage.
+
+Issue #153 tested an opt-in `safe_bomb` exploration mode that excludes an
+unsafe `BOMB` only from the random epsilon-greedy branch. It increased Classic
+self-kills from `0.045` to `0.075` and reduced Classic collection from `0.1694`
+to `0.1489`; no replica improved its Classic self-kill rate. The treatment was
+rejected, and standard epsilon-greedy exploration remains the default. The mode
+is retained only to reproduce the negative experiment.
 - retains inherited non-potential-based movement shaping;
 - can select actions that are framework-legal but tactically unsafe.

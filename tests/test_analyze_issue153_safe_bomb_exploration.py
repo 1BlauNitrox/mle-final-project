@@ -99,5 +99,6 @@ def test_every_registered_failure_is_reported() -> None:
 
 
 def test_committed_evidence_reproduces_result() -> None:
-    with pytest.raises(FileNotFoundError):
-        verify_from_evidence()
+    result = verify_from_evidence()
+    assert result["comparison"]["mean_difference"] == pytest.approx(0.03)
+    assert not result["passed"]
