@@ -481,7 +481,10 @@ def _run_job(
     attempt_root = plan_directory / "jobs" / job.run_id
     attempt_root.mkdir(parents=True, exist_ok=True)
     attempt_input = attempt_root / f"{attempt_id}-input-agent"
-    _snapshot_workspace(alias_directory, attempt_input)
+    if process_monitor is not None and hasattr(process_monitor, "snapshot_input"):
+        process_monitor.snapshot_input(alias_directory, attempt_input)
+    else:
+        _snapshot_workspace(alias_directory, attempt_input)
     with lock:
         job_status["status"] = "running"
         job_status["attempts"].append(attempt)
