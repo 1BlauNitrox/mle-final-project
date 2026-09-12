@@ -81,3 +81,27 @@ def test_registered_matrix_and_pins(monkeypatch):
     source = instrument_source(ROOT)
     assert "world_seed in {1501101, 1501102, 1501201}" in source
     assert "Diagnostic altered checkpoint" in source
+
+
+def test_resource_sampling_includes_interpreter_child_and_retains_finished_cpu():
+    from types import SimpleNamespace
+
+    from scripts.diagnose_issue162 import sample_tree
+
+    class Process:
+        def __init__(self, pid, cpu, rss):
+            self.pid, self.cpu, self.rss = pid, cpu, rss
+
+        def cpu_times(self):
+            return SimpleNamespace(user=self.cpu, system=0)
+
+        def memory_info(self):
+            return SimpleNamespace(rss=self.rss)
+
+    parent = Process(1, 0.1, 4)
+    child = Process(2, 5.0, 300)
+    parent.children = lambda recursive: [child]
+    samples = {}
+    assert sample_tree(parent, samples) == (5.1, 304)
+    parent.children = lambda recursive: []
+    assert sample_tree(parent, samples) == (5.1, 4)

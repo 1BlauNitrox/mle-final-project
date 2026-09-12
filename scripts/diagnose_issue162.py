@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tarfile
 import time
+from contextlib import suppress
 from pathlib import Path
 
 import psutil
@@ -90,6 +91,18 @@ def instrument_source(repo):
     if source.count(old) != 1:
         raise ValueError("Reviewed instrumentation seed contract changed")
     return source.replace(old, new)
+
+
+def sample_tree(process, cpu_by_pid):
+    memory = 0
+    for item in [process, *process.children(recursive=True)]:
+        try:
+            times = item.cpu_times()
+            cpu_by_pid[item.pid] = max(cpu_by_pid.get(item.pid, 0), times.user + times.system)
+            memory += item.memory_info().rss
+        except psutil.NoSuchProcess:
+            continue
+    return sum(cpu_by_pid.values()), memory
 
 
 def run(evidence, output):
@@ -179,17 +192,7 @@ def run(evidence, output):
                         process = psutil.Process(child.pid)
                         while child.poll() is None:
                             try:
-                                memory = 0
-                                for item in [process, *process.children(recursive=True)]:
-                                    try:
-                                        times = item.cpu_times()
-                                        cpu_by_pid[item.pid] = max(
-                                            cpu_by_pid.get(item.pid, 0), times.user + times.system
-                                        )
-                                        memory += item.memory_info().rss
-                                    except psutil.NoSuchProcess:
-                                        continue
-                                cpu = sum(cpu_by_pid.values())
+                                cpu, memory = sample_tree(process, cpu_by_pid)
                                 report["peak_memory_bytes"] = max(
                                     report["peak_memory_bytes"], memory
                                 )
@@ -208,10 +211,8 @@ def run(evidence, output):
                     finally:
                         if child.poll() is None:
                             for item in reversed([process, *process.children(recursive=True)]):
-                                try:
+                                with suppress(psutil.NoSuchProcess):
                                     item.kill()
-                                except psutil.NoSuchProcess:
-                                    pass
                             child.wait()
                         report["cpu_seconds"] += cpu
                 if digest(checkpoint) != r["sha256"]:
