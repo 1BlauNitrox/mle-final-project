@@ -1,0 +1,62 @@
+{
+  "issue147-control/train-r1-classic-peaceful": {
+    "path": "artifacts/r1/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "eef5d6beed255b908dddd15f8740097e84b24f56902284c43979b4a812f8f26d",
+    "size_bytes": 3436215
+  },
+  "issue147-control/train-r2-classic-peaceful": {
+    "path": "artifacts/r2/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "55387cfb6d808e0660cf74b9fa90c7d46b91d1a7e41d6ebaef29f956422b210a",
+    "size_bytes": 3436215
+  },
+  "issue147-control/train-r3-classic-peaceful": {
+    "path": "artifacts/r3/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "b50a7b1f5ce20b8bcc065f13bc78d8cfcf0ee8d82b6441989050d9cbe23933e8",
+    "size_bytes": 3436215
+  },
+  "issue147-control/train-r4-classic-peaceful": {
+    "path": "artifacts/r4/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "87259de6a5c978041f13221768bd38728d0c2e5519c9de8e9484b9078360a421",
+    "size_bytes": 3436215
+  },
+  "issue147-control/train-r5-classic-peaceful": {
+    "path": "artifacts/r5/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "ef4b326a19f5f8d40c84a3790bb213f3766443f83b04dbb2c1c101bfca0cab8e",
+    "size_bytes": 3436215
+  },
+  "issue147-masked/train-r1-classic-peaceful": {
+    "path": "artifacts/r1/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "e8500c5d5c17bb82cb86495fd76b250b7fa4f4871c4309a9a64ef41aca6f8817",
+    "size_bytes": 3436215
+  },
+  "issue147-masked/train-r2-classic-peaceful": {
+    "path": "artifacts/r2/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "45ef664c1bd1786e553396c0de104805347319285e2117de69a2cd752667b5ac",
+    "size_bytes": 3436215
+  },
+  "issue147-masked/train-r3-classic-peaceful": {
+    "path": "artifacts/r3/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "9708af46fa67244f5dfb96f2f44ebe99849f8a6486ab39f660526b3b3885c4dd",
+    "size_bytes": 3436215
+  },
+  "issue147-masked/train-r4-classic-peaceful": {
+    "path": "artifacts/r4/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "92bee1972916e6c56908590e00793e48642334c0055134cb989894beddc93caa",
+    "size_bytes": 3436215
+  },
+  "issue147-masked/train-r5-classic-peaceful": {
+    "path": "artifacts/r5/classic-peaceful/checkpoint.pt",
+    "selection": "final checkpoint after the exact stage budget",
+    "sha256": "563dffebd2242d23f4d942ec5b054e422b4d59709a40da5221fc55c3b9a52e19",
+    "size_bytes": 3436215
+  }
+}

@@ -1,5 +1,12 @@
 # Server handoff: Issue 147
 
+**Historical launch instructions.** This campaign completed at source
+`15bedeed078d073e4acefea378e1a06cd41ca7df` and failed its registered adoption
+gates. Use [RESULTS.md](RESULTS.md) to retrieve and verify its evidence; do not
+start another campaign from these instructions. The owner explicitly waived
+pre-execution peer review for this run, as disclosed in that result record.
+The original run's source, binding, seeds and resource records must stay intact.
+
 Preparation is safe now. Launch only after the owner approves this exact
 100,000-training / 3,520-evaluation, 24-CPU-hour / 10-wall-hour / 8-GiB proposal,
 the exact source receives peer review, CI passes and the server has a free

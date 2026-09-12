@@ -1,5 +1,15 @@
 # 0006 AI Usage and Disclosure
 
+Issue #147 result verification (2026-09-12): OpenAI Codex verified the downloaded
+archive and all 10,635 members, implemented tested historical source/dependency
+and binding relocation checks, and reproduced all raw observations and the
+registered negative decision. It prepared compact tables, checkpoint inventory,
+durable evidence and result documentation. The owner ran the registered campaign
+under an explicit exception before peer review; this is disclosed without
+altering original authorization records. No new games were launched, thresholds
+relaxed or candidate promoted during analysis. A human must review the evidence,
+interpretation and implementation before merge; AI output is not evidence.
+
 Issue #147 preparation (2026-09-12): OpenAI Codex proposed the matched Task 3
 legal-mask follow-up from #109's failed invalid-action/hunting/retention gates
 and the limitations of #124. It reused existing policy code, added explicit

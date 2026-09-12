@@ -1,10 +1,13 @@
 # DagobertDuckDQNTask3
 
-The proposed [Issue 147 follow-up](../../experiments/2026-09-12-task3-legal-mask/README.md)
-compares this existing model's consistent legal masking off/on during fresh
-peaceful-opponent training. It changes no default or committed checkpoint.
-Preparation tests do not establish efficacy; owner approval and review precede
-the new experiment. The #109 negative result and its no-selection decision remain.
+The completed [Issue 147 mask comparison](../../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
+failed its registered adoption rule. Five matched 10,000-episode replicas per
+arm achieved 21% masked versus 18% unmasked peaceful elimination (paired
+difference 95% CI [-14.5, 20.5] percentage points). Masked peaceful self-kills
+were 3.5% and invalid actions 0.00382%; all collection and crate-retention gates
+still failed. All integrity, repeat, latency and resource checks passed.
+No default or checkpoint changes; no replica is selected. The owner authorized
+execution before peer review, which remains outstanding for the result.
 
 Status: schema-4 implementation under #125 / PR #130; the completed #109
 exploratory campaign failed the peaceful-stage gates. No trained Task 3
@@ -61,19 +64,21 @@ regeneration and cannot be loaded under the new schema.
 
 ## Baselines and next steps
 
-The Task 2 parent is explicitly configurable. Historical #107 A/r2 can support
-the exploratory #109 study now; a later registered Task 2 selection requires
-a new binding, with failed gates retained explicitly. Neither choice certifies
-Task 2 completion. The [#109 protocol](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md)
+The Task 2 parent is explicitly configurable. Both completed studies used the
+owner-authorized provisional #91 A/r3 with exact provenance in their records.
+A future parent requires a new prospective binding, with failed gates retained
+explicitly; no choice certifies Task 2 completion. The [#109 protocol](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md)
 registers user-approved numerical gates, five 10,000-episode replicas, matched
 40-pair peaceful/classic/coin-heaven/loot-crate evaluations with repeats, a
 paired analyzer and guarded launcher. Fresh review and separate compute
-authorization remain required. #137 prepares exploratory coin-collector
-continuation after its peaceful decision; #51 retains its validated-parent scope.
+authorization are required for any distinct follow-up. #137 coin-collector
+continuation is blocked by the failed peaceful decisions; #51 retains its
+validated-parent scope. Diagnose the remaining hunting/retention limitation
+before registering another training intervention; #146's looping cause is unknown.
 
 Unit/contract tests cover prefix equivalence, active-feature Q preservation,
 separate online/target weights, masking consistency, reward attribution,
 source checksums and read-only evaluation. Integration smoke and packaging
 checks do not establish game strength, learning convergence or tournament
-latency on the official hardware. There are no Task 3 means, confidence
-intervals or success claims yet.
+latency on the official hardware. The two exploratory results establish neither
+successful hunting nor tournament readiness.

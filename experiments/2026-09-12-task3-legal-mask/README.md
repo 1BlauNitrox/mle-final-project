@@ -1,6 +1,14 @@
 # Issue 147: consistent legal masking in exploratory Task 3
 
-**Prospective proposal; no scientific execution or compute authorization.**
+**Completed exploratory negative result; no checkpoint selected.**
+See [RESULTS.md](RESULTS.md) for verified observations, every gate, durable
+evidence and reproduction commands. Masking achieved 21% peaceful elimination
+versus 18% control; the paired difference was +3 percentage points (95% CI
+[-14.5, 20.5]), failing the registered benefit rule. Collection and crate
+retention also failed. No automatic #137 continuation is permitted.
+The owner explicitly authorized execution before peer review; that exception
+does not imply reviewer approval. The prospective config remains unchanged
+as the executed registration, including its historical authorization wording.
 Owner Julius / 1BlauNitrox; reviewer requested: LiliWestermann. Refs #147,
 #109 and roadmap #106/PR #145 at 32a2450 (not assumed merged).
 
@@ -30,7 +38,7 @@ bombs during exploration, greedy acting and Bellman maximization. It neither
 avoids dangerous legal moves nor adds an anti-loop policy. In moving-opponent
 games it cannot promise zero invalid actions after simultaneous action ordering.
 
-## Registered proposal
+## Executed registration
 
 - Five paired replicas per trained arm, 10,000 classic episodes each against
   exactly one unchanged peaceful_agent. Learner slot 0, opponent slot 1; seeded
@@ -67,7 +75,7 @@ independent implementation/diagnosis; laptop can verify transferred compact
 evidence. Do not split control/treatment by host or duplicate evaluation merely
 to occupy the laptop.
 
-Proposed shared cap: **24 CPU-hours, 10 elapsed wall-hours, 8 GiB process-tree
+Registered shared cap: **24 CPU-hours, 10 elapsed wall-hours, 8 GiB process-tree
 memory**, with at least one additional hour for analysis/export/transfer inside
 a confirmed 12-hour allocation. #109 measured 3h19m for one arm plus reference;
 twice that is about 6h38m. Plan **7-9 hours for games**, with uncertain masked
@@ -82,8 +90,9 @@ See [SERVER.md](SERVER.md). `training.task3_mask_campaign` provides prepare,
 dry-run, guarded run/resume, raw verification/analysis, compact verification and
 export. The shared tested launcher preserves authorization, source/dependency
 fingerprints, jobs, failed attempts and cumulative resources. Raw analysis must
-run on the original source/environment; laptop verification uses compact
-observations and the pinned analysis commit, without rerunning games.
+use the original source/environment or the historical verifier documented in
+RESULTS.md, which checks executed Git bytes and dependencies separately from
+the analysis environment. Compact verification also requires no games.
 
 Export retains raw statistics, per-episode CSVs, metadata/status, bindings,
 checkpoints, full analysis and SHA-256/size manifests, while omitting duplicated
@@ -92,5 +101,5 @@ Publish the archive and manifest durably with the result PR. Analysis integrity
 failure is distinct from scientific gate failure; neither permits selection.
 
 No new agent defaults, model family, reward objective or held-out seeds change.
-AI assistance: Codex prepared plans, guarded tooling, tests and documentation;
-human protocol approval, peer review and compute authorization remain required.
+AI assistance: Codex prepared plans, guarded tooling, tests, result verification
+and documentation. Human review of the result remains required before merge.

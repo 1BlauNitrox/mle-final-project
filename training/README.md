@@ -1,10 +1,13 @@
 # Training Orchestration
 
-The proposed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/README.md)
+The completed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
 reuses the guarded campaign executor and raw evidence checks with an explicit
 issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
 provides prepare, dry-run, run/resume, analyze, verify and compact export.
-Its new protocol and compute budget require separate approval before execution.
+The registered result rejects continuation. `training.verify_task3_mask_results`
+verifies its archive and historical source, parent, matrix, dependencies, raw
+observations and decision without launching games or changing server evidence.
+Any new scientific run needs its own prospective authorization.
 
 The completed #109 peaceful campaign is an exploratory negative result; its
 registered selection rule blocks automatic coin-collector continuation.
