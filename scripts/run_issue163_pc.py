@@ -6,11 +6,15 @@ import argparse
 import ctypes
 import json
 import os
+import platform
 import subprocess
 import sys
+from contextlib import suppress
 from datetime import datetime, timezone
 from pathlib import Path
 from time import sleep
+
+import psutil
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -39,6 +43,35 @@ def next_output(root, stem, suffix=""):
     return root / f"{stem}-{index:03d}{suffix}"
 
 
+def hardware_record(review_note):
+    return {
+        "review_note": review_note,
+        "platform": platform.platform(),
+        "processor": platform.processor() or platform.machine(),
+        "host": platform.node(),
+        "python": platform.python_version(),
+        "logical_cpus": psutil.cpu_count(),
+        "physical_cpus": psutil.cpu_count(logical=False),
+        "total_memory_bytes": psutil.virtual_memory().total,
+        "evaluation_workers": 1,
+        "training_workers": 1,
+    }
+
+
+def stop_owned_process(process):
+    if process.poll() is not None:
+        return
+    try:
+        parent = psutil.Process(process.pid)
+        owned = [parent, *parent.children(recursive=True)]
+        for item in reversed(owned):
+            with suppress(psutil.NoSuchProcess):
+                item.kill()
+        psutil.wait_procs(owned, timeout=5)
+    except psutil.NoSuchProcess:
+        pass
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
@@ -65,11 +98,13 @@ def main():
     study.require(
         args.authorize_compute and args.review_note, "Explicit run and budget decision required"
     )
-    import psutil
 
     study.require(psutil.virtual_memory().available >= 2 * 1024**3, "Need 2 GiB available RAM")
     if not (root / "run-completed").exists():
         study.preflight(study.validate(root / "binding")[1], root / "runs", ROOT)
+    hardware_path = root / "hardware.txt"
+    if not hardware_path.exists():
+        study.write_json(hardware_path, hardware_record(args.review_note))
     ownership = root / ".supervisor.lock"
     with ownership.open("x", encoding="utf-8") as handle:
         handle.write(str(os.getpid()))
@@ -81,6 +116,7 @@ def main():
         "total_cpu_hours": 12,
         "memory_gib": 2,
         "binding_sha256": study.sha256(root / "binding/binding.json"),
+        "hardware_sha256": study.sha256(hardware_path),
     }
     monitor = None
     try:
@@ -121,6 +157,9 @@ def main():
                     process.returncode == 0,
                     f"Stage failed with exit {process.returncode}; preserve outputs",
                 )
+            except BaseException:
+                stop_owned_process(process)
+                raise
             finally:
                 # Resource breaches terminate only this registered process tree.
                 if registered:
@@ -138,7 +177,7 @@ def main():
                     "--authorized-by",
                     "Julius",
                     "--hardware-description",
-                    args.review_note + "; same Windows PC, serial, 2GiB cap",
+                    hardware_path.read_text(encoding="utf-8"),
                     "--available-memory-gib",
                     "2",
                     "--allocation-hours",
