@@ -1,5 +1,15 @@
 # 0006 AI Usage and Disclosure
 
+Issue #150 preparation (2026-09-12): Codex proposed and implemented an optional
+Double DQN target under the owner's next-experiment preparation authorization,
+using retained #146 diagnostic observations and the original Double DQN paper.
+The hypothesis is not a proven cause or cure for the observed stalls. It keeps
+the model family, rewards, features and historical defaults unchanged, and
+registers a fresh matched campaign with all existing capability gates. Tests,
+isolated smokes and timing checks verify implementation only; no long scientific
+campaign was launched or checkpoint promoted. Human ownership and review remain
+required before accepting the experiment or any result.
+
 Issue #147 result verification (2026-09-12): OpenAI Codex verified the downloaded
 archive and all 10,635 members, implemented tested historical source/dependency
 and binding relocation checks, and reproduced all raw observations and the
@@ -168,3 +178,10 @@ A/r2 exploratory baseline. Unit/regression, isolated integration and clean
 packaging checks verify implementation only; no Task 3 performance claim or
 scientific compute authorization is implied. Final #124 parent binding,
 numeric #109 decisions and scientific execution remain separate work.
+
+Issue #150 protocol tooling (2026-09-12): Codex prepared the matched seed matrix,
+parent and intervention validators, unchanged-gate analyzer, compact export and
+server handoff. Scoped warning-only logging reduces disk use while retaining
+raw scientific observations and failure records. Unit tests and an isolated
+integration smoke validate mechanics; they do not establish scientific efficacy
+or authorize a long run. Human review and ownership remain required.

@@ -16,6 +16,7 @@ from .replay import ReplayBatch
 
 CPU_DEVICE = torch.device("cpu")
 
+
 @dataclass(frozen=True)
 class TrainingResult:
     """Diagnostics produced by one optimizer update."""
@@ -24,6 +25,7 @@ class TrainingResult:
     mean_abs_td_error: float
     target_synchronized: bool
 
+
 class QNetwork(nn.Module):
     """Small feed-forward network that estimates action values"""
 
@@ -31,19 +33,11 @@ class QNetwork(nn.Module):
         super().__init__()
         self.config = config
 
-        dimensions = (
-            config.input_dim,
-            *config.hidden_sizes,
-            config.output_dim
-        )
+        dimensions = (config.input_dim, *config.hidden_sizes, config.output_dim)
 
         layers: list[nn.Module] = []
 
-        for input_size, output_size in zip(
-            dimensions[:-1],
-            dimensions[1:],
-            strict=True
-        ):
+        for input_size, output_size in zip(dimensions[:-1], dimensions[1:], strict=True):
             layers.append(nn.Linear(input_size, output_size))
 
             if output_size != config.output_dim:
@@ -58,8 +52,7 @@ class QNetwork(nn.Module):
 
         if inputs.shape[-1] != self.config.input_dim:
             raise ValueError(
-                f"Expected {self.config.input_dim} input features,"
-                f"got {inputs.shape[-1]}"
+                f"Expected {self.config.input_dim} input features,got {inputs.shape[-1]}"
             )
 
         if inputs.dtype != torch.float32:
@@ -70,17 +63,15 @@ class QNetwork(nn.Module):
 
         return self.layers(inputs)
 
-def build_q_network(
-    config: DQNConfig = DEFAULT_CONFIG,
-    *,
-    seed: int
-) -> QNetwork:
+
+def build_q_network(config: DQNConfig = DEFAULT_CONFIG, *, seed: int) -> QNetwork:
     """Build a deterministically initialized CPU network"""
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
         network = QNetwork(config)
 
     return network.to(CPU_DEVICE)
+
 
 def select_action(
     *,
@@ -137,6 +128,7 @@ def _validate_action_mask(action_mask: np.ndarray | None) -> np.ndarray:
         raise ValueError("action_mask must retain at least one legal action.")
     return mask
 
+
 def compute_bellman_targets(
     *,
     rewards: torch.Tensor,
@@ -144,6 +136,7 @@ def compute_bellman_targets(
     terminals: torch.Tensor,
     discount_factor: float,
     next_action_masks: torch.Tensor | None = None,
+    online_next_q_values: torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Calculate fixed DQN targets for one transition batch"""
     if not 0.0 <= discount_factor <= 1.0:
@@ -157,7 +150,7 @@ def compute_bellman_targets(
     if next_q_values.shape != (batch_size, len(ACTIONS)):
         raise ValueError("next_q_values have an incompatible shape")
 
-    if terminals.shape != (batch_size, ):
+    if terminals.shape != (batch_size,):
         raise ValueError("terminals have an incompatibel shape")
 
     if rewards.dtype != torch.float32:
@@ -175,19 +168,28 @@ def compute_bellman_targets(
         raise ValueError("next_action_masks have an incompatible shape or dtype")
     if not bool(next_action_masks.any(dim=1).all()):
         raise ValueError("Every Bellman target must retain a legal action")
+    if online_next_q_values is not None and (
+        online_next_q_values.shape != next_q_values.shape
+        or online_next_q_values.dtype != torch.float32
+    ):
+        raise ValueError("online_next_q_values have an incompatible shape or dtype")
 
     with torch.no_grad():
-        maximum_next_q_values = (
-            next_q_values.masked_fill(~next_action_masks, -torch.inf).max(dim=1).values
-        )
+        if online_next_q_values is None:
+            maximum_next_q_values = (
+                next_q_values.masked_fill(~next_action_masks, -torch.inf).max(dim=1).values
+            )
+        else:
+            # Double DQN: online selects a legal action, target evaluates it.
+            # torch.argmax deterministically resolves ties by action index.
+            selected = online_next_q_values.masked_fill(~next_action_masks, -torch.inf).argmax(
+                dim=1
+            )
+            maximum_next_q_values = next_q_values.gather(1, selected[:, None]).squeeze(1)
         bootstrap_mask = (~terminals).to(dtype=torch.float32)
 
-        return(
-            rewards
-            + discount_factor
-            * bootstrap_mask
-            * maximum_next_q_values
-        )
+        return rewards + discount_factor * bootstrap_mask * maximum_next_q_values
+
 
 class DQNLearner:
     """Online network, target network and optimizer for DQN training."""
@@ -223,14 +225,11 @@ class DQNLearner:
 
         if batch.states.shape != expected_state_shape:
             raise ValueError(
-                f"Expected states with shape {expected_state_shape}, "
-                f"got {batch.states.shape}."
+                f"Expected states with shape {expected_state_shape}, got {batch.states.shape}."
             )
 
         states = torch.from_numpy(batch.states).to(CPU_DEVICE)
-        action_indices = torch.from_numpy(
-            batch.action_indices
-        ).to(CPU_DEVICE)
+        action_indices = torch.from_numpy(batch.action_indices).to(CPU_DEVICE)
         rewards = torch.from_numpy(batch.rewards).to(CPU_DEVICE)
         next_states = torch.from_numpy(batch.next_states).to(CPU_DEVICE)
         terminals = torch.from_numpy(batch.terminals).to(CPU_DEVICE)
@@ -246,6 +245,9 @@ class DQNLearner:
 
         with torch.no_grad():
             next_q_values = self.target_network(next_states)
+            online_next_q_values = (
+                self.online_network(next_states) if self.config.double_dqn else None
+            )
 
         targets = compute_bellman_targets(
             rewards=rewards,
@@ -253,6 +255,7 @@ class DQNLearner:
             terminals=terminals,
             discount_factor=self.config.discount_factor,
             next_action_masks=next_action_masks,
+            online_next_q_values=online_next_q_values,
         )
 
         td_errors = targets - current_q_values
@@ -272,39 +275,27 @@ class DQNLearner:
         self.optimizer.step()
         self.update_steps += 1
 
-        target_synchronized = (
-            self.update_steps
-            % self.config.target_update_interval
-            == 0
-        )
+        target_synchronized = self.update_steps % self.config.target_update_interval == 0
 
         if target_synchronized:
             self.synchronize_target_network()
 
         return TrainingResult(
             loss=float(loss.detach().item()),
-            mean_abs_td_error=float(
-                td_errors.detach().abs().mean().item()
-            ),
+            mean_abs_td_error=float(td_errors.detach().abs().mean().item()),
             target_synchronized=target_synchronized,
         )
 
     def synchronize_target_network(self) -> None:
         """Copy online parameters into the frozen target network."""
-        self.target_network.load_state_dict(
-            self.online_network.state_dict()
-        )
+        self.target_network.load_state_dict(self.online_network.state_dict())
         self.target_network.eval()
 
     def state_dict(self) -> dict[str, Any]:
         """Export all state required to resume DQN optimization."""
         return {
-            "online_network": deepcopy(
-                self.online_network.state_dict()
-            ),
-            "target_network": deepcopy(
-                self.target_network.state_dict()
-            ),
+            "online_network": deepcopy(self.online_network.state_dict()),
+            "target_network": deepcopy(self.target_network.state_dict()),
             "optimizer": deepcopy(self.optimizer.state_dict()),
             "update_steps": self.update_steps,
         }
@@ -324,9 +315,7 @@ class DQNLearner:
         update_steps = state["update_steps"]
 
         if type(update_steps) is not int or update_steps < 0:
-            raise ValueError(
-                "Learner update_steps must be a non-negative integer."
-            )
+            raise ValueError("Learner update_steps must be a non-negative integer.")
 
         try:
             self.online_network.load_state_dict(

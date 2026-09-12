@@ -9,6 +9,30 @@ import pytest
 from training.seeded_framework import seeds, wrap_process_event
 
 
+def test_compact_logging_is_explicit_and_only_changes_log_levels(monkeypatch):
+    import logging
+
+    import settings
+    from training.seeded_framework import configure_diagnostic_logging
+
+    for name in ("LOG_GAME", "LOG_AGENT_WRAPPER", "LOG_AGENT_CODE"):
+        monkeypatch.setattr(settings, name, logging.INFO)
+    monkeypatch.setenv("BOMBERMAN_COMPACT_LOGS", "0")
+    configure_diagnostic_logging()
+    assert settings.LOG_GAME == logging.INFO
+    monkeypatch.setenv("BOMBERMAN_COMPACT_LOGS", "1")
+    configure_diagnostic_logging()
+    assert (
+        settings.LOG_GAME
+        == settings.LOG_AGENT_WRAPPER
+        == settings.LOG_AGENT_CODE
+        == logging.WARNING
+    )
+    monkeypatch.setenv("BOMBERMAN_COMPACT_LOGS", "invalid")
+    with pytest.raises(ValueError):
+        configure_diagnostic_logging()
+
+
 def draw(runner, event):
     if event == "setup":
         np.random.seed()

@@ -1,0 +1,23 @@
+{
+  "scope": "synthetic_mechanics_timing_not_efficacy",
+  "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "torch": "2.13.0+cpu",
+  "threads": 1,
+  "source": "1a959a2604b43d0962a4d4cb2272fd949f0c3228",
+  "updates_per_repeat": 500,
+  "warmup_updates": 25,
+  "seconds_per_update": {
+    "standard": [
+      0.001929688600008376,
+      0.0020117280000122263,
+      0.0020671190000139178
+    ],
+    "double": [
+      0.0021428141999640504,
+      0.002132004000013694,
+      0.002129608399991412
+    ]
+  },
+  "ratio_of_medians": 1.059787406647786
+}

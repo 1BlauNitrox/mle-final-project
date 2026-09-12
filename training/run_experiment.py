@@ -142,6 +142,11 @@ def run_experiment(
         environment["BOMBERMAN_AGENT_SEED"] = str(agent_seed)
     if environment_overrides:
         environment.update(environment_overrides)
+    metadata["logging_policy"] = (
+        "warning_only"
+        if seed_opponents and environment.get("BOMBERMAN_COMPACT_LOGS") == "1"
+        else "framework_default"
+    )
     if (
         mode == "training"
         and environment.get("BOMBERMAN_DQN_REPLAY_TREATMENT")

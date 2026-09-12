@@ -321,6 +321,9 @@ def _restore_config(value: Any) -> DQNConfig:
     # Evaluation artifacts predating Issue #86 are unmasked by definition.
     if "action_masking" not in value:
         value = {**value, "action_masking": False}
+    # Historical Task 3 checkpoints always used target-network maximization.
+    if "double_dqn" not in value:
+        value = {**value, "double_dqn": False}
 
     if set(value) != set(expected_defaults):
         raise ValueError("Stored configuration has unexpected fields.")
