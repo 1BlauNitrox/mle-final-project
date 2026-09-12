@@ -61,6 +61,30 @@ def _write_plan(tmp_path: Path, data: dict[str, object]) -> Path:
     return path
 
 
+def test_training_stage_offsets_are_resolved_without_resetting_agent_seed(tmp_path):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = 1000
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    assert (plan.jobs[0].world_seed, plan.jobs[1].world_seed) == (101, 1101)
+    assert plan.jobs[0].agent_seed == plan.jobs[1].agent_seed == 201
+    assert plan.to_dict()["jobs"][1]["world_seed"] == 1101
+
+
+@pytest.mark.parametrize("offset", [-1, True, 1.5, "100", 2**32])
+def test_invalid_training_stage_offsets_are_rejected(tmp_path, offset):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = offset
+    with pytest.raises(ValueError):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
+def test_offset_training_seed_cannot_overlap_evaluation(tmp_path):
+    data = _plan_data()
+    data["training_stages"][1]["world_seed_offset"] = 200
+    with pytest.raises(ValueError, match="overlap"):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
 def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) -> None:
     path = _write_plan(tmp_path, _plan_data())
 
@@ -195,7 +219,7 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
                 state_representation="compact_decision",
                 tabular_initialization="parent_prior",
             ),
-            "compact_decision requires",
+            "compact state representations require",
         ),
         "potential shaping": (
             lambda plan: plan.update(potential_shaping="unknown"),
@@ -297,6 +321,35 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
     }
+
+
+def test_training_only_can_resume_evaluation_without_retraining(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["replicas"] = [data["replicas"][0]]
+    data["training_stages"] = [data["training_stages"][0]]
+    data["evaluation_suites"] = [data["evaluation_suites"][0]]
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    calls = []
+
+    def fake_runner(**kwargs):
+        calls.append(kwargs["mode"])
+        directory = Path(kwargs["output_root"]) / kwargs["run_id"]
+        directory.mkdir(parents=True)
+        (directory / "metadata.json").write_text("{}")
+        artifact = run_plan.REPOSITORY_ROOT / "agent_code" / kwargs["agent"] / "model.npz"
+        if kwargs["mode"] == "training":
+            artifact.write_bytes(b"trained")
+        else:
+            assert artifact.read_bytes() == b"trained"
+        return directory
+
+    with patch.object(run_plan, "run_experiment", side_effect=fake_runner):
+        directory = run_plan.execute_plan(plan, output_root=tmp_path / "out", training_only=True)
+        status = json.loads((directory / "status.json").read_text())
+        assert status["status"] == "training_complete"
+        assert calls == ["training"]
+        run_plan.execute_plan(plan, output_root=tmp_path / "out", resume=True)
+    assert calls == ["training", "evaluation"]
 
 
 def test_resume_rejects_every_protected_fingerprint(tmp_path: Path) -> None:
@@ -414,6 +467,17 @@ def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
 
     assert plan.potential_shaping == "escape_distance_half"
+
+
+def test_compact_post_bomb_escape_state_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_post_bomb_escape"
+    data["tabular_initialization"] = "zeros"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.state_representation == "compact_post_bomb_escape"
+    assert plan.tabular_initialization == "zeros"
 
 
 def test_zero_initialization_removes_only_the_initial_source_model(
