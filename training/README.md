@@ -1,5 +1,13 @@
 # Training Orchestration
 
+The completed #109 peaceful campaign is an exploratory negative result; its
+registered selection rule blocks automatic coin-collector continuation.
+See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+`python -m training.verify_task3_results` verifies the historical server campaign
+against its executed Git source and recorded dependencies without launching
+games or changing original bindings. `training.analyze_task3_campaign
+--verify-evidence` recomputes decisions from portable lossless observations.
+
 This directory is for tooling shared across experiments and agents:
 
 - curriculum launchers;

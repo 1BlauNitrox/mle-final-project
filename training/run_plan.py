@@ -36,6 +36,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
     "none",
     "compact_safety",
     "escape_distance",
+    "escape_distance_half",
 )
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
