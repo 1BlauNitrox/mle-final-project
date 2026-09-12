@@ -1,5 +1,8 @@
 # Issue 146: bounded development diagnosis
 
+The completed [diagnostic results](RESULTS.md) reproduce learned WAIT stalls,
+invalid actions and legal two-tile cycles; no corrective behavior is adopted.
+
 This is read-only diagnosis, not an efficacy experiment or a model selection.
 The owner authorized short tests to prepare the next Task 3 protocol. The
 [prospective registration](https://github.com/1BlauNitrox/mle-final-project/issues/146#issuecomment-5644860530)
