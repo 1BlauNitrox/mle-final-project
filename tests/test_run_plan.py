@@ -205,7 +205,7 @@ def test_schema_rejects_invalid_plans_before_execution(tmp_path: Path) -> None:
                 state_representation="compact_decision",
                 tabular_initialization="parent_prior",
             ),
-            "compact_decision requires",
+            "compact state representations require",
         ),
         "potential shaping": (
             lambda plan: plan.update(potential_shaping="unknown"),
@@ -452,6 +452,17 @@ def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
 
     assert plan.potential_shaping == "escape_distance_half"
+
+
+def test_compact_post_bomb_escape_state_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_post_bomb_escape"
+    data["tabular_initialization"] = "zeros"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.state_representation == "compact_post_bomb_escape"
+    assert plan.tabular_initialization == "zeros"
 
 
 def test_zero_initialization_removes_only_the_initial_source_model(
