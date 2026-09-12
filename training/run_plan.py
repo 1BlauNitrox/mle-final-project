@@ -41,6 +41,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
     "compact_safety",
     "escape_distance",
     "escape_distance_half",
+    "escape_distance_half_full_no_route",
 )
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
 VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
