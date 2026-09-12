@@ -316,5 +316,13 @@ strength significantly improved Classic collection but failed the registered
 safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
 limit), so neither escape-distance treatment is the default. Both modes remain
 available for reproducibility of the experiment lineage.
+
+Issue #144 tested whether an appended post-bomb escape-status category could
+resolve compact-state aliasing. It produced exactly the same Classic collection
+(`0.1272`) and self-kill rate (`0.075`) as control, with a paired collection
+difference and confidence interval of zero. Post-hoc Q-table inspection found
+no compact-state prefix split across multiple status values, so the added value
+acted as a relabeling on visited states. The candidate was rejected and
+`compact_decision` remains the default.
 - retains inherited non-potential-based movement shaping;
 - can select actions that are framework-legal but tactically unsafe.

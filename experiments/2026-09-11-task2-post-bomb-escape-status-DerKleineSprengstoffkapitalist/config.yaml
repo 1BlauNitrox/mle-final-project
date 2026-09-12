@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 144
-status: registered_ready_to_run
+status: completed_candidate_rejected
 evidence_scope: prospective_completed_experiment
 agent: DerKleineSprengstoffkapitalist
 owner: LiliWestermann
@@ -70,6 +70,7 @@ criteria:
   decision_time_max_ms_max_exclusive: 100
 
 analysis:
+  implementation_commit: "145dd1546d57dbe2f3fa2a7d0d692b2ac50059be"
   bootstrap_resamples: 10000
   classic_collection_resampler_seed: 144
 
@@ -89,3 +90,15 @@ approval:
 outputs:
   commit: [README.md, config.yaml, evidence.csv, training_diagnostics.csv, summary.csv, result.json, figures/]
   external: [trained_models, resolved_plans, statuses, raw_job_outputs]
+
+results:
+  completed_jobs: 2430
+  classic_collection: {control: 0.1272222222222222, candidate: 0.1272222222222222}
+  classic_self_kill_rate: {control: 0.075, candidate: 0.075}
+  classic_collection_difference: {mean: 0.0, ci_lower: 0.0, ci_upper: 0.0}
+  replicas_with_higher_classic_collection: 0
+  coin_heaven_collection: {control: 1.0, candidate: 1.0}
+  loot_crate_collection: {control: 0.1541, candidate: 0.1541}
+  mean_visits_per_state: {control: 675.515973959414, candidate: 675.515973959414}
+  passed: false
+  decision: reject_candidate_keep_compact_control

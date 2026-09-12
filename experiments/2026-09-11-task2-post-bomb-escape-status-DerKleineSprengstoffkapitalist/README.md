@@ -1,6 +1,6 @@
 # Compact post-bomb escape-status experiment
 
-> Status: registered and ready to run
+> Status: completed; candidate rejected
 
 ## Metadata
 
@@ -61,11 +61,46 @@ training and does not alter the treatments, seeds, budget, metrics or criteria.
 
 ## Results
 
-Pending execution.
+All 2,430 planned jobs completed: 1,215 per arm. The table reports means over
+the five final models and 40 fresh evaluation seeds per scenario.
+
+| Scenario | Collection control | Collection candidate | Self-kill control | Self-kill candidate |
+| --- | ---: | ---: | ---: | ---: |
+| Classic | 0.1272 | 0.1272 | 0.075 | 0.075 |
+| Coin Heaven | 1.0000 | 1.0000 | 0.000 | 0.000 |
+| Loot Crate | 0.1541 | 0.1541 | 0.225 | 0.225 |
+
+The paired Classic collection difference was exactly `0.0000`, with a 95%
+bootstrap interval of `[0.0000, 0.0000]`. Zero of five replicas improved.
+The candidate also missed the absolute Classic self-kill limit of `0.055`.
+Both treatments had the same mean visits per state (`675.516`, ratio `1.000`)
+and evaluation unseen-state rate (`0.0096%`). Deterministic repeats matched,
+and all registered latency limits passed. Overall, six of ten criteria passed.
+
+The committed result can be reproduced from compact evidence with:
+
+    python -m training.analyze_issue144_post_bomb_escape --verify-from-evidence
+
+Figures:
+
+![Performance and safety](figures/performance_and_safety.png)
+
+![Learning efficiency](figures/learning_efficiency.png)
 
 ## Interpretation and decision
 
-Pending execution.
+Reject `compact_post_bomb_escape` and retain `compact_decision` as the default.
+The candidate did not merely fail to improve the metrics: every retained
+performance, safety and learning-efficiency outcome was identical to control.
+
+A post-hoc inspection of the five candidate final Q-tables found status counts
+of roughly 1,022--1,051 `NOT_APPLICABLE`, 47 `COMPLETE_ROUTE`, four
+`TEMPORARY_SAFETY_ONLY`, and zero `NO_ROUTE` states per table. More importantly,
+no shared five-value compact-state prefix occurred with multiple escape-status
+values. Thus, on the visited data, the appended category acted only as a
+one-to-one relabeling rather than resolving state aliasing. This diagnostic was
+not a registered criterion and is used only to explain the exact null result.
+Confirmation seeds were not used.
 
 ## AI assistance
 
