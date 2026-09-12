@@ -30,9 +30,18 @@ def fixture(root):
         jobs[f"job{index}"] = {
             "kind": kind,
             "status": status,
-            "artifact": {"selection": "immutable evaluation input", "sha256": digest(path)},
+            "replica": "r1",
+            "artifact": {
+                "selection": "immutable evaluation input",
+                "sha256": digest(path),
+                "path": "artifacts/checkpoint.pt",
+            },
             "attempts": [{"status": status, "output": f"jobs/job{index}/attempt-001"}],
         }
+    for relative in ("artifacts/checkpoint.pt", "replicas/r1/agent/checkpoint.pt"):
+        protected = plan / relative
+        protected.parent.mkdir(parents=True)
+        shutil.copy2(paths[0], protected)
     (plan / "status.json").write_text(json.dumps({"jobs": jobs}))
     (root / "resources.json").write_text('{"active_root_pids": []}')
     return paths
@@ -105,3 +114,13 @@ def test_link_failure_preserves_original_and_records_attempt(tmp_path, monkeypat
     assert paths[1].read_bytes() == before
     assert json.loads(audit.read_text().splitlines()[-1])["phase"] == "before"
     assert not (tmp_path / ".task3-campaign.lock").exists()
+
+
+def test_damaged_live_workspace_blocks_recovery_before_changes(tmp_path):
+    paths = fixture(tmp_path)
+    live = tmp_path / "plans/example/replicas/r1/agent/checkpoint.pt"
+    live.write_bytes(b"truncated workspace")
+    with pytest.raises(ValueError, match="artifact/workspace hash mismatch"):
+        recover(tmp_path, audit=tmp_path / "audit.jsonl")
+    assert not os.path.samefile(*paths[:2])
+    assert live.read_bytes() == b"truncated workspace"

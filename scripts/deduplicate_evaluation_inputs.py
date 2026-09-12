@@ -63,6 +63,21 @@ def inventory(root):
         controls[status_path] = digest(status_path)
         data = json.loads(status_path.read_text(encoding="utf-8"))
         for job in data["jobs"].values():
+            if job["status"] == "completed":
+                artifact = job["artifact"]
+                protected = [status_path.parent / artifact["path"]]
+                if job["kind"] == "training":
+                    protected.append(
+                        status_path.parent / "replicas" / job["replica"] / "agent/checkpoint.pt"
+                    )
+                for candidate in protected:
+                    candidate = inside(root, candidate.relative_to(root))
+                    if candidate not in controls:
+                        controls[candidate] = digest(candidate)
+                    require(
+                        controls[candidate] == artifact["sha256"],
+                        "Protected artifact/workspace hash mismatch: " + str(candidate),
+                    )
             if job["kind"] != "evaluation" or job["status"] != "completed":
                 continue
             require(
@@ -123,6 +138,7 @@ def recover(root, *, audit=None):
             "replacement_paths": len(pairs),
             "estimated_reclaimed_bytes": savings,
             "apply": audit is not None,
+            "protected_checkpoint_files": sum(p.suffix == ".pt" for p in controls),
         }
         if audit is None:
             return result
