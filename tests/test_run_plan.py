@@ -465,7 +465,7 @@ def test_half_progress_full_no_route_treatment_can_be_selected(
     plan = run_plan.load_plan(_write_plan(tmp_path, data))
 
     assert plan.potential_shaping == "escape_distance_half_full_no_route"
-    
+ 
 
 def test_compact_post_bomb_escape_state_can_be_selected(tmp_path: Path) -> None:
     data = _plan_data()
@@ -536,3 +536,4 @@ def test_zero_initialization_removes_only_the_initial_source_model(
 
     assert (workspace / "model.npz").read_bytes() == b"trained model"
     assert (second_alias / "model.npz").read_bytes() == b"trained model"
+    
