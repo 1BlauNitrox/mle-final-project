@@ -805,7 +805,7 @@ agent:
 - satisfies the Task 1 completion contract; or
 - is tournament-ready.
 
-A 5â€“10 episode smoke run verifies only that the instrumentation works. Any
+A 5–10 episode smoke run verifies only that the instrumentation works. Any
 performance conclusion requires a preregistered experiment with controlled
 variables, fixed seed populations, appropriate baselines, and uncertainty
 reporting.

@@ -17,6 +17,27 @@ The authoritative sources remain the supplied assignment PDF (currently
 issue/PR discussions. If this file conflicts with one of those sources, inspect
 the conflict and follow the authoritative source rather than guessing.
 
+## Task 3 branch handoff (2026-09-12)
+
+Refresh GitHub before acting: PR #145 remains an unmerged roadmap proposal;
+its accepted scheduling decisions guide this work. Completed #109 and #147
+peaceful campaigns did not pass every gate, so no Task 3 replica is selected and
+#137 / PR #140 cannot automatically continue. Task 2 remains cumulatively
+incomplete; do not restart standalone DQN Task 2 optimization.
+
+Read-only #146 diagnosis is in PR #151. It reproduces learned WAIT and legal
+movement cycles without establishing the original GUI incident's cause. The
+next prepared hypothesis is #150 / PR #154: matched standard versus Double DQN
+training targets, fresh provisional #91 A/r3 initialization, unchanged rewards,
+features and hunting/retention gates. See
+[the protocol](experiments/2026-09-12-task3-double-dqn/README.md),
+[server commands](experiments/2026-09-12-task3-double-dqn/SERVER.md), and
+[independent device checks](experiments/2026-09-12-task3-double-dqn/DEVICES.md).
+Preparation and short mechanics checks are complete; long-run execution still
+needs the concrete protocol/budget decision and review or an explicit owner
+execution exception. This is not scientific evidence of improvement. PR #149
+under #126 remains parent-gated Task 4 preparation, not a launchable campaign.
+
 ## Mandatory startup behavior for every new session
 
 Before changing code, documentation, experiments, issues, or pull requests:
