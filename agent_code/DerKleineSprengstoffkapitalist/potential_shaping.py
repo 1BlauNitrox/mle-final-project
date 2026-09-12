@@ -15,17 +15,22 @@ NO_POTENTIAL_SHAPING = "none"
 COMPACT_SAFETY_POTENTIAL_SHAPING = "compact_safety"
 ESCAPE_DISTANCE_POTENTIAL_SHAPING = "escape_distance"
 HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING = "escape_distance_half"
+HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING = (
+    "escape_distance_half_full_no_route"
+)
 
 VALID_POTENTIAL_SHAPING_MODES = (
     NO_POTENTIAL_SHAPING,
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
 )
 
-ESCAPE_DISTANCE_POTENTIAL_SCALES = {
-    ESCAPE_DISTANCE_POTENTIAL_SHAPING: 1.0,
-    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING: 0.5,
+ESCAPE_DISTANCE_POTENTIAL_PROFILES = {
+    ESCAPE_DISTANCE_POTENTIAL_SHAPING: (1.0, -5.0),
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING: (0.5, -2.5),
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING: (0.5, -5.0),
 }
 
 
@@ -49,7 +54,12 @@ def escape_distance_potential_from_distance(distance: int | None) -> float:
     return -3.0
 
 
-def escape_distance_potential(game_state: dict, *, scale: float = 1.0) -> float:
+def escape_distance_potential(
+    game_state: dict,
+    *,
+    scale: float = 1.0,
+    no_route_potential: float = -5.0,
+) -> float:
     """Return the time-aware escape-distance potential for a game state."""
     if not 0.0 < scale <= 1.0:
         raise ValueError("Escape-distance potential scale must be in (0, 1].")
@@ -69,6 +79,9 @@ def escape_distance_potential(game_state: dict, *, scale: float = 1.0) -> float:
         bombs,
         position,
     )
+    if distance is None:
+        return float(no_route_potential)
+
     return scale * escape_distance_potential_from_distance(distance)
 
 
@@ -168,7 +181,7 @@ def apply_potential_shaping(
     if mode == NO_POTENTIAL_SHAPING:
         return float(reward)
 
-    if mode in ESCAPE_DISTANCE_POTENTIAL_SCALES:
+    if mode in ESCAPE_DISTANCE_POTENTIAL_PROFILES:
         if current_external_potential is None:
             raise ValueError(
                 "Escape-distance shaping requires the current potential."

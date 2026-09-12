@@ -469,6 +469,19 @@ def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
     assert plan.potential_shaping == "escape_distance_half"
 
 
+def test_half_progress_full_no_route_treatment_can_be_selected(
+    tmp_path: Path,
+) -> None:
+    data = _plan_data()
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    data["potential_shaping"] = "escape_distance_half_full_no_route"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.potential_shaping == "escape_distance_half_full_no_route"
+
+
 def test_compact_post_bomb_escape_state_can_be_selected(tmp_path: Path) -> None:
     data = _plan_data()
     data["state_representation"] = "compact_post_bomb_escape"
