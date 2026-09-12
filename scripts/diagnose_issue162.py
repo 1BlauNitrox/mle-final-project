@@ -102,7 +102,7 @@ def run(evidence, output):
     for r in config["replicas"]:
         path = (evidence / r["archive_path"]).resolve()
         path.relative_to(evidence.resolve())
-        if digest(path) != r["sha256"] or path.stat().st_size != r["size_bytes"]:
+        if digest(path) != r["sha256"] or path.stat().st_size != int(r["size_bytes"]):
             raise ValueError(f"Wrong input: {r['replica']}")
         inputs.append((r, path))
     output = output.resolve()
