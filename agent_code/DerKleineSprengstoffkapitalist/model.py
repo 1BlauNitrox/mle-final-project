@@ -89,6 +89,7 @@ class QTable:
         epsilon: float,
         rng: np.random.Generator,
         action_mask: np.ndarray | None = None,
+        exploration_action_mask: np.ndarray | None = None,
     ) -> str:
         """Select an action using epsilon-greedy exploration."""
 
@@ -96,10 +97,15 @@ class QTable:
             raise ValueError("Epsilon must be in [0, 1].")
 
         legal = _validate_action_mask(action_mask)
-        legal_indices = np.flatnonzero(legal)
 
         if rng.random() < epsilon:
-            selected_index = int(rng.choice(legal_indices))
+            exploration_legal = legal & _validate_action_mask(
+                exploration_action_mask
+            )
+            exploration_indices = np.flatnonzero(exploration_legal)
+            if exploration_indices.size == 0:
+                raise ValueError("Exploration action mask excludes every legal action")
+            selected_index = int(rng.choice(exploration_indices))
             return ACTIONS[selected_index]
 
         values = self.q_values(state)

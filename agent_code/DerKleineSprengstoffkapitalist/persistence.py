@@ -33,9 +33,9 @@ from .potential_shaping import (
     VALID_POTENTIAL_SHAPING_MODES,
 )
 
-MODEL_SCHEMA_VERSION = 5
+MODEL_SCHEMA_VERSION = 6
 LEGACY_MODEL_SCHEMA_VERSION = 3
-PREVIOUS_MODEL_SCHEMA_VERSION = 4
+PREVIOUS_MODEL_SCHEMA_VERSIONS = (4, 5)
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -52,6 +52,7 @@ class LoadedModel:
     state_representation: str
     initialization: str
     potential_shaping: str
+    exploration_mode: str
 
 
 def save_model(
@@ -64,6 +65,7 @@ def save_model(
     state_representation: str = BASELINE_STATE_REPRESENTATION,
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
+    exploration_mode: str = "standard",
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -88,6 +90,9 @@ def save_model(
 
     if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
         raise ValueError("Invalid potential-shaping mode.")
+
+    if exploration_mode not in {"standard", "safe_bomb"}:
+        raise ValueError("Invalid exploration mode.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -124,6 +129,7 @@ def save_model(
         "bomb_prior_margin": BOMB_PRIOR_MARGIN,
         "useful_bomb_reward": useful_bomb_reward,
         "action_masking": action_masking,
+        "exploration_mode": exploration_mode,
     }
 
     path = Path(path)
@@ -235,6 +241,9 @@ def load_model(
                 "potential_shaping": NO_POTENTIAL_SHAPING,
             }
 
+        if "exploration_mode" not in metadata:
+            metadata = {**metadata, "exploration_mode": "standard"}
+
         stored_schema_version = metadata.get("model_schema_version")
 
         if stored_schema_version == LEGACY_MODEL_SCHEMA_VERSION:
@@ -244,7 +253,7 @@ def load_model(
                 "state_representation": BASELINE_STATE_REPRESENTATION,
                 "initialization": PARENT_PRIOR_INITIALIZATION,
             }
-        elif stored_schema_version == PREVIOUS_MODEL_SCHEMA_VERSION:
+        elif stored_schema_version in PREVIOUS_MODEL_SCHEMA_VERSIONS:
             metadata = {
                 **metadata,
                 "model_schema_version": MODEL_SCHEMA_VERSION,
@@ -316,6 +325,7 @@ def load_model(
         state_representation=state_representation,
         initialization=initialization,
         potential_shaping=str(metadata["potential_shaping"]),
+        exploration_mode=str(metadata["exploration_mode"]),
     )
 
 
@@ -477,6 +487,7 @@ def _validate_metadata(metadata: Any) -> None:
         "useful_bomb_reward",
         "action_masking",
         "potential_shaping",
+        "exploration_mode",
     }
 
     if (
@@ -487,6 +498,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["action_masking"] not in {"none", "framework_legal"}:
         raise ValueError("Stored action-masking mode is invalid")
+
+    if metadata["exploration_mode"] not in {"standard", "safe_bomb"}:
+        raise ValueError("Stored exploration mode is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")

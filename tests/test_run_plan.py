@@ -110,6 +110,20 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.state_representation == "baseline"
     assert first.tabular_initialization == "parent_prior"
     assert first.potential_shaping == "none"
+    assert first.tabular_exploration_mode == "standard"
+
+
+def test_safe_bomb_exploration_requires_compact_state(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["tabular_exploration_mode"] = "safe_bomb"
+
+    with pytest.raises(ValueError, match="requires state_representation"):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+    data["state_representation"] = "compact_decision"
+    data["tabular_initialization"] = "zeros"
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    assert plan.tabular_exploration_mode == "safe_bomb"
 
 
 def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path) -> None:
@@ -300,8 +314,9 @@ def test_execution_preserves_failures_and_resumes_exactly(tmp_path: Path) -> Non
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_TABULAR_STATE_REPRESENTATION": "baseline",
-        "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
-        "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
+            "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
+            "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
+            "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
