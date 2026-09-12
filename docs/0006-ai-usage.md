@@ -185,3 +185,11 @@ server handoff. Scoped warning-only logging reduces disk use while retaining
 raw scientific observations and failure records. Unit tests and an isolated
 integration smoke validate mechanics; they do not establish scientific efficacy
 or authorize a long run. Human review and ownership remain required.
+
+Issue #150 storage recovery (2026-09-12): Codex's 8 GiB working-space estimate
+missed retained per-evaluation checkpoint snapshots; the owner reported disk
+exhaustion. Codex prepared a separately executed, audited hard-link utility for
+identical completed evaluation inputs and tested it on disposable fixtures and
+a copy of real smoke output. No scientific source, checkpoint bytes, seeds,
+thresholds or resource budget are changed. Recovery and final scientific
+verification remain separate from these mechanics checks.
