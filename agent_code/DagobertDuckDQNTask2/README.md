@@ -1,13 +1,13 @@
 # DagobertDuckDQNTask2
 
-> Status: Issue #87 multi-step escape implementation complete; the four-cell
-> campaign is registered separately in Issue #107.
+> Status: Standalone Task 2 optimization concluded September 11 with known
+> limitations; cumulative capability remains incomplete. See the closeout below.
 >
 > Current measured result: the corrected evaluation passed determinism and
 > latency checks, but failed the registered Task 2 feasibility and Task 1
 > retention gates. It is therefore not a submission candidate.
 
-Issue #107 prospectively registers the final four-cell Task 2 campaign on the
+Issue #107 registered the four-cell Task 2 campaign on the
 merged Issue #87 and #88 implementations. It compares control, escape-only,
 protected-replay-only, and combined cells from identical 26-feature migrated
 weights. The protocol, seed lists, gates, multiplicity handling, mechanical
@@ -390,17 +390,11 @@ same numbers so this exploratory record is not wasted.
 
 ## Training status
 
-Training is implemented and enabled (`setup_training` no longer raises).
-Running it produces per-episode event counts for every reward-relevant event,
-in addition to the inherited loss/TD-error/replay/target-sync metrics. Issue
-#103 produced an exploratory three-arm run but no confirmatory decision. The
-reviewed Issue #107 factorial campaign is the active scientific Task 2
-experiment and has separate authorization and evidence requirements.
-
-A training-only curriculum mixing `coin-heaven`, `loot-crate`, and `classic`
-(without opponents) is expected to live in `training/` orchestration under
-issue #50. Issue #44 implements the agent-side capability that curriculum
-will drive; the reviewed issue split records the orchestration as downstream.
+Training and staged orchestration are implemented. #107 and the subsequent
+#124/#91 campaigns produced scientific evidence; their results do not establish
+cumulative Task 2 completion. #103 remains exploratory without a confirmatory
+decision. Standalone Task 2 tuning is stopped under #106; implementation remains
+available, but a new run needs a separately reviewed protocol and authorization.
 
 ## Smoke evidence (integration only, not performance evidence)
 
@@ -478,6 +472,26 @@ Parent imports are permitted only in repository-level differential tests.
 
 ## Limitations and next steps
 
+Standalone Task 2 optimization concluded on September 11 under #106 with known
+limitations; cumulative Task 2 capability remains incomplete. Scientific runs
+exist: #107 records mixed/negative escape/replay results, and PR #131 (#124)
+and PR #136 (#91) retain the subsequent reduced factorial and discount-horizon
+results pending fresh peer review. See the
+[active closeout and delivery plan](../../docs/0009-dqn-deadline-plan.md) for
+immutable result links, exact evidence and the Task 3 handoff.
+
+The #124 masked arm passes Task 2-specific gates but fails Task 1 retention and
+its adoption rule. Higher gamma in #91 harms collection. No treatment/default
+or committed checkpoint is promoted by this documentation. #109 registers #91
+A/r3 as a provisional Task 3 parent, not a validated Task 2 model.
+
+Occasional loops reported in a GUI preview are an unquantified observation;
+reproduce and diagnose them before identifying a code bug or proposing a reward
+change. Later training is not guaranteed to repair navigation or survival.
+The danger model cannot predict an opponent's future bomb placement. Escape
+search remains bounded to 10 arrivals. Keep earlier-task regression evidence in
+all later studies, preserve frozen predecessors, and do not launch more broad
+Task 2 sweeps solely to claim completion before the deadline.
 - No scientific Task 2 training or evaluation has been run; every reward,
   hyperparameter, and feature choice here is an implementation default.
 - The danger model does not account for an opponent placing a new bomb,

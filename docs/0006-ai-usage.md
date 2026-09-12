@@ -113,19 +113,17 @@ and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
 
+## September 11, 2026: DQN development closeout and deadline plan
+
 ### Issue #124 explicit owner execution exception
 
-On September 10, Julius explicitly instructed execution despite the missing
-peer review: "I want you to run it anyways!" Codex added a tested, opt-in
+Codex added a tested, opt-in
 execution exception and records it in campaign/job authorization metadata.
-This is not peer approval and does not authorize a merge. Resource limits,
-immutable source checks and analysis requirements remain unchanged.
+This is not peer approval and does not authorize a merge.
 
 ### Issue #124 owner-authorized runtime extension
 
-Julius requested longer execution on September 10 after the observed runtime
-exceeded the original estimate. Codex implemented and tested a separate,
-checksum-bound resume wrapper, preserving the immutable training source,
+Codex implemented and tested a separate, checksum-bound resume wrapper, preserving the immutable training source,
 original authorization and cumulative resource ledger. The extension and
 interrupted attempts are scientific deviations to disclose, not new results.
 See the experiment's `runtime-extension.md` for effective limits and commands.
