@@ -155,4 +155,3 @@ completed checkpoints, failed attempts and cumulative resource accounting.
   observations and final-training provenance, published checkpoint evidence, and
   documented negative rehearsal / inconclusive masking results. No default model
   changed and no Task 2 completion claim is made. Human review remains required.
-
