@@ -168,16 +168,10 @@ def load_plan(path: Path) -> ResolvedPlan:
     useful_bomb_reward = raw.get("useful_bomb_reward", 0.0)
     state_representation = raw.get("state_representation", "baseline")
     if state_representation not in VALID_STATE_REPRESENTATIONS:
-        raise ValueError(
-            "state_representation must be one of "
-            f"{list(VALID_STATE_REPRESENTATIONS)}"
-        )
+        raise ValueError(f"state_representation must be one of {list(VALID_STATE_REPRESENTATIONS)}")
     potential_shaping = raw.get("potential_shaping", "none")
     if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
-        raise ValueError(
-            "potential_shaping must be one of "
-            f"{list(VALID_POTENTIAL_SHAPING_MODES)}"
-        )
+        raise ValueError(f"potential_shaping must be one of {list(VALID_POTENTIAL_SHAPING_MODES)}")
 
     tabular_exploration_mode = raw.get(
         "tabular_exploration_mode",
@@ -212,8 +206,7 @@ def load_plan(path: Path) -> ResolvedPlan:
     )
     if tabular_initialization not in VALID_TABULAR_INITIALIZATIONS:
         raise ValueError(
-            "tabular_initialization must be one of "
-            f"{list(VALID_TABULAR_INITIALIZATIONS)}"
+            f"tabular_initialization must be one of {list(VALID_TABULAR_INITIALIZATIONS)}"
         )
 
     if (
@@ -252,13 +245,8 @@ def load_plan(path: Path) -> ResolvedPlan:
     if not raw_replicas:
         raise ValueError("replicas must contain at least one replica")
     replicas = tuple(_parse_replica(item, plan_path.parent) for item in raw_replicas)
-    if (
-        tabular_initialization == "zeros"
-        and any(replica.parent_artifact for replica in replicas)
-    ):
-        raise ValueError(
-            "Zero initialization cannot use replica parent artifacts"
-        )
+    if tabular_initialization == "zeros" and any(replica.parent_artifact for replica in replicas):
+        raise ValueError("Zero initialization cannot use replica parent artifacts")
     _require_unique([replica.replica_id for replica in replicas], "replica IDs")
     if artifact_path is None and any(replica.parent_artifact for replica in replicas):
         raise ValueError("artifact_path is required when a parent_artifact is present")

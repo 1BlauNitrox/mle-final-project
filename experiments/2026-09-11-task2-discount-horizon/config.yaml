@@ -1,0 +1,36 @@
+﻿issue: 91
+status: prospective_protocol
+owner: 1BlauNitrox
+reviewer_requested: Waffelmanufaktur
+factor: discount_factor
+control: 0.9
+treatment: 0.97
+source_sha256: 4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60
+training_replicas_per_arm: 5
+training_episodes_per_replica: 10000
+training_episodes_total: 100000
+evaluation_episodes_total: 2720
+escape_continuations: on
+action_masking: none
+replay_treatment: uniform
+reward_variant: control
+primary:
+  metric: classic_total_board_collection_fraction
+  minimum_mean_improvement: 0.10
+  paired_hierarchical_ci95_lower_strictly_above: 0
+  bootstrap_resamples: 10000
+guards:
+  collection_and_survival_ci95_lower_strictly_above: -0.05
+  self_kill_improvement_ci95_lower_strictly_above: -0.05
+  scenarios: [classic, coin-heaven, loot-crate]
+absolute_gates: unchanged_issue107_task1_task2_latency_and_determinism
+checkpoint_selection: final_after_10000_episodes_then_median_classic_replica
+resources:
+  max_training_workers: 2
+  evaluation_workers: 1
+  wall_hours: 24
+  cpu_hours: 48
+  aggregate_memory_gib: 4
+  startup_available_memory_gib: 5
+  runtime_available_memory_floor_gib: 1
+scientific_training_started: false
