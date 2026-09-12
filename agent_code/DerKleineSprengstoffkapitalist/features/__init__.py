@@ -12,6 +12,7 @@ from .assemble import (
 )
 from .representations import (
     BASELINE_STATE_REPRESENTATION,
+    COMPACT_ESCAPE_STATE_REPRESENTATION,
     COMPACT_STATE_REPRESENTATION,
     VALID_STATE_REPRESENTATIONS,
     StateRepresentation,
@@ -30,6 +31,7 @@ __all__ = [
     "validate_features",
     "BASELINE_STATE_REPRESENTATION",
     "COMPACT_STATE_REPRESENTATION",
+    "COMPACT_ESCAPE_STATE_REPRESENTATION",
     "VALID_STATE_REPRESENTATIONS",
     "StateRepresentation",
     "encode_state",

@@ -18,13 +18,21 @@ from .compact import (
     compact_state_to_features,
     validate_compact_features,
 )
+from .compact_escape import (
+    COMPACT_ESCAPE_FEATURE_COUNT,
+    COMPACT_ESCAPE_FEATURE_SCHEMA_VERSION,
+    compact_escape_state_to_features,
+    validate_compact_escape_features,
+)
 
 BASELINE_STATE_REPRESENTATION = "baseline"
 COMPACT_STATE_REPRESENTATION = "compact_decision"
+COMPACT_ESCAPE_STATE_REPRESENTATION = "compact_post_bomb_escape"
 
 VALID_STATE_REPRESENTATIONS = (
     BASELINE_STATE_REPRESENTATION,
     COMPACT_STATE_REPRESENTATION,
+    COMPACT_ESCAPE_STATE_REPRESENTATION,
 )
 
 
@@ -53,6 +61,13 @@ REPRESENTATIONS = {
         feature_schema_version=COMPACT_FEATURE_SCHEMA_VERSION,
         encode=compact_state_to_features,
         validate=validate_compact_features,
+    ),
+    COMPACT_ESCAPE_STATE_REPRESENTATION: StateRepresentation(
+        name=COMPACT_ESCAPE_STATE_REPRESENTATION,
+        feature_count=COMPACT_ESCAPE_FEATURE_COUNT,
+        feature_schema_version=COMPACT_ESCAPE_FEATURE_SCHEMA_VERSION,
+        encode=compact_escape_state_to_features,
+        validate=validate_compact_escape_features,
     ),
 }
 

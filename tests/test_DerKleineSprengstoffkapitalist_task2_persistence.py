@@ -13,6 +13,7 @@ from agent_code.DerKleineSprengstoffkapitalist.config import (
 )
 from agent_code.DerKleineSprengstoffkapitalist.features import (
     BASELINE_STATE_REPRESENTATION,
+    COMPACT_ESCAPE_STATE_REPRESENTATION,
     COMPACT_STATE_REPRESENTATION,
 )
 from agent_code.DerKleineSprengstoffkapitalist.migration import (
@@ -158,6 +159,31 @@ def test_compact_zero_initialized_model_round_trip(
         loaded.q_table.q_values(compact_state),
         q_table.q_values(compact_state),
     )
+
+
+def test_compact_escape_model_round_trip(tmp_path: Path) -> None:
+    state = (0, 15, 2, 0, 3, 1)
+    q_table = QTable(feature_count=6, initialization=ZERO_INITIALIZATION)
+    q_table.update(
+        state=state,
+        action="BOMB",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+    path = tmp_path / "compact-escape-model.npz"
+    save_model(
+        q_table,
+        epsilon=0.5,
+        completed_episodes=1,
+        state_representation=COMPACT_ESCAPE_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        path=path,
+    )
+    loaded = load_model(path)
+    assert loaded.state_representation == COMPACT_ESCAPE_STATE_REPRESENTATION
+    assert loaded.q_table.feature_count == 6
+    np.testing.assert_array_equal(loaded.q_table.q_values(state), q_table.q_values(state))
 
 
 def test_useful_bomb_reward_round_trip(tmp_path: Path) -> None:

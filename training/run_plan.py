@@ -31,7 +31,11 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
-VALID_STATE_REPRESENTATIONS = ("baseline", "compact_decision")
+VALID_STATE_REPRESENTATIONS = (
+    "baseline",
+    "compact_decision",
+    "compact_post_bomb_escape",
+)
 VALID_POTENTIAL_SHAPING_MODES = (
     "none",
     "compact_safety",
@@ -193,11 +197,11 @@ def load_plan(path: Path) -> ResolvedPlan:
         )
 
     if (
-        state_representation == "compact_decision"
+        state_representation in {"compact_decision", "compact_post_bomb_escape"}
         and tabular_initialization != "zeros"
     ):
         raise ValueError(
-            "compact_decision requires tabular_initialization=zeros"
+            "compact state representations require tabular_initialization=zeros"
         )
     if (
         isinstance(useful_bomb_reward, bool)
@@ -258,7 +262,7 @@ def load_plan(path: Path) -> ResolvedPlan:
 
     jobs = _expand_jobs(replicas, stages, suites)
     _require_unique([job.run_id for job in jobs], "expanded run IDs")
-    _validate_seed_populations(replicas, suites)
+    _validate_seed_populations(replicas, suites, jobs)
 
     fingerprints = {
         "configuration": _sha256_bytes(
@@ -302,10 +306,13 @@ def execute_plan(
     output_root: Path,
     resume: bool = False,
     evaluation_only: bool = False,
+    training_only: bool = False,
     workspace_root: Path | None = None,
     process_monitor: Any | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if training_only and evaluation_only:
+        raise ValueError("Training-only and evaluation-only are mutually exclusive")
     if evaluation_only:
         plan = replace(
             plan,
@@ -373,7 +380,7 @@ def execute_plan(
                 future.result()
 
         for job in plan.jobs:
-            if job.kind == "evaluation":
+            if job.kind == "evaluation" and not training_only:
                 _run_job(
                     plan,
                     job,
@@ -392,7 +399,7 @@ def execute_plan(
         _discard_staging_aliases(plan)
         raise
 
-    status["status"] = "completed"
+    status["status"] = "training_complete" if training_only else "completed"
     status["error"] = None
     status["updated_at"] = _timestamp()
     _write_json_atomic(status_path, status)
@@ -707,6 +714,9 @@ def _expand_jobs(
     jobs: list[Job] = []
     for replica in replicas:
         for stage in stages:
+            world_seed = replica.world_seed + stage.get("world_seed_offset", 0)
+            if world_seed >= 2**32:
+                raise ValueError("Training world seed exceeds the NumPy seed range")
             jobs.append(
                 Job(
                     run_id=f"train-{replica.replica_id}-{stage['id']}",
@@ -717,7 +727,7 @@ def _expand_jobs(
                     scenario=stage["scenario"],
                     opponents=tuple(stage["opponents"]),
                     rounds=stage["rounds"],
-                    world_seed=replica.world_seed,
+                    world_seed=world_seed,
                     agent_seed=replica.agent_seed,
                 )
             )
@@ -765,6 +775,10 @@ def _parse_stage(value: Any) -> dict[str, Any]:
         "scenario": _scenario(mapping),
         "rounds": _positive_integer(mapping, "rounds"),
         "opponents": _opponents(mapping),
+        "world_seed_offset": _non_negative_integer(
+            {"world_seed_offset": mapping.get("world_seed_offset", 0)},
+            "world_seed_offset",
+        ),
     }
 
 
@@ -788,10 +802,17 @@ def _parse_suite(value: Any) -> dict[str, Any]:
     }
 
 
-def _validate_seed_populations(replicas: tuple[Replica, ...], suites: list[dict[str, Any]]) -> None:
+def _validate_seed_populations(
+    replicas: tuple[Replica, ...],
+    suites: list[dict[str, Any]],
+    jobs: tuple[Job, ...] = (),
+) -> None:
     populations: dict[str, set[int]] = {name: set() for name in VALID_POPULATIONS}
     for replica in replicas:
         populations["training"].update((replica.world_seed, replica.agent_seed))
+    for job in jobs:
+        if job.kind == "training":
+            populations["training"].update((job.world_seed, job.agent_seed))
     for suite in suites:
         populations[suite["population"]].update(suite["world_seeds"] + suite["agent_seeds"])
     for index, left in enumerate(VALID_POPULATIONS):
