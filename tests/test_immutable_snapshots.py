@@ -36,7 +36,7 @@ def test_changed_object_fails_closed(tmp_path):
     store = ImmutableSnapshots(tmp_path / "objects")
     store.snapshot(source, tmp_path / "a")
     obj = next(store.root.iterdir())
-    obj.chmod(stat.S_IWRITE)
+    obj.chmod(stat.S_IREAD | stat.S_IWRITE)
     obj.write_bytes(b"tampered")
     with pytest.raises(ValueError, match="changed"):
         store.snapshot(source, tmp_path / "b")
