@@ -118,6 +118,7 @@ def make_agent() -> SimpleNamespace:
         state_representation=BASELINE_STATE_REPRESENTATION,
         initialization=PARENT_PRIOR_INITIALIZATION,
         potential_shaping=NO_POTENTIAL_SHAPING,
+        exploration_mode=callbacks.STANDARD_EXPLORATION,
     )
 
     training.setup_training(agent)
@@ -140,6 +141,31 @@ def test_setup_training_initializes_episode_state() -> None:
     assert agent.pending_transition is None
 
     agent.logger.info.assert_called_once()
+
+
+def test_safe_bomb_exploration_masks_only_unsafe_compact_bomb() -> None:
+    agent = SimpleNamespace(
+        train=True,
+        exploration_mode=callbacks.SAFE_BOMB_EXPLORATION,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+    )
+
+    unsafe = callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 2))
+    safe = callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 3))
+
+    assert unsafe is not None
+    assert unsafe.tolist() == [True, True, True, True, True, False]
+    assert safe is None
+
+
+def test_safe_bomb_exploration_is_disabled_during_evaluation() -> None:
+    agent = SimpleNamespace(
+        train=False,
+        exploration_mode=callbacks.SAFE_BOMB_EXPLORATION,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+    )
+
+    assert callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 2)) is None
 
 
 def test_fresh_training_agent_uses_parent_prior(

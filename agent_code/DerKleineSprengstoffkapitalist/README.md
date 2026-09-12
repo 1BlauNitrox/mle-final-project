@@ -317,6 +317,12 @@ safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
 limit), so neither escape-distance treatment is the default. Both modes remain
 available for reproducibility of the experiment lineage.
 
+Issue #153 tested an opt-in `safe_bomb` exploration mode that excludes an
+unsafe `BOMB` only from the random epsilon-greedy branch. It increased Classic
+self-kills from `0.045` to `0.075` and reduced Classic collection from `0.1694`
+to `0.1489`; no replica improved its Classic self-kill rate. The treatment was
+rejected, and standard epsilon-greedy exploration remains the default. The mode
+is retained only to reproduce the negative experiment.
 Issue #144 tested whether an appended post-bomb escape-status category could
 resolve compact-state aliasing. It produced exactly the same Classic collection
 (`0.1272`) and self-kill rate (`0.075`) as control, with a paired collection
