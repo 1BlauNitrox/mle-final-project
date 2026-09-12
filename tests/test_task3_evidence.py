@@ -118,7 +118,7 @@ def evidence(tmp_path, monkeypatch):
                 "artifact": {"path": "model.pt", "sha256": campaign.sha256(directory / "model.pt")},
             }
         write(directory / "status.json", status)
-    monkeypatch.setattr(analysis, "validate_protocol", lambda _: (config, plans, {}))
+    monkeypatch.setattr(analysis, "validate_protocol", lambda *_: (config, plans, {}))
     return root, binding
 
 

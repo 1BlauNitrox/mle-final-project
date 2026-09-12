@@ -37,6 +37,15 @@ AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
 
+2026-09-11, Issue #137: OpenAI Codex prepared the separately tracked exploratory
+coin-collector continuation, reusing the #109 metrics, analyzer and budget
+monitor. Tests cover the passing-peaceful prerequisite, selected parent hash,
+independent online/target preservation and reset training state. The published
+#51 capability targets remain explicit, and #51's validated-parent prerequisites
+are unchanged. No scientific execution occurred. Human review of the prospective
+protocol and later peaceful result, plus separate compute authorization, remain
+required.
+
 2026-09-11, Issue #109 reproducibility review: OpenAI Codex identified entropy
 reseeding in the unchanged supplied opponents, added experiment-only isolated
 per-slot NumPy/Python streams, and bound that policy into campaign evidence.

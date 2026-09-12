@@ -12,8 +12,8 @@ import numpy as np
 from training.aggregate import read_episodes_csv
 from training.metrics import _parse_round_number, normalize_episode_rows
 from training.run_task3_campaign import (
-    CONFIG,
     portable_plan,
+    protocol_path,
     read_json,
     relative_file,
     require,
@@ -95,12 +95,13 @@ def summarize(rows):
 
 def decide(rows, config):
     """Apply all conjunctive gates; no post-hoc fallback can produce a pass."""
+    hunting = config.get("opponent_suite", "classic-peaceful")
     models = sorted({r["replica"] for r in rows if r["arm"] == "candidate"})
     require(len(models) == 5, "Require all five candidate replicas")
     primary = [r for r in rows if r["suite"].endswith("-primary")]
     gates, contrasts, summaries = {}, {}, {}
     limits = config["gates"]
-    for suite in SUITES:
+    for suite in (hunting, *SUITES[1:]):
         groups = {
             model: sorted(
                 [
@@ -149,7 +150,7 @@ def decide(rows, config):
             contrasts[f"{suite}/{name}"] = result
             return result
 
-        if suite == "classic-peaceful":
+        if suite == hunting:
             elimination = contrast("elimination")
             gates["elimination_absolute"] = (
                 summaries[suite]["candidate"]["elimination"] >= limits["elimination_min"]
@@ -196,9 +197,7 @@ def decide(rows, config):
         for r in rows
     )
     passed = all(gates.values())
-    ordering = sorted(
-        models, key=lambda m: (summaries["classic-peaceful"]["per_model"][m]["elimination"], m)
-    )
+    ordering = sorted(models, key=lambda m: (summaries[hunting]["per_model"][m]["elimination"], m))
     return {
         "status": "exploratory_pass" if passed else "exploratory_mixed_or_negative",
         "task2_complete": False,
@@ -206,14 +205,18 @@ def decide(rows, config):
         "contrasts": contrasts,
         "summaries": summaries,
         "selected_replica": ordering[len(ordering) // 2] if passed else None,
-        "next_decision": "review_coincollector_protocol"
+        "next_decision": (
+            "review_coincollector_protocol"
+            if config["issue"] == 109
+            else "review_next_stage_no_automatic_launch"
+        )
         if passed
         else "stop_no_automatic_continuation",
     }
 
 
-def load_evidence(root, binding_directory):
-    config, plans, _report = validate_protocol(binding_directory)
+def load_evidence(root, binding_directory, protocol="peaceful"):
+    config, plans, _report = validate_protocol(binding_directory, protocol)
     auth = read_json(root / "authorization.json")
     identity = auth["identity"]
     require(identity["limits"] == config["resources"], "Authorized resource ceiling mismatch")
@@ -223,7 +226,10 @@ def load_evidence(root, binding_directory):
         require(
             sha256(ROOT / "agent_code" / name / "callbacks.py") == digest, "Opponent source changed"
         )
-    require(identity["protocol_sha256"] == sha256(CONFIG), "Protocol authorization mismatch")
+    require(
+        identity["protocol_sha256"] == sha256(protocol_path(protocol)),
+        "Protocol authorization mismatch",
+    )
     require(
         identity["binding_sha256"] == sha256(binding_directory / "binding.json"), "Binding changed"
     )
@@ -255,7 +261,7 @@ def load_evidence(root, binding_directory):
         "Exceeded registered resources",
     )
     campaign = {
-        "issue": 109,
+        "issue": config["issue"],
         "opponent_seed_policy": "task3_per_slot_v1",
         "authorization_sha256": sha256(root / "authorization.json"),
         "reviewed_commit": identity["reviewed_commit"],
@@ -425,8 +431,10 @@ def load_evidence(root, binding_directory):
     return config, evidence, training, manifest, auth, resources
 
 
-def analyze(root, binding_directory, output):
-    config, rows, training, manifest, auth, resources = load_evidence(root, binding_directory)
+def analyze(root, binding_directory, output, protocol="peaceful"):
+    config, rows, training, manifest, auth, resources = load_evidence(
+        root, binding_directory, protocol
+    )
     result = decide(rows, config)
     result.update({"authorization": auth, "resources": resources})
     require(not output.exists(), "Analysis output already exists; preserve the previous evidence")
@@ -451,12 +459,12 @@ def analyze(root, binding_directory, output):
     return result
 
 
-def verify_compact(directory):
+def verify_compact(directory, protocol="peaceful"):
     """Recompute every decision and summary from the retained lossless observations."""
     result = read_json(directory / "result.json")
-    config = validate_protocol()[0]
+    config = validate_protocol(protocol=protocol)[0]
     require(
-        result["authorization"]["identity"]["protocol_sha256"] == sha256(CONFIG),
+        result["authorization"]["identity"]["protocol_sha256"] == sha256(protocol_path(protocol)),
         "Compact evidence uses another protocol",
     )
     record = result["observations"]
@@ -484,18 +492,22 @@ def verify_compact(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--protocol", choices=("peaceful", "coincollector"), default="peaceful")
     parser.add_argument("--campaign-root", type=Path)
     parser.add_argument("--binding-dir", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--verify-evidence", type=Path)
     args = parser.parse_args()
     if args.verify_evidence:
-        print(json.dumps(verify_compact(args.verify_evidence.resolve()), indent=2))
+        print(json.dumps(verify_compact(args.verify_evidence.resolve(), args.protocol), indent=2))
         return
     if not all((args.campaign_root, args.binding_dir, args.output)):
         parser.error("Analysis requires --campaign-root, --binding-dir and --output")
     result = analyze(
-        args.campaign_root.resolve(), args.binding_dir.resolve(), args.output.resolve()
+        args.campaign_root.resolve(),
+        args.binding_dir.resolve(),
+        args.output.resolve(),
+        args.protocol,
     )
     print(
         json.dumps(

@@ -1,0 +1,70 @@
+schema_version: 2
+issue: 137
+owner: 1BlauNitrox
+reviewer: LiliWestermann
+reviewer_status: review_requested_not_approved
+status: prospective_protocol_no_scientific_execution
+registration: 'Prospective exploratory continuation of #109; #51 unchanged.'
+hypothesis: Coin-collector continuation improves hunting and match outcome over the
+  frozen peaceful-stage parent while retaining Tasks 1/2.
+task2_complete: false
+parent_policy: 'Requires verified passing #109 decision and its mechanically selected
+  Task 3 training checkpoint.'
+plans:
+  candidate: training/run_plans/issue109-task3-vs-coincollector.yaml
+  reference: training/run_plans/issue137-task3-reference-vs-coincollector.yaml
+replicas: 5
+training_episodes: 50000
+evaluation_episodes: 1920
+evaluation_pairs_per_suite: 40
+checkpoint_rule: Final checkpoint after exactly 10000 episodes for every replica;
+  no early/best checkpoint selection.
+selection_rule: All gates must pass; median replica by primary coin-collector elimination,
+  ties by replica ID. Otherwise stop; no automatic Task 4.
+bootstrap:
+  samples: 10000
+  seed: 137
+  confidence: 0.95
+  method: Crossed replica/world-pair percentile bootstrap; resample replicas and common
+    seed-pair indices independently, reuse each reference observation across candidates.
+gates:
+  elimination_min: 0.4
+  elimination_improvement_min: 0.2
+  first_place_min: 0.55
+  score_margin_min_exclusive: 0.0
+  efficacy_ci_lower_min_exclusive: 0.0
+  self_kill_max: 0.1
+  invalid_action_max_exclusive: 0.01
+  task1_collection_margin: 0.02
+  task2_collection_margin: 0.03
+  survival_margin: 0.05
+  crates_relative_margin: 0.1
+  self_kill_increase_margin: 0.02
+  decision_p95_ms_max_exclusive: 50.0
+  decision_max_ms_max_exclusive: 100.0
+resources:
+  cpu_hours: 24
+  wall_hours: 15
+  memory_gib: 8
+  max_parallel_training: 2
+  evaluation_workers: 1
+  status: registered_ceiling_execution_requires_separate_authorization
+protected_seed_ranges:
+- - 1092141
+  - 1092150
+- - 1092241
+  - 1092250
+- - 1092341
+  - 1092350
+- - 1092441
+  - 1092450
+- - 2092141
+  - 2092150
+- - 2092241
+  - 2092250
+- - 2092341
+  - 2092350
+- - 2092441
+  - 2092450
+scientific_training_authorized: false
+opponent_suite: classic-coincollector
