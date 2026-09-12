@@ -66,8 +66,8 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_model_schema_version_is_five() -> None:
-    assert MODEL_SCHEMA_VERSION == 5
+def test_model_schema_version_is_six() -> None:
+    assert MODEL_SCHEMA_VERSION == 6
 
 
 def test_parent_artifact_has_expected_checksum() -> None:
@@ -110,12 +110,32 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.q_table.initialization == PARENT_PRIOR_INITIALIZATION
     assert loaded.q_table.total_state_visits == 1
     assert loaded.potential_shaping == NO_POTENTIAL_SHAPING
+    assert loaded.exploration_mode == "standard"
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(TEST_STATE),
         q_table.q_values(TEST_STATE),
     )
 
+
+def test_exploration_mode_round_trip(tmp_path: Path) -> None:
+    q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    path = tmp_path / "safe-bomb.npz"
+
+    save_model(
+        q_table,
+        epsilon=0.5,
+        completed_episodes=1,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        exploration_mode="safe_bomb",
+        path=path,
+    )
+
+    assert load_model(path).exploration_mode == "safe_bomb"
 
 def test_compact_zero_initialized_model_round_trip(
     tmp_path: Path,

@@ -230,6 +230,7 @@ def end_of_round(
         initialization=self.initialization,
         path=MODEL_PATH,
         potential_shaping=self.potential_shaping,
+        exploration_mode=self.exploration_mode,
     )
 
     self.episode_reward = 0.0

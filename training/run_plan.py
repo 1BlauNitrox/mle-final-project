@@ -44,6 +44,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
     "escape_distance_half_full_no_route",
 )
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
+VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
 VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
@@ -115,6 +116,7 @@ class ResolvedPlan:
     action_masking: str
     state_representation: str
     potential_shaping: str
+    tabular_exploration_mode: str
     tabular_initialization: str
     useful_bomb_reward: float
     reward_variant: str
@@ -175,6 +177,24 @@ def load_plan(path: Path) -> ResolvedPlan:
         raise ValueError(
             "potential_shaping must be one of "
             f"{list(VALID_POTENTIAL_SHAPING_MODES)}"
+        )
+
+    tabular_exploration_mode = raw.get(
+        "tabular_exploration_mode",
+        "standard",
+    )
+    if tabular_exploration_mode not in VALID_TABULAR_EXPLORATION_MODES:
+        raise ValueError(
+            "tabular_exploration_mode must be one of "
+            f"{list(VALID_TABULAR_EXPLORATION_MODES)}"
+        )
+    if (
+        tabular_exploration_mode == "safe_bomb"
+        and state_representation != "compact_decision"
+    ):
+        raise ValueError(
+            "safe_bomb exploration requires "
+            "state_representation=compact_decision"
         )
 
     if (
@@ -288,6 +308,7 @@ def load_plan(path: Path) -> ResolvedPlan:
         action_masking=action_masking,
         state_representation=state_representation,
         potential_shaping=potential_shaping,
+        tabular_exploration_mode=tabular_exploration_mode,
         tabular_initialization=tabular_initialization,
         useful_bomb_reward=float(useful_bomb_reward),
         reward_variant=reward_variant,
@@ -496,6 +517,7 @@ def _run_job(
             "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_STATE_REPRESENTATION": plan.state_representation,
             "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": plan.potential_shaping,
+            "BOMBERMAN_TABULAR_EXPLORATION_MODE": plan.tabular_exploration_mode,
             "BOMBERMAN_TABULAR_INITIALIZATION": plan.tabular_initialization,
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
@@ -533,6 +555,7 @@ def _run_job(
                     "action_masking": plan.action_masking,
                     "state_representation": plan.state_representation,
                     "potential_shaping": plan.potential_shaping,
+                    "tabular_exploration_mode": plan.tabular_exploration_mode,
                     "tabular_initialization": plan.tabular_initialization,
                     "useful_bomb_reward": plan.useful_bomb_reward,
                     "reward_variant": plan.reward_variant,
