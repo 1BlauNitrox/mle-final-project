@@ -178,3 +178,10 @@ A/r2 exploratory baseline. Unit/regression, isolated integration and clean
 packaging checks verify implementation only; no Task 3 performance claim or
 scientific compute authorization is implied. Final #124 parent binding,
 numeric #109 decisions and scientific execution remain separate work.
+
+Issue #150 protocol tooling (2026-09-12): Codex prepared the matched seed matrix,
+parent and intervention validators, unchanged-gate analyzer, compact export and
+server handoff. Scoped warning-only logging reduces disk use while retaining
+raw scientific observations and failure records. Unit tests and an isolated
+integration smoke validate mechanics; they do not establish scientific efficacy
+or authorize a long run. Human review and ownership remain required.
