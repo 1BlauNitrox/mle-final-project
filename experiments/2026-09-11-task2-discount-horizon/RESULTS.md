@@ -89,16 +89,26 @@ line endings, bind the Linux protocol configuration.
 
 ## Durable evidence and exact verification
 
-[Evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue91-evidence-v1)
+[Evidence release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue91-evidence-v2)
 contains the lossless required episode CSVs, metadata, protocol, resource and
 startup-recovery records, original server analysis, two initial and thirty stage
 checkpoints. Redundant per-episode agent copies and raw logs are omitted.
-Archive: `issue91-complete-evidence-v1.tar.gz`, **19,134,828 bytes**.
-SHA-256: `9e1ade26006539fec7fa92d20da0ba7a16922b86174b06d71946e00c08e53efe`.
+The v2 archive adds the original `A.yaml`, `B.yaml`, `frozen_task1.yaml` and
+`untrained.yaml` at the campaign root. Their bytes match the SHA-256 values
+registered in `protocol.json`; every retained v1 member is byte-identical.
+The v1 release is preserved for history but is incomplete for this verifier.
+The previous verification used an existing local import containing these plans,
+so it did not establish that the published v1 package alone was sufficient.
+This packaging correction changes no observations, checkpoints or decision rules.
+A fresh v2 extraction reproduces the committed verification report exactly.
+See `evidence-archive-v2.json` for archive identity and added plan hashes.
+
+Archive: `issue91-complete-evidence-v2.tar.gz`, **18,129,266 bytes**.
+SHA-256: `eee17a70dbf77563696bd57afd2e92ce7a6ad3ace2a33de662b887ee6bcb2921`.
 
 ```bash
-gh release download issue91-evidence-v1 --repo 1BlauNitrox/mle-final-project --pattern issue91-complete-evidence-v1.tar.gz --dir training_outputs/issue91-evidence
-tar -xzf training_outputs/issue91-evidence/issue91-complete-evidence-v1.tar.gz -C training_outputs/issue91-evidence
+gh release download issue91-evidence-v2 --repo 1BlauNitrox/mle-final-project --pattern issue91-complete-evidence-v2.tar.gz --dir training_outputs/issue91-evidence
+tar -xzf training_outputs/issue91-evidence/issue91-complete-evidence-v2.tar.gz -C training_outputs/issue91-evidence
 python -m training.verify_issue91_results --campaign-root training_outputs/issue91-evidence/issue91-fixed --output training_outputs/issue91-evidence/verification.json
 ```
 

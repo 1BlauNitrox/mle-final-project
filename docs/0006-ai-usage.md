@@ -112,3 +112,13 @@ by another team member.
   evidence verification and corruption/missing-file tests, published complete
   evidence and documented the negative gamma result and review-timing deviation.
   No new scientific run, model promotion or Task 2 completion is claimed.
+
+## September 12, 2026: Issue #91 evidence archive correction
+
+Codex addressed the PR #136 review finding that the published archive omitted
+four registered YAML plans. The replacement version preserves all existing
+member bytes and adds only original protocol-hash-matching plans. Verification
+uses a fresh extraction rather than the prior populated local import. No
+scientific run, model, observations or selection rules are changed. The previous
+claim of complete v1 portability was incorrect; the v1 archive remains available
+for history. Human review of the corrected release and reproduction is required.

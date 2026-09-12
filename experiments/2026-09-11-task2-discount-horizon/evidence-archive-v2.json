@@ -1,0 +1,14 @@
+{
+  "archive": "issue91-complete-evidence-v2.tar.gz",
+  "release": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue91-evidence-v2",
+  "sha256": "eee17a70dbf77563696bd57afd2e92ce7a6ad3ace2a33de662b887ee6bcb2921",
+  "size_bytes": 18129266,
+  "supersedes_incomplete_archive": "issue91-complete-evidence-v1.tar.gz",
+  "original_member_bytes_unchanged": true,
+  "added_protocol_plans": {
+    "A.yaml": "509b721bb84f7e0f26fc8adddfd4f67905f6eef682ce8f2e8a55ded2c703bc5f",
+    "B.yaml": "ab4d2db3fb7bb71bc1bc6497c510b8536be4d339850151352114faef53fb7421",
+    "frozen_task1.yaml": "2eee65f65bd7ff8ab4406a4a0fa7de285f6ebb029a8040b564febe01f4149316",
+    "untrained.yaml": "603fc1fd38fb26cec9ff71c4a4a526cea986bbee1b900a3d72e2a512c42d53f2"
+  }
+}
