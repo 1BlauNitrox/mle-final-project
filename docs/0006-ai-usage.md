@@ -1,5 +1,12 @@
 # 0006 AI Usage and Disclosure
 
+Issue #146 diagnosis (2026-09-12): Codex prepared prospectively bounded read-only
+trajectory instrumentation and stall tests under the owner's short-test
+authorization. It records original model/source identity, full public states,
+features, Q-values, actions and rewards without optimizer updates or policy
+overrides. Diagnostic seeds are separate from efficacy and held-out populations.
+Human review must assess the observations and any proposed causal explanation.
+
 Issue #147 result verification (2026-09-12): OpenAI Codex verified the downloaded
 archive and all 10,635 members, implemented tested historical source/dependency
 and binding relocation checks, and reproduced all raw observations and the
