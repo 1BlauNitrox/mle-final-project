@@ -1,5 +1,13 @@
 # DagobertDuckDQNTask3
 
+Issue #150 prepares a matched standard/Double DQN target comparison, motivated
+by the read-only #146 stall diagnosis. `DQNConfig.double_dqn` defaults to false;
+historical artifacts load as standard DQN. When true, training selects the next
+legal action with the online network and evaluates it with the target network.
+The persisted flag does not change greedy evaluation, rewards, features or the
+action mask. This is preparation, not an established improvement or a selected
+model. See [the registered experiment](../../experiments/2026-09-12-task3-double-dqn/README.md).
+
 The completed [Issue 147 mask comparison](../../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
 failed its registered adoption rule. Five matched 10,000-episode replicas per
 arm achieved 21% masked versus 18% unmasked peaceful elimination (paired
