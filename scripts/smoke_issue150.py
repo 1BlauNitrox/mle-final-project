@@ -48,7 +48,8 @@ def main():
     report.update(
         training_episodes=2, evaluation_episodes=24, evidence_scope="implementation_smoke_only"
     )
-    validator = lambda _: (config, plans, report)
+    def validator(_):
+        return config, plans, report
     args.authorize_compute = True
     args.reviewed_commit = double.campaign.git("rev-parse", "HEAD")
     args.authorized_by = "Julius-authorized-short-setup-smoke"
@@ -75,26 +76,26 @@ def main():
         loaded = load_training_checkpoint(checkpoint)
         assert loaded.completed_episodes == 1
         assert loaded.config.double_dqn == (arm == "double")
-    for metadata in args.output_root.glob("plans/*/runs/*/metadata.json"):
+    metadata_files = list(args.output_root.glob("plans/*/jobs/*/attempt-*/metadata.json"))
+    assert len(metadata_files) == 26
+    for metadata in metadata_files:
         assert double.read_json(metadata)["logging_policy"] == "warning_only"
     output = args.output_root / "smoke-analysis"
     output.mkdir()
     with gzip.open(output / "observations.json.gz", "wt", encoding="utf-8") as file:
         json.dump({"evaluation": rows, "training": training}, file)
-    result = double.decide(rows, config)
-    result.update(
-        evidence_scope="implementation_smoke_only",
-        authorization=auth,
-        resources=resources,
-        protocol_sha256=double.sha256(double.CONFIG),
-        observations_sha256=double.sha256(output / "observations.json.gz"),
-    )
-    double.write_json(output / "result.json", result)
+    try:
+        double.decide(rows, config)
+    except ValueError as error:
+        assert str(error) == "Require all five candidate replicas"
+    else:
+        raise AssertionError("Incomplete smoke must not produce a scientific decision")
     double.write_json(output / "source-manifest.json", manifest)
-    double.verify(output)
-    double.export(
-        args.output_root, args.binding_dir, output, args.output_root / "smoke-evidence.tar.gz"
-    )
+    double.write_json(output / "mechanics.json", {
+        "scope": "implementation_smoke_only", "episodes": 26,
+        "scientific_analyzer_rejects_incomplete_matrix": True,
+        "authorization": auth, "resources": resources,
+    })
     print(
         json.dumps(
             {
