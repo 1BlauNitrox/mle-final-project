@@ -1,0 +1,25 @@
+{
+  "archive_sha256": "c40f4b934fc77607c6f6f0a05a139f96818943671dc82040c2a710495a73da4f",
+  "archive_size_bytes": 123938950,
+  "archive_members": 10642,
+  "recovery_sha256": "a958a7856dcb3fdf0787699817ff2f85d218397b1df7c521ea82ddad2531b980",
+  "recovery_size_bytes": 28654,
+  "recovery_members": {
+    "recover.py": {
+      "size_bytes": 8221,
+      "sha256": "e82606b17dd075067591cf388ed2822c14c75bd75907cc79fc2449d0d4902c50"
+    },
+    "resume.py": {
+      "size_bytes": 8404,
+      "sha256": "fb19a744da9af849f8f291e1fbc921dafc8a5c26e0b25c2975c06d54ab1ceb62"
+    },
+    "recovery-1789236785.jsonl": {
+      "size_bytes": 1705885,
+      "sha256": "2212c49472896ebf52720bf64d3f4170bd08525cb9d5c6d19c4a2d732db4e950"
+    },
+    "resume-330cd00c8eca469aaa1ad87fb136fdc8.jsonl": {
+      "size_bytes": 4784,
+      "sha256": "ab730b65a086041401628f18254ad2d45e06730e8522daf3c0b1fbdbad85d9db"
+    }
+  }
+}
