@@ -57,6 +57,6 @@ def test_budget_keeps_records_export_and_reserve():
 
     plans = validate()[1]
     report = issue163_storage.storage_budget(plans)
-    assert report["required_free_bytes"] == 40 * 1024**3
-    assert report["training_jobs"] == 10 and report["evaluation_jobs"] == 3520
+    assert report["required_free_bytes"] == 35 * 1024**3
+    assert report["training_jobs"] == 10 and report["evaluation_jobs"] == 1760
     assert report["free_reserve_bytes"] == 4 * 1024**3

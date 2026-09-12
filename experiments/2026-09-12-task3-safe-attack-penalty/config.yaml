@@ -16,11 +16,11 @@ plans:
   control: training/run_plans/issue163-control.yaml
   neutral: training/run_plans/issue163-neutral.yaml
 replicas: 5
-training_episodes: 100000
-evaluation_episodes: 3520
-evaluation_pairs_per_suite: 40
-checkpoint_rule: Final checkpoint after exactly 10000 episodes for every replica;
-  no early/best checkpoint selection.
+training_episodes: 50000
+evaluation_episodes: 1760
+evaluation_pairs_per_suite: 20
+checkpoint_rule: Final checkpoint after exactly 5000 episodes for every replica; no
+  early/best checkpoint selection.
 selection_rule: 'Only if every gate passes: median replica by primary elimination
   rate, ties ordered by replica id. Otherwise stop and retain all results; no automatic
   coin-collector launch.'
@@ -53,25 +53,30 @@ resources:
   evaluation_workers: 1
   status: registered_ceiling_execution_requires_separate_authorization
 protected_seed_ranges:
-- - 1631141
+- - 1631121
   - 1631150
-- - 1631241
+- - 1631221
   - 1631263
-- - 1631341
+- - 1631321
   - 1631350
-- - 1631441
+- - 1631421
   - 1631450
-- - 2631141
+- - 2631121
   - 2631163
-- - 2631241
+- - 2631221
   - 2631250
-- - 2631341
+- - 2631321
   - 2631350
-- - 2631441
+- - 2631421
   - 2631450
 scientific_training_authorized: false
 primary_effect_min: 0.1
 storage_policy: immutable_input_objects_v1
-required_free_disk_gib: 40
+required_free_disk_gib: 35
 independent_variable: neutral_safe_attack_bombs flag; no positive attack bonus; native
   kill reward and terminal handling unchanged
+allocation_hours: 12
+workload_rationale: 'Prospective reduction after same-PC timing: 5000 training episodes
+  per replica and 20 common development pairs per suite with exact repeats; five replicas
+  and all numerical gates unchanged. Lower evaluation precision is explicit; no comparison
+  with historical seed means.'

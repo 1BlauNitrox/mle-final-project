@@ -11,13 +11,23 @@ from training import task3_attack_campaign as campaign
 
 
 def rows():
-    return [dict(r, arm="neutral" if r["arm"] == "masked" else r["arm"]) for r in mask_rows()]
+    sample = mask_rows()
+    keys = {}
+    for suite in {r["suite"] for r in sample}:
+        keys[suite] = sorted(
+            {(r["world_seed"], r["agent_seed"]) for r in sample if r["suite"] == suite}
+        )[:20]
+    return [
+        dict(r, arm="neutral" if r["arm"] == "masked" else r["arm"])
+        for r in sample
+        if (r["world_seed"], r["agent_seed"]) in keys[r["suite"]]
+    ]
 
 
 def test_matrix_modes_budget_and_seeds():
     config, plans, report = campaign.validate()
-    assert report["training_episodes"] == 100000
-    assert report["evaluation_episodes"] == 3520
+    assert report["training_episodes"] == 50000
+    assert report["evaluation_episodes"] == 1760
     assert not report["compute_authorized"]
     assert config["bootstrap"]["seed"] == 163
     assert plans["control"].action_masking == plans["neutral"].action_masking == "framework_legal"

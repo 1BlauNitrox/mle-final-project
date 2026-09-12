@@ -152,7 +152,7 @@ def validate(directory=None):
     for arm, plan in templates.items():
         require(
             [sum(j.rounds for j in plan.jobs if j.kind == k) for k in ("training", "evaluation")]
-            == ([0, 320] if arm == "reference" else [50000, 1600]),
+            == ([0, 160] if arm == "reference" else [25000, 800]),
             "Wrong episode budget",
         )
         signatures.append(
@@ -217,8 +217,8 @@ def validate(directory=None):
         plans,
         {
             "issue": 163,
-            "training_episodes": 100000,
-            "evaluation_episodes": 3520,
+            "training_episodes": 50000,
+            "evaluation_episodes": 1760,
             "protocol_sha256": sha256(CONFIG),
             "parent_bound": directory is not None,
             "seed_audit": audit,
@@ -277,7 +277,7 @@ def analyze(root, binding, output):
                     campaign.relative_file(directory, job["artifact"]["path"])
                 )
                 require(
-                    loaded.completed_episodes == 10000
+                    loaded.completed_episodes == 5000
                     and loaded.config.neutral_safe_attack_bombs == (arm == "neutral")
                     and loaded.config.action_masking
                     and not loaded.config.double_dqn,
