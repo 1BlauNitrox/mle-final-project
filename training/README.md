@@ -763,7 +763,7 @@ agent:
 - satisfies the Task 1 completion contract; or
 - is tournament-ready.
 
-A 5–10 episode smoke run verifies only that the instrumentation works. Any
+A 5â€“10 episode smoke run verifies only that the instrumentation works. Any
 performance conclusion requires a preregistered experiment with controlled
 variables, fixed seed populations, appropriate baselines, and uncertainty
 reporting.
@@ -982,6 +982,7 @@ Issue #168's bounded exploration probes and small learning pilot use
 compact probe evidence and analyzers are under
 `experiments/2026-09-13-task3-exploration-screen/`.
 See [the pilot command reference](issue168-pilot-commands.md) for source-pinned
-preparation, detached Windows launch, progress, budget-limited resume, portable
-serial evaluation and compact result transfer. The pilot requires separate
-explicit compute authorization; a dry-run does not grant it.
+preparation, detached Windows launch, progress, budget-limited resume and compact
+results. The completed pilot ran training and evaluation on the same PC. Its
+negative result and exact archive reproduction are linked from the command
+reference; new comparisons require a separate prospective protocol.

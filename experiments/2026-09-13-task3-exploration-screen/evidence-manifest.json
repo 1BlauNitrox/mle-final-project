@@ -15,5 +15,13 @@
     "size_bytes": 219507,
     "episodes": 40,
     "analysis_command": "python -m scripts.analyze_task3_exploration analyze experiments/2026-09-13-task3-exploration-screen/phase-c-evidence.tar.gz phase-c-analysis.json"
+  },
+  "scope": "Phase A/C frozen-policy evidence; phase-D learning result is recorded separately.",
+  "decision_scope": "The original conditional phase-B pilot was not run after the failed phase-A filter; this field is not the later phase-D authorization.",
+  "phase_d": {
+    "manifest": "phase-d-evidence-manifest.json",
+    "analysis": "phase-d-analysis.json",
+    "reproduction": "phase-d-reproduction.md",
+    "pilot_screen_passed": false
   }
 }

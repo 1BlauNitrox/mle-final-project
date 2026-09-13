@@ -18,7 +18,11 @@
     1682118,
     1682119
   ],
-  "scientific_pilot_started": false,
-  "training_episodes_in_pilot": 0,
-  "remaining_gate": "Explicit owner approval for registered phase-D allocation; human narrative and manual AI-use entry remain pending before PR readiness."
+  "scientific_pilot_started": true,
+  "training_episodes_in_pilot": 300,
+  "remaining_gate": "Manual AI-use entry, explicit approval/publication of the prepared full evidence archive, final-head CI and non-author review. Human README edits and commit/push consent received.",
+  "scope": "Pre-run mechanical validation; smoke data remain excluded from all scientific results.",
+  "evaluation_episodes_in_pilot": 280,
+  "scientific_pilot_completed": true,
+  "result_record": "phase-d-evidence-manifest.json"
 }

@@ -1,9 +1,9 @@
 # DagobertDuckDQNTask3
 
-> Status: Task 3 implementation successor prepared under issue #108. This PR
-> contains contract decisions, tests, migration, and bounded integration
-> validation only. It contains no scientific training result or performance
-> claim.
+> Status: this checkout retains the original Task 3 implementation fixture.
+> Issue #168 tested a separately pinned, escape-preserving runtime and a
+> provisional #91-derived parent. Its learning pilot failed; no default model
+> or fixture was replaced, and cumulative Task 2/3 success is not established.
 
 ## Purpose and hypothesis
 
@@ -30,10 +30,14 @@ sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
 source commit: 933a8fe11440e0f7645254390928da6af5dad46d (current main at branch creation)
 ```
 
-Issue #107 is the final Task 2 selection campaign. After it selects the
-development artifact, the parent source/artifact hashes in `artifact.json`
-must be rebound before scientific Task 3 training. This provisional fixture is
-not evidence and does not close that dependency.
+This is the historical compatibility fixture, not the parent used in #168.
+That experiment explicitly bound the provisional #91 A/r3 predecessor and
+executed the 39-input, escape-preserving runtime at
+`c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113`; the implementation described below
+is the original 34-input checkout. The exact experimental parent, initialization,
+source and six final checkpoint hashes are in the
+[phase-D manifest](../../experiments/2026-09-13-task3-exploration-screen/phase-d-evidence-manifest.json).
+Neither the fixture nor the experimental parent certifies Task 2 completion.
 
 Migration copies the 21 Task 2 input columns, both 64-unit hidden layers, and
 all six output rows. The thirteen Task 3 input columns are zero-initialized, so
@@ -79,6 +83,19 @@ reproducible run-plan expansion. The agent card records the Task 2 campaign's
 known mixed/failed gates as inherited context; it does not turn them into a
 Task 3 result.
 
-The eventual parent artifact, training seeds, evaluation seeds, numerical
-selection rule, and scientific results are intentionally not fixed here. They
-belong to the post-#107 Task 3 launch protocol.
+## Exploration pilot result (#168)
+
+Frozen-policy probes motivated a three-replica learning comparison of stepwise
+20% exploration against an 80% greedy / 20% random episode mixture. After 300
+training and 280 evaluation episodes, mixture hunting was 0.200 eliminations/game
+versus 0.133 for stepwise exploration and 0.200 for the unchanged parent.
+The +0.067 effect missed the +0.10 pilot threshold; its descriptive 95% interval
+was [-0.400, +0.533]. Coin-heaven collection was 71.2% versus the parent's 88.0%.
+Coin-heaven and opponent-free classic failed collection and self-kill retention;
+loot-crate passed. Learning, repeatability, invalid-action and latency gates passed.
+
+The pilot is negative overall and selected no checkpoint. The proposed follow-up
+holds episode exploration fixed and tests a smaller learning rate to investigate
+retention. It must use fresh paired seeds and the unchanged initialization;
+smaller updates are not yet a validated remedy. Detailed results and limitations
+are in the [experiment record](../../experiments/2026-09-13-task3-exploration-screen/README.md).
