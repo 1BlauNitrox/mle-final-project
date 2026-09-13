@@ -1,0 +1,145 @@
+schema_version: 1
+issue: 139
+status: completed_rejected
+evidence_scope: prospective_completed_experiment
+agent: DerKleineSprengstoffkapitalist
+owner: LiliWestermann
+
+revisions:
+  registration_base: "974fa7c"
+  implementation_commit: "b46a54984d25cd4e15096eebbfa876614257590b"
+  experiment_commit: "698c031893528dfad850b82251583fcb522a47a2"
+  analysis_commit: "2c59feca1cdd9309900a3ce1b9ff5ce8116283d9"
+  framework_revision: "974fa7c"
+
+treatments:
+  control:
+    state_representation: compact_decision
+    potential_shaping: escape_distance
+    potential_scale: 1.0
+    tabular_initialization: zeros
+    run_plan: training/run_plans/issue139-compact-task2-full-strength.yaml
+  candidate:
+    state_representation: compact_decision
+    potential_shaping: escape_distance_half
+    potential_scale: 0.5
+    tabular_initialization: zeros
+    run_plan: training/run_plans/issue139-compact-task2-half-strength.yaml
+
+potential:
+  full_strength: {safe: 0.0, distance_1: -1.0, distance_2: -2.0, distance_3_or_more: -3.0, no_route: -5.0}
+  half_strength: {safe: 0.0, distance_1: -0.5, distance_2: -1.0, distance_3_or_more: -1.5, no_route: -2.5}
+  formula: gamma_phi_next_minus_phi_current
+  discount_factor: 0.9
+  terminal_next_potential: 0.0
+
+controlled:
+  algorithm: one_step_tabular_q_learning
+  learning_rate: 0.05
+  discount_factor: 0.9
+  initial_epsilon: 1.0
+  epsilon_decay: 0.99
+  minimum_epsilon: 0.1
+  action_masking: none
+  useful_bomb_reward: 0.0
+  state_representation: compact_decision
+  q_value_initialization: zeros
+  opponents: []
+  checkpoint_selection: final_exact_budget
+  replicas: 5
+  episodes_per_replica: 10000
+
+training:
+  seeds:
+    - {id: r1, world_seed: 141001, agent_seed: 241001}
+    - {id: r2, world_seed: 141002, agent_seed: 241002}
+    - {id: r3, world_seed: 141003, agent_seed: 241003}
+    - {id: r4, world_seed: 141004, agent_seed: 241004}
+    - {id: r5, world_seed: 141005, agent_seed: 241005}
+  curriculum:
+    - {scenario: coin-heaven, rounds: 2000}
+    - {scenario: loot-crate, rounds: 2000}
+    - {scenario: classic, rounds: 6000}
+
+evaluation:
+  rounds_per_seed: 1
+  deterministic_repeat: true
+  classic_world_seeds: {start: 142001, stop_inclusive: 142040}
+  coin_heaven_world_seeds: {start: 143001, stop_inclusive: 143040}
+  loot_crate_world_seeds: {start: 144001, stop_inclusive: 144040}
+  confirmation_seeds_used: false
+
+historical_reference:
+  source_issue: 135
+  no_shaping_classic_self_kill_rate: 0.055
+  use: preregistered_safety_guard_only
+
+criteria:
+  classic_collection_candidate_minus_control_mean_above: 0.0
+  classic_collection_ci_lower_above: 0.0
+  candidate_classic_self_kill_rate_below: 0.055
+  candidate_replicas_below_historical_self_kill_minimum: 4
+  coin_heaven_collection_candidate_minus_control_minimum: -0.05
+  mean_visits_per_state_candidate_control_ratio_minimum: 0.90
+  deterministic_repeat: true
+  decision_time_p95_ms_max_exclusive: 50
+  decision_time_max_ms_max_exclusive: 100
+
+analysis:
+  bootstrap_resamples: 10000
+  classic_collection_resampler_seed: 139
+
+compute_budget:
+  maximum_training_episodes: 100000
+  planned_evaluation_episodes: 2400
+  maximum_evaluation_episodes: 2480
+  maximum_cpu_hours: 36
+  paid_resources: false
+
+approval:
+  required_before_training: false
+  waived_by: LiliWestermann
+  reason: explicit_instruction_to_execute_without_intermediate_approval
+  authorized_implementation_commit: "b46a54984d25cd4e15096eebbfa876614257590b"
+
+outputs:
+  commit: [README.md, config.yaml, evidence.csv, training_diagnostics.csv, summary.csv, result.json, figures/]
+  external: [trained_models, resolved_plans, statuses, per_episode_evidence, evaluation_metadata]
+
+results:
+  decision: reject_half_strength_as_default
+  overall_pass: false
+  deterministic_repeats: true
+  completed_jobs_per_treatment: 1215
+  primary_evaluation_episodes: 1200
+  repeat_evaluation_episodes: 1200
+  classic:
+    full_strength_collection_fraction: 0.04722222222222222
+    half_strength_collection_fraction: 0.13444444444444442
+    collection_half_minus_full: 0.08722222222222223
+    collection_ci_lower: 0.029444444444444447
+    collection_ci_upper: 0.1438888888888889
+    full_strength_self_kill_rate: 0.01
+    half_strength_self_kill_rate: 0.07
+    half_strength_replicas_below_historical_0_055: 3
+  coin_heaven:
+    full_strength_collection_fraction: 1.0
+    half_strength_collection_fraction: 1.0
+  loot_crate:
+    full_strength_collection_fraction: 0.1005
+    half_strength_collection_fraction: 0.1633
+    full_strength_self_kill_rate: 0.09
+    half_strength_self_kill_rate: 0.195
+  learning_efficiency:
+    full_strength_mean_q_table_size: 1072.2
+    half_strength_mean_q_table_size: 1087.8
+    full_strength_mean_visits_per_state: 798.469953242583
+    half_strength_mean_visits_per_state: 737.7889966891437
+    half_full_visits_ratio: 0.9240034564769605
+    full_strength_unseen_state_rate: 0.000022318065916407683
+    half_strength_unseen_state_rate: 0.00008327187076205657
+  latency:
+    maximum_primary_p95_ms: 1.7824888229370115
+    maximum_primary_decision_ms: 10.70094108581543
+    p95_within_limit: true
+    maximum_within_limit: true

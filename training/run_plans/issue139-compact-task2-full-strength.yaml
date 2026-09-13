@@ -1,0 +1,48 @@
+schema_version: 1
+plan_id: issue139-compact-task2-full-strength
+agent: DerKleineSprengstoffkapitalist
+artifact_path: model.npz
+action_masking: none
+useful_bomb_reward: 0.0
+state_representation: compact_decision
+potential_shaping: escape_distance
+tabular_initialization: zeros
+max_parallel_training: 2
+
+replicas:
+  - {id: r1, world_seed: 141001, agent_seed: 241001}
+  - {id: r2, world_seed: 141002, agent_seed: 241002}
+  - {id: r3, world_seed: 141003, agent_seed: 241003}
+  - {id: r4, world_seed: 141004, agent_seed: 241004}
+  - {id: r5, world_seed: 141005, agent_seed: 241005}
+
+training_stages:
+  - {id: visible-coins, scenario: coin-heaven, rounds: 2000, opponents: []}
+  - {id: dense-crates, scenario: loot-crate, rounds: 2000, opponents: []}
+  - {id: classic-crates, scenario: classic, rounds: 6000, opponents: []}
+
+evaluation_suites:
+  - id: classic-primary
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: &classic_worlds [142001, 142002, 142003, 142004, 142005, 142006, 142007, 142008, 142009, 142010, 142011, 142012, 142013, 142014, 142015, 142016, 142017, 142018, 142019, 142020, 142021, 142022, 142023, 142024, 142025, 142026, 142027, 142028, 142029, 142030, 142031, 142032, 142033, 142034, 142035, 142036, 142037, 142038, 142039, 142040]
+    agent_seeds: &classic_agents [242001, 242002, 242003, 242004, 242005, 242006, 242007, 242008, 242009, 242010, 242011, 242012, 242013, 242014, 242015, 242016, 242017, 242018, 242019, 242020, 242021, 242022, 242023, 242024, 242025, 242026, 242027, 242028, 242029, 242030, 242031, 242032, 242033, 242034, 242035, 242036, 242037, 242038, 242039, 242040]
+    opponents: []
+  - {id: classic-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *classic_worlds, agent_seeds: *classic_agents, opponents: []}
+  - id: coin-heaven-primary
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: &coin_worlds [143001, 143002, 143003, 143004, 143005, 143006, 143007, 143008, 143009, 143010, 143011, 143012, 143013, 143014, 143015, 143016, 143017, 143018, 143019, 143020, 143021, 143022, 143023, 143024, 143025, 143026, 143027, 143028, 143029, 143030, 143031, 143032, 143033, 143034, 143035, 143036, 143037, 143038, 143039, 143040]
+    agent_seeds: &coin_agents [243001, 243002, 243003, 243004, 243005, 243006, 243007, 243008, 243009, 243010, 243011, 243012, 243013, 243014, 243015, 243016, 243017, 243018, 243019, 243020, 243021, 243022, 243023, 243024, 243025, 243026, 243027, 243028, 243029, 243030, 243031, 243032, 243033, 243034, 243035, 243036, 243037, 243038, 243039, 243040]
+    opponents: []
+  - {id: coin-heaven-repeat, population: development, scenario: coin-heaven, rounds: 1, world_seeds: *coin_worlds, agent_seeds: *coin_agents, opponents: []}
+  - id: loot-crate-primary
+    population: development
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: &loot_worlds [144001, 144002, 144003, 144004, 144005, 144006, 144007, 144008, 144009, 144010, 144011, 144012, 144013, 144014, 144015, 144016, 144017, 144018, 144019, 144020, 144021, 144022, 144023, 144024, 144025, 144026, 144027, 144028, 144029, 144030, 144031, 144032, 144033, 144034, 144035, 144036, 144037, 144038, 144039, 144040]
+    agent_seeds: &loot_agents [244001, 244002, 244003, 244004, 244005, 244006, 244007, 244008, 244009, 244010, 244011, 244012, 244013, 244014, 244015, 244016, 244017, 244018, 244019, 244020, 244021, 244022, 244023, 244024, 244025, 244026, 244027, 244028, 244029, 244030, 244031, 244032, 244033, 244034, 244035, 244036, 244037, 244038, 244039, 244040]
+    opponents: []
+  - {id: loot-crate-repeat, population: development, scenario: loot-crate, rounds: 1, world_seeds: *loot_worlds, agent_seeds: *loot_agents, opponents: []}

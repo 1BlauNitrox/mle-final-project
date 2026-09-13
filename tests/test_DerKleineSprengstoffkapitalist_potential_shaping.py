@@ -12,6 +12,8 @@ from agent_code.DerKleineSprengstoffkapitalist.features.bombs_and_crates import 
 from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
     apply_potential_shaping,
     escape_distance_potential,
@@ -196,7 +198,13 @@ def test_escape_distance_potential_uses_time_aware_route() -> None:
     )
 
     assert escape_distance_potential(state) == pytest.approx(-1.0)
-    assert escape_distance_potential(state) == pytest.approx(-1.0)
+    assert escape_distance_potential(state, scale=0.5) == pytest.approx(-0.5)
+
+
+@pytest.mark.parametrize("scale", (0.0, -0.5, 1.1))
+def test_escape_distance_potential_rejects_invalid_scale(scale: float) -> None:
+    with pytest.raises(ValueError, match="scale must be in"):
+        escape_distance_potential(make_game_state(), scale=scale)
 
 
 def test_existing_escape_check_still_validates_required_first_direction() -> None:
@@ -225,6 +233,11 @@ def test_escape_distance_potential_reports_no_route() -> None:
     )
 
     assert escape_distance_potential(state) == pytest.approx(-5.0)
+    assert escape_distance_potential(
+        state,
+        scale=0.5,
+        no_route_potential=-5.0,
+    ) == pytest.approx(-5.0)
 
 
 def test_escape_progress_and_regress_use_registered_potentials() -> None:
@@ -274,3 +287,33 @@ def test_escape_distance_mode_adds_external_potential_reward() -> None:
     )
 
     assert reward == pytest.approx(4.1)
+
+
+def test_half_escape_distance_mode_adds_scaled_external_potential_reward() -> None:
+    reward = apply_potential_shaping(
+        3.0,
+        SAFE_STATE,
+        DANGER_WITH_ESCAPE,
+        terminal=False,
+        mode=HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        discount_factor=0.9,
+        current_external_potential=-1.0,
+        next_external_potential=-0.5,
+    )
+
+    assert reward == pytest.approx(3.55)
+
+
+def test_half_progress_full_no_route_mode_accepts_external_potential() -> None:
+    reward = apply_potential_shaping(
+        3.0,
+        SAFE_STATE,
+        DANGER_WITH_ESCAPE,
+        terminal=False,
+        mode=HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
+        discount_factor=0.9,
+        current_external_potential=-5.0,
+        next_external_potential=-0.5,
+    )
+
+    assert reward == pytest.approx(7.55)

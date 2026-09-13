@@ -13,6 +13,7 @@ from agent_code.DerKleineSprengstoffkapitalist.config import (
 )
 from agent_code.DerKleineSprengstoffkapitalist.features import (
     BASELINE_STATE_REPRESENTATION,
+    COMPACT_ESCAPE_STATE_REPRESENTATION,
     COMPACT_STATE_REPRESENTATION,
 )
 from agent_code.DerKleineSprengstoffkapitalist.migration import (
@@ -35,6 +36,8 @@ from agent_code.DerKleineSprengstoffkapitalist.persistence import (
 from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 
@@ -63,8 +66,8 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def test_model_schema_version_is_five() -> None:
-    assert MODEL_SCHEMA_VERSION == 5
+def test_model_schema_version_is_six() -> None:
+    assert MODEL_SCHEMA_VERSION == 6
 
 
 def test_parent_artifact_has_expected_checksum() -> None:
@@ -107,12 +110,32 @@ def test_sparse_model_round_trip(tmp_path: Path) -> None:
     assert loaded.q_table.initialization == PARENT_PRIOR_INITIALIZATION
     assert loaded.q_table.total_state_visits == 1
     assert loaded.potential_shaping == NO_POTENTIAL_SHAPING
+    assert loaded.exploration_mode == "standard"
 
     np.testing.assert_array_equal(
         loaded.q_table.q_values(TEST_STATE),
         q_table.q_values(TEST_STATE),
     )
 
+
+def test_exploration_mode_round_trip(tmp_path: Path) -> None:
+    q_table = QTable(
+        feature_count=5,
+        initialization=ZERO_INITIALIZATION,
+    )
+    path = tmp_path / "safe-bomb.npz"
+
+    save_model(
+        q_table,
+        epsilon=0.5,
+        completed_episodes=1,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        exploration_mode="safe_bomb",
+        path=path,
+    )
+
+    assert load_model(path).exploration_mode == "safe_bomb"
 
 def test_compact_zero_initialized_model_round_trip(
     tmp_path: Path,
@@ -156,6 +179,31 @@ def test_compact_zero_initialized_model_round_trip(
         loaded.q_table.q_values(compact_state),
         q_table.q_values(compact_state),
     )
+
+
+def test_compact_escape_model_round_trip(tmp_path: Path) -> None:
+    state = (0, 15, 2, 0, 3, 1)
+    q_table = QTable(feature_count=6, initialization=ZERO_INITIALIZATION)
+    q_table.update(
+        state=state,
+        action="BOMB",
+        reward=1.0,
+        next_state=None,
+        terminal=True,
+    )
+    path = tmp_path / "compact-escape-model.npz"
+    save_model(
+        q_table,
+        epsilon=0.5,
+        completed_episodes=1,
+        state_representation=COMPACT_ESCAPE_STATE_REPRESENTATION,
+        initialization=ZERO_INITIALIZATION,
+        path=path,
+    )
+    loaded = load_model(path)
+    assert loaded.state_representation == COMPACT_ESCAPE_STATE_REPRESENTATION
+    assert loaded.q_table.feature_count == 6
+    np.testing.assert_array_equal(loaded.q_table.q_values(state), q_table.q_values(state))
 
 
 def test_useful_bomb_reward_round_trip(tmp_path: Path) -> None:
@@ -351,6 +399,8 @@ def test_compact_representation_rejects_baseline_q_table(
     (
         COMPACT_SAFETY_POTENTIAL_SHAPING,
         ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     ),
 )
 def test_potential_shaping_mode_round_trip(
