@@ -204,43 +204,10 @@ raw scientific observations and failure records. Unit tests and an isolated
 integration smoke validate mechanics; they do not establish scientific efficacy
 or authorize a long run. Human review and ownership remain required.
 
-### Issue #124 explicit owner execution exception
-
-On September 10, Julius explicitly instructed execution despite the missing
-peer review: "I want you to run it anyways!" Codex added a tested, opt-in
-execution exception and records it in campaign/job authorization metadata.
-This is not peer approval and does not authorize a merge. Resource limits,
-immutable source checks and analysis requirements remain unchanged.
-
-### Issue #124 owner-authorized runtime extension
-
-Julius requested longer execution on September 10 after the observed runtime
-exceeded the original estimate. Codex implemented and tested a separate,
-checksum-bound resume wrapper, preserving the immutable training source,
-original authorization and cumulative resource ledger. The extension and
-interrupted attempts are scientific deviations to disclose, not new results.
-See the experiment's `runtime-extension.md` for effective limits and commands.
-
-### Issue #124 Windows resource-ledger recovery
-
-Codex traced B/r2 block 16's technical failure to a Windows permission error
-on atomic resource-file replacement. A bounded retry in the separately
-versioned operational resume monitor was tested with transient, persistent
-and unrelated I/O failures. Recovery retains the original learning source,
-completed checkpoints, failed attempts and cumulative resource accounting.
-
-- September 10, Issue #124: Codex inspected retained campaign/job/resource records, invoked the registered analyzer in analysis-only mode, and documented the system-memory interruption. No scientific performance conclusion or checkpoint selection was inferred; the compact operational snapshot is committed for review.
-
-- Issue #124 memory recovery: Codex implemented and tested an owner-authorized recovery from the system availability stop, preserving archived breach evidence and cumulative accounting. No scientific settings or budgets changed.
-
-- September 11, Issue #124: Codex verified the second system-memory interruption against retained statuses and ledgers, reran analysis-only validation, and documented 395 completed training blocks with zero evaluation episodes. No scientific conclusion was inferred.
-
-- September 11, Issue #124: Codex prepared the user-authorized reduced evaluation amendment and serial launcher, with pinned final artifacts, no training, unchanged evaluation suites and tests rejecting corruption/incomplete included replicas. D/r5 remains excluded and D exploratory; no outcome informed this amendment.
-
-- September 11, Issue #124 evaluation extension: Codex implemented and tested explicit owner-authorized runtime limits with preserved original registration, plus process-scoped Windows wakefulness. Throughput alone informed the extension; no evaluation performance conclusions were used.
-
-- 2026-09-11, #124 / PR #131: Codex verified the returned Windows laptop evidence,
-  implemented a reduced-scope analyzer and rejection tests, retained per-episode
-  observations and final-training provenance, published checkpoint evidence, and
-  documented negative rehearsal / inconclusive masking results. No default model
-  changed and no Task 2 completion claim is made. Human review remains required.
+Issue #150 storage recovery (2026-09-12): Codex's 8 GiB working-space estimate
+missed retained per-evaluation checkpoint snapshots; the owner reported disk
+exhaustion. Codex prepared a separately executed, audited hard-link utility for
+identical completed evaluation inputs and tested it on disposable fixtures and
+a copy of real smoke output. No scientific source, checkpoint bytes, seeds,
+thresholds or resource budget are changed. Recovery and final scientific
+verification remain separate from these mechanics checks.
