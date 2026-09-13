@@ -1,6 +1,18 @@
 # Issue 150: standard versus Double DQN targets
 
-**Prospective exploratory protocol; no scientific result or selected model.**
+**Registered exploratory protocol with an actual interrupted execution.**
+The original campaign at `6f01448` exhausted disk space after approximately
+8.9 GiB: reference completed 320/320 jobs, control 1,605/1,605, and Double DQN
+564 jobs, with 1,040 pending and an interrupted attempt recorded as running.
+The original 8 GiB free-disk prerequisite was insufficient. Corrected fresh-run
+storage checks and the evidence-preserving recovery procedure are documented
+in [SERVER.md](SERVER.md). Historical recovery must retain the original source,
+authorization, attempts, resource accounting and recovery journals. Do not
+replace an interrupted campaign with the corrected fresh-run source.
+
+Completed-result analysis is tracked separately in
+[PR #161](https://github.com/1BlauNitrox/mle-final-project/pull/161); this
+preparation PR does not certify that result or select a model.
 Owner Julius / 1BlauNitrox; reviewer requested LiliWestermann. Refs #150,
 #146, #147 and the unmerged #145 roadmap. Task 2 remains incomplete.
 
@@ -77,7 +89,12 @@ reviewed continuation binding; it does not bypass #137's existing helper.
 The **server** runs reference, control and Double plans serially, at most two
 training workers within an arm, all evaluation serially in one recorded
 environment. Caps: 24 CPU-hours / 10 wall-hours / 8 GiB process-tree memory; require
-8 GiB free disk and 8 GiB available RAM. Confirm an exclusive 12-hour allocation,
+91 GiB free on the output filesystem and at least 6 GiB on the source
+filesystem (included in the 91 GiB if shared), plus 8 GiB available RAM.
+Both CLI paths enforce the full-matrix storage preflight; sampled runtime
+guards retain incomplete evidence on breach. These guards are not disk quotas.
+See [SERVER.md](SERVER.md) for the calculation and recovery/resume limits.
+Confirm an exclusive 12-hour allocation,
 including transfer/export/recovery margin. Keep campaign source/parent/seeds/
 budget immutable; interruption uses the same retained authorization and resume.
 
