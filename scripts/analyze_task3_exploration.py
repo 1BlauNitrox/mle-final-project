@@ -207,7 +207,7 @@ def export(root, output):
         "size_bytes": output.stat().st_size,
         "files": len(paths),
         "contents": (
-            "60 native episodes and compact step observations, "
+            f"{len(status['jobs'])} native episodes and compact step observations, "
             "registration/source hashes and failed-attempt record; no checkpoints or raw logs"
         ),
     }

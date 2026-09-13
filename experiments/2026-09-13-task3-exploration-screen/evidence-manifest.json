@@ -8,5 +8,12 @@
   "history_retrieval": "Use training.verify_issue163_results from c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113 and the issue163-evidence-v1 release to reproduce the input observations.",
   "task2_complete": false,
   "selected_checkpoint": null,
-  "next_learning_pilot_authorized": false
+  "next_learning_pilot_authorized": false,
+  "phase_c": {
+    "archive": "phase-c-evidence.tar.gz",
+    "sha256": "747ece8dee67187d3dc1bf6c49038ba0fd7a57ebbab58c550f2e63cdf9ac2cc0",
+    "size_bytes": 219507,
+    "episodes": 40,
+    "analysis_command": "python -m scripts.analyze_task3_exploration analyze experiments/2026-09-13-task3-exploration-screen/phase-c-evidence.tar.gz phase-c-analysis.json"
+  }
 }
