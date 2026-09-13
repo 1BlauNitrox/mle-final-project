@@ -1,0 +1,37 @@
+{
+  "scope": "mechanical preflight; no scientific result",
+  "tool_source": "1aae01e1536ec31d3c2e336968fde42ad81dc606",
+  "config_sha256": "facf56942df15b4fe86048d70df1d30a5046e71d0dcec8d313e8276740a08856",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "tests": "927 tests and11subtests passed;10focused tests passed after bounded smoke-only warmup change",
+  "seed_audit": "623tracked blobs; no collisions",
+  "first_smoke": "Two short games did not reach the unchanged500-transition warmup; preserved separately, no scientific data produced",
+  "passed_smoke": {
+    "scope": "mechanical_smoke_excluded_from_pilot",
+    "training_episodes": 3,
+    "evaluation_episodes": 7,
+    "optimizer_updates": 308,
+    "checkpoint_sha256": "8e500dde3133b874046338409df8702351687df33edead47f9d96944a6313fbd"
+  },
+  "smoke_resources": {
+    "cpu_seconds": 49.640625,
+    "wall_seconds": 50.30071029998362,
+    "peak_memory_bytes": 301547520
+  },
+  "opponent_free_smoke": "exact treatment/reference native behavior and action hashes in all three solo suites",
+  "upstream_smoke": {
+    "source": "0f55c1d207e586e6fe6db95e64302ed32281e370",
+    "reward": 20.0,
+    "world_seed": 7975806,
+    "agent_seed": 8975801,
+    "opponents": [
+      "random_agent",
+      "random_agent",
+      "random_agent"
+    ],
+    "exit_code": 0,
+    "checkpoint_bytes_unchanged": true
+  },
+  "output_root": "training_outputs/campaign-v2",
+  "scientific_execution_started": false
+}
