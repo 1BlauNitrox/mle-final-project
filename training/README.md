@@ -968,3 +968,13 @@ Issue #124 reduced laptop evidence is verified with
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
 The verifier retains five-replica A/B/C inference and marks D exploratory; the
 original full-matrix analyzer remains strict and unchanged.
+
+Issue #168's bounded exploration probes and small learning pilot use
+`scripts/probe_task3_exploration.py` and
+`scripts/pilot_task3_episode_exploration.py`. The prospective configurations,
+compact probe evidence and analyzers are under
+`experiments/2026-09-13-task3-exploration-screen/`.
+See [the pilot command reference](issue168-pilot-commands.md) for source-pinned
+preparation, detached Windows launch, progress, budget-limited resume, portable
+serial evaluation and compact result transfer. The pilot requires separate
+explicit compute authorization; a dry-run does not grant it.
