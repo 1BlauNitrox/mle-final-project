@@ -1,0 +1,71 @@
+schema_version: 1
+issue: 124
+status: prospective_protocol
+owner: 1BlauNitrox
+non_author_reviewer: Waffelmanufaktur (requested)
+prerequisite: 123
+agent: DagobertDuckDQNTask2
+escape_continuations: 'on'
+replay_treatment: uniform
+source_sha256: 4ad409472e7ca008dfcc82aa26017017c90259b65f9e593020d1b63921430f60
+proposed_cells:
+  A:
+    practice: blocked
+    masking: none
+  B:
+    practice: interleaved
+    masking: none
+  C:
+    practice: blocked
+    masking: framework_legal
+  D:
+    practice: interleaved
+    masking: framework_legal
+training:
+  replicas_per_cell: 5
+  episodes_per_replica: 10000
+  block_episodes: 500
+evaluation:
+  primary_pairs_per_scenario: 40
+  deterministic_repeats: true
+absolute_gate_source: experiments/2026-09-07-dqn-task2-factorial/config.yaml
+scope_ratified: true
+resources:
+  workers: 4
+  memory_gib: 8
+  wall_hours: 10
+  cpu_hours: 40
+plan_sha256:
+  A: e787689609c6601873c316dc6bdfacefbae90360a5c6d569d4a778178860d724
+  B: 956197430ba50abc00aa74b99077e864c293058c7f301be59a20bd72c2bb82c6
+  C: 4445f01ce6c22c60c0d664fe67deca96d525307d38b144049bf0579875d7dd94
+  D: 3ce2d302842b5a0d7c3ff29c46281cda3543efbdec4b6881981e71951985dbb7
+  frozen_task1: 547f446a5ba416384f466058441a5494f52e5ceace820fb638a09b28743e8ff6
+  untrained: 275323c9609349f759d4c1de84c90e9000b1018deb4d4d8d1c01cbad28972840
+review_required_before_execution: true
+analysis:
+  bootstrap_resamples: 10000
+  confidence_interval_percent: 95
+  efficacy_family_size: 4
+  efficacy_interval_percent: 98.75
+  rehearsal_coin_collection_improvement_min: 0.1
+  mask_classic_collection_improvement_min: 0.1
+  adjusted_lower_strictly_above: 0.0
+  non_regression_collection_survival_margin: 0.05
+  non_regression_ci_lower_strict: true
+selection:
+  no_eligible_treatment: A
+  combined_requires_both_efficacies: true
+  combined_guards_against:
+  - A
+  - B
+  - C
+  rank:
+  - overall_passed
+  - task2_passed
+  - task1_passed
+  - classic_collection
+  - lower_classic_self_kills
+  - coin_heaven_collection
+  - alphabetical_id
+  representative: median classic collection replica; tie by replica ID; third of five
