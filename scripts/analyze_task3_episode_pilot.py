@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import gzip
+import hashlib
 import json
 import random
 from statistics import mean
@@ -55,9 +56,46 @@ def interval(matrix):
     return [draws[249], draws[9749]]
 
 
+def verify_training_tensors(root):
+    import torch
+
+    torch.set_num_threads(1)
+    initial = torch.load(root / "initial.pt", map_location="cpu", weights_only=True)
+
+    def digest(state):
+        value = hashlib.sha256()
+        for name, tensor in state.items():
+            value.update(name.encode() + tensor.detach().cpu().numpy().tobytes())
+        return value.hexdigest()
+
+    for relative in read_json(root / "training-state.json")["completed"].values():
+        directory = root / relative
+        result = read_json(directory / "result.json")
+        payload = torch.load(directory / "checkpoint.pt", map_location="cpu", weights_only=True)
+        if (
+            payload["completed_episodes"] != 50
+            or payload["agent_seed"] != config()["replica_agent_seeds"][result["replica"]]
+            or payload["learner_state"]["update_steps"] != result["optimizer_updates"]
+            or digest(payload["learner_state"]["online_network"]) != result["final_online_sha256"]
+        ):
+            raise ValueError("Checkpoint tensors/counters do not match execution evidence")
+        for key in (
+            "config",
+            "actions",
+            "rewards",
+            "checkpoint_schema_version",
+            "model_schema_version",
+            "feature_schema_version",
+        ):
+            if payload[key] != initial[key]:
+                raise ValueError("Checkpoint training controls changed")
+    return digest(initial["learner_state"]["online_network"])
+
+
 def analyze(root):
     verify(root)
     models = artifacts(root)
+    initial_network_hash = verify_training_tensors(root)
     cfg = config()
     state = read_json(root / "evaluation-state.json")
     if state["status"] != "completed" or len(state["completed"]) != 28:
@@ -163,7 +201,7 @@ def analyze(root):
             "attack_episodes": sum(row["attack_steps"] > 0 for row in rows),
             "eliminations": sum(metrics(row)["eliminations"] for row in rows),
         }
-    if len(initial_hashes) != 1:
+    if initial_hashes != {initial_network_hash}:
         raise ValueError("Unequal initialization")
     times = [
         t

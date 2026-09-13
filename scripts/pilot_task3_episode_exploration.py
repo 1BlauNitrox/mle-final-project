@@ -100,6 +100,7 @@ def code_hashes():
         "scripts/task3_episode_exploration.py",
         "scripts/analyze_task3_exploration.py",
         "scripts/analyze_task3_episode_pilot.py",
+        "scripts/run_issue168_pilot.ps1",
     ]
     return {
         name: hashlib.sha256((ROOT / name).read_bytes().replace(b"\r\n", b"\n")).hexdigest()

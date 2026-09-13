@@ -95,6 +95,7 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
     from scripts.pilot_task3_episode_exploration import sha, write, zip_json
 
     monkeypatch.setattr(analysis, "verify", lambda root: None)
+    monkeypatch.setattr(analysis, "verify_training_tensors", lambda root: "initial")
     monkeypatch.setattr(analysis, "interval", lambda matrix: [-1, 1])
     cfg = config()
     (tmp_path / "reference.pt").write_bytes(b"reference")
@@ -206,6 +207,29 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
     assert result["pilot_screen_passed"]
     assert result["selected_checkpoint"] is None
     assert not result["next_long_experiment_authorized"]
+
+    # Round-trip the same portable transfer layout using explicitly synthetic bytes.
+    import tarfile
+
+    import scripts.pilot_task3_episode_exploration as pilot
+
+    monkeypatch.setattr(pilot, "verify", lambda root: None)
+    for name, value in (
+        ("binding.json", {"tool_source": "synthetic-test"}),
+        ("config.json", cfg),
+        ("source-manifest.json", {}),
+    ):
+        write(tmp_path / name, value)
+    (tmp_path / "initial.pt").write_bytes(b"synthetic-initial")
+    with tarfile.open(tmp_path / "runtime-source.tar", "w"):
+        pass
+    transfer = tmp_path / "transfer.tar.gz"
+    pilot.bundle(tmp_path, transfer)
+    with pytest.raises(ValueError, match="checksum"):
+        pilot.import_bundle(tmp_path / "bad-import", transfer, "0" * 64)
+    assert not (tmp_path / "bad-import").exists()
+    pilot.import_bundle(tmp_path / "imported", transfer, sha(transfer))
+    assert set(pilot.artifacts(tmp_path / "imported")) == set(model_paths)
     # A legitimate negative result must fail the pilot, even with positive hunting.
     import gzip
 
@@ -274,3 +298,44 @@ def test_prepare_dispatches_one_binding_mode_without_starting_games(tmp_path, mo
     monkeypatch.setattr(pilot.subprocess, "run", run)
     pilot.prepare(tmp_path / "prepared", parent)
     assert modes == ["_bind"]
+
+
+def test_raw_tensor_counters_must_match_training_evidence(tmp_path):
+    import hashlib
+
+    import torch
+
+    from scripts.analyze_task3_episode_pilot import verify_training_tensors
+    from scripts.pilot_task3_episode_exploration import write
+
+    state = {"weight": torch.tensor([1.0])}
+    digest = hashlib.sha256(b"weight" + state["weight"].numpy().tobytes()).hexdigest()
+    initial = {
+        "learner_state": {"online_network": state},
+        "config": {},
+        "actions": [],
+        "rewards": {},
+        "checkpoint_schema_version": 1,
+        "model_schema_version": 1,
+        "feature_schema_version": 1,
+    }
+    torch.save(initial, tmp_path / "initial.pt")
+    directory = tmp_path / "job"
+    directory.mkdir()
+    payload = {
+        **initial,
+        "completed_episodes": 50,
+        "agent_seed": 2683001,
+        "learner_state": {"online_network": state, "update_steps": 10},
+    }
+    torch.save(payload, directory / "checkpoint.pt")
+    write(
+        directory / "result.json",
+        {"replica": 0, "optimizer_updates": 10, "final_online_sha256": digest},
+    )
+    write(tmp_path / "training-state.json", {"completed": {"job": "job"}})
+    assert verify_training_tensors(tmp_path) == digest
+    payload["completed_episodes"] = 49
+    torch.save(payload, directory / "checkpoint.pt")
+    with pytest.raises(ValueError, match="counters"):
+        verify_training_tensors(tmp_path)
