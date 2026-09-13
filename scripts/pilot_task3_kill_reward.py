@@ -767,7 +767,8 @@ def smoke_worker(root, output):
     checkpoint = output / "smoke-only.pt"
     shutil.copyfile(root / "initial-treatment.pt", checkpoint)
     training = []
-    for episode in range(2):
+    # Bounded mechanical warm-up; short deaths can leave two games below 500 transitions.
+    for episode in range(len(config()["smoke"]["world_seeds"])):
         training.append(
             play(
                 root,
@@ -783,7 +784,12 @@ def smoke_worker(root, output):
                 kill_reward=config()["kill_rewards"]["treatment"],
             )
         )
-    if training[-1]["completed_episodes"] != 2 or training[-1]["optimizer_updates"] <= 0:
+        if training[-1]["optimizer_updates"] > 0:
+            break
+    if (
+        training[-1]["completed_episodes"] != len(training)
+        or training[-1]["optimizer_updates"] <= 0
+    ):
         raise ValueError("Smoke did not exercise genuine checkpointed learning")
     evaluation = []
     for index, (suite, setting) in enumerate(config()["evaluation_suites"].items()):
@@ -829,7 +835,7 @@ def smoke_worker(root, output):
         output / "result.json",
         {
             "scope": "mechanical_smoke_excluded_from_pilot",
-            "training_episodes": 2,
+            "training_episodes": len(training),
             "evaluation_episodes": 7,
             "optimizer_updates": training[-1]["optimizer_updates"],
             "checkpoint_sha256": sha(checkpoint),
