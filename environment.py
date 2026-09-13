@@ -585,11 +585,10 @@ class BombeRLeWorld(GenericWorld):
 
         # Send final event to agents that expect them
         for a in self.agents:
-            if a.train:
-                learning_metrics = a.round_ended()
-                self.round_statistics[self.round_id]["agents"][a.name][
-                    "learning_metrics"
-                ] = learning_metrics
+            learning_metrics = a.round_ended()
+            self.round_statistics[self.round_id]["agents"][a.name][
+                "learning_metrics"
+            ] = learning_metrics
 
         # Save course of the game for future replay
         if self.args.save_replay:

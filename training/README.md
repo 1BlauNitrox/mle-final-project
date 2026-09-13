@@ -901,6 +901,12 @@ The following agent-specific learning metrics are optional:
 | `shaped_reward` | number | Cumulative shaped reward for the episode. |
 | `epsilon` | number | Exploration probability associated with the episode. |
 | `q_table_size` | integer | Number of represented states or state-action entries, as defined by the agent. |
+| `total_state_visits` | integer | Cumulative number of Q-table state updates. |
+| `mean_visits_per_state` | number | Mean number of updates per materialized state. |
+| `singleton_state_fraction` | number | Fraction of materialized states updated exactly once. |
+| `evaluation_decisions` | integer | Number of encoded decisions during the evaluation episode. |
+| `evaluation_unseen_decisions` | integer | Evaluation decisions whose state was absent from the trained Q-table. |
+| `evaluation_unseen_state_rate` | number or empty | `evaluation_unseen_decisions / evaluation_decisions`; empty when no state was encoded. |
 | `replay_size` | integer | Number of transitions currently stored in experience replay. |
 | `update_count` | integer | Cumulative optimizer-update count. |
 | `mean_loss` | number | Mean optimizer loss for updates in the episode. |
@@ -956,3 +962,9 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.

@@ -51,6 +51,12 @@ def make_episode_row(
         "shaped_reward": None,
         "epsilon": None,
         "q_table_size": None,
+        "total_state_visits": None,
+        "mean_visits_per_state": None,
+        "singleton_state_fraction": None,
+        "evaluation_decisions": None,
+        "evaluation_unseen_decisions": None,
+        "evaluation_unseen_state_rate": None,
         "replay_size": None,
         "update_count": None,
         "mean_loss": None,
@@ -347,6 +353,12 @@ class ExperimentAggregationTests(unittest.TestCase):
                 mean_abs_td_error=0.4,
                 target_synchronizations=1,
                 episode_target_synchronizations=1,
+                total_state_visits=20,
+                mean_visits_per_state=2.0,
+                singleton_state_fraction=0.5,
+                evaluation_decisions=10,
+                evaluation_unseen_decisions=4,
+                evaluation_unseen_state_rate=0.4,
             ),
             make_episode_row(
                 round=2,
@@ -359,6 +371,12 @@ class ExperimentAggregationTests(unittest.TestCase):
                 mean_abs_td_error=0.2,
                 target_synchronizations=2,
                 episode_target_synchronizations=1,
+                total_state_visits=50,
+                mean_visits_per_state=4.0,
+                singleton_state_fraction=0.3,
+                evaluation_decisions=30,
+                evaluation_unseen_decisions=6,
+                evaluation_unseen_state_rate=0.2,
             ),
         ]
 
@@ -379,6 +397,30 @@ class ExperimentAggregationTests(unittest.TestCase):
         self.assertEqual(
             2,
             learning["total_episode_target_synchronizations"],
+        )
+        self.assertEqual(
+            50,
+            learning["maximum_total_state_visits"],
+        )
+        self.assertEqual(
+            3.0,
+            learning["mean_visits_per_state"],
+        )
+        self.assertEqual(
+            0.4,
+            learning["mean_singleton_state_fraction"],
+        )
+        self.assertEqual(
+            40,
+            learning["total_evaluation_decisions"],
+        )
+        self.assertEqual(
+            10,
+            learning["total_evaluation_unseen_decisions"],
+        )
+        self.assertEqual(
+            0.25,
+            learning["evaluation_unseen_state_rate"],
         )
 
     def test_coin_efficiency_uses_ratios_of_totals(self) -> None:

@@ -308,5 +308,35 @@ The agent still:
 
 Potential-based reward shaping and further reward tuning must be evaluated as
 separate controlled experiments.
+
+Issue #135 found that full-strength time-aware escape-distance shaping reduced
+Classic self-kills but caused an unacceptable collection loss. Issue #139 then
+tested half strength against a newly trained full-strength control. Half
+strength significantly improved Classic collection but failed the registered
+safety guard (`0.070` self-kill rate versus the historical `0.055` no-shaping
+limit), so neither escape-distance treatment is the default. Both modes remain
+available for reproducibility of the experiment lineage.
+
+Issue #142 isolated the no-route bucket by comparing uniform half strength
+against half-strength progress with the original `-5` no-route potential. The
+candidate reduced mean Classic self-kills from `0.115` to `0.045`, with four of
+five replicas improving, but its paired 95% interval still crossed zero and
+Classic collection fell by `0.0678`, beyond the registered `0.05` guard. A
+single deterministic-repeat mismatch also produced a maximum-latency outlier.
+The candidate was rejected, the default remains unchanged, and the mode is
+retained only for reproducibility.
+Issue #153 tested an opt-in `safe_bomb` exploration mode that excludes an
+unsafe `BOMB` only from the random epsilon-greedy branch. It increased Classic
+self-kills from `0.045` to `0.075` and reduced Classic collection from `0.1694`
+to `0.1489`; no replica improved its Classic self-kill rate. The treatment was
+rejected, and standard epsilon-greedy exploration remains the default. The mode
+is retained only to reproduce the negative experiment.
+Issue #144 tested whether an appended post-bomb escape-status category could
+resolve compact-state aliasing. It produced exactly the same Classic collection
+(`0.1272`) and self-kill rate (`0.075`) as control, with a paired collection
+difference and confidence interval of zero. Post-hoc Q-table inspection found
+no compact-state prefix split across multiple status values, so the added value
+acted as a relabeling on visited states. The candidate was rejected and
+`compact_decision` remains the default.
 - retains inherited non-potential-based movement shaping;
 - can select actions that are framework-legal but tactically unsafe.

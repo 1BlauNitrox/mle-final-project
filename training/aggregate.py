@@ -76,6 +76,9 @@ OPTIONAL_FLOAT_COLUMNS = (
     "epsilon",
     "mean_loss",
     "mean_abs_td_error",
+    "mean_visits_per_state",
+    "singleton_state_fraction",
+    "evaluation_unseen_state_rate",
 )
 
 OPTIONAL_INTEGER_COLUMNS = (
@@ -85,6 +88,9 @@ OPTIONAL_INTEGER_COLUMNS = (
     "update_count",
     "target_synchronizations",
     "episode_target_synchronizations",
+    "total_state_visits",
+    "evaluation_decisions",
+    "evaluation_unseen_decisions",
 )
 
 NON_NEGATIVE_INTEGER_COLUMNS = (
@@ -272,6 +278,25 @@ def _aggregate_group(
         else None
     )
 
+    total_evaluation_decisions = _sum_available(
+        rows,
+        "evaluation_decisions",
+    )
+    total_evaluation_unseen_decisions = _sum_available(
+        rows,
+        "evaluation_unseen_decisions",
+    )
+    evaluation_unseen_state_rate = (
+        total_evaluation_unseen_decisions
+        / total_evaluation_decisions
+        if (
+            total_evaluation_decisions is not None
+            and total_evaluation_unseen_decisions is not None
+            and total_evaluation_decisions > 0
+        )
+        else None
+    )
+
     return {
         "episode_count": episode_count,
         "coins": {
@@ -354,6 +379,25 @@ def _aggregate_group(
             "maximum_q_table_size": _maximum_available(
                 rows,
                 "q_table_size",
+            ),
+            "maximum_total_state_visits": _maximum_available(
+                rows,
+                "total_state_visits",
+            ),
+            "mean_visits_per_state": _mean_available(
+                rows,
+                "mean_visits_per_state",
+            ),
+            "mean_singleton_state_fraction": _mean_available(
+                rows,
+                "singleton_state_fraction",
+            ),
+            "total_evaluation_decisions": total_evaluation_decisions,
+            "total_evaluation_unseen_decisions": (
+                total_evaluation_unseen_decisions
+            ),
+            "evaluation_unseen_state_rate": (
+                evaluation_unseen_state_rate
             ),
             "maximum_replay_size": _maximum_available(
                 rows,

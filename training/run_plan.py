@@ -31,6 +31,20 @@ from training.run_experiment import (
 RUN_PLAN_SCHEMA_VERSION = 1
 VALID_POPULATIONS = ("training", "development", "confirmation", "final")
 VALID_ACTION_MASKING = ("none", "framework_legal")
+VALID_STATE_REPRESENTATIONS = (
+    "baseline",
+    "compact_decision",
+    "compact_post_bomb_escape",
+)
+VALID_POTENTIAL_SHAPING_MODES = (
+    "none",
+    "compact_safety",
+    "escape_distance",
+    "escape_distance_half",
+    "escape_distance_half_full_no_route",
+)
+VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
+VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
 VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
@@ -100,6 +114,10 @@ class ResolvedPlan:
     agent: str
     artifact_path: str | None
     action_masking: str
+    state_representation: str
+    potential_shaping: str
+    tabular_exploration_mode: str
+    tabular_initialization: str
     useful_bomb_reward: float
     reward_variant: str
     escape_continuations: str
@@ -148,6 +166,63 @@ def load_plan(path: Path) -> ResolvedPlan:
     if action_masking not in VALID_ACTION_MASKING:
         raise ValueError(f"action_masking must be one of {list(VALID_ACTION_MASKING)}")
     useful_bomb_reward = raw.get("useful_bomb_reward", 0.0)
+    state_representation = raw.get("state_representation", "baseline")
+    if state_representation not in VALID_STATE_REPRESENTATIONS:
+        raise ValueError(
+            "state_representation must be one of "
+            f"{list(VALID_STATE_REPRESENTATIONS)}"
+        )
+    potential_shaping = raw.get("potential_shaping", "none")
+    if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
+        raise ValueError(
+            "potential_shaping must be one of "
+            f"{list(VALID_POTENTIAL_SHAPING_MODES)}"
+        )
+
+    tabular_exploration_mode = raw.get(
+        "tabular_exploration_mode",
+        "standard",
+    )
+    if tabular_exploration_mode not in VALID_TABULAR_EXPLORATION_MODES:
+        raise ValueError(
+            "tabular_exploration_mode must be one of "
+            f"{list(VALID_TABULAR_EXPLORATION_MODES)}"
+        )
+    if (
+        tabular_exploration_mode == "safe_bomb"
+        and state_representation != "compact_decision"
+    ):
+        raise ValueError(
+            "safe_bomb exploration requires "
+            "state_representation=compact_decision"
+        )
+
+    if (
+        potential_shaping != "none"
+        and state_representation != "compact_decision"
+    ):
+        raise ValueError(
+            "potential shaping requires "
+            "state_representation=compact_decision"
+        )
+
+    tabular_initialization = raw.get(
+        "tabular_initialization",
+        "parent_prior",
+    )
+    if tabular_initialization not in VALID_TABULAR_INITIALIZATIONS:
+        raise ValueError(
+            "tabular_initialization must be one of "
+            f"{list(VALID_TABULAR_INITIALIZATIONS)}"
+        )
+
+    if (
+        state_representation in {"compact_decision", "compact_post_bomb_escape"}
+        and tabular_initialization != "zeros"
+    ):
+        raise ValueError(
+            "compact state representations require tabular_initialization=zeros"
+        )
     if (
         isinstance(useful_bomb_reward, bool)
         or not isinstance(useful_bomb_reward, (int, float))
@@ -177,6 +252,13 @@ def load_plan(path: Path) -> ResolvedPlan:
     if not raw_replicas:
         raise ValueError("replicas must contain at least one replica")
     replicas = tuple(_parse_replica(item, plan_path.parent) for item in raw_replicas)
+    if (
+        tabular_initialization == "zeros"
+        and any(replica.parent_artifact for replica in replicas)
+    ):
+        raise ValueError(
+            "Zero initialization cannot use replica parent artifacts"
+        )
     _require_unique([replica.replica_id for replica in replicas], "replica IDs")
     if artifact_path is None and any(replica.parent_artifact for replica in replicas):
         raise ValueError("artifact_path is required when a parent_artifact is present")
@@ -224,6 +306,10 @@ def load_plan(path: Path) -> ResolvedPlan:
         agent=agent,
         artifact_path=artifact_path,
         action_masking=action_masking,
+        state_representation=state_representation,
+        potential_shaping=potential_shaping,
+        tabular_exploration_mode=tabular_exploration_mode,
+        tabular_initialization=tabular_initialization,
         useful_bomb_reward=float(useful_bomb_reward),
         reward_variant=reward_variant,
         escape_continuations=escape_continuations,
@@ -241,10 +327,13 @@ def execute_plan(
     output_root: Path,
     resume: bool = False,
     evaluation_only: bool = False,
+    training_only: bool = False,
     workspace_root: Path | None = None,
     process_monitor: Any | None = None,
 ) -> Path:
     """Execute or resume a validated plan and retain every attempt record."""
+    if training_only and evaluation_only:
+        raise ValueError("Training-only and evaluation-only are mutually exclusive")
     if evaluation_only:
         plan = replace(
             plan,
@@ -312,7 +401,7 @@ def execute_plan(
                 future.result()
 
         for job in plan.jobs:
-            if job.kind == "evaluation":
+            if job.kind == "evaluation" and not training_only:
                 _run_job(
                     plan,
                     job,
@@ -331,7 +420,7 @@ def execute_plan(
         _discard_staging_aliases(plan)
         raise
 
-    status["status"] = "completed"
+    status["status"] = "training_complete" if training_only else "completed"
     status["error"] = None
     status["updated_at"] = _timestamp()
     _write_json_atomic(status_path, status)
@@ -426,6 +515,10 @@ def _run_job(
             "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": str(plan.useful_bomb_reward),
             "BOMBERMAN_DQN_REWARD_VARIANT": plan.reward_variant,
             "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
+            "BOMBERMAN_TABULAR_STATE_REPRESENTATION": plan.state_representation,
+            "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": plan.potential_shaping,
+            "BOMBERMAN_TABULAR_EXPLORATION_MODE": plan.tabular_exploration_mode,
+            "BOMBERMAN_TABULAR_INITIALIZATION": plan.tabular_initialization,
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
@@ -460,6 +553,10 @@ def _run_job(
                         artifact.name if job.kind == "evaluation" and artifact is not None else None
                     ),
                     "action_masking": plan.action_masking,
+                    "state_representation": plan.state_representation,
+                    "potential_shaping": plan.potential_shaping,
+                    "tabular_exploration_mode": plan.tabular_exploration_mode,
+                    "tabular_initialization": plan.tabular_initialization,
                     "useful_bomb_reward": plan.useful_bomb_reward,
                     "reward_variant": plan.reward_variant,
                     "escape_continuations": plan.escape_continuations,
@@ -552,10 +649,14 @@ def _prepare_replica_workspace(
         else:
             source = REPOSITORY_ROOT / "agent_code" / plan.agent
         _snapshot_workspace(source, workspace)
-        if workspace_root is None and replica.parent_artifact:
-            target = workspace / str(plan.artifact_path)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(replica.parent_artifact, target)
+        if workspace_root is None and plan.artifact_path:
+            target = workspace / plan.artifact_path
+
+            if replica.parent_artifact:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(replica.parent_artifact, target)
+            elif plan.tabular_initialization == "zeros":
+                target.unlink(missing_ok=True)
     # The alias is disposable. Recreate it before every job so a stale or
     # partially written process workspace can never contaminate a retry.
     if alias.is_dir():
