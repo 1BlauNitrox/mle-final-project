@@ -1,0 +1,21 @@
+[
+  {
+    "pair": [
+      "control",
+      "r5",
+      "loot-crate-retention",
+      1631403,
+      2631403
+    ],
+    "differences": {
+      "attempted_actions": [
+        400,
+        399
+      ],
+      "action_wait": [
+        390,
+        389
+      ]
+    }
+  }
+]

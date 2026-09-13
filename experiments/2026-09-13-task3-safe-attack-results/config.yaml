@@ -1,0 +1,15 @@
+schema_version: 1
+kind: completed_experiment_analysis
+issue: 163
+execution_source: 1e18b9c659041b4044d04e9ec6563b98c8c471dc
+registered_protocol: experiments/2026-09-12-task3-safe-attack-penalty/config.yaml
+registered_protocol_sha256: 039d35148d6dc209461a75c63742b5ca661f14f627769b20f1d0d413d63ef5c0
+analysis_module: training.verify_issue163_results
+training_episodes: 50000
+evaluation_episodes: 1760
+completed_jobs: 1770
+selected_arm: null
+selected_replica: null
+automatic_continuation_allowed: false
+task2_complete: false
+publication_status: published_and_download_verified

@@ -185,3 +185,5 @@ server handoff. Scoped warning-only logging reduces disk use while retaining
 raw scientific observations and failure records. Unit tests and an isolated
 integration smoke validate mechanics; they do not establish scientific efficacy
 or authorize a long run. Human review and ownership remain required.
+
+PR #163: Codex implemented and run the experiment directed by us. The Analysis and documentation was done by us assissted by Codex who ran the analyzer script on our results
