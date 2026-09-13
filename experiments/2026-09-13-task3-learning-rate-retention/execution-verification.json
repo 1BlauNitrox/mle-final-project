@@ -1,0 +1,324 @@
+{
+  "reanalysis_matches_saved": true,
+  "analysis_sha256": "f83eb0333c813d6e67dc62cb72f759f8f865ebd4cf0c8d0114f7adf198d212fc",
+  "training_episodes": 300,
+  "evaluation_episodes": 280,
+  "behavioral_repeat_pairs": 140,
+  "training_checkpoint_snapshots": 300,
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "binding": {
+    "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "tool_source": "5bee5a723c7f4857c5e4f13959ef8401a14ade6c",
+    "tool_hashes": {
+      "scripts/pilot_task3_learning_rate.py": "fec88b1d971b219c395dc278f78685a9da610b0047cb1930dd64e83b5bc3736a",
+      "scripts/task3_pilot_resources.py": "9daf2534d9f892f1477cf54f36b792ec33246fb88bc9ff4be59bb0f53204fbc1",
+      "scripts/analyze_task3_learning_rate.py": "1d0fa5ad880dc1510a55d8dfb9aeacd4782198500be1a04e539549e1b86523e9",
+      "scripts/run_issue171_pilot.ps1": "793eb1ad965aa7ab79098fa0c00367b39e79300507debc9cda85e0568f2cad80",
+      "scripts/audit_task3_retention_seeds.py": "a36e0fa32d2ebff711d0685f453b6c33888c77ac99919563e0a7bcc698d2b162"
+    },
+    "config_sha256": "227e171ad8bdb48aafa416ee20889771b6588e6d528e90e2fcd1b747f26074d1",
+    "prepared_environment": {
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "host": "DESKTOP-4QELBC5",
+      "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+      "packages": {
+        "numpy": "2.5.1",
+        "torch": "2.13.0+cpu",
+        "pygame": "2.6.1",
+        "psutil": "7.2.2"
+      },
+      "omp_threads": null,
+      "mkl_threads": null
+    },
+    "seed_audit_sha256": "e03835a569d2e1b19e7a87b69a3ff7573eadbecf0e2f17199727412b2ec84190"
+  },
+  "initialization": {
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "reference_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "only_changed_fields": [
+      "config.learning_rate",
+      "learner_state.optimizer.param_groups[*].lr"
+    ],
+    "identical_online_and_target_weights": true,
+    "arms": {
+      "control": {
+        "sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+        "learning_rate": 0.0005
+      },
+      "treatment": {
+        "sha256": "0d6a6eba5fb2bc0fa88aced88427b2f625d4e2b54dca7ab86799b3f51e3e0660",
+        "learning_rate": 5e-05
+      }
+    }
+  },
+  "states": {
+    "training": {
+      "status": "completed",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        }
+      },
+      "completed": {
+        "control-r1": "training/control-r1/attempt-001",
+        "treatment-r1": "training/treatment-r1/attempt-002",
+        "control-r2": "training/control-r2/attempt-003",
+        "treatment-r2": "training/treatment-r2/attempt-004",
+        "control-r3": "training/control-r3/attempt-005",
+        "treatment-r3": "training/treatment-r3/attempt-006"
+      },
+      "attempts": [
+        {
+          "job": "control-r1",
+          "output": "training/control-r1/attempt-001",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r1",
+          "output": "training/treatment-r1/attempt-002",
+          "status": "completed"
+        },
+        {
+          "job": "control-r2",
+          "output": "training/control-r2/attempt-003",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r2",
+          "output": "training/treatment-r2/attempt-004",
+          "status": "completed"
+        },
+        {
+          "job": "control-r3",
+          "output": "training/control-r3/attempt-005",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r3",
+          "output": "training/treatment-r3/attempt-006",
+          "status": "completed"
+        }
+      ],
+      "cpu_seconds": 2237.390625,
+      "wall_seconds": 2266.266065199976,
+      "peak_memory_bytes": 325738496,
+      "active": null
+    },
+    "evaluation": {
+      "status": "completed",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        }
+      },
+      "completed": {
+        "reference-classic-peaceful": "evaluation/reference-classic-peaceful/attempt-001",
+        "reference-coin-heaven": "evaluation/reference-coin-heaven/attempt-002",
+        "reference-loot-crate": "evaluation/reference-loot-crate/attempt-003",
+        "reference-classic-empty": "evaluation/reference-classic-empty/attempt-004",
+        "control-r1-classic-peaceful": "evaluation/control-r1-classic-peaceful/attempt-005",
+        "control-r1-coin-heaven": "evaluation/control-r1-coin-heaven/attempt-006",
+        "control-r1-loot-crate": "evaluation/control-r1-loot-crate/attempt-007",
+        "control-r1-classic-empty": "evaluation/control-r1-classic-empty/attempt-008",
+        "treatment-r1-classic-peaceful": "evaluation/treatment-r1-classic-peaceful/attempt-009",
+        "treatment-r1-coin-heaven": "evaluation/treatment-r1-coin-heaven/attempt-010",
+        "treatment-r1-loot-crate": "evaluation/treatment-r1-loot-crate/attempt-011",
+        "treatment-r1-classic-empty": "evaluation/treatment-r1-classic-empty/attempt-012",
+        "control-r2-classic-peaceful": "evaluation/control-r2-classic-peaceful/attempt-013",
+        "control-r2-coin-heaven": "evaluation/control-r2-coin-heaven/attempt-014",
+        "control-r2-loot-crate": "evaluation/control-r2-loot-crate/attempt-015",
+        "control-r2-classic-empty": "evaluation/control-r2-classic-empty/attempt-016",
+        "treatment-r2-classic-peaceful": "evaluation/treatment-r2-classic-peaceful/attempt-017",
+        "treatment-r2-coin-heaven": "evaluation/treatment-r2-coin-heaven/attempt-018",
+        "treatment-r2-loot-crate": "evaluation/treatment-r2-loot-crate/attempt-019",
+        "treatment-r2-classic-empty": "evaluation/treatment-r2-classic-empty/attempt-020",
+        "control-r3-classic-peaceful": "evaluation/control-r3-classic-peaceful/attempt-021",
+        "control-r3-coin-heaven": "evaluation/control-r3-coin-heaven/attempt-022",
+        "control-r3-loot-crate": "evaluation/control-r3-loot-crate/attempt-023",
+        "control-r3-classic-empty": "evaluation/control-r3-classic-empty/attempt-024",
+        "treatment-r3-classic-peaceful": "evaluation/treatment-r3-classic-peaceful/attempt-025",
+        "treatment-r3-coin-heaven": "evaluation/treatment-r3-coin-heaven/attempt-026",
+        "treatment-r3-loot-crate": "evaluation/treatment-r3-loot-crate/attempt-027",
+        "treatment-r3-classic-empty": "evaluation/treatment-r3-classic-empty/attempt-028"
+      },
+      "attempts": [
+        {
+          "job": "reference-classic-peaceful",
+          "output": "evaluation/reference-classic-peaceful/attempt-001",
+          "status": "completed"
+        },
+        {
+          "job": "reference-coin-heaven",
+          "output": "evaluation/reference-coin-heaven/attempt-002",
+          "status": "completed"
+        },
+        {
+          "job": "reference-loot-crate",
+          "output": "evaluation/reference-loot-crate/attempt-003",
+          "status": "completed"
+        },
+        {
+          "job": "reference-classic-empty",
+          "output": "evaluation/reference-classic-empty/attempt-004",
+          "status": "completed"
+        },
+        {
+          "job": "control-r1-classic-peaceful",
+          "output": "evaluation/control-r1-classic-peaceful/attempt-005",
+          "status": "completed"
+        },
+        {
+          "job": "control-r1-coin-heaven",
+          "output": "evaluation/control-r1-coin-heaven/attempt-006",
+          "status": "completed"
+        },
+        {
+          "job": "control-r1-loot-crate",
+          "output": "evaluation/control-r1-loot-crate/attempt-007",
+          "status": "completed"
+        },
+        {
+          "job": "control-r1-classic-empty",
+          "output": "evaluation/control-r1-classic-empty/attempt-008",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r1-classic-peaceful",
+          "output": "evaluation/treatment-r1-classic-peaceful/attempt-009",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r1-coin-heaven",
+          "output": "evaluation/treatment-r1-coin-heaven/attempt-010",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r1-loot-crate",
+          "output": "evaluation/treatment-r1-loot-crate/attempt-011",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r1-classic-empty",
+          "output": "evaluation/treatment-r1-classic-empty/attempt-012",
+          "status": "completed"
+        },
+        {
+          "job": "control-r2-classic-peaceful",
+          "output": "evaluation/control-r2-classic-peaceful/attempt-013",
+          "status": "completed"
+        },
+        {
+          "job": "control-r2-coin-heaven",
+          "output": "evaluation/control-r2-coin-heaven/attempt-014",
+          "status": "completed"
+        },
+        {
+          "job": "control-r2-loot-crate",
+          "output": "evaluation/control-r2-loot-crate/attempt-015",
+          "status": "completed"
+        },
+        {
+          "job": "control-r2-classic-empty",
+          "output": "evaluation/control-r2-classic-empty/attempt-016",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r2-classic-peaceful",
+          "output": "evaluation/treatment-r2-classic-peaceful/attempt-017",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r2-coin-heaven",
+          "output": "evaluation/treatment-r2-coin-heaven/attempt-018",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r2-loot-crate",
+          "output": "evaluation/treatment-r2-loot-crate/attempt-019",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r2-classic-empty",
+          "output": "evaluation/treatment-r2-classic-empty/attempt-020",
+          "status": "completed"
+        },
+        {
+          "job": "control-r3-classic-peaceful",
+          "output": "evaluation/control-r3-classic-peaceful/attempt-021",
+          "status": "completed"
+        },
+        {
+          "job": "control-r3-coin-heaven",
+          "output": "evaluation/control-r3-coin-heaven/attempt-022",
+          "status": "completed"
+        },
+        {
+          "job": "control-r3-loot-crate",
+          "output": "evaluation/control-r3-loot-crate/attempt-023",
+          "status": "completed"
+        },
+        {
+          "job": "control-r3-classic-empty",
+          "output": "evaluation/control-r3-classic-empty/attempt-024",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r3-classic-peaceful",
+          "output": "evaluation/treatment-r3-classic-peaceful/attempt-025",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r3-coin-heaven",
+          "output": "evaluation/treatment-r3-coin-heaven/attempt-026",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r3-loot-crate",
+          "output": "evaluation/treatment-r3-loot-crate/attempt-027",
+          "status": "completed"
+        },
+        {
+          "job": "treatment-r3-classic-empty",
+          "output": "evaluation/treatment-r3-classic-empty/attempt-028",
+          "status": "completed"
+        }
+      ],
+      "cpu_seconds": 792.0,
+      "wall_seconds": 807.9720448000007,
+      "peak_memory_bytes": 231677952,
+      "active": null
+    }
+  },
+  "resource_gates": {
+    "training": {
+      "cpu": true,
+      "wall": true,
+      "memory": true
+    },
+    "evaluation": {
+      "cpu": true,
+      "wall": true,
+      "memory": true
+    }
+  },
+  "archive_members": 966,
+  "new_games_for_analysis": 0,
+  "publication_status": "published; archive and checksum manifests verified after fresh download"
+}

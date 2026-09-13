@@ -1,9 +1,36 @@
 # DagobertDuckDQNTask3
 
-> Status: Task 3 implementation successor prepared under issue #108. This PR
-> contains contract decisions, tests, migration, and bounded integration
-> validation only. It contains no scientific training result or performance
-> claim.
+## Issue 171 retention pilot 
+
+[Issue #171](https://github.com/1BlauNitrox/mle-final-project/issues/171) tested
+whether reducing Adam's learning rate from `0.0005` to `0.00005` improves retention
+without reducing hunting. Both arms used the same fresh #168 initialization and
+80% greedy / 20% random episode schedule. The pilot used the archived 39-input
+runtime at `c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113`, separately from the tracked
+34-input provisional fixture described in the remaining implementation sections.
+Three paired replicas completed 300 training episodes; all six fixed-final
+checkpoints and the unchanged reference completed 280 evaluation episodes,
+including exact repeats, across four suites.
+
+**The registered retention screen failed.** Lower-rate Task 1 collection improved
+by 6.8 percentage points versus control, below the required 10 (descriptive 95%
+interval: -37.47 to +57.20 points). Hunting fell from 0.267 to 0.133 eliminations
+per game (paired difference -0.133; interval -0.533 to +0.267). Loot-crate and
+classic-empty retention failed, as did the whole-matrix zero-invalid-action gate
+because of one control event reproduced in its repeat. Genuine learning,
+behavioral repeats and latency passed. The wide intervals limit generalization.
+
+This result does not support adopting the lower rate as a retention remedy.
+No checkpoint was selected or promoted, and no agent default changed. Task 2
+remains cumulatively incomplete; the original Task 3 gates and coin-collector
+continuation requirements remain in force. Review the negative result before
+proposing another controlled experiment.
+
+The [experiment record](../../experiments/2026-09-13-task3-learning-rate-retention/README.md)
+links the registered configuration, artifact provenance, all effects and paired
+uncertainty, resource accounting and reproducible analysis. Durable evidence
+publication and human interpretation are still pending in
+[PR #172](https://github.com/1BlauNitrox/mle-final-project/pull/172).
 
 ## Purpose and hypothesis
 
