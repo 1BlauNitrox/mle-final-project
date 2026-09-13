@@ -1,6 +1,6 @@
-﻿# Issue 168 pilot commands
+ï»¿# Issue 168 pilot commands
 
-Source for the commands below: `324f94ae1761474ca8d2c1590421ad80452c15fe`.
+Source for the commands below: `bf4aef4823512ae4b63dd5b20143f55e818c2887`.
 The scientific runtime remains `c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113`.
 The exact protocol is [phase-d-config.json](../experiments/2026-09-13-task3-exploration-screen/phase-d-config.json).
 Training and evaluation require the owner's explicit approval of the registered
@@ -16,7 +16,7 @@ The dedicated preparation is separate from the original checkout and its changes
 ```powershell
 $py = Join-Path $PWD '.venv/Scripts/python.exe'
 $repo = Join-Path $env:TEMP 'issue168-exploration'
-$run = Join-Path $repo 'training_outputs/phase-d-prepared-v3'
+$run = Join-Path $repo 'training_outputs/phase-d-ready'
 Set-Location $repo
 & $py -m scripts.pilot_task3_episode_exploration dry-run --root $run
 ```
@@ -73,7 +73,7 @@ $url = 'https://github.com/1BlauNitrox/mle-final-project.git'
 New-Item -ItemType Directory -Force $task | Out-Null
 git clone $url $repo
 Set-Location $repo
-$rev = '324f94ae1761474ca8d2c1590421ad80452c15fe'
+$rev = 'bf4aef4823512ae4b63dd5b20143f55e818c2887'
 git checkout --detach $rev
 py -3.13 -m venv .venv
 $py = Join-Path $repo '.venv/Scripts/python.exe'
