@@ -3,6 +3,7 @@
 import json
 import os
 import shutil
+import stat
 
 import pytest
 
@@ -51,6 +52,10 @@ def test_dry_run_apply_preservation_and_idempotence(tmp_path):
     root = tmp_path / "runs"
     paths = fixture(root)
     before = {p: p.read_bytes() for p in root.rglob("*") if p.is_file()}
+    attributes = {
+        p: (stat.S_IMODE(p.stat().st_mode), p.stat().st_mtime_ns)
+        for p in before
+    }
     result = recover(root)
     assert result["replacement_paths"] == 1
     assert result["estimated_reclaimed_bytes"] == paths[0].stat().st_size
@@ -61,6 +66,10 @@ def test_dry_run_apply_preservation_and_idempotence(tmp_path):
     assert not os.path.samefile(paths[0], paths[2])
     assert not os.path.samefile(paths[0], paths[3])
     assert all(p.read_bytes() == data for p, data in before.items())
+    assert all(
+        (stat.S_IMODE(p.stat().st_mode), p.stat().st_mtime_ns) == value
+        for p, value in attributes.items()
+    )
     assert set(before) == {p for p in root.rglob("*") if p.is_file()}
     assert recover(root)["replacement_paths"] == 0
     assert json.loads(audit.read_text().splitlines()[-1])["phase"] == "complete"

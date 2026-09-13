@@ -17,7 +17,7 @@ import yaml
 
 from training import run_plan
 from training import task3_mask_campaign as mask
-from training.verify_task3_results import extract_files, fingerprint
+from training.verify_task3_results import extract_files, fingerprint, registered_plan_module
 
 EXECUTION = "15bedeed078d073e4acefea378e1a06cd41ca7df"
 
@@ -45,6 +45,7 @@ def verify_export(archive_path, manifest_path, destination):
 
 def relocate(source, destination):
     """Check original files before relocating only absolute parent paths in scratch."""
+    source, destination = source.resolve(), destination.resolve()
     binding = mask.read_json(source / "binding.json")
     shutil.copytree(source, destination)
     fingerprints = {}
@@ -80,7 +81,7 @@ def verify(root, binding, output):
     dependencies = auth["identity"]["plans"]["reference"]["fingerprints"]["dependencies"]
     mask.require(set(dependencies) == {"python", *run_plan.DEPENDENCIES}, "Missing dependencies")
     with tempfile.TemporaryDirectory(prefix="issue147-verification-") as temporary:
-        temporary = Path(temporary)
+        temporary = Path(temporary).resolve()
         snapshot = temporary / "source"
         snapshot.mkdir()
         source_tar = temporary / "source.tar"
@@ -95,7 +96,6 @@ def verify(root, binding, output):
             "training/task3_mask_campaign.py",
             "training/analyze_task3_campaign.py",
             "training/run_task3_campaign.py",
-            "training/run_plan.py",
             "training/metrics.py",
         ):
             mask.require(
@@ -113,16 +113,19 @@ def verify(root, binding, output):
         config_path = snapshot / "experiments/2026-09-12-task3-legal-mask/config.yaml"
         validator = mask.validate
         with (
+            registered_plan_module(snapshot) as historical_plan,
+            patch.object(mask, "load_plan", historical_plan.load_plan),
+            patch.object(mask.campaign, "load_plan", historical_plan.load_plan),
             patch.object(mask, "ROOT", snapshot),
             patch.object(mask, "CONFIG", config_path),
             patch.object(mask.campaign, "ROOT", snapshot),
-            patch.object(run_plan, "REPOSITORY_ROOT", snapshot),
-            patch.object(run_plan, "_dependency_record", lambda: dict(dependencies)),
+            patch.object(historical_plan, "REPOSITORY_ROOT", snapshot),
+            patch.object(historical_plan, "_dependency_record", lambda: dict(dependencies)),
             patch.object(
-                run_plan, "_fingerprint_paths", lambda names: fingerprint(snapshot, names)
+                historical_plan, "_fingerprint_paths", lambda names: fingerprint(snapshot, names)
             ),
             patch.object(
-                run_plan,
+                historical_plan,
                 "_fingerprint_directory",
                 lambda path: fingerprint(snapshot, (str(path),), directory=True),
             ),

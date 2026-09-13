@@ -9,10 +9,22 @@ All command lines below are single commands: do not insert newlines inside paths
 ## Preparation (Linux server)
 
 Use the existing Python 3.13 environment without upgrading it. Both training
-arms and every comparative evaluation stay on this server. Allow 12 hours;
-keep 8 GiB RAM and 8 GiB disk free. Warning-only logs are fixed for all three arms;
-full episode statistics, metadata, failures and checkpoints are retained. This
-reduces the previous verbose-log disk burden; no old output is deleted.
+arms and every comparative evaluation stay on this server. Allow 12 hours and
+keep 8 GiB RAM free. Fresh runs require the calculated storage preflight below:
+91 GiB free on the output filesystem and at least 6 GiB on the source filesystem.
+When these share a filesystem, the 91 GiB includes the source allowance.
+Warning-only logs are fixed for all three arms; full episode statistics,
+metadata, failures and checkpoints are retained. No old output is deleted.
+
+The calculation charges all 3,530 jobs for two retained 8 MiB snapshots,
+512 MiB of records per training job and 1 MiB per evaluation job, plus live
+workspaces, uncompressed analysis/export headroom and a 4 GiB reserve. It takes
+no credit for compression or deduplication. Both the shell launcher and direct
+Python run enforce the preflight. Runtime checks sample free space and active
+job sizes every 0.25 seconds; an exceeded envelope stops the process forest and
+persists an incomplete run. This is a sampled guard, not a filesystem quota:
+keep unrelated disk writers off the allocation. Resume rechecks full headroom
+without deleting earlier attempts or resetting resource limits.
 
 ```bash
 export ROOT="$HOME/task3-issue150"
@@ -27,6 +39,7 @@ git checkout --detach "$SOURCE"
 "$PY" --version
 "$PY" -m training.task3_double_campaign prepare --parent "$HOME/task3-issue147/binding/migration/task2-parent.pt" --binding-dir "$ROOT/binding"
 "$PY" -m training.task3_double_campaign dry-run --binding-dir "$ROOT/binding" > "$ROOT/preflight.json"
+"$PY" -m training.task3_double_campaign storage-check --binding-dir "$ROOT/binding" --output-root "$ROOT/runs"
 cat "$ROOT/preflight.json"
 df -h "$ROOT"
 free -h
@@ -57,6 +70,41 @@ The supervisor writes a completion marker only after the guarded campaign
 returns successfully, then performs raw analysis, compact verification and export.
 
 ## Progress, interruption and resume
+
+### Historical interrupted run
+
+The owner launched source `6f014485a3026cc3707fa2cc3a379880dd0b74bd`.
+The review records an ENOSPC interruption at approximately 8.9 GiB of outputs:
+reference 320/320 and control 1605/1605 jobs complete; Double DQN has 564
+complete, one interrupted attempt and 1040 pending. The former 8 GiB preflight
+was insufficient. Successful resumed completion has not been verified; retain
+this campaign as incomplete until its final matrix and analysis are verified.
+
+Keep that checkout, binding, authorization and outputs immutable as scientific
+inputs. Do not pull this fresh-run fix into its checkout or use the generic
+resume command below on that historical source. Its separate recovery tools are
+[PR #156](https://github.com/1BlauNitrox/mle-final-project/pull/156) and
+[PR #158](https://github.com/1BlauNitrox/mle-final-project/pull/158):
+
+- Use the stopped-campaign recovery procedure in PR #156's `RECOVERY.md`.
+  The included `scripts/deduplicate_evaluation_inputs.py` defaults to dry-run;
+  test a copy before applying. It only links byte- and metadata-matching completed
+  evaluation input checkpoints. Failed/running attempts, canonical checkpoints,
+  status records and authorization remain protected. File bytes, permission bits
+  and modification times are preserved; inode, link count and change time change.
+  Preserve its external audit and verify an idempotent second audit.
+- Owner-reported recovery verified 2479 inputs and 21 protected checkpoints,
+  reclaimed approximately 8.154 GB and restored 8.2 GiB free. These counts are
+  an operational report, not independently retrieved evidence or a new safe
+  fresh-run prerequisite.
+- The original source also compares equivalent UTC timestamp strings literally.
+  Use PR #158's externally pinned `scripts/resume_issue150.py` adapter and its
+  documented checks, rather than editing authorization/resources JSON. It must
+  keep all completed training jobs and the original CPU/wall/deadline limits.
+  Resume only while those original limits permit it. Otherwise retain and export
+  incomplete evidence; never obtain more budget by changing timestamps.
+
+The following generic commands apply to runs created with the corrected source.
 
 ```bash
 tail -n 30 "$ROOT/supervisor.log"
@@ -109,9 +157,8 @@ Get-FileHash "$HOME/Downloads/issue150-evidence.tar.gz" -Algorithm SHA256
 ```
 
 Share the hash after download. Keep the server originals until review verifies
-all required evidence. The previous same-sized campaign's compact archive was
-126 MB (874 MB extracted); warning-only logging targets roughly 1-2 GB total useful
-outputs plus staging/transfer headroom, not a guaranteed storage upper bound.
+all required evidence. Compressed archive sizes do not establish a bound for
+the retained working tree; use the storage preflight above.
 
 ## Incomplete campaign or failed analysis
 
