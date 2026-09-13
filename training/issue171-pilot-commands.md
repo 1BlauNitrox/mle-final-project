@@ -47,3 +47,30 @@ read, verified and manually modified by Julius before commit. A manual disclosur
 entry in `docs/0006-ai-usage.md` is required for protocol implementation, validation,
 execution and analysis. No agent may edit that log. No checkpoint is selected or
 promoted; the existing cumulative gates and coin-collector helper remain in force.
+
+## Result table and figure export (no games)
+
+After importing and verifying the archive, use the result-exporter commit in
+addition to the registered runner source. Install `requirements-dev.txt` for
+matplotlib. Export into a fresh destination; differing existing outputs are
+rejected. This command never writes a README or the AI log.
+
+```powershell
+& $py -m scripts.export_task3_retention_results `
+  --root training_outputs/result-verification-01 `
+  --archive training_outputs/pilot-ready/issue171-pilot-evidence.tar.gz `
+  --output training_outputs/issue171-review-tables
+```
+
+The exporter recomputes the registered analysis, checks the archive SHA-256 and
+size and every member against the extraction, then generates native compact
+observations, episode/replica/arm tables, all paired contrasts, gates, checkpoint
+hashes and a figure. The manifest explicitly marks durable publication pending;
+replace that status only after uploading and verifying retrievable bytes.
+
+The original `setup-verification.json` records preflight state. Post-run
+`execution-verification.json`, `chain-completion.json`, `smoke-result.json`,
+`smoke-resources.json` and `result-validation.json` retain completion, resource
+and verification records. The chain/smoke supplements are separate from the
+immutable 966-member experiment archive. Local human-edit/publication handoff:
+`training_outputs/RESULTS-HANDOFF.md`.
