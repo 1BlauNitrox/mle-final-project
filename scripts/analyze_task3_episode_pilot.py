@@ -8,7 +8,14 @@ import json
 import random
 from statistics import mean
 
-from scripts.pilot_task3_episode_exploration import artifacts, config, read_json, sha, verify
+from scripts.pilot_task3_episode_exploration import (
+    artifacts,
+    config,
+    episode_epsilon,
+    read_json,
+    sha,
+    verify,
+)
 
 
 def metrics(row):
@@ -197,6 +204,16 @@ def analyze(root):
         replica = result["replica"]
         if [row["world_seed"] for row in rows] != cfg["training_world_seeds"][replica]:
             raise ValueError("Training seeds or counts differ")
+        for index, row in enumerate(rows):
+            expected_seed = cfg["replica_agent_seeds"][replica]
+            if (
+                row["agent_seed"] != expected_seed
+                or not row["training"]
+                or row["completed_episodes"] != index + 1
+                or row["behavior_epsilon"] != episode_epsilon(result["arm"], expected_seed, index)
+            ):
+                raise ValueError("Executed exploration schedule differs from registration")
+
         training_summary[key] = {
             "optimizer_updates": result["optimizer_updates"],
             "mean_survival_steps": mean(metrics(row)["survival_steps"] for row in rows),

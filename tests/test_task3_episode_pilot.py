@@ -109,7 +109,7 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
             (directory / "checkpoint.pt").write_bytes(key.encode())
             model_paths[key] = directory / "checkpoint.pt"
             rows = []
-            for seed in cfg["training_world_seeds"][replica]:
+            for index, seed in enumerate(cfg["training_world_seeds"][replica]):
                 own = {
                     "score": 2,
                     "initially_available_coins": 10,
@@ -125,6 +125,12 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
                 rows.append(
                     {
                         "world_seed": seed,
+                        "agent_seed": cfg["replica_agent_seeds"][replica],
+                        "training": True,
+                        "completed_episodes": index + 1,
+                        "behavior_epsilon": episode_epsilon(
+                            arm, cfg["replica_agent_seeds"][replica], index
+                        ),
                         "native": {"agents": {"DagobertDuckDQNTask3": own}},
                         "attack_steps": 1,
                     }
@@ -134,6 +140,7 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
                 directory / "result.json",
                 {
                     "episodes": 50,
+                    "arm": arm,
                     "replica": replica,
                     "checkpoint_sha256": sha(directory / "checkpoint.pt"),
                     "initial_online_sha256": "initial",
@@ -251,6 +258,18 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
     write(directory / "result.json", metadata)
     with pytest.raises(ValueError, match="mixed evaluation environment"):
         analysis.analyze(tmp_path)
+    metadata["environment"] = {"host": "laptop"}
+    write(directory / "result.json", metadata)
+    training_directory = tmp_path / "training/stepwise-r1"
+    with gzip.open(training_directory / "episodes.json.gz", "rt") as file:
+        training_rows = json.load(file)
+    training_rows[0]["behavior_epsilon"] = 0.7
+    zip_json(training_directory / "episodes.json.gz", training_rows)
+    training_metadata = json.loads((training_directory / "result.json").read_text())
+    training_metadata["episodes_sha256"] = sha(training_directory / "episodes.json.gz")
+    write(training_directory / "result.json", training_metadata)
+    with pytest.raises(ValueError, match="exploration schedule"):
+        analysis.analyze(tmp_path)
 
 
 def test_prepare_dispatches_one_binding_mode_without_starting_games(tmp_path, monkeypatch):
@@ -344,7 +363,9 @@ def test_raw_tensor_counters_must_match_training_evidence(tmp_path):
 
 def test_resume_rejects_changed_host_before_any_worker(tmp_path, monkeypatch):
     from types import SimpleNamespace
+
     import psutil
+
     import scripts.pilot_task3_episode_exploration as pilot
 
     monkeypatch.setattr(pilot, "verify", lambda root: None)
