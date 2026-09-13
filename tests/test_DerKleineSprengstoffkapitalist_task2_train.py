@@ -39,6 +39,7 @@ from agent_code.DerKleineSprengstoffkapitalist.potential_shaping import (
     COMPACT_SAFETY_POTENTIAL_SHAPING,
     ESCAPE_DISTANCE_POTENTIAL_SHAPING,
     HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+    HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     NO_POTENTIAL_SHAPING,
 )
 from agent_code.DerKleineSprengstoffkapitalist.rewards import (
@@ -118,6 +119,7 @@ def make_agent() -> SimpleNamespace:
         state_representation=BASELINE_STATE_REPRESENTATION,
         initialization=PARENT_PRIOR_INITIALIZATION,
         potential_shaping=NO_POTENTIAL_SHAPING,
+        exploration_mode=callbacks.STANDARD_EXPLORATION,
     )
 
     training.setup_training(agent)
@@ -140,6 +142,31 @@ def test_setup_training_initializes_episode_state() -> None:
     assert agent.pending_transition is None
 
     agent.logger.info.assert_called_once()
+
+
+def test_safe_bomb_exploration_masks_only_unsafe_compact_bomb() -> None:
+    agent = SimpleNamespace(
+        train=True,
+        exploration_mode=callbacks.SAFE_BOMB_EXPLORATION,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+    )
+
+    unsafe = callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 2))
+    safe = callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 3))
+
+    assert unsafe is not None
+    assert unsafe.tolist() == [True, True, True, True, True, False]
+    assert safe is None
+
+
+def test_safe_bomb_exploration_is_disabled_during_evaluation() -> None:
+    agent = SimpleNamespace(
+        train=False,
+        exploration_mode=callbacks.SAFE_BOMB_EXPLORATION,
+        state_representation=COMPACT_STATE_REPRESENTATION,
+    )
+
+    assert callbacks._exploration_action_mask(agent, (0, 15, 0, 1, 2)) is None
 
 
 def test_fresh_training_agent_uses_parent_prior(
@@ -1043,12 +1070,28 @@ def test_pending_transition_scales_half_escape_distance_potentials() -> None:
     assert agent.pending_transition.next_external_potential == pytest.approx(0.0)
 
 
+def test_full_no_route_profile_preserves_catastrophic_penalty() -> None:
+    agent = make_agent()
+    agent.potential_shaping = HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING
+    trapped = make_game_state(
+        position=(2, 2),
+        bombs=[((2, 2), 3)],
+        step=1,
+    )
+    trapped["field"] = np.full((5, 5), -1, dtype=int)
+    trapped["field"][2, 2] = 0
+    trapped["explosion_map"] = np.zeros((5, 5), dtype=int)
+
+    assert training._external_potential(agent, trapped) == pytest.approx(-5.0)
+
+
 @pytest.mark.parametrize(
     "potential_shaping",
     (
         COMPACT_SAFETY_POTENTIAL_SHAPING,
         ESCAPE_DISTANCE_POTENTIAL_SHAPING,
         HALF_ESCAPE_DISTANCE_POTENTIAL_SHAPING,
+        HALF_PROGRESS_FULL_NO_ROUTE_POTENTIAL_SHAPING,
     ),
 )
 def test_safety_shaping_rejects_baseline_state(
