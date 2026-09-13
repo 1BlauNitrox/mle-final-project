@@ -45,6 +45,7 @@ def verify_export(archive_path, manifest_path, destination):
 
 def relocate(source, destination):
     """Check original files before relocating only absolute parent paths in scratch."""
+    source, destination = source.resolve(), destination.resolve()
     binding = mask.read_json(source / "binding.json")
     shutil.copytree(source, destination)
     fingerprints = {}
@@ -80,7 +81,7 @@ def verify(root, binding, output):
     dependencies = auth["identity"]["plans"]["reference"]["fingerprints"]["dependencies"]
     mask.require(set(dependencies) == {"python", *run_plan.DEPENDENCIES}, "Missing dependencies")
     with tempfile.TemporaryDirectory(prefix="issue147-verification-") as temporary:
-        temporary = Path(temporary)
+        temporary = Path(temporary).resolve()
         snapshot = temporary / "source"
         snapshot.mkdir()
         source_tar = temporary / "source.tar"
