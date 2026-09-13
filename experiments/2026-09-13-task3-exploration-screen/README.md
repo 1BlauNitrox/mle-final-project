@@ -71,4 +71,3 @@ through the failed coin-collector continuation gate.
 [Protocol](phase-d-config.json) ? [All metrics, uncertainty and gates](phase-d-analysis.json)
 ? [Per-model table](phase-d-summary.csv) ? [Evidence and reproduction](phase-d-reproduction.md)
 ? [Earlier diagnostics](evidence-manifest.json). Refs #168 / PR #170.
-
