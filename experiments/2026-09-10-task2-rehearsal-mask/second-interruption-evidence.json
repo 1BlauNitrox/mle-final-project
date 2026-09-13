@@ -1,0 +1,260 @@
+﻿{
+    "scope":  "Second interruption; operational evidence only",
+    "plans":  [
+                  {
+                      "plan":  "issue124-cell-a",
+                      "source_status_sha256":  "e58292a9adb98ea1ae0ffdb4fb517e44d45b6ea4799767775c1dcf69e02ff30b",
+                      "completed_evaluation":  0,
+                      "incomplete_training":  [
+
+                                              ],
+                      "completed_training":  100
+                  },
+                  {
+                      "plan":  "issue124-cell-b",
+                      "source_status_sha256":  "f9da9f53e3d0bebc5745417a3d5c1f57bfb4728a7dd881a65ef4a8e78ecfa980",
+                      "completed_evaluation":  0,
+                      "incomplete_training":  [
+
+                                              ],
+                      "completed_training":  100
+                  },
+                  {
+                      "plan":  "issue124-cell-c",
+                      "source_status_sha256":  "748b6d1a15b890d2ded613209de0a40411c2d737b322f4a900036ad868bbbb10",
+                      "completed_evaluation":  0,
+                      "incomplete_training":  [
+
+                                              ],
+                      "completed_training":  100
+                  },
+                  {
+                      "plan":  "issue124-cell-d",
+                      "source_status_sha256":  "e873f3c672900be9264fa73849f051ba546409760c25611379c9d45cf796f2df",
+                      "completed_evaluation":  0,
+                      "incomplete_training":  [
+                                                  {
+                                                      "id":  "train-r5-block-16",
+                                                      "record":  {
+                                                                     "attempts":  [
+                                                                                      {
+                                                                                          "attempt":  1,
+                                                                                          "error":  "CampaignResourceLimitExceeded: System free RAM fell below 1 GiB",
+                                                                                          "finished_at":  "2026-09-10T22:56:43.260549Z",
+                                                                                          "output":  "jobs/train-r5-block-16/attempt-001",
+                                                                                          "started_at":  "2026-09-10T22:26:47.591071Z",
+                                                                                          "status":  "failed"
+                                                                                      }
+                                                                                  ],
+                                                                     "kind":  "training",
+                                                                     "population":  "training",
+                                                                     "replica":  "r5",
+                                                                     "status":  "failed"
+                                                                 }
+                                                  },
+                                                  {
+                                                      "id":  "train-r5-block-17",
+                                                      "record":  {
+                                                                     "attempts":  [
+
+                                                                                  ],
+                                                                     "kind":  "training",
+                                                                     "population":  "training",
+                                                                     "replica":  "r5",
+                                                                     "status":  "pending"
+                                                                 }
+                                                  },
+                                                  {
+                                                      "id":  "train-r5-block-18",
+                                                      "record":  {
+                                                                     "attempts":  [
+
+                                                                                  ],
+                                                                     "kind":  "training",
+                                                                     "population":  "training",
+                                                                     "replica":  "r5",
+                                                                     "status":  "pending"
+                                                                 }
+                                                  },
+                                                  {
+                                                      "id":  "train-r5-block-19",
+                                                      "record":  {
+                                                                     "attempts":  [
+
+                                                                                  ],
+                                                                     "kind":  "training",
+                                                                     "population":  "training",
+                                                                     "replica":  "r5",
+                                                                     "status":  "pending"
+                                                                 }
+                                                  },
+                                                  {
+                                                      "id":  "train-r5-block-20",
+                                                      "record":  {
+                                                                     "attempts":  [
+
+                                                                                  ],
+                                                                     "kind":  "training",
+                                                                     "population":  "training",
+                                                                     "replica":  "r5",
+                                                                     "status":  "pending"
+                                                                 }
+                                                  }
+                                              ],
+                      "completed_training":  95
+                  }
+              ],
+    "campaign_status":  {
+                            "error":  "CampaignResourceLimitExceeded: System free RAM fell below 1 GiB",
+                            "scientific_selection":  null,
+                            "status":  "stopped_incomplete"
+                        },
+    "resources":  {
+                      "active_root_pids":  [
+
+                                           ],
+                      "authorized_at":  "2026-09-10T06:59:45.481673Z",
+                      "cpu_seconds_consumed":  176074.0,
+                      "current_memory_bytes":  67223552,
+                      "limit_reached":  "System free RAM fell below 1 GiB",
+                      "limits":  {
+                                     "cpu_seconds":  345600,
+                                     "memory_bytes":  8589934592,
+                                     "wall_seconds":  86400
+                                 },
+                      "peak_memory_bytes":  1350107136,
+                      "schema_version":  1,
+                      "updated_at":  "2026-09-10T22:56:43.172981Z",
+                      "wall_seconds_elapsed":  57417.691282749176
+                  },
+    "budget_amendment":  {
+                             "schema_version":  1,
+                             "authorized_by":  "1BlauNitrox",
+                             "instruction":  "can you not hard stop the runs at 6PM? let them run longer",
+                             "recorded_at":  "2026-09-10T11:39:08.935954+00:00",
+                             "execution_commit":  "1ce18c8736b6a50773b60b95ec0f11dd4c901028",
+                             "operational_wrapper_commit":  "355e81db9dd9e53d369e3883ce4b84dbc9da7ad5",
+                             "original_limits":  {
+                                                     "cpu_seconds":  144000,
+                                                     "memory_bytes":  8589934592,
+                                                     "wall_seconds":  36000
+                                                 },
+                             "new_limits":  {
+                                                "cpu_seconds":  345600,
+                                                "wall_seconds":  86400,
+                                                "memory_bytes":  8589934592
+                                            },
+                             "workers":  4,
+                             "original_authorization_sha256":  "e26cba32f74883b2b8dffd4e15c9185932d2f5665e8de3ae938f17d745f9cb65",
+                             "resume_script_sha256":  "6ab2422bf7857bd5b9b3cd54c38f9f9f98bd845d16996c0d474aa92e43771229",
+                             "reason":  "Complete the original matrix; no episodes, seeds or scientific decision rules changed",
+                             "preserved_records":  [
+                                                       "budget-amendment-history/authorization.json",
+                                                       "budget-amendment-history/resources.json",
+                                                       "budget-amendment-history/campaign-status.json",
+                                                       "budget-amendment-history/campaign.lock",
+                                                       "budget-amendment-history/issue124-cell-a-status.json",
+                                                       "budget-amendment-history/issue124-cell-b-status.json",
+                                                       "budget-amendment-history/issue124-cell-c-status.json",
+                                                       "budget-amendment-history/issue124-cell-d-status.json",
+                                                       "runtime-recovery-history/20260910-165434/authorization.json",
+                                                       "runtime-recovery-history/20260910-165434/resources.json",
+                                                       "runtime-recovery-history/20260910-165434/campaign-status.json",
+                                                       "runtime-recovery-history/20260910-165434/campaign.lock",
+                                                       "runtime-recovery-history/20260910-165434/budget-amendment.json",
+                                                       "runtime-recovery-history/20260910-165434/resume_issue124_amendment.py",
+                                                       "runtime-recovery-history/20260910-165434/issue124-cell-a-status.json",
+                                                       "runtime-recovery-history/20260910-165434/issue124-cell-b-status.json",
+                                                       "runtime-recovery-history/20260910-165434/issue124-cell-c-status.json",
+                                                       "runtime-recovery-history/20260910-165434/issue124-cell-d-status.json",
+                                                       "runtime-recovery-history/20260910-212601-memory/resources.json",
+                                                       "runtime-recovery-history/20260910-212601-memory/campaign-status.json",
+                                                       "runtime-recovery-history/20260910-212601-memory/budget-amendment.json",
+                                                       "runtime-recovery-history/20260910-212601-memory/recover_issue124_memory.py"
+                                                   ],
+                             "stopped_processes":  [
+                                                       {
+                                                           "pid":  33336,
+                                                           "created":  1789023583.7791655
+                                                       },
+                                                       {
+                                                           "pid":  40384,
+                                                           "created":  1789039371.7347012
+                                                       },
+                                                       {
+                                                           "pid":  31216,
+                                                           "created":  1789039990.9119515
+                                                       },
+                                                       {
+                                                           "pid":  44560,
+                                                           "created":  1789040145.702988
+                                                       },
+                                                       {
+                                                           "pid":  45204,
+                                                           "created":  1789040265.5312743
+                                                       },
+                                                       {
+                                                           "pid":  44144,
+                                                           "created":  1789040265.5458999
+                                                       },
+                                                       {
+                                                           "pid":  45372,
+                                                           "created":  1789040145.7190683
+                                                       },
+                                                       {
+                                                           "pid":  42808,
+                                                           "created":  1789039990.9303641
+                                                       },
+                                                       {
+                                                           "pid":  34220,
+                                                           "created":  1789039371.7546608
+                                                       }
+                                                   ],
+                             "handover_cpu_padding_seconds":  1,
+                             "handover_cpu_padding_rule":  "ceil(time since last persisted sample * logical CPUs); conservative upper bound",
+                             "interrupted_attempt_reason":  "Owner-authorized runtime extension requires supervisor restart; retained attempts restart from preceding stage",
+                             "operational_recoveries":  [
+                                                            {
+                                                                "recorded_at":  "2026-09-10T14:54:34.704973+00:00",
+                                                                "reason":  "Retry transient resource ledger locks and resume B/r2/block16",
+                                                                "wrapper_commit":  "5a9d8ec082c06c9c9361ddcad07549b67192a67e",
+                                                                "completed_blocks_preserved":  {
+                                                                                                   "issue124-cell-a":  100,
+                                                                                                   "issue124-cell-b":  63,
+                                                                                                   "issue124-cell-c":  95,
+                                                                                                   "issue124-cell-d":  55
+                                                                                               },
+                                                                "old_supervisor":  44456,
+                                                                "cpu_padding_seconds":  3,
+                                                                "prior_wrapper_sha256":  "2cde84df60ec4d359f85bb1da7aa6451b68de7a627604b4e276473694b925b7d"
+                                                            },
+                                                            {
+                                                                "kind":  "owner_authorized_system_memory_recovery",
+                                                                "instruction":  "I tried to free some ram. Continue the runs",
+                                                                "recorded_at":  "2026-09-10T21:26:01.557075+00:00",
+                                                                "available_memory_bytes":  4632555520,
+                                                                "prior_breach":  "System free RAM fell below 1 GiB",
+                                                                "accounting":  "Original authorization, CPU, peak RAM and wall origin preserved",
+                                                                "snapshots":  {
+                                                                                  "runtime-recovery-history/20260910-212601-memory/resources.json":  {
+                                                                                                                                                         "sha256":  "72b57eeb26374c4ca4d7b724acacccf9358648ec8f2ebd1289af0affcd47b8ea",
+                                                                                                                                                         "size_bytes":  481
+                                                                                                                                                     },
+                                                                                  "runtime-recovery-history/20260910-212601-memory/campaign-status.json":  {
+                                                                                                                                                               "sha256":  "95d990e0798e6f9c9f602c731fad8c0340e7088182dc93754bea79d5a24c642e",
+                                                                                                                                                               "size_bytes":  152
+                                                                                                                                                           },
+                                                                                  "runtime-recovery-history/20260910-212601-memory/budget-amendment.json":  {
+                                                                                                                                                                "sha256":  "e07b8e86b62b3413be4c2fa71f84555b4119c5196243aa9292bfecd16694ab4d",
+                                                                                                                                                                "size_bytes":  3676
+                                                                                                                                                            },
+                                                                                  "runtime-recovery-history/20260910-212601-memory/recover_issue124_memory.py":  {
+                                                                                                                                                                     "sha256":  "627469c9f9f6a859c38024bb61efe5720d69c17d8e5fb0ac76cc265276d68dfe",
+                                                                                                                                                                     "size_bytes":  3424
+                                                                                                                                                                 }
+                                                                              }
+                                                            }
+                                                        ]
+                         },
+    "analyzer_error":  "Resource record incomplete, changed or breached"
+}

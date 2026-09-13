@@ -114,3 +114,21 @@ def test_wrong_execution_revision_is_rejected_before_source_access(tmp_path):
         verifier.historical_context(tmp_path, tmp_path),
     ):
         pytest.fail("Invalid evidence entered verification context")
+
+
+def test_historical_plan_schema_does_not_gain_current_defaults(tmp_path):
+    import dataclasses
+    import subprocess
+
+    source = subprocess.check_output(
+        ["git", "show", f"{verifier.EXECUTION}:training/run_plan.py"],
+        cwd=verifier.campaign.ROOT,
+    )
+    (tmp_path / "training").mkdir()
+    (tmp_path / "training/run_plan.py").write_bytes(source)
+    original = verifier.campaign.load_plan
+    with verifier.registered_plan_module(tmp_path) as historical:
+        fields = {field.name for field in dataclasses.fields(historical.ResolvedPlan)}
+        assert "tabular_exploration_mode" not in fields
+        assert historical.load_plan is not original
+    assert verifier.campaign.load_plan is original

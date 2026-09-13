@@ -12,6 +12,9 @@ import numpy as np
 from training.aggregate import read_episodes_csv
 from training.metrics import _parse_round_number, normalize_episode_rows
 from training.run_task3_campaign import (
+    CONFIG as CONFIG,
+)
+from training.run_task3_campaign import (
     portable_plan,
     protocol_path,
     read_json,

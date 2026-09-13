@@ -14,6 +14,20 @@ migration requirements and regression checklist from the verified Issue #107
 limitations. This is a proposed design, not implemented or validated behavior;
 human review and selected-parent binding remain required.
 
+Issue #124 protocol (2026-09-10): OpenAI Codex prepared the matched rehearsal/
+masking matrix, fresh seed blocks, four-worker phase scheduler, detached Windows
+launcher, shared resource limits, evidence validation and prospective decision
+analyzer. The user confirmed four arms and the resource envelope. Non-author
+review must validate the prospective effect/selection rules before execution.
+Tests and dry runs verify implementation, not performance. No scientific
+training result or model adoption is claimed by this protocol PR.
+
+Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
+world-seed offsets and a read-only audit of thirty retained Issue #107 replay
+snapshots. The audit distinguishes the empty-other-partition backfill rule
+from the later 16/48 quota; it cannot reconstruct historical minibatches.
+Human review is required before using the runner in a new scientific campaign.
+
 ## Course rule
 
 AI may be used to brainstorm, assist with code, and draft report text. The final
@@ -122,6 +136,10 @@ implementation remains required; the earlier documentation approval is stale.
 | 2026-09-10 | Issue #128 compact tabular Task 2 state representation, selectable zero-initialized state contracts, state-visit persistence and diagnostics, optional evaluation-metric transport, preregistered paired run plans, local execution, bootstrap analysis, figures, and result documentation | OpenAI Codex | The owner selected the compact state hypothesis and manually applied, reviewed, and tested the suggested implementation. The protocol and dry-run matrices were verbally approved by `1BlauNitrox` before training. The owner executed both run plans locally; all 2,430 jobs completed and all deterministic repeats matched. Ruff, focused agent, metric, analysis, aggregation, runner, and plotting tests passed, and the generated figures were visually inspected. The full local suite reported 740 passing tests and two unrelated pre-existing DQN artifact-tolerance failures. All scientific values were derived from retained framework outputs using the committed analyzer; AI output was not treated as experimental evidence. The registered negative decision was retained without changing its criteria after observing the results, and confirmation seeds were not used. |
 | 2026-09-11 | Issue #135 time-aware escape-distance potential shaping for the compact tabular Task 2 agent: shortest-safe-route feature logic, Q-learning integration, persistence and run-plan support, tests, prospective control/candidate protocol, autonomous local execution, paired-bootstrap analysis, figures, and result documentation | OpenAI Codex | At the owner's explicit request, Codex implemented and executed the experiment through completed evaluation without pausing for the experiment README's intermediate approval step; that waiver is disclosed in the experiment record. Both five-replica run plans completed all 2,430 jobs and deterministic repeats matched. The retained result rejects the candidate as the default: Classic self-kills decreased from 0.055 to 0.015 and four of five replicas improved, but the strict bootstrap gate was missed because the confidence-interval upper bound was exactly zero, the Classic collection decrease exceeded 0.05, and one decision exceeded the registered maximum-latency limit. The owner must independently review the implementation, evidence, analysis, figures, and interpretation and obtain non-author approval before merge. Focused checks passed and the suite excluding the unchanged DQN successor test file reported 777 passing tests; two pre-existing DQN artifact-tolerance assertions remained in the complete suite. All scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as experimental evidence. |
 | 2026-09-11 | Issue #139 half-strength escape-distance potential experiment: treatment implementation and persistence support, paired run plans, clean-worktree execution, compact seed-level evidence, bootstrap analysis, plots, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex ran both registered five-replica plans without the intermediate approval pause and retained all 2,430 completed jobs. The owner must independently inspect the code, evidence and interpretation and obtain non-author approval. The candidate was rejected without changing the prospective criteria: its Classic collection improvement over full strength was positive with a 95% interval above zero, but its `0.070` self-kill rate exceeded the historical `0.055` guard and only three replicas remained below that limit. All deterministic repeats matched; AI output was not treated as evidence. |
+| 2026-09-11 | Issue #142 full no-route penalty experiment: isolated potential profile, persistence and run-plan support, paired clean-worktree execution, compact evidence, bootstrap analysis, figures, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both registered five-replica plans without the intermediate approval pause. All 2,430 jobs completed. The unchanged prospective decision rejected the candidate: mean Classic self-kills fell from `0.115` to `0.045` and four replicas improved, but the 95% interval crossed zero and Classic collection declined by `0.0678`, beyond the `0.05` guard. One retained repeat mismatch included a `1240.2 ms` latency outlier, so the determinism and maximum-latency gates also failed; it was not rerun post hoc. The owner must inspect the code, evidence, figures and interpretation and obtain non-author review. Scientific values were computed from retained framework outputs; AI output was not treated as evidence. |
+| 2026-09-12 | Issue #153 safety-constrained exploration for the compact tabular Task 2 agent: treatment implementation and persistence, run-plan support, tests, prospective paired protocol, autonomous local execution, compact evidence, bootstrap analysis, figures, agent-card update, and interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed without retry. The candidate was rejected under the unchanged registered rule because Classic self-kills rose from `0.045` to `0.075`, the paired interval included zero, no replica improved, and Classic collection exceeded its degradation margin. One retained control repeat had a latency timeout and different action sequence; it was not discarded or rerun. The owner must independently review the implementation, evidence, limitation, and interpretation and obtain non-author approval. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
+| 2026-09-12 | Issue #144 compact post-bomb escape-status representation: feature implementation, persistence and run-plan support, tests, prospective paired protocol, autonomous clean-worktree execution, compact evidence, bootstrap analysis, figures, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed. The registered candidate was rejected: all performance, safety, and learning-efficiency outcomes were exactly identical to control, and post-hoc table inspection showed the appended category did not split any visited compact-state prefix. The owner must independently review the implementation, evidence, and interpretation and obtain non-author approval before merge. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
+
 
 | 2026-09-08 | Issue #108 CI/main-divergence fix: merged `main`'s multi-step escape features (#87/#112, Task 2 `FEATURE_COUNT` 21->26) into the Task 3 branch, corrected a stale hardcoded checkpoint checksum in CI, and fixed three Task 3 tests to construct/slice against Task 2's legacy 21-dim configuration (matching the actual frozen provisional parent) instead of Task 2's now-shifted default shape | Claude (Anthropic) | The GitHub Actions synthetic-merge run (not the raw branch) surfaced that PR #115 was far behind `main`; Claude diagnosed this as test-fixture staleness rather than a flaw in the 34-input redesign, since Task 3's provisional parent is deliberately frozen and independent of Task 2's separate ongoing evolution. The owner must confirm this interpretation before merge. Full test suite (653 tests), `ruff check`, `compileall`, and smoke games pass; all CI checks green. No scientific training result or performance claim was generated. |
 | 2026-09-08 | Issue #109 peaceful-opponent Task 3 protocol registration: three run plans (Task 3 vs. `peaceful_agent`, frozen Task 2 predecessor vs. `peaceful_agent`, Task 3 vs. `coin_collector_agent` staged but gated), experiment README and config.yaml | Claude (Anthropic) | Claude designed the comparison as five paired Task 3 replicas against one frozen Task 2 reference point (mirroring issue #107's `frozen_task1`/`untrained` pattern, since the Task 2 side is a single already-fixed artifact rather than something to retrain in parallel), proposed a resource ceiling scaled from issue #97's estimate, and left the decision rule `not_yet_fixed`. The owner must assign an owner/reviewer, set numeric elimination/paired-score/self-kill/retention criteria, authorize compute, and rebind both provisional parent artifacts once issue #107 selects the development predecessor, before this counts as more than infrastructure validation. No training was run and no scientific claim was generated. |
@@ -159,3 +177,44 @@ A/r2 exploratory baseline. Unit/regression, isolated integration and clean
 packaging checks verify implementation only; no Task 3 performance claim or
 scientific compute authorization is implied. Final #124 parent binding,
 numeric #109 decisions and scientific execution remain separate work.
+
+### Issue #124 explicit owner execution exception
+
+On September 10, Julius explicitly instructed execution despite the missing
+peer review: "I want you to run it anyways!" Codex added a tested, opt-in
+execution exception and records it in campaign/job authorization metadata.
+This is not peer approval and does not authorize a merge. Resource limits,
+immutable source checks and analysis requirements remain unchanged.
+
+### Issue #124 owner-authorized runtime extension
+
+Julius requested longer execution on September 10 after the observed runtime
+exceeded the original estimate. Codex implemented and tested a separate,
+checksum-bound resume wrapper, preserving the immutable training source,
+original authorization and cumulative resource ledger. The extension and
+interrupted attempts are scientific deviations to disclose, not new results.
+See the experiment's `runtime-extension.md` for effective limits and commands.
+
+### Issue #124 Windows resource-ledger recovery
+
+Codex traced B/r2 block 16's technical failure to a Windows permission error
+on atomic resource-file replacement. A bounded retry in the separately
+versioned operational resume monitor was tested with transient, persistent
+and unrelated I/O failures. Recovery retains the original learning source,
+completed checkpoints, failed attempts and cumulative resource accounting.
+
+- September 10, Issue #124: Codex inspected retained campaign/job/resource records, invoked the registered analyzer in analysis-only mode, and documented the system-memory interruption. No scientific performance conclusion or checkpoint selection was inferred; the compact operational snapshot is committed for review.
+
+- Issue #124 memory recovery: Codex implemented and tested an owner-authorized recovery from the system availability stop, preserving archived breach evidence and cumulative accounting. No scientific settings or budgets changed.
+
+- September 11, Issue #124: Codex verified the second system-memory interruption against retained statuses and ledgers, reran analysis-only validation, and documented 395 completed training blocks with zero evaluation episodes. No scientific conclusion was inferred.
+
+- September 11, Issue #124: Codex prepared the user-authorized reduced evaluation amendment and serial launcher, with pinned final artifacts, no training, unchanged evaluation suites and tests rejecting corruption/incomplete included replicas. D/r5 remains excluded and D exploratory; no outcome informed this amendment.
+
+- September 11, Issue #124 evaluation extension: Codex implemented and tested explicit owner-authorized runtime limits with preserved original registration, plus process-scoped Windows wakefulness. Throughput alone informed the extension; no evaluation performance conclusions were used.
+
+- 2026-09-11, #124 / PR #131: Codex verified the returned Windows laptop evidence,
+  implemented a reduced-scope analyzer and rejection tests, retained per-episode
+  observations and final-training provenance, published checkpoint evidence, and
+  documented negative rehearsal / inconclusive masking results. No default model
+  changed and no Task 2 completion claim is made. Human review remains required.
