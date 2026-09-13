@@ -968,3 +968,25 @@ Issue #124 reduced laptop evidence is verified with
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
 The verifier retains five-replica A/B/C inference and marks D exploratory; the
 original full-matrix analyzer remains strict and unchanged.
+
+## Offline immutable-snapshot link recovery
+
+`scripts/recover_snapshot_links.py` repairs a stopped campaign whose private
+content-addressed input objects exhausted filesystem hard-link capacity. It
+requires completed training and fewer than 936 pending evaluation jobs. It
+checks object hashes, protected checkpoint/plan/authorization/resource bytes,
+and inactive process records before making changes.
+
+```powershell
+python scripts/recover_snapshot_links.py --root $campaignRoot
+python scripts/recover_snapshot_links.py --root $campaignRoot --apply --audit "$campaignRoot/recovery-166-001"
+```
+
+The default is read-only. Apply requires a new audit directory. Saturated objects
+are independently copied and the original inodes remain in the audit directory;
+all old snapshot links keep their bytes. Incomplete pre-launch snapshots are
+renamed with `.failed-storage` and retained, with their hashes and the original
+error log. The helper changes no campaign source, model, seed, status,
+authorization or resource limit. Resume remains subject to the original budget;
+this storage operation does not authorize an extension. Retain the complete
+recovery directory alongside the final compact campaign evidence.
