@@ -9,6 +9,12 @@ verifies its archive and historical source, parent, matrix, dependencies, raw
 observations and decision without launching games or changing server evidence.
 Any new scientific run needs its own prospective authorization.
 
+Repeated training blocks can set `world_seed_offset` in a run-plan stage.
+The runner adds it to each replica's world seed and checks the resolved seed
+against evaluation populations and the NumPy seed range. Omission preserves
+historical behavior. Keep the agent seed stable for checkpoint continuation;
+pair offsets by scenario occurrence when comparing reordered curricula.
+
 The completed #109 peaceful campaign is an exploratory negative result; its
 registered selection rule blocks automatic coin-collector continuation.
 See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
@@ -1023,3 +1029,9 @@ currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-on
 framework/agent logging in seeded runs and records that policy in job metadata.
 Episode statistics, failure metadata and scientific measurements are retained.
 Default logging and existing campaign sources remain unchanged.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.

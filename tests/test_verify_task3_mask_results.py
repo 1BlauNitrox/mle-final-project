@@ -85,3 +85,27 @@ def test_export_checks_outer_and_member_integrity(tmp_path, damage):
         assert (tmp_path / "import/campaign/data").read_bytes() == b"evidence"
         with pytest.raises(FileExistsError):
             verifier.verify_export(archive, path, tmp_path / "import")
+
+
+def test_relocated_registered_plans_use_canonical_parent_paths(tmp_path):
+    source = tmp_path / "original"
+    fixture(source)
+    binding = json.loads((source / "binding.json").read_text())
+    # Use the real registered matrices, with only disposable artifact bytes.
+    for arm in verifier.mask.ARMS:
+        template = verifier.mask.ROOT / f"training/run_plans/issue147-{arm}.yaml"
+        data = yaml.safe_load(template.read_text())
+        for replica in data["replicas"]:
+            replica["parent_artifact"] = f"/server/{arm}.pt"
+        plan = source / f"{arm}.yaml"
+        plan.write_text(yaml.safe_dump(data))
+        binding["plans"][arm]["sha256"] = verifier.mask.sha256(plan)
+    (source / "binding.json").write_text(json.dumps(binding))
+    alias = tmp_path / "alias"
+    alias.mkdir()
+    target = alias / ".." / "relocated"
+    verifier.relocate(source, target)
+    for arm in verifier.mask.ARMS:
+        plan = verifier.run_plan.load_plan(target / f"{arm}.yaml")
+        expected = str((target / f"{arm}.pt").resolve())
+        assert all(replica.parent_artifact == expected for replica in plan.replicas)
