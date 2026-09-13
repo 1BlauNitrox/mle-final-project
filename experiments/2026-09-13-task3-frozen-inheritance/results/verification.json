@@ -1,0 +1,23 @@
+{
+  "independent_archive_analysis_exact": true,
+  "training_jobs": 10,
+  "training_episodes": 1000,
+  "evaluation_jobs": 44,
+  "evaluation_episodes": 3520,
+  "repeat_pairs": 1760,
+  "repeat_pairs_equal": 1759,
+  "opponent_free_primary_comparisons": 600,
+  "opponent_free_primary_equal": 599,
+  "mismatch": [
+    "treatment-r1",
+    "classic-empty",
+    5973737,
+    0
+  ],
+  "timing_outlier_ms": 1186.1112117767334,
+  "all_invalid_events": 26,
+  "registered_decision": "failed; no promotion",
+  "recovery_archive": "issue173-recovery.tar.gz",
+  "evidence_sha256": "9fc62badcc71fff177a722c855d616cac6b2805dce0f61ec3ab6481e6697fcdb",
+  "evidence_bytes": 75346125
+}
