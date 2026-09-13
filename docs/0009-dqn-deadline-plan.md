@@ -66,13 +66,17 @@ contracts and cannot be relaxed retrospectively to turn a failure into success.
 Immutable detailed result records and exact reproduction commands:
 
 - [#124 results at 2252c23](https://github.com/1BlauNitrox/mle-final-project/blob/2252c23385c08e1a53d851bb8d5ff6a6e0e5b802/experiments/2026-09-10-task2-rehearsal-mask/RESULTS.md)
-- [#91 results at 04e71e3](https://github.com/1BlauNitrox/mle-final-project/blob/04e71e36551c6a1e844311b5c96d851c053e3f56/experiments/2026-09-11-task2-discount-horizon/RESULTS.md)
+- [#91 corrected reproduction at 8d6dc28](https://github.com/1BlauNitrox/mle-final-project/blob/8d6dc282809cde7e19bc8940f81b590f5ac92811/experiments/2026-09-11-task2-discount-horizon/RESULTS.md)
 - [#107 result PR](https://github.com/1BlauNitrox/mle-final-project/pull/122)
 
 Required checkpoint bytes and manifests are published in
 [issue124-reduced-evidence-v1](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue124-reduced-evidence-v1)
-and [issue91-evidence-v1](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue91-evidence-v1).
-The pinned records contain sizes, hashes, retrieval and verification commands.
+and [issue91-evidence-v2](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue91-evidence-v2).
+The corrected #91 asset is `issue91-complete-evidence-v2.tar.gz` (18,129,266
+bytes), SHA-256
+`eee17a70dbf77563696bd57afd2e92ce7a6ad3ace2a33de662b887ee6bcb2921`.
+It includes the four registered YAML plans missing from V1. The pinned records
+contain retrieval and verification commands.
 Keep local originals until peer review; no cleanup is authorized by this plan.
 
 #109 now registers #91 A/r3 as its owner-authorized exploratory predecessor:
