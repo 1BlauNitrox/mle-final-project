@@ -109,7 +109,7 @@ def observe(features, state, events, action, legal_mask):
         "action": action,
         "events": list(events),
         "opponent_distance": min(
-            (abs(pos[0] - p[0]) + abs(pos[1] - p[1]) for p in others), default=None
+            (int(abs(pos[0] - p[0]) + abs(pos[1] - p[1])) for p in others), default=None
         ),
         "attack": bool(features[30]),
         "safe_attack": safe,
@@ -275,11 +275,25 @@ def stop_owned(child):
     child.wait()
 
 
-def run(checkpoint, output):
+def prior_cost(previous):
+    if previous is None:
+        return 0.0, 0.0, None
+    data = json.loads(previous.read_text(encoding="utf-8"))
+    if data["status"] != "failed" or data["config_sha256"] != sha(CONFIG):
+        raise ValueError("Previous attempt must be failed and share registration")
+    return (
+        data["cpu_seconds"],
+        data["wall_seconds"],
+        {"path": str(previous.resolve()), "sha256": sha(previous)},
+    )
+
+
+def run(checkpoint, output, previous=None):
     import psutil
 
     config = json.loads(CONFIG.read_text(encoding="utf-8"))
     validate(config)
+    previous_cpu, previous_wall, previous_record = prior_cost(previous)
     if sha(checkpoint) != INPUT or checkpoint.stat().st_size != config["input_size_bytes"]:
         raise ValueError("Wrong input")
     if psutil.virtual_memory().available < config["limits"]["minimum_free_memory_bytes"]:
@@ -309,7 +323,8 @@ def run(checkpoint, output):
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip(),
         "config_sha256": sha(CONFIG),
-        "cpu_seconds": 0.0,
+        "cpu_seconds": previous_cpu,
+        "previous_attempt": previous_record,
         "peak_memory_bytes": 0,
     }
     started = time.monotonic()
@@ -354,7 +369,7 @@ def run(checkpoint, output):
                                 break
                             report["peak_memory_bytes"] = max(report["peak_memory_bytes"], memory)
                             if (
-                                time.monotonic() - started > 900
+                                time.monotonic() - started + previous_wall > 900
                                 or time.monotonic() - job_started > 120
                                 or report["cpu_seconds"] + cpu > 900
                                 or memory > 1073741824
@@ -379,7 +394,7 @@ def run(checkpoint, output):
                 job = json.loads((target / "result.json").read_text(encoding="utf-8"))
                 report["cpu_seconds"] += max(cpu, job["cpu_seconds"])
                 report["jobs"].append({**job, "output": label})
-                report["wall_seconds"] = time.monotonic() - started
+                report["wall_seconds"] = time.monotonic() - started + previous_wall
                 write(output / "status.json", report)
         if any(sha(source / name) != value for name, value in source_hashes.items()):
             raise ValueError("Runtime source changed")
@@ -390,7 +405,7 @@ def run(checkpoint, output):
         report.update(status="failed", error=str(error))
         raise
     finally:
-        report["wall_seconds"] = time.monotonic() - started
+        report["wall_seconds"] = time.monotonic() - started + previous_wall
         write(output / "status.json", report)
     print(json.dumps(report["decision"], indent=2))
 
@@ -401,11 +416,12 @@ def main():
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source", type=Path)
+    parser.add_argument("--previous-status", type=Path)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--epsilon", type=float)
     args = parser.parse_args()
     if args.mode == "run":
-        run(args.checkpoint, args.output)
+        run(args.checkpoint, args.output, args.previous_status)
     else:
         worker(args.source, args.checkpoint, args.seed, args.epsilon, args.output)
 

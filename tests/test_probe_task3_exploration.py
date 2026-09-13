@@ -135,3 +135,39 @@ def test_stop_owned_targets_only_owned_child_tree(monkeypatch):
     descendant.kill.assert_called_once_with()
     parent.kill.assert_called_once_with()
     child.wait.assert_called_once_with()
+
+
+def test_numpy_positions_are_serializable():
+    import numpy as np
+
+    state = {
+        "step": 1,
+        "self": ["a", 0, True, (np.int64(1), np.int64(1))],
+        "others": [["b", 0, True, (np.int64(2), np.int64(3))]],
+    }
+    assert (
+        json.loads(json.dumps(observe([0] * 39, state, [], "WAIT", [True] * 6)))[
+            "opponent_distance"
+        ]
+        == 3
+    )
+
+
+def test_retry_preserves_failed_attempt_cost_and_registration(tmp_path):
+    from scripts.probe_task3_exploration import prior_cost, sha
+
+    path = tmp_path / "status.json"
+    data = {
+        "status": "failed",
+        "config_sha256": sha(CONFIG),
+        "cpu_seconds": 3.5,
+        "wall_seconds": 4.5,
+    }
+    path.write_text(json.dumps(data))
+    cpu, wall, record = prior_cost(path)
+    assert (cpu, wall) == (3.5, 4.5)
+    assert record["sha256"] == sha(path)
+    data["status"] = "running"
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):
+        prior_cost(path)
