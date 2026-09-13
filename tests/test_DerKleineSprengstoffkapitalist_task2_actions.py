@@ -99,6 +99,35 @@ def test_greedy_policy_can_select_bomb() -> None:
     assert action == "BOMB"
 
 
+def test_exploration_mask_excludes_bomb_only_during_exploration() -> None:
+    q_table = QTable()
+    exploration_mask = np.ones(len(ACTIONS), dtype=bool)
+    exploration_mask[ACTION_TO_INDEX["BOMB"]] = False
+
+    for seed in range(100):
+        action = q_table.select_action(
+            TEST_STATE,
+            epsilon=1.0,
+            rng=np.random.default_rng(seed),
+            exploration_action_mask=exploration_mask,
+        )
+        assert action != "BOMB"
+
+
+def test_exploration_mask_does_not_change_greedy_exploitation() -> None:
+    q_table = QTable()
+    q_table.values[TEST_STATE] = np.array([0, 0, 0, 0, 0, 1], dtype=float)
+    exploration_mask = np.ones(len(ACTIONS), dtype=bool)
+    exploration_mask[ACTION_TO_INDEX["BOMB"]] = False
+
+    assert q_table.select_action(
+        TEST_STATE,
+        epsilon=0.0,
+        rng=np.random.default_rng(153),
+        exploration_action_mask=exploration_mask,
+    ) == "BOMB"
+
+
 def test_bomb_update_uses_sixth_q_value() -> None:
     q_table = QTable(
         learning_rate=0.5,
