@@ -160,8 +160,6 @@ def prepare(root, parent):
         [
             sys.executable,
             str(Path(__file__).resolve()),
-            "smoke",
-            "_smoke",
             "_bind",
             "--root",
             str(root),

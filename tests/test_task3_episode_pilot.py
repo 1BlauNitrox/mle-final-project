@@ -226,3 +226,51 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
     write(directory / "result.json", metadata)
     with pytest.raises(ValueError, match="mixed evaluation environment"):
         analysis.analyze(tmp_path)
+
+
+def test_prepare_dispatches_one_binding_mode_without_starting_games(tmp_path, monkeypatch):
+    import tarfile
+
+    import scripts.analyze_task3_exploration as exposure
+    import scripts.pilot_task3_episode_exploration as pilot
+
+    parent = tmp_path / "parent.pt"
+    parent.write_bytes(b"parent")
+    original_sha = pilot.sha
+
+    def digest(path):
+        if path == parent:
+            return pilot.INPUT
+        if path.name == "phase-c-evidence.tar.gz":
+            return config()["phase_c_evidence_sha256"]
+        return original_sha(path)
+
+    monkeypatch.setattr(pilot, "sha", digest)
+    monkeypatch.setattr(pilot, "verify", lambda root: None)
+    monkeypatch.setattr(
+        exposure, "analyze_input", lambda path: {"decision": {"learning_pilot_ready": True}}
+    )
+    monkeypatch.setattr(
+        pilot.subprocess,
+        "check_output",
+        lambda command, **kwargs: "" if "status" in command else "commit",
+    )
+    modes = []
+
+    def run(command, **kwargs):
+        if command[0] == "git":
+            destination = next(
+                argument.split("=", 1)[1]
+                for argument in command
+                if argument.startswith("--output=")
+            )
+            with tarfile.open(destination, "w"):
+                pass
+        else:
+            assert command[2:] == ["_bind", "--root", str(tmp_path / "prepared")]
+            modes.append(command[2])
+            (tmp_path / "prepared/initial.pt").write_bytes(b"bound")
+
+    monkeypatch.setattr(pilot.subprocess, "run", run)
+    pilot.prepare(tmp_path / "prepared", parent)
+    assert modes == ["_bind"]
