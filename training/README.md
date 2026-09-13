@@ -990,3 +990,28 @@ error log. The helper changes no campaign source, model, seed, status,
 authorization or resource limit. Resume remains subject to the original budget;
 this storage operation does not authorize an extension. Retain the complete
 recovery directory alongside the final compact campaign evidence.
+The explicitly approved #163 two-hour wall amendment is applied only by the
+external `scripts/resume_issue163.py` adapter. `--root` points to the existing
+campaign root and `--repo` to the clean original `1e18b9c` checkout. Run once
+with `--prepare` to bind the helper hash and create separate amended records;
+then use `--execute` for detached execution. Do not repeat preparation or edit
+its bound helper while running. Re-execution uses retained amended usage.
+
+The adapter preserves original timestamps and records, extends only the wall
+ceilings (12-hour campaign / 14-hour full pipeline from the original start),
+and keeps 12 CPU-hours / 2 GiB. The outer record starts with the conservative
+sum of original inner and outer CPU usage because the historical outer sampler
+undercounted exited descendants. The replacement outer sampler retains each
+observed descendant's CPU by PID and process creation time.
+
+Remaining jobs are evaluation-only. Native source, raw/CSV, checkpoint, mode,
+seed, and repeat validation and registered metric computation remain unchanged.
+The final `analysis-amended166/result.json` reports the original wall gate
+separately and disables automatic promotion. `performance-decision.json` is
+only the conditional registered metric calculation; its original resource
+record covers the initial execution segment, not the complete recovered run.
+The amended result includes both resource records and the owner amendment.
+`completed-amended166.json` signals successful evaluation, analysis and export.
+Two compact archives retain campaign evidence and the storage/budget recovery
+trail. Preserve both and their manifests. Do not use the original supervisor to
+resume this amended run, because it does not read the amended budget records.
