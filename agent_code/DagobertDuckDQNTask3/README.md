@@ -1,6 +1,6 @@
 # DagobertDuckDQNTask3
 
-## Issue 171 retention pilot 
+## Issue 171 retention pilot
 
 [Issue #171](https://github.com/1BlauNitrox/mle-final-project/issues/171) tested
 whether reducing Adam's learning rate from `0.0005` to `0.00005` improves retention
