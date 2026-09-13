@@ -15,6 +15,8 @@ from pathlib import Path
 from statistics import mean
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 CONFIG = ROOT / "experiments/2026-09-13-task3-exploration-screen/config.json"
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
@@ -126,7 +128,7 @@ def network_sha(network):
     return result.hexdigest()
 
 
-def worker(source, checkpoint, seed, epsilon, output):
+def worker(source, checkpoint, seed, epsilon, output, phase="A"):
     # Runtime imports resolve only to the exact archived scientific source.
     sys.path.insert(0, str(source.resolve()))
     from unittest.mock import patch
@@ -138,7 +140,8 @@ def worker(source, checkpoint, seed, epsilon, output):
     from agents import AgentRunner
     from environment import BombeRLeWorld, WorldArgs
 
-    if seed not in range(1631101, 1631121) or epsilon not in (1.0, 0.2, 0.0):
+    allowed = range(1631101, 1631121) if phase == "A" else range(1682101, 1682121)
+    if phase not in {"A", "C"} or seed not in allowed or epsilon not in (1.0, 0.2, 0.0):
         raise ValueError("Unregistered worker condition")
     if sha(checkpoint) != INPUT:
         raise ValueError("Wrong input checkpoint")
@@ -275,11 +278,11 @@ def stop_owned(child):
     child.wait()
 
 
-def prior_cost(previous):
+def prior_cost(previous, config_path=CONFIG):
     if previous is None:
         return 0.0, 0.0, None
     data = json.loads(previous.read_text(encoding="utf-8"))
-    if data["status"] != "failed" or data["config_sha256"] != sha(CONFIG):
+    if data["status"] != "failed" or data["config_sha256"] != sha(config_path):
         raise ValueError("Previous attempt must be failed and share registration")
     return (
         data["cpu_seconds"],
@@ -288,12 +291,23 @@ def prior_cost(previous):
     )
 
 
-def run(checkpoint, output, previous=None):
+def run(checkpoint, output, previous=None, phase="A"):
     import psutil
 
-    config = json.loads(CONFIG.read_text(encoding="utf-8"))
-    validate(config)
-    previous_cpu, previous_wall, previous_record = prior_cost(previous)
+    config_path = CONFIG if phase == "A" else CONFIG.with_name("phase-c-config.json")
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    if phase == "A":
+        validate(config)
+        decision_function = decide
+    elif phase == "C":
+        from scripts.task3_episode_exploration import decide as decide_c
+        from scripts.task3_episode_exploration import validate as validate_c
+
+        validate_c(config)
+        decision_function = decide_c
+    else:
+        raise ValueError("Unregistered phase")
+    previous_cpu, previous_wall, previous_record = prior_cost(previous, config_path)
     if sha(checkpoint) != INPUT or checkpoint.stat().st_size != config["input_size_bytes"]:
         raise ValueError("Wrong input")
     if psutil.virtual_memory().available < config["limits"]["minimum_free_memory_bytes"]:
@@ -322,7 +336,8 @@ def run(checkpoint, output, previous=None):
         "tool_source": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
         ).strip(),
-        "config_sha256": sha(CONFIG),
+        "config_sha256": sha(config_path),
+        "phase": phase,
         "cpu_seconds": previous_cpu,
         "previous_attempt": previous_record,
         "peak_memory_bytes": 0,
@@ -330,7 +345,12 @@ def run(checkpoint, output, previous=None):
     started = time.monotonic()
     try:
         for seed in config["world_seeds"]:
-            for epsilon in config["epsilons"]:
+            epsilons = (
+                config["epsilons"]
+                if phase == "A"
+                else [0.2, 1.0 if seed in config["random_episode_world_seeds"] else 0.0]
+            )
+            for epsilon in epsilons:
                 label = f"{seed}-epsilon{epsilon}"
                 target = output / label
                 environment = {
@@ -343,6 +363,8 @@ def run(checkpoint, output, previous=None):
                     sys.executable,
                     str(Path(__file__).resolve()),
                     "worker",
+                    "--phase",
+                    phase,
                     "--source",
                     str(source),
                     "--checkpoint",
@@ -400,7 +422,7 @@ def run(checkpoint, output, previous=None):
             raise ValueError("Runtime source changed")
         if sha(checkpoint) != INPUT:
             raise ValueError("Original checkpoint changed")
-        report.update(status="completed", decision=decide(report["jobs"]))
+        report.update(status="completed", decision=decision_function(report["jobs"]))
     except BaseException as error:
         report.update(status="failed", error=str(error))
         raise
@@ -417,13 +439,14 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source", type=Path)
     parser.add_argument("--previous-status", type=Path)
+    parser.add_argument("--phase", choices=["A", "C"], default="A")
     parser.add_argument("--seed", type=int)
     parser.add_argument("--epsilon", type=float)
     args = parser.parse_args()
     if args.mode == "run":
-        run(args.checkpoint, args.output, args.previous_status)
+        run(args.checkpoint, args.output, args.previous_status, args.phase)
     else:
-        worker(args.source, args.checkpoint, args.seed, args.epsilon, args.output)
+        worker(args.source, args.checkpoint, args.seed, args.epsilon, args.output, args.phase)
 
 
 if __name__ == "__main__":

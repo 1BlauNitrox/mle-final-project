@@ -171,3 +171,106 @@ def test_retry_preserves_failed_attempt_cost_and_registration(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError):
         prior_cost(path)
+
+
+def test_analysis_recomputes_metrics_and_rejects_tampered_evidence(tmp_path):
+    import gzip
+
+    from scripts.analyze_task3_exploration import analyze
+    from scripts.probe_task3_exploration import sha, write
+
+    data = jobs()
+    for index, row in enumerate(data):
+        row.update(
+            output=str(index),
+            crates=0,
+            score=0,
+            eliminations=0,
+            self_kills=0,
+            survived=True,
+            invalid_actions=0,
+            safe_attack_steps=0,
+            available_safe_attack_steps=0,
+            safe_cratefree_placements=0,
+        )
+        episode = tmp_path / str(index)
+        episode.mkdir()
+        observations = [
+            {
+                "attack": i < row["attack_steps"],
+                "safe_attack": False,
+                "available_safe_attack": False,
+                "safe_cratefree_placement": False,
+            }
+            for i in range(row["survival_steps"])
+        ]
+        with gzip.open(episode / "observations.json.gz", "wt") as file:
+            json.dump(observations, file)
+        native = {
+            "survival_steps": row["survival_steps"],
+            "coins": row["coins"],
+            "crates_destroyed": 0,
+            "kills": 0,
+            "self_kills": 0,
+            "invalid": 0,
+            "score": 0,
+        }
+        write(
+            episode / "framework_stats.json",
+            {"by_round": {"one": {"agents": {"DagobertDuckDQNTask3": native}}}},
+        )
+        row["observations_sha256"] = sha(episode / "observations.json.gz")
+        row["framework_stats_sha256"] = sha(episode / "framework_stats.json")
+    status = {
+        "status": "completed",
+        "jobs": data,
+        "cpu_seconds": 1,
+        "wall_seconds": 2,
+        "peak_memory_bytes": 3,
+    }
+    write(tmp_path / "status.json", status)
+    result = analyze(tmp_path)
+    assert result["decision"]["phase_b_ready"]
+    assert result["paired_low_minus_control"]["survival_steps"] == {
+        "mean_difference": 20,
+        "paired_bootstrap_95_percent": [20, 20],
+    }
+    (tmp_path / "0/framework_stats.json").write_text("{}")
+    with pytest.raises(ValueError, match="checksum"):
+        analyze(tmp_path)
+
+
+def test_phase_c_is_exactly_paired_and_keeps_its_new_gates():
+    from scripts.task3_episode_exploration import RANDOM_EPISODES, SEEDS
+    from scripts.task3_episode_exploration import decide as decide_c
+    from scripts.task3_episode_exploration import validate as validate_c
+
+    config = json.loads(CONFIG.with_name("phase-c-config.json").read_text())
+    validate_c(config)
+    data = [
+        {
+            "world_seed": seed,
+            "epsilon": epsilon,
+            "status": "completed",
+            "weights_unchanged": True,
+            "survival_steps": 10 if epsilon == 0.2 else 100,
+            "coins": 1,
+            "attack_steps": 1,
+            "self_kills": int(epsilon == 1),
+        }
+        for seed in SEEDS
+        for epsilon in (0.2, 1.0 if seed in RANDOM_EPISODES else 0.0)
+    ]
+    result = decide_c(data)
+    assert result["learning_pilot_ready"]
+    assert result["selected_checkpoint"] is None
+    assert not result["long_training_authorized"]
+    assert result["mixture_self_kill_rate"] == 0.2
+    for row in data:
+        row["self_kills"] = 1
+    assert not decide_c(data)["learning_pilot_ready"]
+    with pytest.raises(ValueError):
+        decide_c(data[:-1])
+    config["random_episode_world_seeds"] = SEEDS[:4]
+    with pytest.raises(ValueError):
+        validate_c(config)
