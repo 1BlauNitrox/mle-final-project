@@ -20,7 +20,7 @@
   ],
   "scientific_pilot_started": true,
   "training_episodes_in_pilot": 300,
-  "remaining_gate": "Manual AI-use entry, explicit approval/publication of the prepared full evidence archive, final-head CI and non-author review. Human README edits and commit/push consent received.",
+  "remaining_gate": "Manual AI-use entry, final-head CI and non-author review. Human README revision and exact public evidence publication completed.",
   "scope": "Pre-run mechanical validation; smoke data remain excluded from all scientific results.",
   "evaluation_episodes_in_pilot": 280,
   "scientific_pilot_completed": true,

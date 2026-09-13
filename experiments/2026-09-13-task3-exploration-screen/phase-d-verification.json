@@ -25,5 +25,7 @@
   },
   "diff_check": "passed",
   "changes": "Documentation and retained result evidence only; executable code and registered scientific configurations unchanged.",
-  "publication": "Human README review and commit/push consent received. Public archive upload requires separate explicit consent after automatic approval review rejected the upload. Full archive remains locally verified; final-head CI is checked after push."
+  "publication": "Exact approved archive and accompanying manifest published at issue168-pilot-evidence-v1. Both downloaded from GitHub and verified by SHA-256 and byte size.",
+  "published_download_verified": true,
+  "published_manifest_sha256": "0a6cf648cad1f2fd82b294a18875d0c33c4b03375ac58775a8778ef0b0241951"
 }

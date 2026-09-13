@@ -1,9 +1,10 @@
 # Reproduce the Issue 168 learning-pilot result
 
-The result package is prepared locally. **The release has not been uploaded;
-the retrieval command becomes usable after publication consent and upload.**
-The local archive has been imported into a new directory and reanalyzed; its
-result exactly matches `phase-d-analysis.json`. No training is needed.
+The full evidence is published in
+[issue168-pilot-evidence-v1](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue168-pilot-evidence-v1).
+The published archive and manifest were downloaded and verified against their
+recorded byte sizes and SHA-256 hashes. Archive import and registered reanalysis
+exactly reproduce `phase-d-analysis.json`. No training is needed.
 
 ## Evidence
 
@@ -40,7 +41,7 @@ from this PR's checkout with unchanged pilot tools, or a separate clean checkout
 of `dcff79fefe812becbe76e7bdf2d1718a9eda4cea`. Do not switch/reset a worktree
 containing user edits or an active campaign. Use a new verification directory.
 
-After the release has been published:
+Download the published archive:
 
 ```powershell
 $project = '1BlauNitrox/mle-final-project'

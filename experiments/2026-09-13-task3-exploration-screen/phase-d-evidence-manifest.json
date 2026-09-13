@@ -2,14 +2,14 @@
   "schema_version": 1,
   "issue": 168,
   "phase": "D",
-  "publication_status": "Compact evidence approved for Git publication. Full archive remains local: exact public upload approval is pending after automatic approval review rejected the release upload. The planned release locator is not yet retrievable.",
+  "publication_status": "Published at issue168-pilot-evidence-v1; archive and manifest downloaded from GitHub and verified against the approved exact SHA-256 and byte sizes.",
   "archive": {
     "name": "issue168-pilot-evidence.tar.gz",
     "sha256": "d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071",
     "size_bytes": 48744548,
     "release_tag": "issue168-pilot-evidence-v1",
-    "planned_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz",
-    "contents": "663 members: exact runtime source tar, binding/config/source hashes, 300 training and 280 evaluation observations/native statistics, eight initial/reference/final checkpoints, complete stage records and registered analysis. No model selected."
+    "contents": "663 members: exact runtime source tar, binding/config/source hashes, 300 training and 280 evaluation observations/native statistics, eight initial/reference/final checkpoints, complete stage records and registered analysis. No model selected.",
+    "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz"
   },
   "source": {
     "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
@@ -281,5 +281,11 @@
   "reproduction": "phase-d-reproduction.md",
   "archive_reanalysis": "Independently extracted and reanalyzed with the registered analyzer; exact JSON equality with the execution result.",
   "task2_complete": false,
-  "selected_checkpoint": null
+  "selected_checkpoint": null,
+  "published_manifest": {
+    "name": "issue168-pilot-evidence.tar.gz.manifest.json",
+    "size_bytes": 192,
+    "sha256": "0a6cf648cad1f2fd82b294a18875d0c33c4b03375ac58775a8778ef0b0241951",
+    "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz.manifest.json"
+  }
 }
