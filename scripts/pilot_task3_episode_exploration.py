@@ -85,6 +85,8 @@ def environment():
     return {
         "python": sys.version,
         "platform": platform.platform(),
+        "host": platform.node(),
+        "processor": platform.processor(),
         "packages": {
             p: importlib.metadata.version(p) for p in ("numpy", "torch", "pygame", "psutil")
         },
@@ -417,11 +419,16 @@ def supervise(root, stage, resume=False):
         or shutil.disk_usage(root).free < cfg["minimum_free_disk_bytes"]
     ):
         raise ValueError("Need 3 GiB available RAM and 2 GiB free disk")
+    stage_environment = {
+        k: v for k, v in environment().items() if k not in {"omp_threads", "mkl_threads"}
+    }
     path = root / f"{stage}-state.json"
     if path.exists():
         if not resume:
             raise ValueError("Existing stage; inspect state and use --resume explicitly")
         state = read_json(path)
+        if state.get("environment") != stage_environment:
+            raise ValueError("Stage environment changed; do not move a partial stage between hosts")
         if state["status"] == "completed":
             raise ValueError("Stage already complete")
         active = state.get("active")
@@ -438,6 +445,7 @@ def supervise(root, stage, resume=False):
     else:
         state = {
             "status": "running",
+            "environment": stage_environment,
             "completed": {},
             "attempts": [],
             "cpu_seconds": 0.0,

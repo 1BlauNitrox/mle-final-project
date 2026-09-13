@@ -137,6 +137,7 @@ def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_pa
                     "replica": replica,
                     "checkpoint_sha256": sha(directory / "checkpoint.pt"),
                     "initial_online_sha256": "initial",
+                    "environment": {"host": "PC"},
                     "final_online_sha256": key,
                     "optimizer_updates": 50,
                     "episodes_sha256": sha(directory / "episodes.json.gz"),
@@ -339,3 +340,19 @@ def test_raw_tensor_counters_must_match_training_evidence(tmp_path):
     torch.save(payload, directory / "checkpoint.pt")
     with pytest.raises(ValueError, match="counters"):
         verify_training_tensors(tmp_path)
+
+
+def test_resume_rejects_changed_host_before_any_worker(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    import psutil
+    import scripts.pilot_task3_episode_exploration as pilot
+
+    monkeypatch.setattr(pilot, "verify", lambda root: None)
+    monkeypatch.setenv("TASK168_PILOT_AUTHORIZED", "yes")
+    monkeypatch.setattr(psutil, "virtual_memory", lambda: SimpleNamespace(available=10**12))
+    monkeypatch.setattr(pilot.shutil, "disk_usage", lambda root: SimpleNamespace(free=10**12))
+    pilot.write(
+        tmp_path / "training-state.json", {"environment": {"host": "different"}, "status": "failed"}
+    )
+    with pytest.raises(ValueError, match="environment changed"):
+        pilot.supervise(tmp_path, "training", resume=True)

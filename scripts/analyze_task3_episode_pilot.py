@@ -180,10 +180,12 @@ def analyze(root):
     updated = True
     initial_hashes = set()
     training_summary = {}
+    training_environments = set()
     for key, relative in training["completed"].items():
         directory = root / relative
         result = read_json(directory / "result.json")
         initial_hashes.add(result["initial_online_sha256"])
+        training_environments.add(json.dumps(result["environment"], sort_keys=True))
         updated &= (
             result["optimizer_updates"] > 0
             and result["final_online_sha256"] != result["initial_online_sha256"]
@@ -201,6 +203,8 @@ def analyze(root):
             "attack_episodes": sum(row["attack_steps"] > 0 for row in rows),
             "eliminations": sum(metrics(row)["eliminations"] for row in rows),
         }
+    if len(training_environments) != 1:
+        raise ValueError("Training arms were split across environments")
     if initial_hashes != {initial_network_hash}:
         raise ValueError("Unequal initialization")
     times = [
