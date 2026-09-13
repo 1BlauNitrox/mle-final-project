@@ -17,7 +17,8 @@
   "timing_outlier_ms": 1186.1112117767334,
   "all_invalid_events": 26,
   "registered_decision": "failed; no promotion",
-  "recovery_archive": "issue173-recovery.tar.gz",
+  "recovery_archive": "issue173-recovery-final.tar.gz",
   "evidence_sha256": "9fc62badcc71fff177a722c855d616cac6b2805dce0f61ec3ab6481e6697fcdb",
-  "evidence_bytes": 75346125
+  "evidence_bytes": 75346125,
+  "public_evidence": "evidence.json"
 }
