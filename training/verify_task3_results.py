@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 from contextlib import contextmanager
@@ -62,6 +64,7 @@ def fingerprint(root, paths, *, directory=False):
 
 def rebind_copy(source, destination):
     """Verify original binding bytes, then relocate only parent paths in a scratch copy."""
+    source, destination = source.resolve(), destination.resolve()
     binding = campaign.read_json(source / "binding.json")
     campaign.require(binding["parent"]["sha256"] == PARENT, "Wrong registered #91 parent")
     campaign.require(
@@ -100,6 +103,17 @@ def rebind_copy(source, destination):
 
 
 @contextmanager
+def registered_plan_module(snapshot):
+    """Use the executed plan schema, not defaults added after the experiment."""
+    name = "_task3_registered_run_plan"
+    spec = importlib.util.spec_from_file_location(name, snapshot / "training/run_plan.py")
+    module = importlib.util.module_from_spec(spec)
+    with patch.dict(sys.modules, {name: module}):
+        spec.loader.exec_module(module)
+        yield module
+
+
+@contextmanager
 def historical_context(root, binding_directory):
     """Validate historical sources/dependencies separately from the analysis environment."""
     auth = campaign.read_json(root / "authorization.json")
@@ -110,7 +124,7 @@ def historical_context(root, binding_directory):
         "Incomplete execution dependency record",
     )
     with tempfile.TemporaryDirectory(prefix="task3-verification-") as temporary:
-        temporary = Path(temporary)
+        temporary = Path(temporary).resolve()
         snapshot = temporary / "source"
         snapshot.mkdir()
         archive_path = temporary / "source.tar"
@@ -134,16 +148,18 @@ def historical_context(root, binding_directory):
         config_path = snapshot / "experiments/2026-09-08-dqn-task3-peaceful-opponent/config.yaml"
         original_validator = campaign.validate_protocol
         with (
+            registered_plan_module(snapshot) as historical_plan,
+            patch.object(campaign, "load_plan", historical_plan.load_plan),
             patch.object(campaign, "ROOT", snapshot),
             patch.object(campaign, "CONFIG", config_path),
             patch.object(analysis, "CONFIG", config_path),
-            patch.object(run_plan, "REPOSITORY_ROOT", snapshot),
-            patch.object(run_plan, "_dependency_record", lambda: dict(dependencies)),
+            patch.object(historical_plan, "REPOSITORY_ROOT", snapshot),
+            patch.object(historical_plan, "_dependency_record", lambda: dict(dependencies)),
             patch.object(
-                run_plan, "_fingerprint_paths", lambda names: fingerprint(snapshot, names)
+                historical_plan, "_fingerprint_paths", lambda names: fingerprint(snapshot, names)
             ),
             patch.object(
-                run_plan,
+                historical_plan,
                 "_fingerprint_directory",
                 lambda path: fingerprint(snapshot, (str(path),), directory=True),
             ),

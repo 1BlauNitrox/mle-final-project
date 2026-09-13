@@ -6,7 +6,7 @@ import os
 
 import numpy as np
 
-from .config import DEFAULT_SEED, INITIAL_EPSILON
+from .config import ACTIONS, DEFAULT_SEED, INITIAL_EPSILON
 from .features import (
     BASELINE_STATE_REPRESENTATION,
     VALID_STATE_REPRESENTATIONS,
@@ -33,6 +33,12 @@ VALID_ACTION_MASKING = {"none", "framework_legal"}
 STATE_REPRESENTATION_ENV = "BOMBERMAN_TABULAR_STATE_REPRESENTATION"
 INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
 POTENTIAL_SHAPING_ENV = "BOMBERMAN_TABULAR_POTENTIAL_SHAPING"
+EXPLORATION_MODE_ENV = "BOMBERMAN_TABULAR_EXPLORATION_MODE"
+STANDARD_EXPLORATION = "standard"
+SAFE_BOMB_EXPLORATION = "safe_bomb"
+VALID_EXPLORATION_MODES = (STANDARD_EXPLORATION, SAFE_BOMB_EXPLORATION)
+COMPACT_BOMB_STATUS_INDEX = 4
+COMPACT_UNSAFE_BOMB_STATUS = 2
 
 
 def setup(self) -> None:
@@ -45,6 +51,7 @@ def setup(self) -> None:
     self.state_representation = _read_state_representation()
     self.initialization = _read_initialization()
     self.potential_shaping = _read_potential_shaping()
+    self.exploration_mode = _read_exploration_mode()
 
     representation = get_state_representation(
         self.state_representation
@@ -86,6 +93,9 @@ def setup(self) -> None:
 
         if loaded.potential_shaping != self.potential_shaping:
             mismatches.append(POTENTIAL_SHAPING_ENV)
+
+        if loaded.exploration_mode != self.exploration_mode:
+            mismatches.append(EXPLORATION_MODE_ENV)
 
         if mismatches and (not is_fresh_model or not self.train):
             raise ValueError(
@@ -162,7 +172,24 @@ def act(self, game_state: dict) -> str:
         epsilon=epsilon,
         rng=self.rng,
         action_mask=action_mask,
+        exploration_action_mask=_exploration_action_mask(self, state),
     )
+
+
+def _exploration_action_mask(self, state: tuple[int, ...]) -> np.ndarray | None:
+    """Exclude only an unsafe BOMB from random compact-state exploration."""
+
+    if (
+        not self.train
+        or self.exploration_mode != SAFE_BOMB_EXPLORATION
+        or self.state_representation != "compact_decision"
+        or state[COMPACT_BOMB_STATUS_INDEX] != COMPACT_UNSAFE_BOMB_STATUS
+    ):
+        return None
+
+    mask = np.ones(len(ACTIONS), dtype=bool)
+    mask[ACTIONS.index("BOMB")] = False
+    return mask
 
 
 def end_of_round(
@@ -282,4 +309,16 @@ def _read_potential_shaping() -> str:
             f"{list(VALID_POTENTIAL_SHAPING_MODES)}."
         )
 
+    return mode
+
+
+def _read_exploration_mode() -> str:
+    """Read the opt-in training exploration treatment."""
+
+    mode = os.environ.get(EXPLORATION_MODE_ENV, STANDARD_EXPLORATION)
+    if mode not in VALID_EXPLORATION_MODES:
+        raise ValueError(
+            f"{EXPLORATION_MODE_ENV} must be one of "
+            f"{list(VALID_EXPLORATION_MODES)}."
+        )
     return mode

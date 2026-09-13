@@ -5,11 +5,21 @@ has matched strong/mixed/reference matrices and a statistics-only decision
 function. `python -m training.task4_protocol --dry-run` reports concrete blockers;
 it cannot authorize a run or substitute for verified raw evidence and parent binding.
 
-The proposed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/README.md)
+
+The completed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
 reuses the guarded campaign executor and raw evidence checks with an explicit
 issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
 provides prepare, dry-run, run/resume, analyze, verify and compact export.
-Its new protocol and compute budget require separate approval before execution.
+The registered result rejects continuation. `training.verify_task3_mask_results`
+verifies its archive and historical source, parent, matrix, dependencies, raw
+observations and decision without launching games or changing server evidence.
+Any new scientific run needs its own prospective authorization.
+
+Repeated training blocks can set `world_seed_offset` in a run-plan stage.
+The runner adds it to each replica's world seed and checks the resolved seed
+against evaluation populations and the NumPy seed range. Omission preserves
+historical behavior. Keep the agent seed stable for checkpoint continuation;
+pair offsets by scenario occurrence when comparing reordered curricula.
 
 The completed #109 peaceful campaign is an exploratory negative result; its
 registered selection rule blocks automatic coin-collector continuation.
@@ -1013,3 +1023,9 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.
