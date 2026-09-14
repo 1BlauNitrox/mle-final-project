@@ -1,0 +1,62 @@
+{
+  "issue": 168,
+  "phase": "A",
+  "scope": "behavior_policy_mechanism_not_efficacy",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "input_size_bytes": 64301,
+  "parent_sha256": "c0b6081acf5a733258005d46b9430f3ef50e403470a3bb5428661729f9aeedf7",
+  "input_release": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue163-evidence-v1",
+  "input_archive_path": "campaign-root/binding/control.pt",
+  "epsilons": [
+    1.0,
+    0.2,
+    0.0
+  ],
+  "world_seeds": [
+    1631101,
+    1631102,
+    1631103,
+    1631104,
+    1631105,
+    1631106,
+    1631107,
+    1631108,
+    1631109,
+    1631110,
+    1631111,
+    1631112,
+    1631113,
+    1631114,
+    1631115,
+    1631116,
+    1631117,
+    1631118,
+    1631119,
+    1631120
+  ],
+  "agent_seed_offset": 1000000,
+  "scenario": "classic",
+  "opponents": [
+    "peaceful_agent"
+  ],
+  "episodes": 60,
+  "training_episodes": 0,
+  "maximum_steps": 400,
+  "limits": {
+    "wall_seconds": 900,
+    "cpu_seconds": 900,
+    "memory_bytes": 1073741824,
+    "episode_seconds": 120,
+    "minimum_free_memory_bytes": 3221225472
+  },
+  "readiness_filter": {
+    "mean_survival_ratio_min": 2.0,
+    "strictly_longer_pairs_min": 14,
+    "coin_difference_min": 0.0,
+    "attack_episode_count_min": 2
+  },
+  "selected_checkpoint": null,
+  "scientific_gates_unchanged": true,
+  "authorization": "Owner request permits bounded local mini-experiments; issue168 registration precedes execution."
+}

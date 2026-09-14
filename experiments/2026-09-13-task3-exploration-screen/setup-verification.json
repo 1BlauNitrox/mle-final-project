@@ -1,0 +1,28 @@
+{
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "runtime_files_reverified": 603,
+  "mechanical_smoke": {
+    "scope": "mechanical_smoke_excluded_from_pilot",
+    "training_episodes": 2,
+    "evaluation_episodes": 4,
+    "optimizer_updates": 301,
+    "checkpoint_sha256": "6c720b91c30dc8321d57e63dc7d18f6264cf293a096665226df56e0debe8f990"
+  },
+  "smoke_resources": {
+    "cpu_seconds": 41.140625,
+    "wall_seconds": 42.06989029998658,
+    "peak_memory_bytes": 300834816
+  },
+  "collision_trace_source": "a86e931",
+  "collision_observations_byte_identical_to_phase_c": [
+    1682118,
+    1682119
+  ],
+  "scientific_pilot_started": true,
+  "training_episodes_in_pilot": 300,
+  "remaining_gate": "Manual AI-use entry, final-head CI and non-author review. Human README revision and exact public evidence publication completed.",
+  "scope": "Pre-run mechanical validation; smoke data remain excluded from all scientific results.",
+  "evaluation_episodes_in_pilot": 280,
+  "scientific_pilot_completed": true,
+  "result_record": "phase-d-evidence-manifest.json"
+}
