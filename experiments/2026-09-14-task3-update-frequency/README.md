@@ -70,6 +70,8 @@ The evidence archive is 74,494,938 bytes with SHA-256
 `56c029257352854696314cd5ecc1dfbec3e885d117dcbc7bc4626afa722bf3f0`.
 Its manifest SHA-256 is
 `d3e3fe9c4b795c08e90f037872700c59e5fa6abe40878a00dcb0b1839d8437e6`.
+Both files are published in the
+[`issue178-evidence-v1` release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue178-evidence-v1).
 
 ## Limitations and next step
 
