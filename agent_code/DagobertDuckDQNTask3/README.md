@@ -5,6 +5,26 @@
 > provisional #91-derived parent. Its learning pilot failed; no default model
 > or fixture was replaced, and cumulative Task 2/3 success is not established.
 
+## Completed Double DQN comparison (#150)
+
+The [registered result](../../experiments/2026-09-12-task3-double-dqn-results/README.md)
+compared five matched standard/Double DQN replicas, 10,000 training episodes
+each, from provisional #91 A/r3. Both arms achieved 23.5% peaceful elimination;
+the Double-minus-standard difference was 0 percentage points, 95% CI
+[-18.5, +16.0]. Double DQN's registered benefit and cumulative hunting/retention
+gates failed. No arm or replica is selected, and Task 2 remains incomplete.
+Runtime and deterministic-repeat gates passed.
+
+The executed 39-input implementation is pinned at
+`6f014485a3026cc3707fa2cc3a379880dd0b74bd` in PR #154. This result PR retains
+the older 34-input implementation described below; it does not install or
+promote the experimental model. Full metrics, parent/checkpoint hashes, seeds
+and retrievable evidence are in the linked result record.
+
+The next step is bounded hunting/retention diagnosis before another registered
+intervention. This result does not justify adopting Double DQN or choosing a
+favorable standard-DQN replica as a fallback.
+
 ## Purpose and hypothesis
 
 Task 3 extends the Task 2 DQN with descriptive awareness of public opponents.
@@ -38,6 +58,12 @@ is the original 34-input checkout. The exact experimental parent, initialization
 source and six final checkpoint hashes are in the
 [phase-D manifest](../../experiments/2026-09-13-task3-exploration-screen/phase-d-evidence-manifest.json).
 Neither the fixture nor the experimental parent certifies Task 2 completion.
+
+This is the historical compatibility fixture, not the parent used for the
+completed #150 experiment. That experiment used explicitly authorized
+provisional #91 A/r3, with its exact binding retained in the result record.
+Future training requires a prospectively registered parent; it does not need
+to wait for Task 2 to be declared complete.
 
 Migration copies the 21 Task 2 input columns, both 64-unit hidden layers, and
 all six output rows. The thirteen Task 3 input columns are zero-initialized, so
@@ -99,3 +125,7 @@ holds episode exploration fixed and tests a smaller learning rate to investigate
 retention. It must use fresh paired seeds and the unchanged initialization;
 smaller updates are not yet a validated remedy. Detailed results and limitations
 are in the [experiment record](../../experiments/2026-09-13-task3-exploration-screen/README.md).
+
+The historical implementation and smoke checks below the result summary do
+not establish performance. The #150 result record defines the exact executed
+implementation, parent, seeds, decision rules and failed scientific gates.
