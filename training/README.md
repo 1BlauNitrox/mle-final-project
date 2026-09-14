@@ -1,5 +1,14 @@
 # Training Orchestration
 
+The completed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
+reuses the guarded campaign executor and raw evidence checks with an explicit
+issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
+provides prepare, dry-run, run/resume, analyze, verify and compact export.
+The registered result rejects continuation. `training.verify_task3_mask_results`
+verifies its archive and historical source, parent, matrix, dependencies, raw
+observations and decision without launching games or changing server evidence.
+Any new scientific run needs its own prospective authorization.
+
 Repeated training blocks can set `world_seed_offset` in a run-plan stage.
 The runner adds it to each replica's world seed and checks the resolved seed
 against evaluation populations and the NumPy seed range. Omission preserves
@@ -1018,6 +1027,18 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+## Prospective Task 3 target comparison (#150)
+
+`python -m training.task3_double_campaign` prepares and validates matched standard
+and Double DQN runs, guards execution, analyzes raw observations, verifies compact
+results and exports retrievable evidence. See the [registered protocol](../experiments/2026-09-12-task3-double-dqn/README.md)
+and [server commands](../experiments/2026-09-12-task3-double-dqn/SERVER.md).
+Both arms start from the same provisional #91 parent; no passing Task 3 model is
+currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-only
+framework/agent logging in seeded runs and records that policy in job metadata.
+Episode statistics, failure metadata and scientific measurements are retained.
+Default logging and existing campaign sources remain unchanged.
 
 Issue #124 reduced laptop evidence is verified with
 `python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.

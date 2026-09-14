@@ -218,8 +218,15 @@ def decide(rows, config):
     }
 
 
-def load_evidence(root, binding_directory, protocol="peaceful"):
-    config, plans, _report = validate_protocol(binding_directory, protocol)
+def load_evidence(
+    root, binding_directory, protocol="peaceful", *, validator=None, config_path=None, issue=None
+):
+    if validator is not None:
+        config, plans, _report = validator(binding_directory)
+    else:
+        config, plans, _report = validate_protocol(binding_directory, protocol)
+    if issue is None:
+        issue = config["issue"]
     auth = read_json(root / "authorization.json")
     identity = auth["identity"]
     require(identity["limits"] == config["resources"], "Authorized resource ceiling mismatch")
@@ -230,7 +237,7 @@ def load_evidence(root, binding_directory, protocol="peaceful"):
             sha256(ROOT / "agent_code" / name / "callbacks.py") == digest, "Opponent source changed"
         )
     require(
-        identity["protocol_sha256"] == sha256(protocol_path(protocol)),
+        identity["protocol_sha256"] == sha256(config_path or protocol_path(protocol)),
         "Protocol authorization mismatch",
     )
     require(
@@ -264,7 +271,7 @@ def load_evidence(root, binding_directory, protocol="peaceful"):
         "Exceeded registered resources",
     )
     campaign = {
-        "issue": config["issue"],
+        "issue": issue,
         "opponent_seed_policy": "task3_per_slot_v1",
         "authorization_sha256": sha256(root / "authorization.json"),
         "reviewed_commit": identity["reviewed_commit"],

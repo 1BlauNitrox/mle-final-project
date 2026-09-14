@@ -1,5 +1,33 @@
 # 0006 AI Usage and Disclosure
 
+Issue #150 preparation (2026-09-12): Codex proposed and implemented an optional
+Double DQN target under the owner's next-experiment preparation authorization,
+using retained #146 diagnostic observations and the original Double DQN paper.
+The hypothesis is not a proven cause or cure for the observed stalls. It keeps
+the model family, rewards, features and historical defaults unchanged, and
+registers a fresh matched campaign with all existing capability gates. Tests,
+isolated smokes and timing checks verify implementation only; no long scientific
+campaign was launched or checkpoint promoted. Human ownership and review remain
+required before accepting the experiment or any result.
+
+Issue #147 result verification (2026-09-12): OpenAI Codex verified the downloaded
+archive and all 10,635 members, implemented tested historical source/dependency
+and binding relocation checks, and reproduced all raw observations and the
+registered negative decision. It prepared compact tables, checkpoint inventory,
+durable evidence and result documentation. The owner ran the registered campaign
+under an explicit exception before peer review; this is disclosed without
+altering original authorization records. No new games were launched, thresholds
+relaxed or candidate promoted during analysis. A human must review the evidence,
+interpretation and implementation before merge; AI output is not evidence.
+
+Issue #147 preparation (2026-09-12): OpenAI Codex proposed the matched Task 3
+legal-mask follow-up from #109's failed invalid-action/hunting/retention gates
+and the limitations of #124. It reused existing policy code, added explicit
+single-flag initialization checks, paired analysis and shared execution/export
+tooling, and drafted server instructions. Synthetic tests and isolated smokes
+validate mechanics only. No new scientific compute or efficacy claim is made;
+the owner must approve the proposed protocol/budget and a teammate must review.
+
 Issue #109 result analysis (2026-09-12): OpenAI Codex verified the owner's
 download hash, retained source/checkpoint identity and complete campaign
 observations, and reproduced the preregistered negative decision. Codex fixed
@@ -178,43 +206,17 @@ packaging checks verify implementation only; no Task 3 performance claim or
 scientific compute authorization is implied. Final #124 parent binding,
 numeric #109 decisions and scientific execution remain separate work.
 
-### Issue #124 explicit owner execution exception
+Issue #150 protocol tooling (2026-09-12): Codex prepared the matched seed matrix,
+parent and intervention validators, unchanged-gate analyzer, compact export and
+server handoff. Scoped warning-only logging reduces disk use while retaining
+raw scientific observations and failure records. Unit tests and an isolated
+integration smoke validate mechanics; they do not establish scientific efficacy
+or authorize a long run. Human review and ownership remain required.
 
-On September 10, Julius explicitly instructed execution despite the missing
-peer review: "I want you to run it anyways!" Codex added a tested, opt-in
-execution exception and records it in campaign/job authorization metadata.
-This is not peer approval and does not authorize a merge. Resource limits,
-immutable source checks and analysis requirements remain unchanged.
-
-### Issue #124 owner-authorized runtime extension
-
-Julius requested longer execution on September 10 after the observed runtime
-exceeded the original estimate. Codex implemented and tested a separate,
-checksum-bound resume wrapper, preserving the immutable training source,
-original authorization and cumulative resource ledger. The extension and
-interrupted attempts are scientific deviations to disclose, not new results.
-See the experiment's `runtime-extension.md` for effective limits and commands.
-
-### Issue #124 Windows resource-ledger recovery
-
-Codex traced B/r2 block 16's technical failure to a Windows permission error
-on atomic resource-file replacement. A bounded retry in the separately
-versioned operational resume monitor was tested with transient, persistent
-and unrelated I/O failures. Recovery retains the original learning source,
-completed checkpoints, failed attempts and cumulative resource accounting.
-
-- September 10, Issue #124: Codex inspected retained campaign/job/resource records, invoked the registered analyzer in analysis-only mode, and documented the system-memory interruption. No scientific performance conclusion or checkpoint selection was inferred; the compact operational snapshot is committed for review.
-
-- Issue #124 memory recovery: Codex implemented and tested an owner-authorized recovery from the system availability stop, preserving archived breach evidence and cumulative accounting. No scientific settings or budgets changed.
-
-- September 11, Issue #124: Codex verified the second system-memory interruption against retained statuses and ledgers, reran analysis-only validation, and documented 395 completed training blocks with zero evaluation episodes. No scientific conclusion was inferred.
-
-- September 11, Issue #124: Codex prepared the user-authorized reduced evaluation amendment and serial launcher, with pinned final artifacts, no training, unchanged evaluation suites and tests rejecting corruption/incomplete included replicas. D/r5 remains excluded and D exploratory; no outcome informed this amendment.
-
-- September 11, Issue #124 evaluation extension: Codex implemented and tested explicit owner-authorized runtime limits with preserved original registration, plus process-scoped Windows wakefulness. Throughput alone informed the extension; no evaluation performance conclusions were used.
-
-- 2026-09-11, #124 / PR #131: Codex verified the returned Windows laptop evidence,
-  implemented a reduced-scope analyzer and rejection tests, retained per-episode
-  observations and final-training provenance, published checkpoint evidence, and
-  documented negative rehearsal / inconclusive masking results. No default model
-  changed and no Task 2 completion claim is made. Human review remains required.
+Issue #150 storage recovery (2026-09-12): Codex's 8 GiB working-space estimate
+missed retained per-evaluation checkpoint snapshots; the owner reported disk
+exhaustion. Codex prepared a separately executed, audited hard-link utility for
+identical completed evaluation inputs and tested it on disposable fixtures and
+a copy of real smoke output. No scientific source, checkpoint bytes, seeds,
+thresholds or resource budget are changed. Recovery and final scientific
+verification remain separate from these mechanics checks.
