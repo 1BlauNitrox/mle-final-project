@@ -1,13 +1,5 @@
 # 0006 AI Usage and Disclosure
 
-Issue #124 protocol (2026-09-10): OpenAI Codex prepared the matched rehearsal/
-masking matrix, fresh seed blocks, four-worker phase scheduler, detached Windows
-launcher, shared resource limits, evidence validation and prospective decision
-analyzer. The user confirmed four arms and the resource envelope. Non-author
-review must validate the prospective effect/selection rules before execution.
-Tests and dry runs verify implementation, not performance. No scientific
-training result or model adoption is claimed by this protocol PR.
-
 Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
 world-seed offsets and a read-only audit of thirty retained Issue #107 replay
 snapshots. The audit distinguishes the empty-other-partition backfill rule
