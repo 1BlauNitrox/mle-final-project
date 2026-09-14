@@ -66,6 +66,17 @@ def test_distance_uses_the_nearest_public_opponent():
     assert nearest_opponent_distance(state) == 1
 
 
+def test_distance_is_a_plain_int_so_evidence_rows_stay_serializable():
+    """Framework positions can be NumPy integers, which json.dumps refuses."""
+    state = make_state(
+        position=(np.int64(3), np.int64(3)),
+        others=[("target", 0, True, (np.int64(3), np.int64(6)))],
+    )
+    distance = nearest_opponent_distance(state)
+    assert type(distance) is int
+    assert json.dumps({"opponent_distance_sum": distance}) == '{"opponent_distance_sum": 3}'
+
+
 def test_potential_is_zero_without_an_opponent_and_decays_with_distance():
     assert potential(None, 3.0) == 0.0
     assert potential(make_state(), 3.0) == 0.0

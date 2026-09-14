@@ -38,7 +38,9 @@ def nearest_opponent_distance(game_state: dict | None) -> int | None:
         return None
 
     x, y = game_state["self"][3]
-    return min(abs(other[3][0] - x) + abs(other[3][1] - y) for other in others)
+    # Framework positions can be NumPy integers; return a plain int so callers
+    # can record the value in JSON evidence without a conversion step.
+    return int(min(abs(other[3][0] - x) + abs(other[3][1] - y) for other in others))
 
 
 def approach_potential(game_state: dict | None, *, scale: float, discount_factor: float) -> float:
