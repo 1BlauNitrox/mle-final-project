@@ -1,5 +1,35 @@
 # DagobertDuckDQNTask3
 
+## Issue 171 retention pilot
+
+[Issue #171](https://github.com/1BlauNitrox/mle-final-project/issues/171) tested
+whether reducing Adam's learning rate from 0.0005 to 0.00005 improves retention
+without reducing hunting. Both arms used the same fresh #168 initialization and
+80% greedy / 20% random episode schedule. The pilot used the archived 39-input
+runtime at `c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113`, separately from the tracked
+34-input provisional fixture described in the remaining implementation sections.
+Three paired replicas completed 300 training episodes; all six fixed-final
+checkpoints and the unchanged reference completed 280 evaluation episodes,
+including exact repeats, across four suites.
+
+**The registered retention screen failed.** Lower-rate Task 1 collection improved
+by 6.8 percentage points versus control, below the required 10 (descriptive 95%
+interval: -37.47 to +57.20 points). Hunting fell from 0.267 to 0.133 eliminations
+per game (paired difference -0.133; interval -0.533 to +0.267). Loot-crate and
+classic-empty retention failed, as did the whole-matrix zero-invalid-action gate
+because of one control event reproduced in its repeat. Genuine learning,
+behavioral repeats and latency passed. The wide intervals limit generalization.
+
+This result does not support adopting the lower rate as a retention remedy.
+No checkpoint was selected or promoted, and no agent default changed. Task 2
+remains cumulatively incomplete; the original Task 3 gates and coin-collector
+continuation requirements remain in force. Review the negative result before
+proposing another controlled experiment.
+
+The [experiment record](../../experiments/2026-09-13-task3-learning-rate-retention/README.md)
+links the registered configuration, artifact provenance, all effects and paired
+uncertainty, resource accounting and reproducible analysis.
+
 > Status: this checkout retains the original Task 3 implementation fixture.
 > Issue #168 tested a separately pinned, escape-preserving runtime and a
 > provisional #91-derived parent. Its learning pilot failed; no default model
@@ -166,7 +196,7 @@ Tests cover blocked paths, no opponent, nearest-opponent tie-breaking, blast
 opportunities, occupancy, escape context, migration Q-value preservation,
 gradient flow, persistence, terminal elimination reward attribution, and
 reproducible run-plan expansion. The agent card records the Task 2 campaign's
-known mixed/failed gates as inherited context; it does not turn them into a
+known mixed/failed gates as inherited context. It does not turn them into a
 Task 3 result.
 
 The eventual parent artifact, training seeds, evaluation seeds, numerical
