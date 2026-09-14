@@ -1,5 +1,10 @@
 # 0006 AI Usage and Disclosure
 
+Issue #126 preparation (2026-09-12): OpenAI Codex drafted the independent fixed
+strong-opponent versus fixed-mixture protocol, matched regression matrices and
+tested statistical decision. The parent and execution adapter remain blocked;
+numeric thresholds and compute require owner ratification. No training or Task 4
+result is claimed. The proposal preserves the roadmap's evidence and freeze windows.
 Issue #146 diagnosis (2026-09-12): Codex prepared prospectively bounded read-only
 trajectory instrumentation and stall tests under the owner's short-test
 authorization. It records original model/source identity, full public states,
