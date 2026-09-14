@@ -16,13 +16,14 @@ param(
     [ValidateSet('approach-shaping', 'update-cadence')]
     [string]$Profile = 'approach-shaping',
     [string]$Root = "training_outputs/task3-$Profile",
+    [string]$Python = '.\.venv\Scripts\python.exe',
     [switch]$Authorize,
     [switch]$KeepAwake
 )
 
 $ErrorActionPreference = 'Stop'
-$python = '.\.venv\Scripts\python.exe'
-if (-not (Test-Path $python)) { throw "Expected a virtual environment at $python" }
+$python = $Python
+if (-not (Test-Path $python)) { throw "No interpreter at $python; pass -Python <path>" }
 if (-not (Test-Path $Root)) { throw "Prepare $Root first with prepare_task3_approach.ps1" }
 if (-not $Authorize) {
     throw 'Refusing to start: re-run with -Authorize once you have approved this allocation.'

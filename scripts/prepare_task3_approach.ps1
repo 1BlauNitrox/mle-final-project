@@ -13,12 +13,13 @@ param(
     [ValidateSet('approach-shaping', 'update-cadence')]
     [string]$Profile = 'approach-shaping',
     [string]$Root = "training_outputs/task3-$Profile",
-    [string]$Archive = 'training_outputs/inputs/issue175-pilot-evidence.tar.gz'
+    [string]$Archive = 'training_outputs/inputs/issue175-pilot-evidence.tar.gz',
+    [string]$Python = '.\.venv\Scripts\python.exe'
 )
 
 $ErrorActionPreference = 'Stop'
-$python = '.\.venv\Scripts\python.exe'
-if (-not (Test-Path $python)) { throw "Expected a virtual environment at $python" }
+$python = $Python
+if (-not (Test-Path $python)) { throw "No interpreter at $python; pass -Python <path>" }
 if (Test-Path $Root) { throw "Output root $Root already exists; inspect and preserve it" }
 
 $env:TASK3_APPROACH_PROFILE = $Profile
