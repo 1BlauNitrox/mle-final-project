@@ -22,7 +22,7 @@ of four suites, with two repeats: 1,000 training and 3,520 evaluation episodes.
 
 
 
-The registered experiment failed. 
+The registered experiment failed.
 The treatment-control elimination difference was +0.010/game (95% CI \[-0.080, +0.105]). This misses
 both the required +0.100 improvement and positive confidence-interval lower bound.
 Treatment also fell below the unchanged reference by 0.160 eliminations/game
@@ -62,4 +62,3 @@ use different worlds and are not a matched comparison with this experiment.
 checkpoint and execution verification. The compact archive is verified locally;
 [results/evidence.json](results/evidence.json) records its hashes and reproduction
 commands.
-
