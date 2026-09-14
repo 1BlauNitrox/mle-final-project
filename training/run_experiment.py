@@ -40,6 +40,7 @@ def run_experiment(
     run_id: str | None = None,
     metadata_extra: dict[str, Any] | None = None,
     process_monitor: Any | None = None,
+    seed_opponents: bool = False,
 ) -> Path:
     """Run one game job and create a self-contained experiment directory."""
     _validate_arguments(
@@ -49,6 +50,14 @@ def run_experiment(
         rounds=rounds,
         opponents=opponents,
     )
+
+    if seed_opponents:
+        if agent_seed is None or agent_seed < 0:
+            raise ValueError("Seeded opponents require a non-negative agent seed")
+        if not set(opponents) <= {"peaceful_agent", "coin_collector_agent"} or len(
+            set(opponents)
+        ) != len(opponents):
+            raise ValueError("Seeded opponents must be distinct supplied Task 3 agents")
 
     started_at = datetime.now(timezone.utc)
     if run_id is None:
@@ -85,6 +94,9 @@ def run_experiment(
         framework_statistics_path=framework_statistics_path,
     )
 
+    if seed_opponents:
+        command[1:2] = ["-m", "training.seeded_framework"]
+
     metadata: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "run_id": run_id,
@@ -96,6 +108,7 @@ def run_experiment(
         "rounds": rounds,
         "world_seed": world_seed,
         "agent_seed": agent_seed,
+        "opponent_seed_policy": "task3_per_slot_v1" if seed_opponents else None,
         "agent_configuration": _agent_configuration_reference(
             agent,
             snapshot_directory=(
@@ -103,7 +116,9 @@ def run_experiment(
                 if git_dirty
                 else None
             ),
+            snapshot_copy=getattr(process_monitor, "snapshot_input", None),
         ),
+        "snapshot_storage": getattr(process_monitor, "snapshot_storage", "independent_copies"),
         "command": command,
         "git_commit": git_commit,
         "git_dirty": git_dirty,
@@ -129,6 +144,11 @@ def run_experiment(
         environment["BOMBERMAN_AGENT_SEED"] = str(agent_seed)
     if environment_overrides:
         environment.update(environment_overrides)
+    metadata["logging_policy"] = (
+        "warning_only"
+        if seed_opponents and environment.get("BOMBERMAN_COMPACT_LOGS") == "1"
+        else "framework_default"
+    )
     if (
         mode == "training"
         and environment.get("BOMBERMAN_DQN_REPLAY_TREATMENT")
@@ -336,6 +356,7 @@ def _agent_configuration_reference(
     agent: str,
     *,
     snapshot_directory: Path | None = None,
+    snapshot_copy=None,
 ) -> dict[str, str | None]:
     """Fingerprint an agent and optionally preserve its dirty state."""
     agent_directory = REPOSITORY_ROOT / "agent_code" / agent
@@ -352,7 +373,9 @@ def _agent_configuration_reference(
     ignored_parts = {"__pycache__", "logs"}
     ignored_files = {STAGED_EVALUATION_CHECKPOINT_NAME}
 
-    if snapshot_directory is not None:
+    if snapshot_directory is not None and snapshot_copy is not None:
+        snapshot_copy(agent_directory, snapshot_directory)
+    elif snapshot_directory is not None:
         shutil.copytree(
             agent_directory,
             snapshot_directory,
@@ -499,6 +522,11 @@ def parse_arguments(
         help="Optional agents placed after the observed agent",
     )
     parser.add_argument(
+        "--seed-opponents",
+        action="store_true",
+        help="Use isolated seeded streams for supplied Task 3 opponents",
+    )
+    parser.add_argument(
         "--output-root",
         type=Path,
         default=DEFAULT_OUTPUT_ROOT,
@@ -522,6 +550,7 @@ def main(argv: list[str] | None = None) -> int:
             agent_seed=arguments.agent_seed,
             opponents=arguments.opponents,
             output_root=arguments.output_root,
+            seed_opponents=arguments.seed_opponents,
         )
     except Exception as error:
         print(

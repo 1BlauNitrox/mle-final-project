@@ -1,0 +1,13 @@
+{
+  "status": "completed",
+  "stage": "results",
+  "started_unix": 1789313552.617086,
+  "deadline_unix": 1789320752.6170862,
+  "completed": [
+    "train",
+    "evaluate",
+    "results"
+  ],
+  "active_pid": null,
+  "wall_seconds": 3255.9025714000454
+}

@@ -1,0 +1,2099 @@
+{
+  "status": "exploratory_mixed_or_negative_with_integrity_failure",
+  "selected_arm": null,
+  "selected_replica": null,
+  "task2_complete": false,
+  "automatic_continuation_allowed": false,
+  "repeat_gate_pass": false,
+  "original_campaign_wall_gate_pass": false,
+  "performance": {
+    "status": "exploratory_mixed_or_negative",
+    "task2_complete": false,
+    "arms": {
+      "control": {
+        "status": "exploratory_mixed_or_negative",
+        "task2_complete": false,
+        "gates": {
+          "elimination_absolute": false,
+          "elimination_improvement": false,
+          "first_place_absolute": true,
+          "first_place_improvement": false,
+          "score_margin_absolute": true,
+          "score_margin_improvement": false,
+          "self_kill_absolute": true,
+          "classic-peaceful/invalid_actions": true,
+          "classic-retention/collection": false,
+          "classic-retention/survival": true,
+          "classic-retention/self_kill": true,
+          "classic-retention/crates": false,
+          "classic-retention/invalid_actions": true,
+          "coin-heaven-retention/collection": false,
+          "coin-heaven-retention/survival": true,
+          "coin-heaven-retention/self_kill": true,
+          "coin-heaven-retention/invalid_actions": true,
+          "loot-crate-retention/collection": false,
+          "loot-crate-retention/survival": true,
+          "loot-crate-retention/self_kill": true,
+          "loot-crate-retention/crates": false,
+          "loot-crate-retention/invalid_actions": true,
+          "runtime": false
+        },
+        "contrasts": {
+          "classic-peaceful/elimination": {
+            "mean": -0.09,
+            "lower": -0.26,
+            "upper": 0.06
+          },
+          "classic-peaceful/first_place": {
+            "mean": -0.14,
+            "lower": -0.31,
+            "upper": 0.02
+          },
+          "classic-peaceful/score_margin": {
+            "mean": -1.64,
+            "lower": -2.98,
+            "upper": -0.29
+          },
+          "classic-retention/collection": {
+            "mean": -0.11444444444444446,
+            "lower": -0.23555555555555557,
+            "upper": -0.007777777777777779
+          },
+          "classic-retention/survival": {
+            "mean": 0.28,
+            "lower": 0.1,
+            "upper": 0.49
+          },
+          "classic-retention/self_kill": {
+            "mean": -0.28,
+            "lower": -0.49,
+            "upper": -0.1
+          },
+          "classic-retention/crates_destroyed": {
+            "mean": -6.8400000000000025,
+            "lower": -19.270250000000004,
+            "upper": 5.435624999999989
+          },
+          "coin-heaven-retention/collection": {
+            "mean": -0.0926,
+            "lower": -0.30500999999999995,
+            "upper": 0.12639999999999996
+          },
+          "coin-heaven-retention/survival": {
+            "mean": 0.1,
+            "lower": 0.0,
+            "upper": 0.25
+          },
+          "coin-heaven-retention/self_kill": {
+            "mean": -0.1,
+            "lower": -0.25,
+            "upper": 0.0
+          },
+          "loot-crate-retention/collection": {
+            "mean": -0.19060000000000002,
+            "lower": -0.30461,
+            "upper": -0.08300000000000002
+          },
+          "loot-crate-retention/survival": {
+            "mean": 0.43,
+            "lower": 0.21,
+            "upper": 0.65
+          },
+          "loot-crate-retention/self_kill": {
+            "mean": -0.43,
+            "lower": -0.65,
+            "upper": -0.21
+          },
+          "loot-crate-retention/crates_destroyed": {
+            "mean": -20.825000000000003,
+            "lower": -32.910000000000004,
+            "upper": -9.299875000000002
+          }
+        },
+        "summaries": {
+          "classic-peaceful": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.23999999999999996,
+              "elimination": 0.11,
+              "self_kill": 0.04,
+              "survival": 0.96,
+              "score": 2.71,
+              "coins_collected": 2.16,
+              "crates_destroyed": 36.32,
+              "bombs_dropped": 25.2,
+              "survival_steps": 390.11,
+              "episode_steps": 392.39,
+              "opponents_eliminated": 0.11,
+              "score_margin": 2.71,
+              "first_place": 0.76,
+              "tied_first": 0.24,
+              "invalid_action_rate": 2.5633795596113916e-05,
+              "action_counts": {
+                "action_up": 6847,
+                "action_right": 6143,
+                "action_down": 6881,
+                "action_left": 6200,
+                "action_wait": 10420,
+                "action_bomb": 2520,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 5.4607391357421875,
+              "decision_p95_ms": 13.563275337219238,
+              "decision_max_ms": 29.070615768432617
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.37222222222222223,
+              "elimination": 0.2,
+              "self_kill": 0.15,
+              "survival": 0.85,
+              "score": 4.35,
+              "coins_collected": 3.35,
+              "crates_destroyed": 47.2,
+              "bombs_dropped": 34.25,
+              "survival_steps": 358.45,
+              "episode_steps": 383.75,
+              "opponents_eliminated": 0.2,
+              "score_margin": 4.35,
+              "first_place": 0.9,
+              "tied_first": 0.1,
+              "invalid_action_rate": 0.010880178546519738,
+              "action_counts": {
+                "action_up": 987,
+                "action_right": 800,
+                "action_down": 1016,
+                "action_left": 822,
+                "action_wait": 2818,
+                "action_bomb": 726,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.282712936401367,
+              "decision_p95_ms": 11.144590377807614,
+              "decision_max_ms": 28.43928337097168
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.2944444444444444,
+                "elimination": 0.15,
+                "self_kill": 0.1,
+                "survival": 0.9,
+                "score": 3.4,
+                "coins_collected": 2.65,
+                "crates_destroyed": 39.45,
+                "bombs_dropped": 25.6,
+                "survival_steps": 373.0,
+                "episode_steps": 373.05,
+                "opponents_eliminated": 0.15,
+                "score_margin": 3.4,
+                "first_place": 0.85,
+                "tied_first": 0.15,
+                "invalid_action_rate": 0.00013404825737265417,
+                "action_counts": {
+                  "action_up": 1471,
+                  "action_right": 1472,
+                  "action_down": 1470,
+                  "action_left": 1541,
+                  "action_wait": 994,
+                  "action_bomb": 512,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.025625228881836,
+                "decision_p95_ms": 13.814747333526608,
+                "decision_max_ms": 29.070615768432617
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.23888888888888885,
+                "elimination": 0.1,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.65,
+                "coins_collected": 2.15,
+                "crates_destroyed": 36.65,
+                "bombs_dropped": 25.65,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.1,
+                "score_margin": 2.65,
+                "first_place": 0.8,
+                "tied_first": 0.2,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1128,
+                  "action_right": 1709,
+                  "action_down": 1178,
+                  "action_left": 1687,
+                  "action_wait": 1785,
+                  "action_bomb": 513,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.257964134216309,
+                "decision_p95_ms": 13.387727737426758,
+                "decision_max_ms": 27.951717376708984
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.23888888888888885,
+                "elimination": 0.05,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.4,
+                "coins_collected": 2.15,
+                "crates_destroyed": 37.85,
+                "bombs_dropped": 33.15,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.05,
+                "score_margin": 2.4,
+                "first_place": 0.75,
+                "tied_first": 0.25,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1540,
+                  "action_right": 771,
+                  "action_down": 1550,
+                  "action_left": 745,
+                  "action_wait": 2731,
+                  "action_bomb": 663,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.116105079650879,
+                "decision_p95_ms": 11.927425861358639,
+                "decision_max_ms": 27.6336669921875
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.25,
+                "elimination": 0.1,
+                "self_kill": 0.1,
+                "survival": 0.9,
+                "score": 2.75,
+                "coins_collected": 2.25,
+                "crates_destroyed": 38.65,
+                "bombs_dropped": 28.7,
+                "survival_steps": 377.55,
+                "episode_steps": 388.9,
+                "opponents_eliminated": 0.1,
+                "score_margin": 2.75,
+                "first_place": 0.75,
+                "tied_first": 0.25,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 902,
+                  "action_right": 1875,
+                  "action_down": 896,
+                  "action_left": 1888,
+                  "action_wait": 1416,
+                  "action_bomb": 574,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.55109977722168,
+                "decision_p95_ms": 14.229059219360352,
+                "decision_max_ms": 23.88739585876465
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.17777777777777778,
+                "elimination": 0.15,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.35,
+                "coins_collected": 1.6,
+                "crates_destroyed": 29.0,
+                "bombs_dropped": 12.9,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.15,
+                "score_margin": 2.35,
+                "first_place": 0.65,
+                "tied_first": 0.35,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1806,
+                  "action_right": 316,
+                  "action_down": 1787,
+                  "action_left": 339,
+                  "action_wait": 3494,
+                  "action_bomb": 258,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 6.617903709411621,
+                "decision_p95_ms": 13.106215000152583,
+                "decision_max_ms": 27.95243263244629
+              }
+            }
+          },
+          "classic-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.15777777777777777,
+              "elimination": 0.0,
+              "self_kill": 0.02,
+              "survival": 0.98,
+              "score": 1.42,
+              "coins_collected": 1.42,
+              "crates_destroyed": 28.98,
+              "bombs_dropped": 17.48,
+              "survival_steps": 393.48,
+              "episode_steps": 393.48,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 11418,
+                "action_right": 4369,
+                "action_down": 11476,
+                "action_left": 4243,
+                "action_wait": 6094,
+                "action_bomb": 1748,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 5.368590354919434,
+              "decision_p95_ms": 14.151954650878908,
+              "decision_max_ms": 29.541730880737305
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.27222222222222225,
+              "elimination": 0.0,
+              "self_kill": 0.3,
+              "survival": 0.7,
+              "score": 2.45,
+              "coins_collected": 2.45,
+              "crates_destroyed": 39.8,
+              "bombs_dropped": 23.95,
+              "survival_steps": 314.45,
+              "episode_steps": 314.45,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.10033391636190174,
+              "action_counts": {
+                "action_up": 1233,
+                "action_right": 635,
+                "action_down": 691,
+                "action_left": 670,
+                "action_wait": 2560,
+                "action_bomb": 500,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.009246826171875,
+              "decision_p95_ms": 11.91020011901855,
+              "decision_max_ms": 27.0383358001709
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.12222222222222223,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.1,
+                "coins_collected": 1.1,
+                "crates_destroyed": 19.45,
+                "bombs_dropped": 9.2,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2707,
+                  "action_right": 701,
+                  "action_down": 2753,
+                  "action_left": 716,
+                  "action_wait": 939,
+                  "action_bomb": 184,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.243062973022461,
+                "decision_p95_ms": 12.035334110259999,
+                "decision_max_ms": 25.092601776123047
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.16111111111111115,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 1.45,
+                "coins_collected": 1.45,
+                "crates_destroyed": 33.75,
+                "bombs_dropped": 18.9,
+                "survival_steps": 384.6,
+                "episode_steps": 384.6,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2319,
+                  "action_right": 657,
+                  "action_down": 2294,
+                  "action_left": 632,
+                  "action_wait": 1412,
+                  "action_bomb": 378,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 6.157875061035156,
+                "decision_p95_ms": 16.296827793121334,
+                "decision_max_ms": 26.480436325073242
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.18888888888888888,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.7,
+                "coins_collected": 1.7,
+                "crates_destroyed": 30.15,
+                "bombs_dropped": 15.45,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2909,
+                  "action_right": 443,
+                  "action_down": 2998,
+                  "action_left": 416,
+                  "action_wait": 925,
+                  "action_bomb": 309,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 4.957914352416992,
+                "decision_p95_ms": 11.657929420471177,
+                "decision_max_ms": 25.56324005126953
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.18333333333333335,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 1.65,
+                "coins_collected": 1.65,
+                "crates_destroyed": 37.8,
+                "bombs_dropped": 30.5,
+                "survival_steps": 382.8,
+                "episode_steps": 382.8,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 964,
+                  "action_right": 1955,
+                  "action_down": 952,
+                  "action_left": 1894,
+                  "action_wait": 1281,
+                  "action_bomb": 610,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.520462989807129,
+                "decision_p95_ms": 16.85410737991333,
+                "decision_max_ms": 29.541730880737305
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.13333333333333336,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.2,
+                "coins_collected": 1.2,
+                "crates_destroyed": 23.75,
+                "bombs_dropped": 13.35,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2519,
+                  "action_right": 613,
+                  "action_down": 2479,
+                  "action_left": 585,
+                  "action_wait": 1537,
+                  "action_bomb": 267,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.529522895812988,
+                "decision_p95_ms": 12.059068679809565,
+                "decision_max_ms": 23.71668815612793
+              }
+            }
+          },
+          "coin-heaven-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.3734,
+              "elimination": 0.0,
+              "self_kill": 0.0,
+              "survival": 1.0,
+              "score": 18.67,
+              "coins_collected": 18.67,
+              "crates_destroyed": 0.0,
+              "bombs_dropped": 4.88,
+              "survival_steps": 390.66,
+              "episode_steps": 390.66,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 3703,
+                "action_right": 5269,
+                "action_down": 3511,
+                "action_left": 4980,
+                "action_wait": 21115,
+                "action_bomb": 488,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 9.54127311706543,
+              "decision_p95_ms": 19.5692777633667,
+              "decision_max_ms": 35.84933280944824
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.466,
+              "elimination": 0.0,
+              "self_kill": 0.1,
+              "survival": 0.9,
+              "score": 23.3,
+              "coins_collected": 23.3,
+              "crates_destroyed": 0.0,
+              "bombs_dropped": 5.15,
+              "survival_steps": 344.3,
+              "episode_steps": 344.3,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.3767063607319198,
+              "action_counts": {
+                "action_up": 4266,
+                "action_right": 369,
+                "action_down": 1759,
+                "action_left": 291,
+                "action_wait": 1,
+                "action_bomb": 200,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 10.049819946289062,
+              "decision_p95_ms": 20.52140235900879,
+              "decision_max_ms": 34.46650505065918
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.29100000000000004,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 14.55,
+                "coins_collected": 14.55,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 4.8,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 272,
+                  "action_right": 1288,
+                  "action_down": 167,
+                  "action_left": 1253,
+                  "action_wait": 4924,
+                  "action_bomb": 96,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 10.539889335632324,
+                "decision_p95_ms": 19.534075260162343,
+                "decision_max_ms": 31.302928924560547
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.41,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 20.5,
+                "coins_collected": 20.5,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 5.65,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1207,
+                  "action_right": 2683,
+                  "action_down": 1224,
+                  "action_left": 2615,
+                  "action_wait": 158,
+                  "action_bomb": 113,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 11.092424392700195,
+                "decision_p95_ms": 23.09278249740598,
+                "decision_max_ms": 35.84933280944824
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.066,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 3.3,
+                "coins_collected": 3.3,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 0.2,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 257,
+                  "action_right": 37,
+                  "action_down": 243,
+                  "action_left": 12,
+                  "action_wait": 7447,
+                  "action_bomb": 4,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 8.756160736083984,
+                "decision_p95_ms": 13.990914821624756,
+                "decision_max_ms": 27.431011199951172
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.5360000000000001,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 26.8,
+                "coins_collected": 26.8,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 8.95,
+                "survival_steps": 377.85,
+                "episode_steps": 377.85,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1287,
+                  "action_right": 916,
+                  "action_down": 1229,
+                  "action_left": 850,
+                  "action_wait": 3096,
+                  "action_bomb": 179,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 8.994579315185547,
+                "decision_p95_ms": 20.030117034912106,
+                "decision_max_ms": 34.655094146728516
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.5640000000000001,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 28.2,
+                "coins_collected": 28.2,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 4.8,
+                "survival_steps": 375.45,
+                "episode_steps": 375.45,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 680,
+                  "action_right": 345,
+                  "action_down": 648,
+                  "action_left": 250,
+                  "action_wait": 5490,
+                  "action_bomb": 96,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 9.785175323486328,
+                "decision_p95_ms": 18.062162399291992,
+                "decision_max_ms": 34.38162803649902
+              }
+            }
+          },
+          "loot-crate-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.08639999999999999,
+              "elimination": 0.0,
+              "self_kill": 0.02,
+              "survival": 0.98,
+              "score": 4.32,
+              "coins_collected": 4.32,
+              "crates_destroyed": 15.31,
+              "bombs_dropped": 7.94,
+              "survival_steps": 393.79,
+              "episode_steps": 393.79,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 6378,
+                "action_right": 4388,
+                "action_down": 6423,
+                "action_left": 4280,
+                "action_wait": 17116,
+                "action_bomb": 794,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 3.635883331298828,
+              "decision_p95_ms": 8.905935287475586,
+              "decision_max_ms": 20.99895477294922
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.277,
+              "elimination": 0.0,
+              "self_kill": 0.45,
+              "survival": 0.55,
+              "score": 13.85,
+              "coins_collected": 13.85,
+              "crates_destroyed": 40.15,
+              "bombs_dropped": 16.0,
+              "survival_steps": 285.15,
+              "episode_steps": 285.15,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.20585656671927055,
+              "action_counts": {
+                "action_up": 880,
+                "action_right": 1282,
+                "action_down": 967,
+                "action_left": 1565,
+                "action_wait": 624,
+                "action_bomb": 385,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.070758819580078,
+              "decision_p95_ms": 10.375547409057617,
+              "decision_max_ms": 23.542404174804688
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.134,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 6.7,
+                "coins_collected": 6.7,
+                "crates_destroyed": 21.9,
+                "bombs_dropped": 9.55,
+                "survival_steps": 383.6,
+                "episode_steps": 383.6,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1783,
+                  "action_right": 554,
+                  "action_down": 1773,
+                  "action_left": 548,
+                  "action_wait": 2823,
+                  "action_bomb": 191,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.4672021865844727,
+                "decision_p95_ms": 11.907041072845459,
+                "decision_max_ms": 19.143342971801758
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.096,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 4.8,
+                "coins_collected": 4.8,
+                "crates_destroyed": 16.95,
+                "bombs_dropped": 9.3,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1110,
+                  "action_right": 1818,
+                  "action_down": 1130,
+                  "action_left": 1799,
+                  "action_wait": 1957,
+                  "action_bomb": 186,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 4.445433616638184,
+                "decision_p95_ms": 9.17754173278808,
+                "decision_max_ms": 20.99895477294922
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.07400000000000002,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 3.7,
+                "coins_collected": 3.7,
+                "crates_destroyed": 12.4,
+                "bombs_dropped": 5.15,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1899,
+                  "action_right": 722,
+                  "action_down": 1922,
+                  "action_left": 687,
+                  "action_wait": 2667,
+                  "action_bomb": 103,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.452777862548828,
+                "decision_p95_ms": 8.02476406097412,
+                "decision_max_ms": 15.129804611206055
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.08299999999999999,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 4.15,
+                "coins_collected": 4.15,
+                "crates_destroyed": 14.8,
+                "bombs_dropped": 9.1,
+                "survival_steps": 385.35,
+                "episode_steps": 385.35,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 666,
+                  "action_right": 1119,
+                  "action_down": 681,
+                  "action_left": 1091,
+                  "action_wait": 3968,
+                  "action_bomb": 182,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.7012100219726562,
+                "decision_p95_ms": 7.227587699890137,
+                "decision_max_ms": 19.29759979248047
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.045000000000000005,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.25,
+                "coins_collected": 2.25,
+                "crates_destroyed": 10.5,
+                "bombs_dropped": 6.6,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 920,
+                  "action_right": 175,
+                  "action_down": 917,
+                  "action_left": 155,
+                  "action_wait": 5701,
+                  "action_bomb": 132,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.4923553466796875,
+                "decision_p95_ms": 6.706607341766356,
+                "decision_max_ms": 12.718439102172852
+              }
+            }
+          }
+        },
+        "selected_replica": null,
+        "next_decision": "stop_no_automatic_continuation"
+      },
+      "neutral": {
+        "status": "exploratory_mixed_or_negative",
+        "task2_complete": false,
+        "gates": {
+          "elimination_absolute": false,
+          "elimination_improvement": false,
+          "first_place_absolute": true,
+          "first_place_improvement": false,
+          "score_margin_absolute": true,
+          "score_margin_improvement": false,
+          "self_kill_absolute": true,
+          "classic-peaceful/invalid_actions": true,
+          "classic-retention/collection": false,
+          "classic-retention/survival": true,
+          "classic-retention/self_kill": true,
+          "classic-retention/crates": false,
+          "classic-retention/invalid_actions": true,
+          "coin-heaven-retention/collection": false,
+          "coin-heaven-retention/survival": true,
+          "coin-heaven-retention/self_kill": true,
+          "coin-heaven-retention/invalid_actions": true,
+          "loot-crate-retention/collection": false,
+          "loot-crate-retention/survival": true,
+          "loot-crate-retention/self_kill": true,
+          "loot-crate-retention/crates": false,
+          "loot-crate-retention/invalid_actions": true,
+          "runtime": true
+        },
+        "contrasts": {
+          "classic-peaceful/elimination": {
+            "mean": -0.09,
+            "lower": -0.26,
+            "upper": 0.06
+          },
+          "classic-peaceful/first_place": {
+            "mean": -0.14,
+            "lower": -0.31,
+            "upper": 0.02
+          },
+          "classic-peaceful/score_margin": {
+            "mean": -1.64,
+            "lower": -2.98,
+            "upper": -0.29
+          },
+          "classic-retention/collection": {
+            "mean": -0.11444444444444446,
+            "lower": -0.23555555555555557,
+            "upper": -0.007777777777777779
+          },
+          "classic-retention/survival": {
+            "mean": 0.28,
+            "lower": 0.1,
+            "upper": 0.49
+          },
+          "classic-retention/self_kill": {
+            "mean": -0.28,
+            "lower": -0.49,
+            "upper": -0.1
+          },
+          "classic-retention/crates_destroyed": {
+            "mean": -6.8400000000000025,
+            "lower": -19.270250000000004,
+            "upper": 5.435624999999989
+          },
+          "coin-heaven-retention/collection": {
+            "mean": -0.0926,
+            "lower": -0.30500999999999995,
+            "upper": 0.12639999999999996
+          },
+          "coin-heaven-retention/survival": {
+            "mean": 0.1,
+            "lower": 0.0,
+            "upper": 0.25
+          },
+          "coin-heaven-retention/self_kill": {
+            "mean": -0.1,
+            "lower": -0.25,
+            "upper": 0.0
+          },
+          "loot-crate-retention/collection": {
+            "mean": -0.19060000000000002,
+            "lower": -0.30461,
+            "upper": -0.08300000000000002
+          },
+          "loot-crate-retention/survival": {
+            "mean": 0.43,
+            "lower": 0.21,
+            "upper": 0.65
+          },
+          "loot-crate-retention/self_kill": {
+            "mean": -0.43,
+            "lower": -0.65,
+            "upper": -0.21
+          },
+          "loot-crate-retention/crates_destroyed": {
+            "mean": -20.825000000000003,
+            "lower": -32.910000000000004,
+            "upper": -9.299875000000002
+          }
+        },
+        "summaries": {
+          "classic-peaceful": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.23999999999999996,
+              "elimination": 0.11,
+              "self_kill": 0.04,
+              "survival": 0.96,
+              "score": 2.71,
+              "coins_collected": 2.16,
+              "crates_destroyed": 36.32,
+              "bombs_dropped": 25.2,
+              "survival_steps": 390.11,
+              "episode_steps": 392.39,
+              "opponents_eliminated": 0.11,
+              "score_margin": 2.71,
+              "first_place": 0.76,
+              "tied_first": 0.24,
+              "invalid_action_rate": 2.5633795596113916e-05,
+              "action_counts": {
+                "action_up": 6847,
+                "action_right": 6143,
+                "action_down": 6881,
+                "action_left": 6200,
+                "action_wait": 10420,
+                "action_bomb": 2520,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 5.450963973999023,
+              "decision_p95_ms": 13.69476318359375,
+              "decision_max_ms": 28.420448303222656
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.37222222222222223,
+              "elimination": 0.2,
+              "self_kill": 0.15,
+              "survival": 0.85,
+              "score": 4.35,
+              "coins_collected": 3.35,
+              "crates_destroyed": 47.2,
+              "bombs_dropped": 34.25,
+              "survival_steps": 358.45,
+              "episode_steps": 383.75,
+              "opponents_eliminated": 0.2,
+              "score_margin": 4.35,
+              "first_place": 0.9,
+              "tied_first": 0.1,
+              "invalid_action_rate": 0.010880178546519738,
+              "action_counts": {
+                "action_up": 987,
+                "action_right": 800,
+                "action_down": 1016,
+                "action_left": 822,
+                "action_wait": 2818,
+                "action_bomb": 726,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.282712936401367,
+              "decision_p95_ms": 11.144590377807614,
+              "decision_max_ms": 28.43928337097168
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.2944444444444444,
+                "elimination": 0.15,
+                "self_kill": 0.1,
+                "survival": 0.9,
+                "score": 3.4,
+                "coins_collected": 2.65,
+                "crates_destroyed": 39.45,
+                "bombs_dropped": 25.6,
+                "survival_steps": 373.0,
+                "episode_steps": 373.05,
+                "opponents_eliminated": 0.15,
+                "score_margin": 3.4,
+                "first_place": 0.85,
+                "tied_first": 0.15,
+                "invalid_action_rate": 0.00013404825737265417,
+                "action_counts": {
+                  "action_up": 1471,
+                  "action_right": 1472,
+                  "action_down": 1470,
+                  "action_left": 1541,
+                  "action_wait": 994,
+                  "action_bomb": 512,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.132317543029785,
+                "decision_p95_ms": 14.059805870056152,
+                "decision_max_ms": 27.832508087158203
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.23888888888888885,
+                "elimination": 0.1,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.65,
+                "coins_collected": 2.15,
+                "crates_destroyed": 36.65,
+                "bombs_dropped": 25.65,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.1,
+                "score_margin": 2.65,
+                "first_place": 0.8,
+                "tied_first": 0.2,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1128,
+                  "action_right": 1709,
+                  "action_down": 1178,
+                  "action_left": 1687,
+                  "action_wait": 1785,
+                  "action_bomb": 513,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.224466323852539,
+                "decision_p95_ms": 13.573515415191645,
+                "decision_max_ms": 27.24170684814453
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.23888888888888885,
+                "elimination": 0.05,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.4,
+                "coins_collected": 2.15,
+                "crates_destroyed": 37.85,
+                "bombs_dropped": 33.15,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.05,
+                "score_margin": 2.4,
+                "first_place": 0.75,
+                "tied_first": 0.25,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1540,
+                  "action_right": 771,
+                  "action_down": 1550,
+                  "action_left": 745,
+                  "action_wait": 2731,
+                  "action_bomb": 663,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.101323127746582,
+                "decision_p95_ms": 12.313473224639877,
+                "decision_max_ms": 26.375293731689453
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.25,
+                "elimination": 0.1,
+                "self_kill": 0.1,
+                "survival": 0.9,
+                "score": 2.75,
+                "coins_collected": 2.25,
+                "crates_destroyed": 38.65,
+                "bombs_dropped": 28.7,
+                "survival_steps": 377.55,
+                "episode_steps": 388.9,
+                "opponents_eliminated": 0.1,
+                "score_margin": 2.75,
+                "first_place": 0.75,
+                "tied_first": 0.25,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 902,
+                  "action_right": 1875,
+                  "action_down": 896,
+                  "action_left": 1888,
+                  "action_wait": 1416,
+                  "action_bomb": 574,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.5446624755859375,
+                "decision_p95_ms": 14.308691024780273,
+                "decision_max_ms": 25.027990341186523
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.17777777777777778,
+                "elimination": 0.15,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.35,
+                "coins_collected": 1.6,
+                "crates_destroyed": 29.0,
+                "bombs_dropped": 12.9,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.15,
+                "score_margin": 2.35,
+                "first_place": 0.65,
+                "tied_first": 0.35,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1806,
+                  "action_right": 316,
+                  "action_down": 1787,
+                  "action_left": 339,
+                  "action_wait": 3494,
+                  "action_bomb": 258,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 6.697535514831543,
+                "decision_p95_ms": 13.205587863922116,
+                "decision_max_ms": 28.420448303222656
+              }
+            }
+          },
+          "classic-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.15777777777777777,
+              "elimination": 0.0,
+              "self_kill": 0.02,
+              "survival": 0.98,
+              "score": 1.42,
+              "coins_collected": 1.42,
+              "crates_destroyed": 28.98,
+              "bombs_dropped": 17.48,
+              "survival_steps": 393.48,
+              "episode_steps": 393.48,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 11418,
+                "action_right": 4369,
+                "action_down": 11476,
+                "action_left": 4243,
+                "action_wait": 6094,
+                "action_bomb": 1748,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 5.349874496459961,
+              "decision_p95_ms": 14.446628093719484,
+              "decision_max_ms": 29.319286346435547
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.27222222222222225,
+              "elimination": 0.0,
+              "self_kill": 0.3,
+              "survival": 0.7,
+              "score": 2.45,
+              "coins_collected": 2.45,
+              "crates_destroyed": 39.8,
+              "bombs_dropped": 23.95,
+              "survival_steps": 314.45,
+              "episode_steps": 314.45,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.10033391636190174,
+              "action_counts": {
+                "action_up": 1233,
+                "action_right": 635,
+                "action_down": 691,
+                "action_left": 670,
+                "action_wait": 2560,
+                "action_bomb": 500,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.009246826171875,
+              "decision_p95_ms": 11.91020011901855,
+              "decision_max_ms": 27.0383358001709
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.12222222222222223,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.1,
+                "coins_collected": 1.1,
+                "crates_destroyed": 19.45,
+                "bombs_dropped": 9.2,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2707,
+                  "action_right": 701,
+                  "action_down": 2753,
+                  "action_left": 716,
+                  "action_wait": 939,
+                  "action_bomb": 184,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.217313766479492,
+                "decision_p95_ms": 12.417757511138902,
+                "decision_max_ms": 25.323152542114258
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.16111111111111115,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 1.45,
+                "coins_collected": 1.45,
+                "crates_destroyed": 33.75,
+                "bombs_dropped": 18.9,
+                "survival_steps": 384.6,
+                "episode_steps": 384.6,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2319,
+                  "action_right": 657,
+                  "action_down": 2294,
+                  "action_left": 632,
+                  "action_wait": 1412,
+                  "action_bomb": 378,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 6.156206130981445,
+                "decision_p95_ms": 17.01176166534424,
+                "decision_max_ms": 26.55959129333496
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.18888888888888888,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.7,
+                "coins_collected": 1.7,
+                "crates_destroyed": 30.15,
+                "bombs_dropped": 15.45,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2909,
+                  "action_right": 443,
+                  "action_down": 2998,
+                  "action_left": 416,
+                  "action_wait": 925,
+                  "action_bomb": 309,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 4.891633987426758,
+                "decision_p95_ms": 12.021672725677478,
+                "decision_max_ms": 25.959491729736328
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.18333333333333335,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 1.65,
+                "coins_collected": 1.65,
+                "crates_destroyed": 37.8,
+                "bombs_dropped": 30.5,
+                "survival_steps": 382.8,
+                "episode_steps": 382.8,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 964,
+                  "action_right": 1955,
+                  "action_down": 952,
+                  "action_left": 1894,
+                  "action_wait": 1281,
+                  "action_bomb": 610,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.5512189865112305,
+                "decision_p95_ms": 17.046093940734863,
+                "decision_max_ms": 29.319286346435547
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.13333333333333336,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 1.2,
+                "coins_collected": 1.2,
+                "crates_destroyed": 23.75,
+                "bombs_dropped": 13.35,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 2519,
+                  "action_right": 613,
+                  "action_down": 2479,
+                  "action_left": 585,
+                  "action_wait": 1537,
+                  "action_bomb": 267,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 5.479216575622559,
+                "decision_p95_ms": 12.903165817260735,
+                "decision_max_ms": 23.956298828125
+              }
+            }
+          },
+          "coin-heaven-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.3734,
+              "elimination": 0.0,
+              "self_kill": 0.0,
+              "survival": 1.0,
+              "score": 18.67,
+              "coins_collected": 18.67,
+              "crates_destroyed": 0.0,
+              "bombs_dropped": 4.88,
+              "survival_steps": 390.66,
+              "episode_steps": 390.66,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 3703,
+                "action_right": 5269,
+                "action_down": 3511,
+                "action_left": 4980,
+                "action_wait": 21115,
+                "action_bomb": 488,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 9.800195693969727,
+              "decision_p95_ms": 20.012855529785156,
+              "decision_max_ms": 35.173654556274414
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.466,
+              "elimination": 0.0,
+              "self_kill": 0.1,
+              "survival": 0.9,
+              "score": 23.3,
+              "coins_collected": 23.3,
+              "crates_destroyed": 0.0,
+              "bombs_dropped": 5.15,
+              "survival_steps": 344.3,
+              "episode_steps": 344.3,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.3767063607319198,
+              "action_counts": {
+                "action_up": 4266,
+                "action_right": 369,
+                "action_down": 1759,
+                "action_left": 291,
+                "action_wait": 1,
+                "action_bomb": 200,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 10.049819946289062,
+              "decision_p95_ms": 20.52140235900879,
+              "decision_max_ms": 34.46650505065918
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.29100000000000004,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 14.55,
+                "coins_collected": 14.55,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 4.8,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 272,
+                  "action_right": 1288,
+                  "action_down": 167,
+                  "action_left": 1253,
+                  "action_wait": 4924,
+                  "action_bomb": 96,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 10.526418685913086,
+                "decision_p95_ms": 20.220863819122272,
+                "decision_max_ms": 31.621217727661133
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.41,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 20.5,
+                "coins_collected": 20.5,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 5.65,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1207,
+                  "action_right": 2683,
+                  "action_down": 1224,
+                  "action_left": 2615,
+                  "action_wait": 158,
+                  "action_bomb": 113,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 11.259675025939941,
+                "decision_p95_ms": 24.73441362380981,
+                "decision_max_ms": 35.173654556274414
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.066,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 3.3,
+                "coins_collected": 3.3,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 0.2,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 257,
+                  "action_right": 37,
+                  "action_down": 243,
+                  "action_left": 12,
+                  "action_wait": 7447,
+                  "action_bomb": 4,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 8.785486221313477,
+                "decision_p95_ms": 14.121091365814205,
+                "decision_max_ms": 32.330989837646484
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.5360000000000001,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 26.8,
+                "coins_collected": 26.8,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 8.95,
+                "survival_steps": 377.85,
+                "episode_steps": 377.85,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1287,
+                  "action_right": 916,
+                  "action_down": 1229,
+                  "action_left": 850,
+                  "action_wait": 3096,
+                  "action_bomb": 179,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 9.041547775268555,
+                "decision_p95_ms": 20.783281326293938,
+                "decision_max_ms": 31.900644302368164
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.5640000000000001,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 28.2,
+                "coins_collected": 28.2,
+                "crates_destroyed": 0.0,
+                "bombs_dropped": 4.8,
+                "survival_steps": 375.45,
+                "episode_steps": 375.45,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 680,
+                  "action_right": 345,
+                  "action_down": 648,
+                  "action_left": 250,
+                  "action_wait": 5490,
+                  "action_bomb": 96,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 10.208368301391602,
+                "decision_p95_ms": 18.092060089111328,
+                "decision_max_ms": 33.32829475402832
+              }
+            }
+          },
+          "loot-crate-retention": {
+            "candidate": {
+              "episodes": 100,
+              "collection": 0.08639999999999999,
+              "elimination": 0.0,
+              "self_kill": 0.02,
+              "survival": 0.98,
+              "score": 4.32,
+              "coins_collected": 4.32,
+              "crates_destroyed": 15.31,
+              "bombs_dropped": 7.94,
+              "survival_steps": 393.79,
+              "episode_steps": 393.79,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.0,
+              "action_counts": {
+                "action_up": 6378,
+                "action_right": 4388,
+                "action_down": 6423,
+                "action_left": 4280,
+                "action_wait": 17116,
+                "action_bomb": 794,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 3.6067962646484375,
+              "decision_p95_ms": 8.941197395324707,
+              "decision_max_ms": 22.770166397094727
+            },
+            "reference": {
+              "episodes": 20,
+              "collection": 0.277,
+              "elimination": 0.0,
+              "self_kill": 0.45,
+              "survival": 0.55,
+              "score": 13.85,
+              "coins_collected": 13.85,
+              "crates_destroyed": 40.15,
+              "bombs_dropped": 16.0,
+              "survival_steps": 285.15,
+              "episode_steps": 285.15,
+              "opponents_eliminated": 0.0,
+              "invalid_action_rate": 0.20585656671927055,
+              "action_counts": {
+                "action_up": 880,
+                "action_right": 1282,
+                "action_down": 967,
+                "action_left": 1565,
+                "action_wait": 624,
+                "action_bomb": 385,
+                "action_unknown": 0
+              },
+              "decision_median_ms": 4.070758819580078,
+              "decision_p95_ms": 10.375547409057617,
+              "decision_max_ms": 23.542404174804688
+            },
+            "per_model": {
+              "r1": {
+                "episodes": 20,
+                "collection": 0.134,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 6.7,
+                "coins_collected": 6.7,
+                "crates_destroyed": 21.9,
+                "bombs_dropped": 9.55,
+                "survival_steps": 383.6,
+                "episode_steps": 383.6,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1783,
+                  "action_right": 554,
+                  "action_down": 1773,
+                  "action_left": 548,
+                  "action_wait": 2823,
+                  "action_bomb": 191,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.4650564193725586,
+                "decision_p95_ms": 12.231767177581787,
+                "decision_max_ms": 19.67310905456543
+              },
+              "r2": {
+                "episodes": 20,
+                "collection": 0.096,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 4.8,
+                "coins_collected": 4.8,
+                "crates_destroyed": 16.95,
+                "bombs_dropped": 9.3,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1110,
+                  "action_right": 1818,
+                  "action_down": 1130,
+                  "action_left": 1799,
+                  "action_wait": 1957,
+                  "action_bomb": 186,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 4.453778266906738,
+                "decision_p95_ms": 9.09358263015747,
+                "decision_max_ms": 22.770166397094727
+              },
+              "r3": {
+                "episodes": 20,
+                "collection": 0.07400000000000002,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 3.7,
+                "coins_collected": 3.7,
+                "crates_destroyed": 12.4,
+                "bombs_dropped": 5.15,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 1899,
+                  "action_right": 722,
+                  "action_down": 1922,
+                  "action_left": 687,
+                  "action_wait": 2667,
+                  "action_bomb": 103,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.3725500106811523,
+                "decision_p95_ms": 8.26402902603149,
+                "decision_max_ms": 15.527486801147461
+              },
+              "r4": {
+                "episodes": 20,
+                "collection": 0.08299999999999999,
+                "elimination": 0.0,
+                "self_kill": 0.05,
+                "survival": 0.95,
+                "score": 4.15,
+                "coins_collected": 4.15,
+                "crates_destroyed": 14.8,
+                "bombs_dropped": 9.1,
+                "survival_steps": 385.35,
+                "episode_steps": 385.35,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 666,
+                  "action_right": 1119,
+                  "action_down": 681,
+                  "action_left": 1091,
+                  "action_wait": 3968,
+                  "action_bomb": 182,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.632783889770508,
+                "decision_p95_ms": 7.451534271240233,
+                "decision_max_ms": 18.522024154663086
+              },
+              "r5": {
+                "episodes": 20,
+                "collection": 0.045000000000000005,
+                "elimination": 0.0,
+                "self_kill": 0.0,
+                "survival": 1.0,
+                "score": 2.25,
+                "coins_collected": 2.25,
+                "crates_destroyed": 10.5,
+                "bombs_dropped": 6.6,
+                "survival_steps": 400.0,
+                "episode_steps": 400.0,
+                "opponents_eliminated": 0.0,
+                "invalid_action_rate": 0.0,
+                "action_counts": {
+                  "action_up": 920,
+                  "action_right": 175,
+                  "action_down": 917,
+                  "action_left": 155,
+                  "action_wait": 5701,
+                  "action_bomb": 132,
+                  "action_unknown": 0
+                },
+                "decision_median_ms": 3.456592559814453,
+                "decision_p95_ms": 7.219135761260985,
+                "decision_max_ms": 12.934684753417969
+              }
+            }
+          }
+        },
+        "selected_replica": null,
+        "next_decision": "stop_no_automatic_continuation"
+      }
+    },
+    "treatment_gate": false,
+    "selected_arm": null,
+    "selected_replica": null,
+    "next_decision": "stop_no_automatic_continuation",
+    "neutral_minus_control_elimination": {
+      "mean": 0.0,
+      "lower": 0.0,
+      "upper": 0.0
+    }
+  },
+  "repeat_failures": [
+    {
+      "pair": [
+        "control",
+        "r5",
+        "loot-crate-retention",
+        1631403,
+        2631403
+      ],
+      "differences": {
+        "attempted_actions": [
+          400,
+          399
+        ],
+        "action_wait": [
+          390,
+          389
+        ]
+      }
+    }
+  ],
+  "resources": {
+    "campaign": {
+      "original_wall_pass": false,
+      "approved_wall_pass": true,
+      "cpu_pass": true,
+      "memory_pass": true,
+      "original": {
+        "active_root_pids": [],
+        "authorized_at": "2026-09-12T22:31:32.669468Z",
+        "cpu_seconds_consumed": 14115.9375,
+        "current_memory_bytes": 0,
+        "limit_reached": null,
+        "limits": {
+          "cpu_seconds": 43200,
+          "memory_bytes": 2147483648,
+          "wall_seconds": 36000
+        },
+        "peak_memory_bytes": 348266496,
+        "schema_version": 1,
+        "updated_at": "2026-09-13T03:49:51.432274Z",
+        "wall_seconds_elapsed": 19098.762788057327
+      },
+      "amended": {
+        "active_root_pids": [],
+        "authorized_at": "2026-09-12T22:31:32.669468Z",
+        "cpu_seconds_consumed": 18525.546875,
+        "current_memory_bytes": 0,
+        "limit_reached": null,
+        "limits": {
+          "cpu_seconds": 43200,
+          "memory_bytes": 2147483648,
+          "wall_seconds": 43200
+        },
+        "peak_memory_bytes": 348266496,
+        "schema_version": 1,
+        "updated_at": "2026-09-13T09:54:53.895415Z",
+        "wall_seconds_elapsed": 41001.225929021835
+      }
+    },
+    "pipeline": {
+      "original_wall_pass": true,
+      "approved_wall_pass": true,
+      "cpu_pass": true,
+      "memory_pass": true,
+      "original": {
+        "active_root_pids": [],
+        "authorized_at": "2026-09-12T22:31:26.134265Z",
+        "cpu_seconds_consumed": 5593.625,
+        "current_memory_bytes": 0,
+        "limit_reached": null,
+        "limits": {
+          "cpu_seconds": 43200,
+          "memory_bytes": 2147483648,
+          "wall_seconds": 43200
+        },
+        "peak_memory_bytes": 672018432,
+        "schema_version": 1,
+        "updated_at": "2026-09-13T03:49:53.054949Z",
+        "wall_seconds_elapsed": 19106.9206635952
+      },
+      "amended": {
+        "active_root_pids": [],
+        "authorized_at": "2026-09-12T22:31:26.134265Z",
+        "cpu_seconds_consumed": 25918.734375,
+        "current_memory_bytes": 0,
+        "limit_reached": null,
+        "limits": {
+          "cpu_seconds": 43200,
+          "memory_bytes": 2147483648,
+          "wall_seconds": 50400
+        },
+        "peak_memory_bytes": 672018432,
+        "schema_version": 1,
+        "updated_at": "2026-09-13T09:56:02.951858Z",
+        "wall_seconds_elapsed": 41076.817571640015
+      }
+    }
+  },
+  "execution_source": "1e18b9c659041b4044d04e9ec6563b98c8c471dc",
+  "protocol_sha256": "039d35148d6dc209461a75c63742b5ca661f14f627769b20f1d0d413d63ef5c0",
+  "training_episodes": 50000,
+  "evaluation_episodes": 1760,
+  "completed_jobs": 1770,
+  "recovery": {
+    "rotated_objects": 19,
+    "protected_records": 45,
+    "completed_jobs_preserved": true,
+    "partial_input_retained": true
+  },
+  "artifacts": [
+    {
+      "arm": "control",
+      "replica": "r1",
+      "sha256": "2d0f84e3f02dcc4ca941fa76de019a96269083368338fae0da0d00fa28b94509",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-control/artifacts/r1/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "control",
+      "replica": "r2",
+      "sha256": "e630d3018c1d58ea5da9e732752194719df627ad45de0978710a296f28c2016a",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-control/artifacts/r2/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "control",
+      "replica": "r3",
+      "sha256": "818f077d5da54e4a47120a9de1b57ca1e1738c6764c260294a7e3a8fe89d8035",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-control/artifacts/r3/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "control",
+      "replica": "r4",
+      "sha256": "9969a80666df23e9968a24bb5568a8cb57445c8e58439e91fd89755b083c6253",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-control/artifacts/r4/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "control",
+      "replica": "r5",
+      "sha256": "74cc2212a36de9325b04ceca4d40ccb2c8ce04172627e3c32df1abdff05f37a6",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-control/artifacts/r5/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "neutral",
+      "replica": "r1",
+      "sha256": "4010fe8d79382a5ddb68709486aea2e672bf7897e81f9876e379c787ddc46993",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-neutral/artifacts/r1/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "neutral",
+      "replica": "r2",
+      "sha256": "ddeed6f33d46ebf68e21e81509c561790613202f6af2d42ba4b3b3a7e210c11b",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-neutral/artifacts/r2/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "neutral",
+      "replica": "r3",
+      "sha256": "07f86d7fc35f982261dd34d802519a58bee073fb5fc841187d4cf557ff19ebbf",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-neutral/artifacts/r3/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "neutral",
+      "replica": "r4",
+      "sha256": "b232ff47ed0b31a6f60ce562043320b9d2e2ca21d4584f07ab7b97907eaeb337",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-neutral/artifacts/r4/classic-peaceful/checkpoint.pt"
+    },
+    {
+      "arm": "neutral",
+      "replica": "r5",
+      "sha256": "f9dc48b7cc122e31daf61a71b1a1a84ea893556912f8185a052deb29eba06dde",
+      "size_bytes": 3436279,
+      "episodes": 5000,
+      "path": "runs/plans/issue163-neutral/artifacts/r5/classic-peaceful/checkpoint.pt"
+    }
+  ],
+  "execution_dependencies": {
+    "python": "3.13.14",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "psutil": "7.2.2",
+    "pygame": "2.6.1",
+    "pytest": "9.1.1",
+    "PyYAML": "6.0.3",
+    "ruff": "0.16.6",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.0",
+    "torch": "2.13.0+cpu",
+    "tqdm": "4.70.0"
+  },
+  "observations_sha256": "f57fd556883d717b3dd1a05bb846b4e81b0dd2578edcdd3f8a029738ee06ecc3",
+  "matched_training": [
+    {
+      "replica": "r1",
+      "checkpoint_differences": [
+        "/config/neutral_safe_attack_bombs"
+      ],
+      "paired_training_episodes": 5000,
+      "differing_nonlatency_training_episodes": 0,
+      "control_retained_replay_transitions": 10000,
+      "bomb_actions": 1360,
+      "safe_attack_states": 3,
+      "safe_cratefree_attack_states": 0,
+      "eligible_bomb_actions": 0,
+      "eligible_nonterminal_bomb_actions": 0
+    },
+    {
+      "replica": "r2",
+      "checkpoint_differences": [
+        "/config/neutral_safe_attack_bombs"
+      ],
+      "paired_training_episodes": 5000,
+      "differing_nonlatency_training_episodes": 0,
+      "control_retained_replay_transitions": 10000,
+      "bomb_actions": 1330,
+      "safe_attack_states": 0,
+      "safe_cratefree_attack_states": 0,
+      "eligible_bomb_actions": 0,
+      "eligible_nonterminal_bomb_actions": 0
+    },
+    {
+      "replica": "r3",
+      "checkpoint_differences": [
+        "/config/neutral_safe_attack_bombs"
+      ],
+      "paired_training_episodes": 5000,
+      "differing_nonlatency_training_episodes": 0,
+      "control_retained_replay_transitions": 10000,
+      "bomb_actions": 1361,
+      "safe_attack_states": 0,
+      "safe_cratefree_attack_states": 0,
+      "eligible_bomb_actions": 0,
+      "eligible_nonterminal_bomb_actions": 0
+    },
+    {
+      "replica": "r4",
+      "checkpoint_differences": [
+        "/config/neutral_safe_attack_bombs"
+      ],
+      "paired_training_episodes": 5000,
+      "differing_nonlatency_training_episodes": 0,
+      "control_retained_replay_transitions": 10000,
+      "bomb_actions": 1345,
+      "safe_attack_states": 0,
+      "safe_cratefree_attack_states": 0,
+      "eligible_bomb_actions": 0,
+      "eligible_nonterminal_bomb_actions": 0
+    },
+    {
+      "replica": "r5",
+      "checkpoint_differences": [
+        "/config/neutral_safe_attack_bombs"
+      ],
+      "paired_training_episodes": 5000,
+      "differing_nonlatency_training_episodes": 0,
+      "control_retained_replay_transitions": 10000,
+      "bomb_actions": 1383,
+      "safe_attack_states": 0,
+      "safe_cratefree_attack_states": 0,
+      "eligible_bomb_actions": 0,
+      "eligible_nonterminal_bomb_actions": 0
+    }
+  ]
+}

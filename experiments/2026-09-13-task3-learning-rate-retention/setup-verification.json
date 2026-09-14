@@ -1,0 +1,69 @@
+{
+  "issue": 171,
+  "binding": {
+    "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "tool_source": "5bee5a723c7f4857c5e4f13959ef8401a14ade6c",
+    "tool_hashes": {
+      "scripts/pilot_task3_learning_rate.py": "fec88b1d971b219c395dc278f78685a9da610b0047cb1930dd64e83b5bc3736a",
+      "scripts/task3_pilot_resources.py": "9daf2534d9f892f1477cf54f36b792ec33246fb88bc9ff4be59bb0f53204fbc1",
+      "scripts/analyze_task3_learning_rate.py": "1d0fa5ad880dc1510a55d8dfb9aeacd4782198500be1a04e539549e1b86523e9",
+      "scripts/run_issue171_pilot.ps1": "793eb1ad965aa7ab79098fa0c00367b39e79300507debc9cda85e0568f2cad80",
+      "scripts/audit_task3_retention_seeds.py": "a36e0fa32d2ebff711d0685f453b6c33888c77ac99919563e0a7bcc698d2b162"
+    },
+    "config_sha256": "227e171ad8bdb48aafa416ee20889771b6588e6d528e90e2fcd1b747f26074d1",
+    "prepared_environment": {
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "host": "DESKTOP-4QELBC5",
+      "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+      "packages": {
+        "numpy": "2.5.1",
+        "torch": "2.13.0+cpu",
+        "pygame": "2.6.1",
+        "psutil": "7.2.2"
+      },
+      "omp_threads": null,
+      "mkl_threads": null
+    },
+    "seed_audit_sha256": "e03835a569d2e1b19e7a87b69a3ff7573eadbecf0e2f17199727412b2ec84190"
+  },
+  "initialization": {
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "reference_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "only_changed_fields": [
+      "config.learning_rate",
+      "learner_state.optimizer.param_groups[*].lr"
+    ],
+    "identical_online_and_target_weights": true,
+    "arms": {
+      "control": {
+        "sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+        "learning_rate": 0.0005
+      },
+      "treatment": {
+        "sha256": "0d6a6eba5fb2bc0fa88aced88427b2f625d4e2b54dca7ab86799b3f51e3e0660",
+        "learning_rate": 5e-05
+      }
+    }
+  },
+  "validation": {
+    "python": "3.13.14",
+    "full_pytest": "929 passed, 11 subtests passed",
+    "expanded_pilot_pytest": "15 passed",
+    "ruff": "passed",
+    "compileall": "passed",
+    "framework_smoke": "passed",
+    "dry_run": {
+      "training_jobs": 6,
+      "training_episodes": 300,
+      "evaluation_jobs": 28,
+      "evaluation_episodes": 280
+    }
+  },
+  "scientific_smoke": "not started: startup available RAM below 3 GiB",
+  "scientific_training": "not started",
+  "scientific_evaluation": "not started",
+  "selected_checkpoint": null
+}

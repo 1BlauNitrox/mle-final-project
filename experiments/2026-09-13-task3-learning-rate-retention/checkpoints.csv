@@ -1,0 +1,8 @@
+artifact,path_in_archive,sha256,size_bytes,selected,learning_rate
+reference,reference.pt,99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113,64301,False,
+control-r1,training/control-r1/attempt-001/checkpoint.pt,b020cea0ef22d96e2bc8df7ea2c441c3bc35101334c73546f7ed5f7de6d08da3,3436279,False,0.0005
+treatment-r1,training/treatment-r1/attempt-002/checkpoint.pt,8b1c8051519b9d651221a0138790a1e42489dd2823594c80109a8640cd45d5b8,3436279,False,5e-05
+control-r2,training/control-r2/attempt-003/checkpoint.pt,24c7edd9c48f20485bea0618f1aab8c6e39e01d663ff19003a7e9a3858fcdf80,3436279,False,0.0005
+treatment-r2,training/treatment-r2/attempt-004/checkpoint.pt,c865562a4577a0d60fe2314d63d0283046568a54f49d30e0182daa2cddbbe177,3436279,False,5e-05
+control-r3,training/control-r3/attempt-005/checkpoint.pt,5f989deb6e683c140c059626060c8989a1b8536cf60403e0204241b8ef0e66b2,3436279,False,0.0005
+treatment-r3,training/treatment-r3/attempt-006/checkpoint.pt,0f280c67e4044f309e4519c608a1ab2cd2ed0b34b4b78197a71dbfc0cbfc5d35,3436279,False,5e-05
