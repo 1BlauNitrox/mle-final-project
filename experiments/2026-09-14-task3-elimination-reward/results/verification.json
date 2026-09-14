@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "independent_archive_analysis_exact": true,
+  "live_and_archived_source_hashes_verified": true,
+  "archived_tool_hashes_verified": true,
+  "binding": {
+    "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "tool_source": "1aae01e1536ec31d3c2e336968fde42ad81dc606",
+    "tool_hashes": {
+      "scripts/pilot_task3_kill_reward.py": "b5e2214b71795e0c0e5a6740091b5c1e1ddeb0c3bfe136bc35e9341ff69281a5",
+      "scripts/task3_pilot_resources.py": "9daf2534d9f892f1477cf54f36b792ec33246fb88bc9ff4be59bb0f53204fbc1",
+      "scripts/frozen_opponent_inputs.py": "678448dcc3a0c152fa205c79e3c3588555988a029b548c09c67482ad8248f957",
+      "scripts/task3_reward_configuration.py": "d76ece0a11c4797aa6eb32de50f9be0ad17f6a4fc5010532fa4db039d88dac0b",
+      "scripts/task3_progress_retry.py": "76218b3005c9ee20bbee4c567ced0bec2fa7de75b73c9ed2295aeead4143a8da",
+      "scripts/analyze_task3_kill_reward.py": "fe93eb01ab221776209c66b2346e7bd62f206b0a82094c72491b49848bad5ee8",
+      "scripts/run_issue175_pilot.ps1": "b2eb82420905da2707169cc83810392f75b3566d72624f62caa2969a877e9cd0",
+      "scripts/audit_task3_kill_reward_seeds.py": "787fcedea4a5e33f4222f516331c597873a54821e5703d410c54af7c451a39b2"
+    },
+    "config_sha256": "facf56942df15b4fe86048d70df1d30a5046e71d0dcec8d313e8276740a08856",
+    "prepared_environment": {
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "host": "DESKTOP-4QELBC5",
+      "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+      "packages": {
+        "numpy": "2.5.1",
+        "torch": "2.13.0+cpu",
+        "pygame": "2.6.1",
+        "psutil": "7.2.2"
+      },
+      "omp_threads": null,
+      "mkl_threads": null
+    },
+    "seed_audit_sha256": "a58f941ac600123a94063ec7480075134119227347c43ffa01860bbe58485818"
+  },
+  "training_jobs": 10,
+  "training_episodes": 1000,
+  "evaluation_jobs": 44,
+  "evaluation_episodes": 3520,
+  "failed_scientific_attempts": 0,
+  "repeat_pairs": 1760,
+  "repeat_pairs_equal": 1760,
+  "both_arms_opponent_free_comparisons": 2400,
+  "both_arms_opponent_free_equal": 2400,
+  "invalid_events": 8,
+  "invalid_episodes": [
+    {
+      "artifact": "reference",
+      "suite": "classic-peaceful",
+      "world_seed": 5975413,
+      "repeat": 0,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "reference",
+      "suite": "classic-peaceful",
+      "world_seed": 5975413,
+      "repeat": 1,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r1",
+      "suite": "classic-peaceful",
+      "world_seed": 5975435,
+      "repeat": 0,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r1",
+      "suite": "classic-peaceful",
+      "world_seed": 5975435,
+      "repeat": 1,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r3",
+      "suite": "classic-peaceful",
+      "world_seed": 5975413,
+      "repeat": 0,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r3",
+      "suite": "classic-peaceful",
+      "world_seed": 5975413,
+      "repeat": 1,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r5",
+      "suite": "classic-peaceful",
+      "world_seed": 5975401,
+      "repeat": 0,
+      "invalid_actions": 1
+    },
+    {
+      "artifact": "treatment-r5",
+      "suite": "classic-peaceful",
+      "world_seed": 5975401,
+      "repeat": 1,
+      "invalid_actions": 1
+    }
+  ],
+  "checkpoints": {
+    "reference": {
+      "path": "reference.pt",
+      "sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+      "size_bytes": 64301
+    },
+    "control-r1": {
+      "path": "training/control-r1/attempt-001/checkpoint.pt",
+      "sha256": "6e98aee9cf963a0f95cda809146194f473b0ac8150bb833b3e9ee7daee551b11",
+      "size_bytes": 3395492
+    },
+    "treatment-r1": {
+      "path": "training/treatment-r1/attempt-002/checkpoint.pt",
+      "sha256": "64ac748ea82759fb96c13cab7ae195f2643f9b5214ee5c7487456d12af5edfbd",
+      "size_bytes": 3395492
+    },
+    "control-r2": {
+      "path": "training/control-r2/attempt-003/checkpoint.pt",
+      "sha256": "57ddcdbaa666130fd099e00c8f6537de5ddedc52bac9c029e3efe2c68ca73c57",
+      "size_bytes": 3395492
+    },
+    "treatment-r2": {
+      "path": "training/treatment-r2/attempt-004/checkpoint.pt",
+      "sha256": "548a7197e46fa68a9f900450c68aead6b472a93e1767bdd93ac1ff8c9a698d76",
+      "size_bytes": 3395492
+    },
+    "control-r3": {
+      "path": "training/control-r3/attempt-005/checkpoint.pt",
+      "sha256": "e17d7b29cfb7c4f281fd75b3146b8831cec89b6b93685ba8f03e442a76ddccc4",
+      "size_bytes": 3395492
+    },
+    "treatment-r3": {
+      "path": "training/treatment-r3/attempt-006/checkpoint.pt",
+      "sha256": "47b7563b36d53b119b2b731db931e83af8fd500977625ca46aa0e56453b19889",
+      "size_bytes": 3395492
+    },
+    "control-r4": {
+      "path": "training/control-r4/attempt-007/checkpoint.pt",
+      "sha256": "9a71599583d1a615a6865d1ae42085f2863a8603931d955ef658cb664fd7533f",
+      "size_bytes": 3395492
+    },
+    "treatment-r4": {
+      "path": "training/treatment-r4/attempt-008/checkpoint.pt",
+      "sha256": "feeef07db846c0344a2b6501bf1fb88aeb66478d65835dc5eb826d50f459ef23",
+      "size_bytes": 3395492
+    },
+    "control-r5": {
+      "path": "training/control-r5/attempt-009/checkpoint.pt",
+      "sha256": "02dde716db52e03f6aac4210e4375837da9fdc5313fd6bb53d9bd09bc80e05eb",
+      "size_bytes": 3395492
+    },
+    "treatment-r5": {
+      "path": "training/treatment-r5/attempt-010/checkpoint.pt",
+      "sha256": "10e5509be51dd7c380bd5c3429aca7083a559d99237a645148ba8cc175551705",
+      "size_bytes": 3395492
+    }
+  },
+  "chain": {
+    "status": "completed",
+    "stage": "results",
+    "started_unix": 1789341091.0929506,
+    "deadline_unix": 1789366291.092951,
+    "completed": [
+      "train",
+      "evaluate",
+      "results"
+    ],
+    "active_pid": null,
+    "wall_seconds": 15913.333249800024
+  },
+  "registered_decision": "failed; no checkpoint selected or promoted",
+  "analysis_command": "python -m scripts.pilot_task3_kill_reward analyze --root PATH_TO_IMPORTED_EVIDENCE --output recomputed-analysis.json"
+}

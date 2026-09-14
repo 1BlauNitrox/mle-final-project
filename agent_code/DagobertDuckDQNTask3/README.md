@@ -82,3 +82,11 @@ Task 3 result.
 The eventual parent artifact, training seeds, evaluation seeds, numerical
 selection rule, and scientific results are intentionally not fixed here. They
 belong to the post-#107 Task 3 launch protocol.
+
+## Experiment evidence: archived 39-input runtime
+
+| Experiment | Runtime source | Kill reward control / treatment | Eliminations per game reference / control / treatment | Decision |
+| --- | --- | --- | --- | --- |
+| [#175](../../experiments/2026-09-14-task3-elimination-reward/README.md) | `c4ddfa4` (39 inputs; separate from this checkout's 34-input fixture) | +5 / +20 | 0.250 / 0.080 / 0.090 | No checkpoint promoted |
+
+[Exact gates, uncertainty and retention](../../experiments/2026-09-14-task3-elimination-reward/results/analysis.json); [artifact provenance](../../experiments/2026-09-14-task3-elimination-reward/results/evidence.json).
