@@ -1,10 +1,14 @@
 """Registered Task 3 approach pilots, adapted from the #175 runner at c4ddfa4.
 
-Two profiles share this runner. `approach-shaping` compares three
-opponent-approach potential scales; `update-cadence` re-runs the #178 update
-interval contrast at the same higher evaluation power. Both keep the #175
-frozen-inheritance restriction, the #168 episode-mixture exploration schedule
-and the unchanged reference as a no-training incumbent.
+Four profiles share this runner, each varying exactly one factor.
+`approach-shaping` compares three opponent-approach potential scales;
+`update-cadence` re-runs the #178 update interval contrast at higher power;
+`proximity-gating` compares which experience is admitted to replay; and
+`opponent-shrinkage` sweeps an L2 coefficient on the opponent columns, which
+dials continuously between training them freely and leaving them at the
+reference. All four keep the #175 frozen-inheritance restriction, the #168
+episode-mixture exploration schedule and the unchanged reference as a
+no-training incumbent.
 
 Training and evaluation jobs run concurrently: the handout permits
 multiprocessing during training, and evaluation here is read-only replay of
@@ -45,13 +49,23 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
 
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
-PROFILES = ("approach-shaping", "update-cadence")
+PROFILES = ("approach-shaping", "update-cadence", "proximity-gating", "opponent-shrinkage")
 PROFILE = os.environ.get("TASK3_APPROACH_PROFILE", "approach-shaping")
 CONFIG = ROOT / f"experiments/2026-09-14-task3-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "approach-shaping": "26e66bc192564f8ae7ee5a6d8c946b39c7458275debaab177c699defcdfd2e98",
     "update-cadence": "8e86c781aba9c0ec3b8ecf3979e83f158cdbec194043b833798a110275dcf5b3",
+    "proximity-gating": "3a4003c3ec8118bdc27f97542e0c9633b56ac58eddc874c266584278cb0bcc4d",
+    "opponent-shrinkage": "8cea4996550c93a7f286a8c89b2ad28b6f2bb3d208dc224934c957526e61fcdf",
 }
+ARM_FACTORS = (
+    "potential_scale",
+    "update_every",
+    "kill_reward",
+    "learning_rate",
+    "proximity_gate",
+    "l2_opponent",
+)
 STAGES = ("training", "evaluation", "latency")
 
 
@@ -92,9 +106,12 @@ def config():
     arms = value["arms"]
     if list(value["arm_settings"]) != arms or "control" not in arms:
         raise ValueError("Arm settings must cover every registered arm exactly once")
-    scales = {value["arm_settings"][arm]["potential_scale"] for arm in arms}
-    intervals = {value["arm_settings"][arm]["update_every"] for arm in arms}
-    if len(scales) > 1 and len(intervals) > 1:
+    varying = [
+        factor
+        for factor in ARM_FACTORS
+        if len({value["arm_settings"][arm].get(factor) for arm in arms}) > 1
+    ]
+    if len(varying) != 1:
         raise ValueError("A registered comparison varies exactly one factor")
     if value["training_episodes"] != (
         len(arms) * value["replicas"] * value["episodes_per_replica_arm"]
@@ -334,8 +351,7 @@ def bind(root):
             raise ValueError("Arm initialization payload mismatch")
         report["arms"][arm] = {
             "sha256": sha(path),
-            "learning_rate": payload["config"]["learning_rate"],
-            **{k: cfg["arm_settings"][arm][k] for k in ("potential_scale", "update_every")},
+            **{k: cfg["arm_settings"][arm].get(k) for k in ARM_FACTORS},
         }
     write(root / "initialization-verification.json", report)
 
@@ -354,6 +370,8 @@ def play(
     kill_reward=5.0,
     potential_scale=0.0,
     update_every=1,
+    proximity_gate=None,
+    l2_opponent=0.0,
 ):
     from unittest.mock import patch
 
@@ -364,8 +382,8 @@ def play(
     from agent_code.DagobertDuckDQNTask3 import config as agent_config
     from agents import AgentRunner
     from environment import BombeRLeWorld, WorldArgs
-    from scripts.frozen_opponent_inputs import FrozenOpponentInputs
     from scripts.task3_approach_interventions import (
+        RegularizedOpponentInputs,
         nearest_opponent_distance,
         training_intervention,
     )
@@ -405,6 +423,7 @@ def play(
             potential_scale=potential_scale if training else 0.0,
             update_every=update_every if training else 1,
             discount_factor=cfg["discount_factor"],
+            proximity_gate=proximity_gate if training else None,
         ),
         patch.dict(
             os.environ,
@@ -445,8 +464,8 @@ def play(
             import torch
 
             anchor = torch.load(root / "initial.pt", weights_only=True, map_location="cpu")
-            guard = FrozenOpponentInputs(
-                policy.learner, anchor["learner_state"]["online_network"]
+            guard = RegularizedOpponentInputs(
+                policy.learner, anchor["learner_state"]["online_network"], l2_opponent
             )
         steps = attacks = 0
         distances = []
@@ -488,6 +507,9 @@ def play(
             "kill_reward": kill_reward,
             "potential_scale": potential_scale if training else 0.0,
             "update_every": update_every if training else 1,
+            "proximity_gate": proximity_gate if training else None,
+            "l2_opponent": l2_opponent if training else 0.0,
+            "gated_out_transitions": int(getattr(policy, "approach_gated_out", 0)),
             "greedy_actions_sha256": canonical_sha(actions),
             "online_before_sha256": before,
             "online_after_sha256": after,
@@ -530,6 +552,8 @@ def train_job(root, output, arm, replica):
             kill_reward=setting["kill_reward"],
             potential_scale=setting["potential_scale"],
             update_every=setting["update_every"],
+            proximity_gate=setting.get("proximity_gate"),
+            l2_opponent=setting.get("l2_opponent", 0.0),
         )
         if row["completed_episodes"] != index + 1:
             raise ValueError("Checkpoint episode counter mismatch")
@@ -965,6 +989,8 @@ def smoke_worker(root, output):
                 kill_reward=setting["kill_reward"],
                 potential_scale=setting["potential_scale"],
                 update_every=setting["update_every"],
+                proximity_gate=setting.get("proximity_gate"),
+                l2_opponent=setting.get("l2_opponent", 0.0),
             )
         )
         training_seconds.append(time.monotonic() - started)

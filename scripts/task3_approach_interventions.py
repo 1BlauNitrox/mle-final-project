@@ -2,7 +2,7 @@
 
 Evaluation always loads the unchanged archived agent: nothing here is imported
 or installed when `training` is false, and no evaluation-time action rule is
-introduced. Both knobs are restricted to their registered values so an
+introduced. Every knob is restricted to its registered values so an
 unregistered configuration fails before any episode is played.
 
 The approach potential is a pure function of the public game state, so
@@ -18,8 +18,17 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 
+from scripts.frozen_opponent_inputs import FrozenOpponentInputs
+
 REGISTERED_POTENTIAL_SCALES = (0.0, 1.0, 3.0)
 REGISTERED_UPDATE_INTERVALS = (1, 8)
+# A bomb reaches three tiles and fuses in four steps, so an opponent beyond
+# roughly eight tiles cannot be converted into a kill within the horizon the
+# agent is deciding over. `None` admits every transition.
+REGISTERED_PROXIMITY_GATES = (None, 8)
+REGISTERED_L2_COEFFICIENTS = (0.0, 0.1, 1.0)
+FIRST_LAYER = "layers.0.weight"
+OPPONENT_PREFIX = 26
 
 
 def nearest_opponent_distance(game_state: dict | None) -> int | None:
@@ -95,21 +104,66 @@ def potential_reward(
     return discount_factor * successor - float(current_potential)
 
 
+class RegularizedOpponentInputs(FrozenOpponentInputs):
+    """Adds the gradient of `lambda/2 * sum(W_opponent**2)` before clipping.
+
+    Shrinking only the trainable opponent columns toward zero shrinks the block
+    toward the unchanged reference, because a zero opponent block reproduces the
+    reference exactly. The coefficient is therefore a direct dial between "train
+    freely" and "do not train at all", which is what makes a dose-response over
+    it able to separate genuine opponent signal from undirected drift.
+    """
+
+    def __init__(self, learner, anchor, coefficient=0.0):
+        if coefficient not in REGISTERED_L2_COEFFICIENTS:
+            raise ValueError("Unregistered opponent L2 coefficient")
+        self.coefficient = coefficient
+        super().__init__(learner, anchor)
+
+    def mask_gradient(self, gradient):
+        result = FrozenOpponentInputs.mask_gradient(gradient)
+        if self.coefficient:
+            weights = self.parameters[FIRST_LAYER].detach()[:, OPPONENT_PREFIX:]
+            result[:, OPPONENT_PREFIX:] += self.coefficient * weights
+        return result
+
+
 @contextmanager
-def training_intervention(train, *, potential_scale, update_every, discount_factor):
-    """Install the registered approach shaping and update interval on `train`.
+def training_intervention(
+    train,
+    *,
+    potential_scale,
+    update_every,
+    discount_factor,
+    proximity_gate=None,
+):
+    """Install the registered training-only interventions on `train`.
 
     The replacement for `_record_transition` mirrors the archived runtime's own
-    body exactly, with two registered additions: the shaping term is added to
-    the stored reward, and post-warmup transitions are counted so that only
-    every `update_every`-th one samples a batch. Skipped transitions still
-    enter replay with their full reward, and target synchronization is still
-    counted from actual optimizer updates.
+    body, with three registered additions.
+
+    The shaping term is added to the stored reward. Post-warmup transitions are
+    counted so that only every `update_every`-th one samples a batch; skipped
+    transitions still enter replay with their full reward, and target
+    synchronization is still counted from actual optimizer updates.
+
+    A proximity gate restricts what enters replay to transitions whose start
+    state has an opponent within `proximity_gate` tiles. The update schedule
+    still counts *every* post-warmup transition, so both gate settings perform
+    essentially the same number of optimizer steps and the comparison isolates
+    which experience supplies the gradient rather than how much gradient is
+    applied.
+
+    The opponent L2 coefficient is installed separately by the caller through
+    `RegularizedOpponentInputs`, because it belongs to the optimizer guard
+    rather than to the transition recorder.
     """
     if potential_scale not in REGISTERED_POTENTIAL_SCALES:
         raise ValueError("Unregistered approach-potential scale")
     if update_every not in REGISTERED_UPDATE_INTERVALS:
         raise ValueError("Unregistered update interval")
+    if proximity_gate not in REGISTERED_PROXIMITY_GATES:
+        raise ValueError("Unregistered proximity gate")
 
     original_events = train.game_events_occurred
     original_end_of_round = train.end_of_round
@@ -128,16 +182,24 @@ def training_intervention(train, *, potential_scale, update_every, discount_fact
         if potentials is None:
             return 0.0
         return potential_reward(
-            potentials[0],
-            potentials[1],
-            terminal=False,
-            discount_factor=discount_factor,
+            potentials[0], potentials[1], terminal=False, discount_factor=discount_factor
         )
+
+    def admitted(self, terminal):
+        """Whether this transition's start state lies inside the proximity gate."""
+        if proximity_gate is None:
+            return True
+        if terminal:
+            distance = getattr(self, "approach_terminal_distance", None)
+        else:
+            pair = getattr(self, "approach_distances", None)
+            distance = pair[0] if pair else None
+        return distance is not None and distance <= proximity_gate
 
     def game_events_occurred(self, old_game_state, self_action, new_game_state, events):
         # The original finalizes the *previous* pending transition first, and
-        # that transition still needs the previous step's potentials. So this
-        # step's pair is computed first but only published afterwards.
+        # that transition still needs the previous step's values. So this step's
+        # values are computed first but only published afterwards.
         current = (
             approach_potential(
                 old_game_state, scale=potential_scale, discount_factor=discount_factor
@@ -146,8 +208,14 @@ def training_intervention(train, *, potential_scale, update_every, discount_fact
                 new_game_state, scale=potential_scale, discount_factor=discount_factor
             ),
         )
+        distances = (
+            nearest_opponent_distance(old_game_state),
+            nearest_opponent_distance(new_game_state),
+        )
         original_events(self, old_game_state, self_action, new_game_state, events)
-        self.approach_potentials = current if self.pending_transition is not None else None
+        pending = self.pending_transition is not None
+        self.approach_potentials = current if pending else None
+        self.approach_distances = distances if pending else None
 
     def end_of_round(self, last_game_state, last_action, events):
         # Both terminal paths record a transition that starts in this state:
@@ -156,32 +224,31 @@ def training_intervention(train, *, potential_scale, update_every, discount_fact
         self.approach_terminal_potential = approach_potential(
             last_game_state, scale=potential_scale, discount_factor=discount_factor
         )
+        self.approach_terminal_distance = nearest_opponent_distance(last_game_state)
         try:
             return original_end_of_round(self, last_game_state, last_action, events)
         finally:
             self.approach_potentials = None
+            self.approach_distances = None
             self.approach_terminal_potential = 0.0
+            self.approach_terminal_distance = None
 
     def record_transition(
-        self,
-        *,
-        state,
-        action_index,
-        reward,
-        next_state,
-        next_action_mask=None,
-        terminal,
+        self, *, state, action_index, reward, next_state, next_action_mask=None, terminal
     ):
         shaped = reward + shaping_term(self, terminal)
-        self.replay_buffer.add(
-            state=state,
-            action_index=action_index,
-            reward=shaped,
-            next_state=next_state,
-            terminal=terminal,
-            next_action_mask=next_action_mask,
-        )
         self.episode_reward += shaped
+        if admitted(self, terminal):
+            self.replay_buffer.add(
+                state=state,
+                action_index=action_index,
+                reward=shaped,
+                next_state=next_state,
+                terminal=terminal,
+                next_action_mask=next_action_mask,
+            )
+        else:
+            self.approach_gated_out = getattr(self, "approach_gated_out", 0) + 1
 
         if len(self.replay_buffer) < self.config.replay_warmup:
             return

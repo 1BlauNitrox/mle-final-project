@@ -38,16 +38,16 @@ def populations(cfg):
 
 
 def cross_profile():
+    """Check every registered profile pair, not just the first two."""
     groups = {profile: populations(profile_config(profile)) for profile in PROFILES}
-    merged = {
-        profile: set().union(*value.values()) for profile, value in groups.items()
-    }
-    first, second = PROFILES
-    shared = merged[first] & merged[second]
-    if shared:
-        raise ValueError("The two registered profiles share seeds")
+    merged = {profile: set().union(*value.values()) for profile, value in groups.items()}
+    for index, first in enumerate(PROFILES):
+        for second in PROFILES[index + 1 :]:
+            if merged[first] & merged[second]:
+                raise ValueError(f"Profiles {first} and {second} share seeds")
     return {
         "profiles": {p: {k: len(v) for k, v in g.items()} for p, g in groups.items()},
+        "compared_pairs": len(PROFILES) * (len(PROFILES) - 1) // 2,
         "shared_seed_count": 0,
         "passed": True,
     }

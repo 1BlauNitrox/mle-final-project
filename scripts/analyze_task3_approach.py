@@ -315,6 +315,8 @@ def analyze(root):
                 or row["kill_reward"] != setting["kill_reward"]
                 or row["potential_scale"] != setting["potential_scale"]
                 or row["update_every"] != setting["update_every"]
+                or row.get("proximity_gate") != setting.get("proximity_gate")
+                or row.get("l2_opponent", 0.0) != setting.get("l2_opponent", 0.0)
             ):
                 raise ValueError("Executed schedule differs from registration")
         steps = sum(metrics(row)["survival_steps"] for row in rows)
@@ -326,6 +328,10 @@ def analyze(root):
             * sum(row["attack_steps"] for row in rows)
             / max(steps, 1),
             "eliminations": sum(metrics(row)["eliminations"] for row in rows),
+            # Non-zero only under a proximity gate; it records how much
+            # experience the gate withheld from replay, which is the quantity
+            # the gated comparison is actually manipulating.
+            "gated_out_transitions": sum(row.get("gated_out_transitions", 0) for row in rows),
         }
     if len(training_environments) != 1 or training_environments != environments:
         raise ValueError("Arms were split across environments")
