@@ -1,0 +1,48 @@
+{
+  "destination": "public GitHub release 1BlauNitrox/mle-final-project -> issue173-evidence-v1",
+  "contents": "source, model/checkpoint inputs and final artifacts, per-episode observations, environment/execution metadata, final recovery records",
+  "files": [
+    {
+      "name": "issue173-pilot-evidence.tar.gz",
+      "size_bytes": 75346125,
+      "sha256": "9fc62badcc71fff177a722c855d616cac6b2805dce0f61ec3ab6481e6697fcdb",
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue173-evidence-v1/issue173-pilot-evidence.tar.gz"
+    },
+    {
+      "name": "issue173-pilot-evidence.tar.gz.manifest.json",
+      "size_bytes": 193,
+      "sha256": "777d059c2ea9bdb86ba59da5412a0bd8407c023615def52329bcc74e62a8e736",
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue173-evidence-v1/issue173-pilot-evidence.tar.gz.manifest.json"
+    },
+    {
+      "name": "issue173-recovery-final.tar.gz",
+      "size_bytes": 6515,
+      "sha256": "88489ebf38fde93d8fb230a2db76b1c2a776d12c1a5a754cfa6090dd9158e69a",
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue173-evidence-v1/issue173-recovery-final.tar.gz"
+    },
+    {
+      "name": "issue173-recovery-final.manifest.json",
+      "size_bytes": 107,
+      "sha256": "02ed67b8e78ed3208be352109a58de92be76d00fb07fb6867a1442e3cd4eafa1",
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue173-evidence-v1/issue173-recovery-final.manifest.json"
+    }
+  ],
+  "status": "published; every asset downloaded and verified against approved byte size and SHA-256",
+  "release_url": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue173-evidence-v1",
+  "schema_version": 1,
+  "archive_schema": {
+    "issue173-pilot-evidence.tar.gz": "Root-level binding/config/source-manifest and seed audit; tools/ executable analysis; runtime-source.tar; initial/reference/final checkpoints; training/ and evaluation/ per-job source, observations and outcomes; training-state.json, evaluation-state.json and analysis.json.",
+    "issue173-recovery-final.tar.gz": "Final operational recovery records, including completed resume state; preserves original failures without replacing scientific observations."
+  },
+  "retrieval_command": "gh release download issue173-evidence-v1 --repo 1BlauNitrox/mle-final-project --dir evidence-download",
+  "verification_commands": [
+    "cd evidence-download",
+    "printf '%s  %s\\n' '9fc62badcc71fff177a722c855d616cac6b2805dce0f61ec3ab6481e6697fcdb' 'issue173-pilot-evidence.tar.gz' | sha256sum -c -",
+    "printf '%s  %s\\n' '777d059c2ea9bdb86ba59da5412a0bd8407c023615def52329bcc74e62a8e736' 'issue173-pilot-evidence.tar.gz.manifest.json' | sha256sum -c -",
+    "printf '%s  %s\\n' '88489ebf38fde93d8fb230a2db76b1c2a776d12c1a5a754cfa6090dd9158e69a' 'issue173-recovery-final.tar.gz' | sha256sum -c -",
+    "printf '%s  %s\\n' '02ed67b8e78ed3208be352109a58de92be76d00fb07fb6867a1442e3cd4eafa1' 'issue173-recovery-final.manifest.json' | sha256sum -c -"
+  ],
+  "analysis_source_commit": "5ef341a53b4432fdfb6b54ae372e8514eb06dff9",
+  "analysis_command": "python -m scripts.pilot_task3_frozen analyze --root PATH_TO_EXTRACTED_ARCHIVE --output recomputed-analysis.json",
+  "analysis_notes": "Run from a checkout of analysis_source_commit, with the archive extracted into a new directory. Compare recomputed JSON structurally with archived analysis.json. Independent archive analysis already reproduced exactly; no additional scientific execution required."
+}
