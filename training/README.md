@@ -1018,6 +1018,18 @@ The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
 
+## Prospective Task 3 target comparison (#150)
+
+`python -m training.task3_double_campaign` prepares and validates matched standard
+and Double DQN runs, guards execution, analyzes raw observations, verifies compact
+results and exports retrievable evidence. See the [registered protocol](../experiments/2026-09-12-task3-double-dqn/README.md)
+and [server commands](../experiments/2026-09-12-task3-double-dqn/SERVER.md).
+Both arms start from the same provisional #91 parent; no passing Task 3 model is
+currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-only
+framework/agent logging in seeded runs and records that policy in job metadata.
+Episode statistics, failure metadata and scientific measurements are retained.
+Default logging and existing campaign sources remain unchanged.
+
 Issue #124 reduced laptop evidence is verified with
 `python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
