@@ -1,0 +1,41 @@
+{
+  "scope": "opaque collision-only audit; no held-out values exposed or games run",
+  "populations": {
+    "training_including_opponents": 1005,
+    "development": 320,
+    "smoke": 7
+  },
+  "remote_revisions": {
+    "refs/remotes/origin/archive/130-before-scope-repair": "05cde8b5251e5c771610912707da8f5b31896211",
+    "refs/remotes/origin/dependabot/pip/psutil-gte-7.2.2": "dbe9cccc6c0b8af9d4cca4d9e857a5b3146fcf52",
+    "refs/remotes/origin/dependabot/pip/pyyaml-gte-6.0.3": "f0d8df91eb09e0ecf1e816211c1fd9e0b9030bcd",
+    "refs/remotes/origin/dependabot/pip/ruff-gte-0.16.6": "68bfbb199d3c16eac9d3186a618896ebb5e4ca68",
+    "refs/remotes/origin/dependabot/pip/torch-2.14.0cpu": "82a847e6be0282ff698c86555fa51e16974c421f",
+    "refs/remotes/origin/docs/106-dqn-deadline-plan": "d7002498b8fd10fa350e5adc3b76f8101d1cb2f1",
+    "refs/remotes/origin/experiment/109-separated-results": "dd54d7de34620aac68a539e8cbda1854de6097bf",
+    "refs/remotes/origin/experiment/126-task4-protocol": "8ea1a6078a5a04c155490246c9ffbddb100f5e2e",
+    "refs/remotes/origin/experiment/137-task3-coincollector": "a8dfb56ba104073f8f10832f29a348cd3cf73fb4",
+    "refs/remotes/origin/experiment/147-task3-legal-mask": "83c638aad26063cedeea4fac66e70aef82f9a98b",
+    "refs/remotes/origin/experiment/150-results": "2535a36bc44f6e5d838c4870dab3a2636fd13d97",
+    "refs/remotes/origin/experiment/150-task3-double-dqn": "c86b40b61b6013acb6d7766f5c82553a5cb7b4fd",
+    "refs/remotes/origin/experiment/162-task3-followup": "1503844f37ba5a80f5d63278f98c6ae9f09e7d56",
+    "refs/remotes/origin/experiment/163-safe-attack-penalty": "fa7ede52857054804076b5627159dbd8734d59b5",
+    "refs/remotes/origin/experiment/168-exploration-diagnostics": "50a5f9a3c38e7db959e1eec8fd06709ab5328ffe",
+    "refs/remotes/origin/experiment/171-learning-rate-retention": "33a978f06dcab3e855e6e6efb40124b4e9217f3e",
+    "refs/remotes/origin/experiment/173-frozen-inheritance": "e3b04dee237ef879be78019918066f474fb49fc6",
+    "refs/remotes/origin/experiment/175-elimination-reward": "4da55865aa50db53fabfef0bd55f7dc31d6b35c1",
+    "refs/remotes/origin/experiment/91-task2-discount-horizon": "315902b07dedaeeae98dc7ef637f8130f36ec0c1",
+    "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
+    "refs/remotes/origin/feature/125-task3-escape-migration": "343d444abb7652945df2b226189a790beffc3edb",
+    "refs/remotes/origin/fix/123-rehearsal-stage-seeds": "3370b2b5b5fc00cac2fa059fef22763d1645d753",
+    "refs/remotes/origin/fix/166-snapshot-link-recovery": "b0608e08e13fc131d9681318708011a92029eca7",
+    "refs/remotes/origin/main": "a58ee9859777c6030612533d393d26f42feb7891",
+    "refs/remotes/origin/test/146-loop-diagnosis": "e960bcc21dbe8b03343b85587a3af725c415616d",
+    "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
+  },
+  "unique_text_blobs": 642,
+  "blob_set_sha256": "c691638a91213c347d70f0fe8d751105a1b3248fa1367b3e956a121fec7b65a1",
+  "colliding_files": [],
+  "passed": true,
+  "method": "all integer literals, literal Python ranges and inclusive written ranges across remote tracked registrations; no dynamic code executed"
+}
