@@ -56,9 +56,11 @@ STAGES = ("training", "evaluation", "latency")
 
 
 def _write(path, value):
+    # `.gitattributes` pins *.json to LF precisely so a Windows writer cannot
+    # reintroduce CRLF and break a byte comparison against a clean checkout.
     path = Path(path)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8", newline="\n")
     os.replace(temporary, path)
 
 
