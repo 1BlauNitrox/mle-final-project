@@ -1,0 +1,245 @@
+{
+  "decision": {
+    "scope": "mechanism_only_not_task3_success",
+    "phase_b_ready": false,
+    "gates": {
+      "survival_ratio": true,
+      "paired_survival": true,
+      "coins": true,
+      "attack_exposure": false
+    },
+    "mean_survival_steps": {
+      "1.0": 8.15,
+      "0.2": 24.05,
+      "0.0": 355.1
+    },
+    "longer_pairs": 16,
+    "mean_coin_difference": 0.3,
+    "low_epsilon_attack_episodes": 0,
+    "selected_checkpoint": null,
+    "long_training_authorized": false
+  },
+  "summary": {
+    "1.0": {
+      "survival_steps": {
+        "mean": 8.15,
+        "total": 163
+      },
+      "coins": {
+        "mean": 0,
+        "total": 0
+      },
+      "crates": {
+        "mean": 2.9,
+        "total": 58
+      },
+      "eliminations": {
+        "mean": 0,
+        "total": 0
+      },
+      "self_kills": {
+        "mean": 1,
+        "total": 20
+      },
+      "survived": {
+        "mean": 0,
+        "total": 0
+      },
+      "invalid_actions": {
+        "mean": 0,
+        "total": 0
+      },
+      "attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "available_safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_cratefree_placements": {
+        "mean": 0,
+        "total": 0
+      }
+    },
+    "0.2": {
+      "survival_steps": {
+        "mean": 24.05,
+        "total": 481
+      },
+      "coins": {
+        "mean": 0.3,
+        "total": 6
+      },
+      "crates": {
+        "mean": 7.45,
+        "total": 149
+      },
+      "eliminations": {
+        "mean": 0,
+        "total": 0
+      },
+      "self_kills": {
+        "mean": 1,
+        "total": 20
+      },
+      "survived": {
+        "mean": 0,
+        "total": 0
+      },
+      "invalid_actions": {
+        "mean": 0,
+        "total": 0
+      },
+      "attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "available_safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_cratefree_placements": {
+        "mean": 0,
+        "total": 0
+      }
+    },
+    "0.0": {
+      "survival_steps": {
+        "mean": 355.1,
+        "total": 7102
+      },
+      "coins": {
+        "mean": 3.05,
+        "total": 61
+      },
+      "crates": {
+        "mean": 44.6,
+        "total": 892
+      },
+      "eliminations": {
+        "mean": 0.2,
+        "total": 4
+      },
+      "self_kills": {
+        "mean": 0.15,
+        "total": 3
+      },
+      "survived": {
+        "mean": 0.85,
+        "total": 17
+      },
+      "invalid_actions": {
+        "mean": 0,
+        "total": 0
+      },
+      "attack_steps": {
+        "mean": 0.6,
+        "total": 12
+      },
+      "safe_attack_steps": {
+        "mean": 0.55,
+        "total": 11
+      },
+      "available_safe_attack_steps": {
+        "mean": 0.2,
+        "total": 4
+      },
+      "safe_cratefree_placements": {
+        "mean": 0,
+        "total": 0
+      }
+    }
+  },
+  "paired_low_minus_control": {
+    "survival_steps": {
+      "mean_difference": 15.9,
+      "paired_bootstrap_95_percent": [
+        7.25,
+        26.8
+      ]
+    },
+    "coins": {
+      "mean_difference": 0.3,
+      "paired_bootstrap_95_percent": [
+        0.1,
+        0.55
+      ]
+    },
+    "crates": {
+      "mean_difference": 4.55,
+      "paired_bootstrap_95_percent": [
+        1.95,
+        7.45
+      ]
+    },
+    "eliminations": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "self_kills": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "survived": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "invalid_actions": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "attack_steps": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "safe_attack_steps": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "available_safe_attack_steps": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    },
+    "safe_cratefree_placements": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    }
+  },
+  "uncertainty": "Descriptive paired-world bootstrap; 10000 draws, seed1682026. Not a Task3 efficacy gate.",
+  "cpu_seconds_including_failed_attempts": 307.140625,
+  "wall_seconds_including_failed_attempts": 335.5171271999716,
+  "peak_memory_bytes": 226373632
+}

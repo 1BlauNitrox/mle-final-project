@@ -1,0 +1,71 @@
+{
+  "scope": "technical_replay_of_both_observed_phase_C_invalid_events",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "events": [
+    {
+      "world_seed": 1682118,
+      "step": 170,
+      "action": "LEFT",
+      "snapshot_legal": true,
+      "destination": [
+        1,
+        13
+      ],
+      "snapshot_self": [
+        2,
+        13
+      ],
+      "snapshot_others": {
+        "peaceful_agent": [
+          1,
+          14
+        ]
+      },
+      "positions_before_execution": {
+        "DagobertDuckDQNTask3": [
+          2,
+          13
+        ],
+        "peaceful_agent": [
+          1,
+          13
+        ]
+      },
+      "occupied_by_other_at_execution": true
+    },
+    {
+      "world_seed": 1682119,
+      "step": 154,
+      "action": "DOWN",
+      "snapshot_legal": true,
+      "destination": [
+        3,
+        14
+      ],
+      "snapshot_self": [
+        3,
+        13
+      ],
+      "snapshot_others": {
+        "peaceful_agent": [
+          3,
+          15
+        ]
+      },
+      "positions_before_execution": {
+        "DagobertDuckDQNTask3": [
+          3,
+          13
+        ],
+        "peaceful_agent": [
+          3,
+          14
+        ]
+      },
+      "occupied_by_other_at_execution": true
+    }
+  ],
+  "cpu_seconds": 8.9375,
+  "wall_seconds": 9.6442067999742,
+  "checkpoints_unchanged": true
+}
