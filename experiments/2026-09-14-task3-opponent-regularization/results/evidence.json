@@ -1,0 +1,10 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "38cf0b17e6cd141793432ef35efe0bc23a02e6dcafdeb57da602e1acb665152b",
+  "archive_size_bytes": 73183147,
+  "archive_public_url": null,
+  "archive_retrieval": "Owner-provided file currently at C:/Users/Julius/Downloads/task3-stability-evidence.tar.gz; publish to a durable release before merge.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task3-stability-evidence.tar.gz"
+}
