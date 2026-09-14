@@ -469,6 +469,14 @@ def _run_job(
         return
 
     replica = next(item for item in plan.replicas if item.replica_id == job.replica)
+    storage_guard = process_monitor is not None and hasattr(process_monitor, "begin_job")
+    if storage_guard:
+        attempt_id = f"attempt-{len(job_status['attempts']) + 1:03d}"
+        process_monitor.begin_job(
+            job,
+            _alias_directory(plan, replica),
+            plan_directory / "jobs" / job.run_id / attempt_id,
+        )
     alias_directory = _prepare_replica_workspace(plan, replica, plan_directory, workspace_root)
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
@@ -490,7 +498,10 @@ def _run_job(
     attempt_root = plan_directory / "jobs" / job.run_id
     attempt_root.mkdir(parents=True, exist_ok=True)
     attempt_input = attempt_root / f"{attempt_id}-input-agent"
-    _snapshot_workspace(alias_directory, attempt_input)
+    if process_monitor is not None and hasattr(process_monitor, "snapshot_input"):
+        process_monitor.snapshot_input(alias_directory, attempt_input)
+    else:
+        _snapshot_workspace(alias_directory, attempt_input)
     with lock:
         job_status["status"] = "running"
         job_status["attempts"].append(attempt)
@@ -559,7 +570,13 @@ def _run_job(
                 }
             },
             process_monitor=process_monitor,
+            seed_opponents=(getattr(process_monitor, "campaign_metadata", None) or {}).get(
+                "opponent_seed_policy"
+            )
+            == "task3_per_slot_v1",
         )
+        if storage_guard:
+            process_monitor.check()
         if job.kind == "evaluation":
             artifact_after = _sha256_file(artifact) if artifact and artifact.is_file() else None
             if artifact_before != artifact_after:
@@ -614,6 +631,8 @@ def _run_job(
         with lock:
             status["updated_at"] = _timestamp()
             _write_json_atomic(status_path, status)
+        if storage_guard:
+            process_monitor.end_job(job)
 
 
 def _prepare_replica_workspace(

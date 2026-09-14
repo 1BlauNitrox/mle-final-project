@@ -134,11 +134,11 @@ def worker(source, checkpoint, seed, epsilon, output, phase="A"):
     from unittest.mock import patch
 
     import psutil
-    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
 
     from agent_code.DagobertDuckDQNTask3 import callbacks, features, legality
     from agents import AgentRunner
     from environment import BombeRLeWorld, WorldArgs
+    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
 
     allowed = range(1631101, 1631121) if phase == "A" else range(1682101, 1682121)
     if phase not in {"A", "C"} or seed not in allowed or epsilon not in (1.0, 0.2, 0.0):

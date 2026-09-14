@@ -249,11 +249,11 @@ def worker(source, evidence, output):
     """Import the actual executed analyzer, with only path/dependency provenance adapters."""
     sys.path.insert(0, str(source))
     import yaml
-    from training.verify_task3_results import fingerprint
 
     from training import run_plan
     from training import task3_double_campaign as double
     from training import verify_task3_mask_results as previous
+    from training.verify_task3_results import fingerprint
 
     root, binding = evidence / "campaign", evidence / "binding"
     auth = read(root / "authorization.json")

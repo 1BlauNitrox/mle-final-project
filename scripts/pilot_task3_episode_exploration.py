@@ -216,11 +216,10 @@ def play(root, checkpoint, world_seed, agent_seed, scenario, opponents, training
 
     sys.path.insert(0, str(root / "source"))
     os.chdir(root / "source")
-    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
-
     from agent_code.DagobertDuckDQNTask3 import callbacks, features, train
     from agents import AgentRunner
     from environment import BombeRLeWorld, WorldArgs
+    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
 
     configure_diagnostic_logging()
     selector = callbacks.select_action

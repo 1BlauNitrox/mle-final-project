@@ -1,5 +1,54 @@
 # 0006 AI Usage and Disclosure
 
+Issue #126 preparation (2026-09-12): OpenAI Codex drafted the independent fixed
+strong-opponent versus fixed-mixture protocol, matched regression matrices and
+tested statistical decision. The parent and execution adapter remain blocked;
+numeric thresholds and compute require owner ratification. No training or Task 4
+result is claimed. The proposal preserves the roadmap's evidence and freeze windows.
+Issue #146 diagnosis (2026-09-12): Codex prepared prospectively bounded read-only
+trajectory instrumentation and stall tests under the owner's short-test
+authorization. It records original model/source identity, full public states,
+features, Q-values, actions and rewards without optimizer updates or policy
+overrides. Diagnostic seeds are separate from efficacy and held-out populations.
+Human review must assess the observations and any proposed causal explanation.
+
+Issue #150 preparation (2026-09-12): Codex proposed and implemented an optional
+Double DQN target under the owner's next-experiment preparation authorization,
+using retained #146 diagnostic observations and the original Double DQN paper.
+The hypothesis is not a proven cause or cure for the observed stalls. It keeps
+the model family, rewards, features and historical defaults unchanged, and
+registers a fresh matched campaign with all existing capability gates. Tests,
+isolated smokes and timing checks verify implementation only; no long scientific
+campaign was launched or checkpoint promoted. Human ownership and review remain
+required before accepting the experiment or any result.
+
+Issue #147 result verification (2026-09-12): OpenAI Codex verified the downloaded
+archive and all 10,635 members, implemented tested historical source/dependency
+and binding relocation checks, and reproduced all raw observations and the
+registered negative decision. It prepared compact tables, checkpoint inventory,
+durable evidence and result documentation. The owner ran the registered campaign
+under an explicit exception before peer review; this is disclosed without
+altering original authorization records. No new games were launched, thresholds
+relaxed or candidate promoted during analysis. A human must review the evidence,
+interpretation and implementation before merge; AI output is not evidence.
+
+Issue #147 preparation (2026-09-12): OpenAI Codex proposed the matched Task 3
+legal-mask follow-up from #109's failed invalid-action/hunting/retention gates
+and the limitations of #124. It reused existing policy code, added explicit
+single-flag initialization checks, paired analysis and shared execution/export
+tooling, and drafted server instructions. Synthetic tests and isolated smokes
+validate mechanics only. No new scientific compute or efficacy claim is made;
+the owner must approve the proposed protocol/budget and a teammate must review.
+
+Issue #109 result analysis (2026-09-12): OpenAI Codex verified the owner's
+download hash, retained source/checkpoint identity and complete campaign
+observations, and reproduced the preregistered negative decision. Codex fixed
+the tested round-identity latency lookup defect and added portable historical
+source/dependency verification. It prepared result tables, durable evidence,
+documentation and PR updates. No scientific games were launched, gates changed,
+replicas discarded or trained model selected. Human review must verify the
+interpretation and evidence before accepting the result.
+
 Issue #125 preparation (2026-09-10): OpenAI Codex drafted the 26-plus-13 input
 migration requirements and regression checklist from the verified Issue #107
 limitations. This is a proposed design, not implemented or validated behavior;
@@ -41,6 +90,30 @@ For every material use of AI:
 AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
+
+
+2026-09-11, Issue #137: OpenAI Codex prepared the separately tracked exploratory
+coin-collector continuation, reusing the #109 metrics, analyzer and budget
+monitor. Tests cover the passing-peaceful prerequisite, selected parent hash,
+independent online/target preservation and reset training state. The published
+#51 capability targets remain explicit, and #51's validated-parent prerequisites
+are unchanged. No scientific execution occurred. Human review of the prospective
+protocol and later peaceful result, plus separate compute authorization, remain
+required.
+
+2026-09-11, Issue #109 reproducibility review: OpenAI Codex identified entropy
+reseeding in the unchanged supplied opponents, added experiment-only isolated
+per-slot NumPy/Python streams, and bound that policy into campaign evidence.
+Unit tests and paired one-round integration checks verify repeatability without
+changing supplied policies or learned-agent runtime dependencies. Human review
+and separate scientific compute authorization remain required.
+
+2026-09-11, Issue #109: OpenAI Codex added Task 3 metric retention and tests,
+then prepared the prospective analysis and execution path. The user approved
+the recommended peaceful-stage numerical gates and 40 development seed pairs
+per suite before scientific execution. No scientific run is authorized by this
+preparation. Human ownership, non-author review and explicit server compute
+authorization remain required.
 
 2026-09-11, Issue #125: OpenAI Codex reviewed the current migration against its
 contract and added tested refusal of existing successor outputs, explicit
@@ -108,6 +181,7 @@ implementation remains required; the earlier documentation approval is stale.
 | 2026-09-12 | Issue #153 safety-constrained exploration for the compact tabular Task 2 agent: treatment implementation and persistence, run-plan support, tests, prospective paired protocol, autonomous local execution, compact evidence, bootstrap analysis, figures, agent-card update, and interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed without retry. The candidate was rejected under the unchanged registered rule because Classic self-kills rose from `0.045` to `0.075`, the paired interval included zero, no replica improved, and Classic collection exceeded its degradation margin. One retained control repeat had a latency timeout and different action sequence; it was not discarded or rerun. The owner must independently review the implementation, evidence, limitation, and interpretation and obtain non-author approval. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 | 2026-09-12 | Issue #144 compact post-bomb escape-status representation: feature implementation, persistence and run-plan support, tests, prospective paired protocol, autonomous clean-worktree execution, compact evidence, bootstrap analysis, figures, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed. The registered candidate was rejected: all performance, safety, and learning-efficiency outcomes were exactly identical to control, and post-hoc table inspection showed the appended category did not split any visited compact-state prefix. The owner must independently review the implementation, evidence, and interpretation and obtain non-author approval before merge. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 
+
 | 2026-09-08 | Issue #108 CI/main-divergence fix: merged `main`'s multi-step escape features (#87/#112, Task 2 `FEATURE_COUNT` 21->26) into the Task 3 branch, corrected a stale hardcoded checkpoint checksum in CI, and fixed three Task 3 tests to construct/slice against Task 2's legacy 21-dim configuration (matching the actual frozen provisional parent) instead of Task 2's now-shifted default shape | Claude (Anthropic) | The GitHub Actions synthetic-merge run (not the raw branch) surfaced that PR #115 was far behind `main`; Claude diagnosed this as test-fixture staleness rather than a flaw in the 34-input redesign, since Task 3's provisional parent is deliberately frozen and independent of Task 2's separate ongoing evolution. The owner must confirm this interpretation before merge. Full test suite (653 tests), `ruff check`, `compileall`, and smoke games pass; all CI checks green. No scientific training result or performance claim was generated. |
 | 2026-09-08 | Issue #109 peaceful-opponent Task 3 protocol registration: three run plans (Task 3 vs. `peaceful_agent`, frozen Task 2 predecessor vs. `peaceful_agent`, Task 3 vs. `coin_collector_agent` staged but gated), experiment README and config.yaml | Claude (Anthropic) | Claude designed the comparison as five paired Task 3 replicas against one frozen Task 2 reference point (mirroring issue #107's `frozen_task1`/`untrained` pattern, since the Task 2 side is a single already-fixed artifact rather than something to retrain in parallel), proposed a resource ceiling scaled from issue #97's estimate, and left the decision rule `not_yet_fixed`. The owner must assign an owner/reviewer, set numeric elimination/paired-score/self-kill/retention criteria, authorize compute, and rebind both provisional parent artifacts once issue #107 selects the development predecessor, before this counts as more than infrastructure validation. No training was run and no scientific claim was generated. |
 
@@ -172,6 +246,15 @@ for history. Human review of the corrected release and reproduction is required.
 
 ## September 11, 2026: DQN development closeout and deadline plan
 
+Issue #150 protocol tooling (2026-09-12): Codex prepared the matched seed matrix,
+parent and intervention validators, unchanged-gate analyzer, compact export and
+server handoff. Scoped warning-only logging reduces disk use while retaining
+raw scientific observations and failure records. Unit tests and an isolated
+integration smoke validate mechanics; they do not establish scientific efficacy
+or authorize a long run. Human review and ownership remain required.
+
+PR #163: Codex implemented and run the experiment directed by us. The Analysis and documentation was done by us assissted by Codex who ran the analyzer script on our results
+
 ### Issue #124 explicit owner execution exception
 
 Codex added a tested, opt-in
@@ -208,6 +291,14 @@ completed checkpoints, failed attempts and cumulative resource accounting.
   observations and final-training provenance, published checkpoint evidence, and
   documented negative rehearsal / inconclusive masking results. No default model
   changed and no Task 2 completion claim is made. Human review remains required.
+
+Issue #150 storage recovery (2026-09-12): Codex's 8 GiB working-space estimate
+missed retained per-evaluation checkpoint snapshots; the owner reported disk
+exhaustion. Codex prepared a separately executed, audited hard-link utility for
+identical completed evaluation inputs and tested it on disposable fixtures and
+a copy of real smoke output. No scientific source, checkpoint bytes, seeds,
+thresholds or resource budget are changed. Recovery and final scientific
+verification remain separate from these mechanics checks.
 
 - 2026-09-12 PR #150:
   Codex executed the Experiments and ran the analyzer scripts. The documentation was done by us based on a draft from codex

@@ -306,13 +306,12 @@ def play(
 
     sys.path.insert(0, str(root / "source"))
     os.chdir(root / "source")
-    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
-
     from agent_code.DagobertDuckDQNTask3 import callbacks, features, train
     from agent_code.DagobertDuckDQNTask3 import config as agent_config
     from agents import AgentRunner
     from environment import BombeRLeWorld, WorldArgs
     from scripts.task3_reward_configuration import configured_rewards
+    from training.seeded_framework import configure_diagnostic_logging, wrap_process_event
 
     configure_diagnostic_logging()
     actions = []

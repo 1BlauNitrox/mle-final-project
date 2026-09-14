@@ -1,10 +1,34 @@
 # Training Orchestration
 
+[Issue 126 Task 4 preparation](../experiments/2026-09-12-task4-opponent-distribution/README.md)
+has matched strong/mixed/reference matrices and a statistics-only decision
+function. `python -m training.task4_protocol --dry-run` reports concrete blockers;
+it cannot authorize a run or substitute for verified raw evidence and parent binding.
+
+
+The completed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
+reuses the guarded campaign executor and raw evidence checks with an explicit
+issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
+provides prepare, dry-run, run/resume, analyze, verify and compact export.
+The registered result rejects continuation. `training.verify_task3_mask_results`
+verifies its archive and historical source, parent, matrix, dependencies, raw
+observations and decision without launching games or changing server evidence.
+Any new scientific run needs its own prospective authorization.
+
+
 Repeated training blocks can set `world_seed_offset` in a run-plan stage.
 The runner adds it to each replica's world seed and checks the resolved seed
 against evaluation populations and the NumPy seed range. Omission preserves
 historical behavior. Keep the agent seed stable for checkpoint continuation;
 pair offsets by scenario occurrence when comparing reordered curricula.
+
+The completed #109 peaceful campaign is an exploratory negative result; its
+registered selection rule blocks automatic coin-collector continuation.
+See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+`python -m training.verify_task3_results` verifies the historical server campaign
+against its executed Git source and recorded dependencies without launching
+games or changing original bindings. `training.analyze_task3_campaign
+--verify-evidence` recomputes decisions from portable lossless observations.
 
 This directory is for tooling shared across experiments and agents:
 
@@ -237,13 +261,29 @@ python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml -
 python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
 ```
 
-Both provisional starting artifacts, the resource ceiling, and the numeric
-decision criteria are unresolved pending owner review and Issue #124's
-development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
-not be started until the peaceful stage's outcome is decided. Full protocol,
+The user-approved numerical gates and 40-pair development suites are registered.
+The parent remains explicitly configurable: historical #107 A/r2 can support
+exploratory work before Task 2 completes, while a later selected Task 2 artifact
+requires a new binding. Use `python -m training.run_task3_campaign --dry-run`
+for matrix/seed preflight, the same launcher with a binding and separate human
+authorization for budget-enforced execution, and
+`python -m training.analyze_task3_campaign` for verified paired analysis.
+Fresh peer review and server compute authorization remain required. The
+coin-collector template is gated on the peaceful decision under exploratory
+#137; #51 retains its validated-predecessor scope. Full protocol,
 rationale, and exact commands are registered in
 `experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
 integration validation only and produces no performance evidence.
+
+### Issue #137 exploratory Task 3 coin-collector continuation
+
+The separately tracked exploratory coin-collector continuation in #137 reuses
+the Task 3 launcher/analyzer with `--protocol coincollector`. Its preparation
+helper requires a verified passing peaceful result and exactly its selected
+training checkpoint. Run `python -m training.run_task3_campaign --protocol
+coincollector --dry-run` to inspect the future matrix without running a game.
+Commands and prerequisites are in
+`experiments/2026-09-11-task3-coincollector/README.md`. #51 remains unchanged.
 
 ### Issue #107 Task 2 factorial campaign
 
@@ -635,6 +675,17 @@ error.
 
 ## Metric interpretation
 
+### Task 3 match outcomes
+
+The optional CSV fields `opponents_eliminated` (native attributable `kills`),
+`opponent_count`, `score_margin`, `first_place` and `tied_first` retain match
+outcomes for each participant. `score_margin` is own score minus the highest
+other score. `first_place` means strictly greater score than every opponent;
+ties at the highest score are recorded separately in `tied_first`. Opponent-free
+episodes have no match outcome (empty fields), and historical missing kill
+counts remain unavailable rather than becoming zero. An observed-agent analyzer
+must filter by `metadata.json`'s `observed_agent`, not aggregate opponent rows.
+
 ### Invalid-action rate
 
 The per-episode rate is:
@@ -983,6 +1034,37 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+## Prospective Task 3 target comparison (#150)
+
+`python -m training.task3_double_campaign` prepares and validates matched standard
+and Double DQN runs, guards execution, analyzes raw observations, verifies compact
+results and exports retrievable evidence. See the [registered protocol](../experiments/2026-09-12-task3-double-dqn/README.md)
+and [server commands](../experiments/2026-09-12-task3-double-dqn/SERVER.md).
+Both arms start from the same provisional #91 parent; no passing Task 3 model is
+currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-only
+framework/agent logging in seeded runs and records that policy in job metadata.
+Episode statistics, failure metadata and scientific measurements are retained.
+Default logging and existing campaign sources remain unchanged.
+
+
+## Completed #163 evidence verification
+
+`python -m training.verify_issue163_results` audits the completed #163 run
+against its exact executed source. It verifies parent/source/checkpoint bindings,
+all registered jobs, native/scalar statistics, recovery records and resource
+amendments before applying the registered metric functions. It preserves repeat
+mismatches in a diagnostic result with no checkpoint selection. Other campaigns
+and the default evidence loader still reject deterministic-repeat mismatches.
+
+`scripts/package_issue163_evidence.py` creates a compact archive, verifies every
+file against a SHA-256/size manifest and optionally extracts into a new directory.
+The archive contains executed source bytes as well as observations and artifacts;
+this preserves Windows fingerprint ordering and line endings for reproduction.
+Existing exports and extraction directories are never overwritten. These tools
+run no games and perform no scientific continuation. See the
+[result record](../experiments/2026-09-13-task3-safe-attack-results/README.md)
+for exact commands, preserved failures and the evidence publication state.
 
 ## Issue #91 discount-horizon server comparison
 

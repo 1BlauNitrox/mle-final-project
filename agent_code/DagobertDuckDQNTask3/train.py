@@ -103,7 +103,12 @@ def game_events_occurred(
     if movement_event is not None:
         training_events.append(movement_event)
 
-    bomb_event = _bomb_usefulness_event(old_game_state, events)
+    bomb_event = _bomb_usefulness_event(
+        old_game_state,
+        events,
+        neutral_safe_attack_bombs=self.config.neutral_safe_attack_bombs,
+        old_features=old_features,
+    )
 
     if bomb_event is not None:
         training_events.append(bomb_event)
@@ -322,8 +327,11 @@ def _coin_movement_event(
 def _bomb_usefulness_event(
     old_game_state: dict,
     events: list[str],
+    *,
+    neutral_safe_attack_bombs: bool = False,
+    old_features=None,
 ) -> str | None:
-    """Return a shaping event rewarding a bomb placement by its crate target.
+    """Classify confirmed placement, optionally exempting safe crate-free attacks.
 
     Only fires when the framework itself confirms the bomb was actually
     placed (`BOMB_DROPPED` in `events`); an attempted-but-invalid `BOMB`
@@ -337,6 +345,11 @@ def _bomb_usefulness_event(
 
     if crates_destroyed_by_bomb_at(position, field) > 0:
         return "USEFUL_BOMB_PLACED"
+
+    if neutral_safe_attack_bombs:
+        features = old_features if old_features is not None else state_to_features(old_game_state)
+        if features is not None and features[31]:
+            return None
 
     return "WASTEFUL_BOMB_PLACED"
 
