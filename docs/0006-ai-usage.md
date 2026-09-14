@@ -177,6 +177,7 @@ retention suites, tested migration from a 26-input control parent, explicit
 checksum-verified migration paths, and a launch-dependency record. The final
 #107 parent binding, numerical scientific criteria, reviewer approval and
 compute authorization remain pending. No scientific training was run.
+| 2026-09-12 | Issue #157 external Task 3 timestamp resume adapter | OpenAI Codex | Owner-supplied records confirm equal UTC instants spelled differently. Codex reproduced the monitor round-trip defect and tested a fail-closed in-memory adapter, checkpoint/budget guards, audit retention and original analysis/export handoff. No campaign checkout or authorization is rewritten; original accounting continues. Peer review and server confirmation remain required; no scientific result is claimed. |
 
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
@@ -205,6 +206,32 @@ A/r2 exploratory baseline. Unit/regression, isolated integration and clean
 packaging checks verify implementation only; no Task 3 performance claim or
 scientific compute authorization is implied. Final #124 parent binding,
 numeric #109 decisions and scientific execution remain separate work.
+- September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.
+
+- 2026-09-11, Issue #91 / PR #136: Codex corrected the missing training-only
+  runner API after an actual server startup failure. The integration test now
+  runs both phases and verifies no repeated training. Added a tested, narrowly
+  scoped pre-job recovery preserving original resource accounting and failures.
+  Earlier green tests did not cover the campaign call; they were insufficient
+  evidence for that execution path. No scientific improvement is claimed.
+
+- 2026-09-11, #91 / PR #136: Codex independently checked all 32 checkpoints,
+  reproduced server metrics/uncertainty and Q diagnostics, implemented portable
+  evidence verification and corruption/missing-file tests, published complete
+  evidence and documented the negative gamma result and review-timing deviation.
+  No new scientific run, model promotion or Task 2 completion is claimed.
+
+## September 12, 2026: Issue #91 evidence archive correction
+
+Codex addressed the PR #136 review finding that the published archive omitted
+four registered YAML plans. The replacement version preserves all existing
+member bytes and adds only original protocol-hash-matching plans. Verification
+uses a fresh extraction rather than the prior populated local import. No
+scientific run, model, observations or selection rules are changed. The previous
+claim of complete v1 portability was incorrect; the v1 archive remains available
+for history. Human review of the corrected release and reproduction is required.
+
+## September 11, 2026: DQN development closeout and deadline plan
 
 Issue #150 protocol tooling (2026-09-12): Codex prepared the matched seed matrix,
 parent and intervention validators, unchanged-gate analyzer, compact export and
@@ -217,17 +244,13 @@ PR #163: Codex implemented and run the experiment directed by us. The Analysis a
 
 ### Issue #124 explicit owner execution exception
 
-On September 10, Julius explicitly instructed execution despite the missing
-peer review: "I want you to run it anyways!" Codex added a tested, opt-in
+Codex added a tested, opt-in
 execution exception and records it in campaign/job authorization metadata.
-This is not peer approval and does not authorize a merge. Resource limits,
-immutable source checks and analysis requirements remain unchanged.
+This is not peer approval and does not authorize a merge.
 
 ### Issue #124 owner-authorized runtime extension
 
-Julius requested longer execution on September 10 after the observed runtime
-exceeded the original estimate. Codex implemented and tested a separate,
-checksum-bound resume wrapper, preserving the immutable training source,
+Codex implemented and tested a separate, checksum-bound resume wrapper, preserving the immutable training source,
 original authorization and cumulative resource ledger. The extension and
 interrupted attempts are scientific deviations to disclose, not new results.
 See the experiment's `runtime-extension.md` for effective limits and commands.
@@ -263,3 +286,6 @@ identical completed evaluation inputs and tested it on disposable fixtures and
 a copy of real smoke output. No scientific source, checkpoint bytes, seeds,
 thresholds or resource budget are changed. Recovery and final scientific
 verification remain separate from these mechanics checks.
+
+- 2026-09-12 PR #150:
+  Codex executed the Experiments and ran the analyzer scripts. The documentation was done by us based on a draft from codex
