@@ -618,6 +618,31 @@ def evaluate_job(root, output, artifact, suite, latency=False):
     )
 
 
+def selftest_job(output):
+    """Minimal worker used only by the supervisor's concurrency tests.
+
+    It plays no games and touches no scientific artifact; it exists so the
+    worker-pool bookkeeping can be exercised without an authorized campaign.
+    """
+    output.mkdir(parents=True, exist_ok=False)
+    started, cpu = time.monotonic(), time.process_time()
+    deadline = started + 1.0
+    while time.monotonic() < deadline:
+        hashlib.sha256(b"selftest" * 4096).hexdigest()
+    if os.environ.get("TASK3_APPROACH_SELFTEST_FAIL") == "yes":
+        raise SystemExit("Deliberate self-test worker failure")
+    write(
+        output / "result.json",
+        {
+            "scope": "supervisor_selftest_not_a_scientific_job",
+            "started_unix": time.time() - (time.monotonic() - started),
+            "finished_unix": time.time(),
+            "cpu_seconds": time.process_time() - cpu,
+            "wall_seconds": time.monotonic() - started,
+        },
+    )
+
+
 def stage_jobs(root, stage, cfg):
     if stage == "training":
         return [
@@ -1139,6 +1164,7 @@ def main():
             "_bind",
             "_train",
             "_evaluate",
+            "_selftest",
         ],
     )
     parser.add_argument("--root", type=Path, required=True)
@@ -1197,6 +1223,8 @@ def main():
         smoke(root, args.output.resolve())
     elif args.mode == "_smoke":
         smoke_worker(root, args.output.resolve())
+    elif args.mode == "_selftest":
+        selftest_job(args.output.resolve())
     elif args.mode == "_bind":
         bind(root)
     elif args.mode == "_train":
