@@ -777,7 +777,7 @@ agent:
 - satisfies the Task 1 completion contract; or
 - is tournament-ready.
 
-A 5–10 episode smoke run verifies only that the instrumentation works. Any
+A 5â€“10 episode smoke run verifies only that the instrumentation works. Any
 performance conclusion requires a preregistered experiment with controlled
 variables, fixed seed populations, appropriate baselines, and uncertainty
 reporting.
@@ -1059,3 +1059,13 @@ The amended result includes both resource records and the owner amendment.
 Two compact archives retain campaign evidence and the storage/budget recovery
 trail. Preserve both and their manifests. Do not use the original supervisor to
 resume this amended run, because it does not read the amended budget records.
+Issue #168's bounded exploration probes and small learning pilot use
+`scripts/probe_task3_exploration.py` and
+`scripts/pilot_task3_episode_exploration.py`. The prospective configurations,
+compact probe evidence and analyzers are under
+`experiments/2026-09-13-task3-exploration-screen/`.
+See [the pilot command reference](issue168-pilot-commands.md) for source-pinned
+preparation, detached Windows launch, progress, budget-limited resume and compact
+results. The completed pilot ran training and evaluation on the same PC. Its
+negative result and exact archive reproduction are linked from the command
+reference; new comparisons require a separate prospective protocol.

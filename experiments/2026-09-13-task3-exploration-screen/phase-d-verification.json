@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "Completed phase-D result verification; no new scientific execution.",
+  "executed_tool_revision": "dcff79fefe812becbe76e7bdf2d1718a9eda4cea",
+  "archive_sha256": "d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071",
+  "archive_bytes": 48744548,
+  "full_archive_import_and_registered_reanalysis_equal": true,
+  "analysis_command": "python -m scripts.pilot_task3_episode_exploration analyze --root training_outputs/phase-d-archive-verification --output training_outputs/phase-d-recomputed.json",
+  "compact_observations_match_archive": true,
+  "training_episodes": 300,
+  "evaluation_episodes": 280,
+  "summary_rows_match_analysis": 28,
+  "compact_hashes_checked_after_lf_normalization": true,
+  "failed_or_retried_phase_d_jobs": 0,
+  "tests": {
+    "command": "python -m pytest -q tests/test_task3_episode_pilot.py tests/test_probe_task3_exploration.py",
+    "passed": 26,
+    "seconds": 9.82
+  },
+  "prior_setup_validation": {
+    "tests_passed": 943,
+    "subtests_passed": 11,
+    "ci_checks_passed": 9,
+    "ci_revision": "dcff79fefe812becbe76e7bdf2d1718a9eda4cea"
+  },
+  "diff_check": "passed",
+  "changes": "Documentation and retained result evidence only; executable code and registered scientific configurations unchanged.",
+  "publication": "Exact approved archive and accompanying manifest published at issue168-pilot-evidence-v1. Both downloaded from GitHub and verified by SHA-256 and byte size.",
+  "published_download_verified": true,
+  "published_manifest_sha256": "0a6cf648cad1f2fd82b294a18875d0c33c4b03375ac58775a8778ef0b0241951"
+}
