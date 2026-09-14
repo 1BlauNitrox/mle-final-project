@@ -968,7 +968,7 @@ def smoke_worker(root, output):
     verify(root)
     output.mkdir(parents=True, exist_ok=False)
     arm = cfg["smoke"]["arm"]
-    setting = cfg["arm_settings"][arm]
+    arm_setting = cfg["arm_settings"][arm]
     checkpoint = output / "smoke-only.pt"
     shutil.copyfile(root / f"initial-{arm}.pt", checkpoint)
     training, training_seconds = [], []
@@ -987,11 +987,11 @@ def smoke_worker(root, output):
                 0.0,
                 output / f"training-{episode}",
                 freeze=True,
-                kill_reward=setting["kill_reward"],
-                potential_scale=setting["potential_scale"],
-                update_every=setting["update_every"],
-                proximity_gate=setting.get("proximity_gate"),
-                l2_opponent=setting.get("l2_opponent", 0.0),
+                kill_reward=arm_setting["kill_reward"],
+                potential_scale=arm_setting["potential_scale"],
+                update_every=arm_setting["update_every"],
+                proximity_gate=arm_setting.get("proximity_gate"),
+                l2_opponent=arm_setting.get("l2_opponent", 0.0),
             )
         )
         training_seconds.append(time.monotonic() - started)
@@ -1016,6 +1016,7 @@ def smoke_worker(root, output):
                 False,
                 0.0,
                 output / suite,
+                kill_reward=arm_setting["kill_reward"],
             )
         )
         evaluation_seconds.append(time.monotonic() - started)
@@ -1034,6 +1035,7 @@ def smoke_worker(root, output):
             False,
             0.0,
             output / (suite + "-reference"),
+            kill_reward=cfg["arm_settings"]["control"]["kill_reward"],
         )
         if behavioral(reference["native"]) != behavioral(evaluation[index]["native"]):
             raise ValueError("Opponent-free smoke behavior changed")
