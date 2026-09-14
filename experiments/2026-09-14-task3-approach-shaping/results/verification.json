@@ -1,0 +1,44 @@
+{
+  "scope": "completed run verification and registered analyzer output",
+  "host": "DESKTOP-4QELBC5",
+  "archive": {
+    "filename": "task3-approach-evidence.tar.gz",
+    "size_bytes": 167285689,
+    "sha256": "b12834626dc09bf896ff6a9faf347bb702e03512f82bff9f4db8d779eefb697f",
+    "manifest_sha256": "08a76407e8ec403c42194d73fa44f9c71685b330730943f4c310dffefef6e07e",
+    "public_locator": null
+  },
+  "tool_source": "2f95a02019220eca8b842ba648e65d10c0a99a1c",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "config_sha256": "26e66bc192564f8ae7ee5a6d8c946b39c7458275debaab177c699defcdfd2e98",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+  "seed_audit_sha256": "fc734c56ec3028e2269fd90539fd32999d0c3f0a65507773a37fa890691b7574",
+  "training_jobs": 15,
+  "evaluation_jobs": 64,
+  "latency_jobs": 16,
+  "failed_jobs": 0,
+  "resources": {
+    "training": {
+      "cpu_seconds": 53272.171875,
+      "wall_seconds": 11064.577941700001,
+      "peak_memory_bytes": 1784680448,
+      "passed": true
+    },
+    "evaluation": {
+      "cpu_seconds": 31878.453125,
+      "wall_seconds": 6576.198434200021,
+      "peak_memory_bytes": 1204572160,
+      "passed": true
+    },
+    "latency": {
+      "cpu_seconds": 576.703125,
+      "wall_seconds": 588.8769928999827,
+      "peak_memory_bytes": 233164800,
+      "passed": true
+    }
+  },
+  "analyzer": "scripts.pilot_task3_approach analyze",
+  "registered_screen_passed": false,
+  "selected_checkpoint": null
+}

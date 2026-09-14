@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "a1912b53ef2549ac97ea1b6fce6ad897cde24ea22198e2e4fc6acd86c028513b",
+  "archive_size_bytes": 125747746,
+  "manifest_sha256": "a2e6b2823c207d467e3ad17fcb8777d9688283024cb917b8630d045e39208bb6",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue186-evidence-v1/task3-approach-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue186-evidence-v1/task3-approach-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; downloaded and checksum-verified on the PC before analysis.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task3-approach-evidence.tar.gz",
+  "reproduce_command": "$env:TASK3_APPROACH_PROFILE='update-cadence'; python -m scripts.pilot_task3_approach import --root <root> --archive task3-approach-evidence.tar.gz --sha256 a1912b53ef2549ac97ea1b6fce6ad897cde24ea22198e2e4fc6acd86c028513b; python -m scripts.pilot_task3_approach analyze --root <root> --output <root>/analysis-reproduced.json"
+}

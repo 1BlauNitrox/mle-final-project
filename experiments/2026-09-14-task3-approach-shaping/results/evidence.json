@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "b12834626dc09bf896ff6a9faf347bb702e03512f82bff9f4db8d779eefb697f",
+  "archive_size_bytes": 167285689,
+  "manifest_sha256": "08a76407e8ec403c42194d73fa44f9c71685b330730943f4c310dffefef6e07e",
+  "archive_public_url": null,
+  "manifest_public_url": null,
+  "archive_retrieval": "Local archive; publish to a durable release before merge.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task3-approach-evidence.tar.gz",
+  "reproduce_command": "$env:TASK3_APPROACH_PROFILE='approach-shaping'; python -m scripts.pilot_task3_approach import --root <root> --archive task3-approach-evidence.tar.gz --sha256 b12834626dc09bf896ff6a9faf347bb702e03512f82bff9f4db8d779eefb697f; python -m scripts.pilot_task3_approach analyze --root <root> --output <root>/analysis-reproduced.json"
+}
