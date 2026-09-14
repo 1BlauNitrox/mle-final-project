@@ -1,4 +1,4 @@
-"""Bounded storage-only workaround for issue173 Windows progress-file sharing errors."""
+"""Bounded storage-only workaround for issue175 Windows progress-file sharing errors."""
 
 import json
 import time

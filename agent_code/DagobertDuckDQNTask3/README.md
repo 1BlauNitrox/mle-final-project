@@ -205,27 +205,11 @@ belong to the post-#107 Task 3 launch protocol.
 
 ## Experiment evidence: archived 39-input runtime
 
-| Experiment | Runtime source | Eliminations per game reference / full fine-tuning / frozen treatment | Treatment minus control (95% CI) | Decision |
+| Experiment | Runtime source | Kill reward control / treatment | Eliminations per game reference / control / treatment | Decision |
 | --- | --- | --- | --- | --- |
-| [#173](../../experiments/2026-09-13-task3-frozen-inheritance/README.md) | `c4ddfa4` (39 inputs; separate from this checkout's 34-input fixture) | 0.200 / 0.185 / 0.170 | -0.015 [-0.150, +0.125] | No checkpoint promoted |
+| [#175](../../experiments/2026-09-14-task3-elimination-reward/README.md) | `c4ddfa4` (39 inputs; separate from this checkout's 34-input fixture) | +5 / +20 | 0.250 / 0.080 / 0.090 | No checkpoint promoted |
 
-[Exact gates, uncertainty and retention](../../experiments/2026-09-13-task3-frozen-inheritance/results/analysis.json); [artifact provenance](../../experiments/2026-09-13-task3-frozen-inheritance/results/evidence.json).
-## Exploration pilot result (#168)
-
-Frozen-policy probes motivated a three-replica learning comparison of stepwise
-20% exploration against an 80% greedy / 20% random episode mixture. After 300
-training and 280 evaluation episodes, mixture hunting was 0.200 eliminations/game
-versus 0.133 for stepwise exploration and 0.200 for the unchanged parent.
-The +0.067 effect missed the +0.10 pilot threshold; its descriptive 95% interval
-was [-0.400, +0.533]. Coin-heaven collection was 71.2% versus the parent's 88.0%.
-Coin-heaven and opponent-free classic failed collection and self-kill retention;
-loot-crate passed. Learning, repeatability, invalid-action and latency gates passed.
-
-The pilot is negative overall and selected no checkpoint. The proposed follow-up
-holds episode exploration fixed and tests a smaller learning rate to investigate
-retention. It must use fresh paired seeds and the unchanged initialization;
-smaller updates are not yet a validated remedy. Detailed results and limitations
-are in the [experiment record](../../experiments/2026-09-13-task3-exploration-screen/README.md).
+[Exact gates, uncertainty and retention](../../experiments/2026-09-14-task3-elimination-reward/results/analysis.json); [artifact provenance](../../experiments/2026-09-14-task3-elimination-reward/results/evidence.json).
 
 The historical implementation and smoke checks below the result summary do
 not establish performance. The #150 result record defines the exact executed

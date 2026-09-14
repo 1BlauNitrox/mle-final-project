@@ -1,4 +1,4 @@
-"""Training-only restriction for issue173; evaluation uses the unchanged DQN.
+"""Training-only restriction for issue175; evaluation uses the unchanged DQN.
 
 Arm provenance lives in the immutable campaign binding and each training row.
 Checkpoint serialization is unchanged. Every reload must reinstall this guard;
