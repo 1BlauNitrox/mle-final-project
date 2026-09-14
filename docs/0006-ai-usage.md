@@ -5,6 +5,12 @@ strong-opponent versus fixed-mixture protocol, matched regression matrices and
 tested statistical decision. The parent and execution adapter remain blocked;
 numeric thresholds and compute require owner ratification. No training or Task 4
 result is claimed. The proposal preserves the roadmap's evidence and freeze windows.
+Issue #146 diagnosis (2026-09-12): Codex prepared prospectively bounded read-only
+trajectory instrumentation and stall tests under the owner's short-test
+authorization. It records original model/source identity, full public states,
+features, Q-values, actions and rewards without optimizer updates or policy
+overrides. Diagnostic seeds are separate from efficacy and held-out populations.
+Human review must assess the observations and any proposed causal explanation.
 
 Issue #150 preparation (2026-09-12): Codex proposed and implemented an optional
 Double DQN target under the owner's next-experiment preparation authorization,
@@ -84,6 +90,7 @@ For every material use of AI:
 AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
+
 
 2026-09-11, Issue #137: OpenAI Codex prepared the separately tracked exploratory
 coin-collector continuation, reusing the #109 metrics, analyzer and budget
