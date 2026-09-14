@@ -1,0 +1,200 @@
+{
+  "decision": {
+    "scope": "temporal_mechanism_only_not_task3_success",
+    "learning_pilot_ready": true,
+    "gates": {
+      "survival_ratio": true,
+      "paired_survival": true,
+      "coins": true,
+      "attack_exposure": true,
+      "self_kills": true
+    },
+    "mean_survival_steps": {
+      "stepwise": 23.8,
+      "episode_mixture": 274.65
+    },
+    "longer_pairs": 16,
+    "mean_coin_difference": 2.55,
+    "mixture_attack_episodes": 5,
+    "mixture_self_kill_rate": 0.35,
+    "selected_checkpoint": null,
+    "long_training_authorized": false
+  },
+  "summary": {
+    "stepwise": {
+      "survival_steps": {
+        "mean": 23.8,
+        "total": 476
+      },
+      "coins": {
+        "mean": 0.2,
+        "total": 4
+      },
+      "crates": {
+        "mean": 7.4,
+        "total": 148
+      },
+      "eliminations": {
+        "mean": 0,
+        "total": 0
+      },
+      "self_kills": {
+        "mean": 1,
+        "total": 20
+      },
+      "survived": {
+        "mean": 0,
+        "total": 0
+      },
+      "invalid_actions": {
+        "mean": 0,
+        "total": 0
+      },
+      "attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "available_safe_attack_steps": {
+        "mean": 0,
+        "total": 0
+      },
+      "safe_cratefree_placements": {
+        "mean": 0,
+        "total": 0
+      }
+    },
+    "episode_mixture": {
+      "survival_steps": {
+        "mean": 274.65,
+        "total": 5493
+      },
+      "coins": {
+        "mean": 2.75,
+        "total": 55
+      },
+      "crates": {
+        "mean": 43.9,
+        "total": 878
+      },
+      "eliminations": {
+        "mean": 0.25,
+        "total": 5
+      },
+      "self_kills": {
+        "mean": 0.35,
+        "total": 7
+      },
+      "survived": {
+        "mean": 0.65,
+        "total": 13
+      },
+      "invalid_actions": {
+        "mean": 0.1,
+        "total": 2
+      },
+      "attack_steps": {
+        "mean": 1.45,
+        "total": 29
+      },
+      "safe_attack_steps": {
+        "mean": 1.4,
+        "total": 28
+      },
+      "available_safe_attack_steps": {
+        "mean": 0.25,
+        "total": 5
+      },
+      "safe_cratefree_placements": {
+        "mean": 0,
+        "total": 0
+      }
+    }
+  },
+  "paired_mixture_minus_stepwise": {
+    "survival_steps": {
+      "mean_difference": 250.85,
+      "paired_bootstrap_95_percent": [
+        173.85,
+        322.85
+      ]
+    },
+    "coins": {
+      "mean_difference": 2.55,
+      "paired_bootstrap_95_percent": [
+        1.45,
+        3.7
+      ]
+    },
+    "crates": {
+      "mean_difference": 36.5,
+      "paired_bootstrap_95_percent": [
+        20.8,
+        52.4
+      ]
+    },
+    "eliminations": {
+      "mean_difference": 0.25,
+      "paired_bootstrap_95_percent": [
+        0.1,
+        0.45
+      ]
+    },
+    "self_kills": {
+      "mean_difference": -0.65,
+      "paired_bootstrap_95_percent": [
+        -0.85,
+        -0.45
+      ]
+    },
+    "survived": {
+      "mean_difference": 0.65,
+      "paired_bootstrap_95_percent": [
+        0.45,
+        0.85
+      ]
+    },
+    "invalid_actions": {
+      "mean_difference": 0.1,
+      "paired_bootstrap_95_percent": [
+        0,
+        0.25
+      ]
+    },
+    "attack_steps": {
+      "mean_difference": 1.45,
+      "paired_bootstrap_95_percent": [
+        0.3,
+        2.8
+      ]
+    },
+    "safe_attack_steps": {
+      "mean_difference": 1.4,
+      "paired_bootstrap_95_percent": [
+        0.3,
+        2.7
+      ]
+    },
+    "available_safe_attack_steps": {
+      "mean_difference": 0.25,
+      "paired_bootstrap_95_percent": [
+        0,
+        0.55
+      ]
+    },
+    "safe_cratefree_placements": {
+      "mean_difference": 0,
+      "paired_bootstrap_95_percent": [
+        0,
+        0
+      ]
+    }
+  },
+  "uncertainty": "Descriptive paired-world bootstrap; 10000 draws, seed1682026. Not a Task3 efficacy gate.",
+  "cpu_seconds_including_failed_attempts": 199.234375,
+  "wall_seconds_including_failed_attempts": 215.7925677000312,
+  "peak_memory_bytes": 226136064
+}

@@ -40,8 +40,8 @@ def test_no_opponent_has_a_neutral_suffix() -> None:
     features = state_to_features(make_state())
 
     assert features is not None
-    assert len(features) == 34
-    assert features[21:] == (0,) * 13
+    assert len(features) == 39
+    assert features[26:] == (0,) * 13
 
 
 def test_nearest_and_second_nearest_direction_distance_and_tie_break() -> None:
@@ -55,16 +55,16 @@ def test_nearest_and_second_nearest_direction_distance_and_tie_break() -> None:
     assert features is not None
     # All three are Manhattan distance 2 away; ties break by (x, y), so the
     # nearest is (1, 3) and the second-nearest is (3, 1).
-    assert features[21:25] == (1, -1, 0, 2)
-    assert features[31:34] == (0, -1, 2)
+    assert features[26:30] == (1, -1, 0, 2)
+    assert features[36:39] == (0, -1, 2)
 
 
 def test_single_opponent_leaves_second_nearest_at_zero() -> None:
     features = state_to_features(make_state(others=[("only", 0, True, (5, 3))]))
 
     assert features is not None
-    assert features[21:25] == (1, 1, 0, 2)
-    assert features[31:34] == (0, 0, 0)
+    assert features[26:30] == (1, 1, 0, 2)
+    assert features[36:39] == (0, 0, 0)
 
 
 def test_opponent_occupancy_blocks_movement_and_is_encoded_per_direction() -> None:
@@ -78,7 +78,7 @@ def test_opponent_occupancy_blocks_movement_and_is_encoded_per_direction() -> No
 
     assert features is not None
     assert features[:4] == (0, 0, 0, 0)
-    assert features[27:31] == (1, 1, 1, 1)
+    assert features[32:36] == (1, 1, 1, 1)
 
 
 def test_attack_opportunity_is_a_flag_not_a_count() -> None:
@@ -89,10 +89,10 @@ def test_attack_opportunity_is_a_flag_not_a_count() -> None:
     features = state_to_features(make_state(others=opponents))
 
     assert features is not None
-    assert features[25] == 1
-    assert features[26] == 1
+    assert features[30] == 1
+    assert features[31] == 1
     # Neither target is adjacent (both two tiles away).
-    assert features[27:31] == (0, 0, 0, 0)
+    assert features[32:36] == (0, 0, 0, 0)
 
 
 def test_wall_blocks_attack_opportunity() -> None:
@@ -106,7 +106,7 @@ def test_wall_blocks_attack_opportunity() -> None:
     )
 
     assert features is not None
-    assert features[25:27] == (0, 0)
+    assert features[30:32] == (0, 0)
 
 
 def test_opponent_blocks_the_only_escape_after_an_attack() -> None:
@@ -122,5 +122,5 @@ def test_opponent_blocks_the_only_escape_after_an_attack() -> None:
     )
 
     assert features is not None
-    assert features[25] == 1
-    assert features[26] == 0
+    assert features[30] == 1
+    assert features[31] == 0
