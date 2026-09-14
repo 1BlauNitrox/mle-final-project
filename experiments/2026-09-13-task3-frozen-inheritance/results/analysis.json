@@ -1,0 +1,1356 @@
+{
+  "pilot_screen_passed": false,
+  "gates": {
+    "resources": true,
+    "genuine_updates": true,
+    "behavioral_repeats": false,
+    "hunting_improvement": false,
+    "hunting_improvement_ci": false,
+    "hunting_self_kills_control": true,
+    "hunting_self_kills_parent": true,
+    "frozen_online_weights": true,
+    "opponent_free_invariance": false,
+    "hunting_parent_retention": false,
+    "nonworse_replicas": false,
+    "earlier_task_retention": true,
+    "invalid_actions": false,
+    "latency": false
+  },
+  "retention_suites": {
+    "coin-heaven": {
+      "coins": true,
+      "self_kills": true
+    },
+    "loot-crate": {
+      "coins": true,
+      "self_kills": true
+    },
+    "classic-empty": {
+      "coins": true,
+      "self_kills": true
+    }
+  },
+  "summary": {
+    "classic-peaceful": {
+      "reference": {
+        "score": 4.825,
+        "strict_win": 0.75,
+        "collection_fraction": 0.425,
+        "coins": 3.825,
+        "crates": 53.75,
+        "eliminations": 0.2,
+        "survived": 0.7,
+        "survival_steps": 312.725,
+        "self_kills": 0.3,
+        "invalid_actions": 0,
+        "bomb_actions": 32.275
+      },
+      "control-r1": {
+        "score": 3.725,
+        "strict_win": 0.8,
+        "collection_fraction": 0.34444444444444444,
+        "coins": 3.1,
+        "crates": 48.9,
+        "eliminations": 0.125,
+        "survived": 0.6,
+        "survival_steps": 285.95,
+        "self_kills": 0.4,
+        "invalid_actions": 0.025,
+        "bomb_actions": 30.125
+      },
+      "treatment-r1": {
+        "score": 2.075,
+        "strict_win": 0.475,
+        "collection_fraction": 0.1611111111111111,
+        "coins": 1.45,
+        "crates": 23.725,
+        "eliminations": 0.125,
+        "survived": 0.8,
+        "survival_steps": 335.675,
+        "self_kills": 0.2,
+        "invalid_actions": 0.05,
+        "bomb_actions": 28
+      },
+      "control-r2": {
+        "score": 5.975,
+        "strict_win": 0.875,
+        "collection_fraction": 0.525,
+        "coins": 4.725,
+        "crates": 70.4,
+        "eliminations": 0.25,
+        "survived": 0.875,
+        "survival_steps": 366.8,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 34.45
+      },
+      "treatment-r2": {
+        "score": 1.75,
+        "strict_win": 0.6,
+        "collection_fraction": 0.15277777777777776,
+        "coins": 1.375,
+        "crates": 24.775,
+        "eliminations": 0.075,
+        "survived": 0.825,
+        "survival_steps": 339.225,
+        "self_kills": 0.175,
+        "invalid_actions": 0,
+        "bomb_actions": 24.125
+      },
+      "control-r3": {
+        "score": 4.475,
+        "strict_win": 0.85,
+        "collection_fraction": 0.39999999999999997,
+        "coins": 3.6,
+        "crates": 58.675,
+        "eliminations": 0.175,
+        "survived": 0.75,
+        "survival_steps": 343.8,
+        "self_kills": 0.25,
+        "invalid_actions": 0,
+        "bomb_actions": 40.025
+      },
+      "treatment-r3": {
+        "score": 3.025,
+        "strict_win": 0.675,
+        "collection_fraction": 0.225,
+        "coins": 2.025,
+        "crates": 36.55,
+        "eliminations": 0.2,
+        "survived": 0.725,
+        "survival_steps": 319.15,
+        "self_kills": 0.275,
+        "invalid_actions": 0.025,
+        "bomb_actions": 38.775
+      },
+      "control-r4": {
+        "score": 3.075,
+        "strict_win": 0.575,
+        "collection_fraction": 0.2583333333333333,
+        "coins": 2.325,
+        "crates": 40,
+        "eliminations": 0.15,
+        "survived": 0.75,
+        "survival_steps": 339.5,
+        "self_kills": 0.25,
+        "invalid_actions": 0.025,
+        "bomb_actions": 21.7
+      },
+      "treatment-r4": {
+        "score": 4.75,
+        "strict_win": 0.8,
+        "collection_fraction": 0.3611111111111111,
+        "coins": 3.25,
+        "crates": 49.125,
+        "eliminations": 0.3,
+        "survived": 0.675,
+        "survival_steps": 309.725,
+        "self_kills": 0.325,
+        "invalid_actions": 0.05,
+        "bomb_actions": 34.325
+      },
+      "control-r5": {
+        "score": 4.325,
+        "strict_win": 0.7,
+        "collection_fraction": 0.35555555555555557,
+        "coins": 3.2,
+        "crates": 48.775,
+        "eliminations": 0.225,
+        "survived": 0.925,
+        "survival_steps": 380.1,
+        "self_kills": 0.075,
+        "invalid_actions": 0.125,
+        "bomb_actions": 28.275
+      },
+      "treatment-r5": {
+        "score": 2.5,
+        "strict_win": 0.525,
+        "collection_fraction": 0.19444444444444445,
+        "coins": 1.75,
+        "crates": 27.575,
+        "eliminations": 0.15,
+        "survived": 0.7,
+        "survival_steps": 320.525,
+        "self_kills": 0.3,
+        "invalid_actions": 0.025,
+        "bomb_actions": 28.25
+      }
+    },
+    "coin-heaven": {
+      "reference": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      },
+      "control-r1": {
+        "score": 14.475,
+        "strict_win": 0,
+        "collection_fraction": 0.2895,
+        "coins": 14.475,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 394.4,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 1.325
+      },
+      "treatment-r1": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      },
+      "control-r2": {
+        "score": 38.575,
+        "strict_win": 0,
+        "collection_fraction": 0.7715,
+        "coins": 38.575,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.575,
+        "survival_steps": 128.65,
+        "self_kills": 0.425,
+        "invalid_actions": 0,
+        "bomb_actions": 10.55
+      },
+      "treatment-r2": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      },
+      "control-r3": {
+        "score": 20.675,
+        "strict_win": 0,
+        "collection_fraction": 0.4135,
+        "coins": 20.675,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 366.775,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 7.475
+      },
+      "treatment-r3": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      },
+      "control-r4": {
+        "score": 24.4,
+        "strict_win": 0,
+        "collection_fraction": 0.488,
+        "coins": 24.4,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.825,
+        "survival_steps": 311.025,
+        "self_kills": 0.175,
+        "invalid_actions": 0,
+        "bomb_actions": 6.275
+      },
+      "treatment-r4": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      },
+      "control-r5": {
+        "score": 13.45,
+        "strict_win": 0,
+        "collection_fraction": 0.269,
+        "coins": 13.45,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 400,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 0.8
+      },
+      "treatment-r5": {
+        "score": 30.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6005,
+        "coins": 30.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 274.7,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 4.35
+      }
+    },
+    "loot-crate": {
+      "reference": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      },
+      "control-r1": {
+        "score": 8.25,
+        "strict_win": 0,
+        "collection_fraction": 0.165,
+        "coins": 8.25,
+        "crates": 26,
+        "eliminations": 0,
+        "survived": 0.55,
+        "survival_steps": 250.275,
+        "self_kills": 0.45,
+        "invalid_actions": 0,
+        "bomb_actions": 13.6
+      },
+      "treatment-r1": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      },
+      "control-r2": {
+        "score": 11.1,
+        "strict_win": 0,
+        "collection_fraction": 0.222,
+        "coins": 11.1,
+        "crates": 32.475,
+        "eliminations": 0,
+        "survived": 0.425,
+        "survival_steps": 228.15,
+        "self_kills": 0.575,
+        "invalid_actions": 0,
+        "bomb_actions": 15.5
+      },
+      "treatment-r2": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      },
+      "control-r3": {
+        "score": 6.475,
+        "strict_win": 0,
+        "collection_fraction": 0.1295,
+        "coins": 6.475,
+        "crates": 20.725,
+        "eliminations": 0,
+        "survived": 0.625,
+        "survival_steps": 275.05,
+        "self_kills": 0.375,
+        "invalid_actions": 0,
+        "bomb_actions": 10.9
+      },
+      "treatment-r3": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      },
+      "control-r4": {
+        "score": 2.3,
+        "strict_win": 0,
+        "collection_fraction": 0.046,
+        "coins": 2.3,
+        "crates": 8,
+        "eliminations": 0,
+        "survived": 0.775,
+        "survival_steps": 320.325,
+        "self_kills": 0.225,
+        "invalid_actions": 0,
+        "bomb_actions": 5.475
+      },
+      "treatment-r4": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      },
+      "control-r5": {
+        "score": 10.55,
+        "strict_win": 0,
+        "collection_fraction": 0.211,
+        "coins": 10.55,
+        "crates": 31.05,
+        "eliminations": 0,
+        "survived": 0.775,
+        "survival_steps": 331.05,
+        "self_kills": 0.225,
+        "invalid_actions": 0,
+        "bomb_actions": 15.475
+      },
+      "treatment-r5": {
+        "score": 8.5,
+        "strict_win": 0,
+        "collection_fraction": 0.17,
+        "coins": 8.5,
+        "crates": 26.1,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 222.525,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25
+      }
+    },
+    "classic-empty": {
+      "reference": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      },
+      "control-r1": {
+        "score": 3.3,
+        "strict_win": 0,
+        "collection_fraction": 0.36666666666666664,
+        "coins": 3.3,
+        "crates": 51.675,
+        "eliminations": 0,
+        "survived": 0.575,
+        "survival_steps": 279.025,
+        "self_kills": 0.425,
+        "invalid_actions": 0,
+        "bomb_actions": 32.45
+      },
+      "treatment-r1": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      },
+      "control-r2": {
+        "score": 3.65,
+        "strict_win": 0,
+        "collection_fraction": 0.40555555555555556,
+        "coins": 3.65,
+        "crates": 50.1,
+        "eliminations": 0,
+        "survived": 0.875,
+        "survival_steps": 360.725,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 20.65
+      },
+      "treatment-r2": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      },
+      "control-r3": {
+        "score": 2.7,
+        "strict_win": 0,
+        "collection_fraction": 0.3,
+        "coins": 2.7,
+        "crates": 45.875,
+        "eliminations": 0,
+        "survived": 0.875,
+        "survival_steps": 357.175,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 32.7
+      },
+      "treatment-r3": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      },
+      "control-r4": {
+        "score": 1.125,
+        "strict_win": 0,
+        "collection_fraction": 0.125,
+        "coins": 1.125,
+        "crates": 18.85,
+        "eliminations": 0,
+        "survived": 0.95,
+        "survival_steps": 381.525,
+        "self_kills": 0.05,
+        "invalid_actions": 0,
+        "bomb_actions": 9.275
+      },
+      "treatment-r4": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      },
+      "control-r5": {
+        "score": 3.65,
+        "strict_win": 0,
+        "collection_fraction": 0.40555555555555556,
+        "coins": 3.65,
+        "crates": 54.675,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 366.65,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 25
+      },
+      "treatment-r5": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.4305555555555555,
+        "coins": 3.875,
+        "crates": 56.35,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 355.7,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 37.725
+      }
+    }
+  },
+  "paired_treatment_minus": {
+    "classic-peaceful": {
+      "control": {
+        "score": {
+          "mean_difference": -1.495,
+          "paired_crossed_bootstrap_95_percent": [
+            -3.34,
+            0.5051249999999982
+          ]
+        },
+        "strict_win": {
+          "mean_difference": -0.145,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.34,
+            0.075
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": -0.15777777777777777,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.2994444444444444,
+            0.0027777777777777735
+          ]
+        },
+        "coins": {
+          "mean_difference": -1.42,
+          "paired_crossed_bootstrap_95_percent": [
+            -2.695,
+            0.025
+          ]
+        },
+        "crates": {
+          "mean_difference": -21,
+          "paired_crossed_bootstrap_95_percent": [
+            -37.265375,
+            -2.8148750000000016
+          ]
+        },
+        "eliminations": {
+          "mean_difference": -0.015,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.15,
+            0.125
+          ]
+        },
+        "survived": {
+          "mean_difference": -0.035,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.195,
+            0.14
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": -18.37,
+          "paired_crossed_bootstrap_95_percent": [
+            -62.510625,
+            32.15074999999999
+          ]
+        },
+        "self_kills": {
+          "mean_difference": 0.035,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.14,
+            0.195
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": -0.005,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.095,
+            0.06
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": -0.22,
+          "paired_crossed_bootstrap_95_percent": [
+            -8.6755,
+            8.16
+          ]
+        }
+      },
+      "reference": {
+        "score": {
+          "mean_difference": -2.005,
+          "paired_crossed_bootstrap_95_percent": [
+            -3.665,
+            -0.27
+          ]
+        },
+        "strict_win": {
+          "mean_difference": -0.135,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.315,
+            0.05
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": -0.2061111111111111,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.33055555555555555,
+            -0.07666666666666667
+          ]
+        },
+        "coins": {
+          "mean_difference": -1.855,
+          "paired_crossed_bootstrap_95_percent": [
+            -2.975,
+            -0.69
+          ]
+        },
+        "crates": {
+          "mean_difference": -21.4,
+          "paired_crossed_bootstrap_95_percent": [
+            -34.516,
+            -7.169500000000007
+          ]
+        },
+        "eliminations": {
+          "mean_difference": -0.03,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.18,
+            0.12
+          ]
+        },
+        "survived": {
+          "mean_difference": 0.045,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.1,
+            0.195
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": 12.135,
+          "paired_crossed_bootstrap_95_percent": [
+            -25.68125,
+            52.06637499999998
+          ]
+        },
+        "self_kills": {
+          "mean_difference": -0.045,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.195,
+            0.1
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0.03,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.08
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": -1.58,
+          "paired_crossed_bootstrap_95_percent": [
+            -9.68025,
+            6.655
+          ]
+        }
+      }
+    },
+    "coin-heaven": {
+      "control": {
+        "score": {
+          "mean_difference": 7.71,
+          "paired_crossed_bootstrap_95_percent": [
+            -2.8506249999999995,
+            16.410124999999997
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.1542,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.05701249999999999,
+            0.3282025
+          ]
+        },
+        "coins": {
+          "mean_difference": 7.71,
+          "paired_crossed_bootstrap_95_percent": [
+            -2.8506249999999995,
+            16.410124999999997
+          ]
+        },
+        "crates": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": 0.02,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.145,
+            0.215
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": -45.47,
+          "paired_crossed_bootstrap_95_percent": [
+            -131.32575,
+            62.87062499999999
+          ]
+        },
+        "self_kills": {
+          "mean_difference": -0.02,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.215,
+            0.145
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": -0.935,
+          "paired_crossed_bootstrap_95_percent": [
+            -4.81,
+            2.5051249999999983
+          ]
+        }
+      },
+      "reference": {
+        "score": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "coins": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "crates": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "self_kills": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "loot-crate": {
+      "control": {
+        "score": {
+          "mean_difference": 0.765,
+          "paired_crossed_bootstrap_95_percent": [
+            -3.5001249999999997,
+            5.135
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.015300000000000005,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.07000250000000001,
+            0.10270000000000001
+          ]
+        },
+        "coins": {
+          "mean_difference": 0.765,
+          "paired_crossed_bootstrap_95_percent": [
+            -3.5001249999999997,
+            5.135
+          ]
+        },
+        "crates": {
+          "mean_difference": 2.45,
+          "paired_crossed_bootstrap_95_percent": [
+            -8.630125000000001,
+            13.860374999999994
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": -0.18,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.39,
+            0.025
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": -58.445,
+          "paired_crossed_bootstrap_95_percent": [
+            -128.471375,
+            7.81637499999998
+          ]
+        },
+        "self_kills": {
+          "mean_difference": 0.18,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.025,
+            0.39
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": -0.94,
+          "paired_crossed_bootstrap_95_percent": [
+            -6.22,
+            4.475124999999998
+          ]
+        }
+      },
+      "reference": {
+        "score": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "coins": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "crates": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "self_kills": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "classic-empty": {
+      "control": {
+        "score": {
+          "mean_difference": 0.99,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.20512499999999986,
+            2.2651249999999985
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.11,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.02279166666666665,
+            0.2516805555555554
+          ]
+        },
+        "coins": {
+          "mean_difference": 0.99,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.20512499999999986,
+            2.2651249999999985
+          ]
+        },
+        "crates": {
+          "mean_difference": 12.115,
+          "paired_crossed_bootstrap_95_percent": [
+            -3.12525,
+            28.91
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": 0.015,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.13,
+            0.185
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": 6.68,
+          "paired_crossed_bootstrap_95_percent": [
+            -34.865125,
+            54.480124999999994
+          ]
+        },
+        "self_kills": {
+          "mean_difference": -0.015,
+          "paired_crossed_bootstrap_95_percent": [
+            -0.185,
+            0.13
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": 13.71,
+          "paired_crossed_bootstrap_95_percent": [
+            4.224875,
+            23.465
+          ]
+        }
+      },
+      "reference": {
+        "score": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "strict_win": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "collection_fraction": {
+          "mean_difference": 0.0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "coins": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "crates": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "eliminations": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survived": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "survival_steps": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "self_kills": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "invalid_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        },
+        "bomb_actions": {
+          "mean_difference": 0,
+          "paired_crossed_bootstrap_95_percent": [
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "training_summary": {
+    "control-r1": {
+      "optimizer_updates": 23865,
+      "mean_survival_steps": 243.64,
+      "attack_episodes": 17,
+      "eliminations": 20
+    },
+    "treatment-r1": {
+      "optimizer_updates": 28228,
+      "mean_survival_steps": 287.27,
+      "attack_episodes": 16,
+      "eliminations": 11
+    },
+    "control-r2": {
+      "optimizer_updates": 25455,
+      "mean_survival_steps": 259.54,
+      "attack_episodes": 20,
+      "eliminations": 20
+    },
+    "treatment-r2": {
+      "optimizer_updates": 26163,
+      "mean_survival_steps": 266.62,
+      "attack_episodes": 15,
+      "eliminations": 13
+    },
+    "control-r3": {
+      "optimizer_updates": 26739,
+      "mean_survival_steps": 272.38,
+      "attack_episodes": 13,
+      "eliminations": 11
+    },
+    "treatment-r3": {
+      "optimizer_updates": 25389,
+      "mean_survival_steps": 258.88,
+      "attack_episodes": 14,
+      "eliminations": 8
+    },
+    "control-r4": {
+      "optimizer_updates": 27513,
+      "mean_survival_steps": 280.12,
+      "attack_episodes": 25,
+      "eliminations": 17
+    },
+    "treatment-r4": {
+      "optimizer_updates": 23603,
+      "mean_survival_steps": 241.02,
+      "attack_episodes": 22,
+      "eliminations": 21
+    },
+    "control-r5": {
+      "optimizer_updates": 27682,
+      "mean_survival_steps": 281.81,
+      "attack_episodes": 18,
+      "eliminations": 17
+    },
+    "treatment-r5": {
+      "optimizer_updates": 25513,
+      "mean_survival_steps": 260.12,
+      "attack_episodes": 13,
+      "eliminations": 14
+    }
+  },
+  "latency": {
+    "median_ms": 5.637884140014648,
+    "p95_ms": 17.577409744262695,
+    "max_ms": 1186.1112117767334
+  },
+  "resources": {
+    "training": {
+      "cpu_seconds": 6956.921875,
+      "wall_seconds": 7047.436602499976,
+      "peak_memory_bytes": 329052160,
+      "passed": true
+    },
+    "evaluation": {
+      "cpu_seconds": 8548.890625,
+      "wall_seconds": 8657.299858199956,
+      "peak_memory_bytes": 239177728,
+      "passed": true
+    }
+  },
+  "invalid_actions_by_artifact": {
+    "reference": 0,
+    "control-r1": 2,
+    "treatment-r1": 4,
+    "control-r2": 0,
+    "treatment-r2": 0,
+    "control-r3": 0,
+    "treatment-r3": 2,
+    "control-r4": 2,
+    "treatment-r4": 4,
+    "control-r5": 10,
+    "treatment-r5": 2
+  },
+  "nonworse_replicas": 2,
+  "selected_checkpoint": null,
+  "task2_complete": false,
+  "original_cumulative_gates": "not_established_by_this_small_pilot",
+  "next_long_experiment_authorized": false
+}

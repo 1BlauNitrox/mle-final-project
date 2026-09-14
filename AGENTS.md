@@ -15,6 +15,54 @@ process is the project's highest priority.
 
 ---
 
+## Human ownership of scientific documentation
+
+Apply this workflow automatically in every session, including resumed work.
+These rules govern who writes and commits documentation wherever another
+repository instruction requires an agent card, experiment record or AI log update.
+
+- Agents may brainstorm, implement and test code, prepare executable experiment
+  configurations, run authorized experiments, and analyze results autonomously.
+  Existing readiness, prospective registration and compute-authorization rules
+  still apply. This policy does not grant new compute authorization.
+- Before planning an experiment for execution, explain the proposed hypothesis,
+  baseline, changed factor, controls, scenarios, seeds, metrics, success gates,
+  expected cost and decision the experiment can support to the human owner.
+  Distinguish proposals from agreed scientific decisions.
+- Scientific narrative documentation is human-owned. An agent may draft an
+  experiment README, but must identify it as a draft, give the human its exact
+  path, and explicitly say that the human must read, verify and manually modify
+  it before it can be committed. For other scientific prose, identify the
+  required human edits instead of autonomously writing the final documentation.
+- Never stage, commit or publish an agent-drafted experiment README until the
+  human has personally checked and modified that draft. A generic approval,
+  permission to use commands, or permission to commit code is insufficient.
+  Confirm the manual edit with the owner and inspect the resulting diff; do not
+  infer human authorship from a timestamp or an unexplained file change. Further
+  agent revisions require another human check and manual edit before committing.
+- Generated configurations, observations, analysis outputs and figures remain
+  reproducible technical artifacts; agents may produce them under the existing
+  evidence rules. They do not replace the human's scientific interpretation.
+- Do not write, edit or remove anything in `docs/0006-ai-usage.md`. Whenever
+  material assistance requires a disclosure entry, tell the human to write it
+  manually in that file and identify the work needing disclosure. Preserve the
+  existing record and do not mark the disclosure requirement complete until the
+  human entry exists. Missing human documentation remains an explicit handoff
+  item; continue independent code and analysis work where possible.
+- PR comments should state findings, their evidence and practical implications,
+  with the necessary fix or validation information. End with a short truthful
+  disclosure such as "AI assistance was used." Avoid a first-person activity
+  diary. This concise comment format does not replace the accurate material-use
+  disclosure required in the human-maintained log and PR description.
+- Preserve accurate attribution and history. Human editing must verify and
+  express the team's understanding; it must not conceal material AI assistance
+  or claim work the team did not do. Do not invent human review or authorship.
+- In every handoff, list the draft paths, pending human edits and pending manual
+  disclosure entries so a subsequent agent does not commit them accidentally.
+
+Explicitly requested maintenance of these workflow instructions is permitted;
+it does not authorize autonomous scientific narrative documentation.
+
 ## Before You Start
 
 Read the relevant project documentation **before writing a single line of
