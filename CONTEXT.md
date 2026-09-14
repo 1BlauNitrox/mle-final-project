@@ -37,6 +37,28 @@ Preparation and short mechanics checks are complete; long-run execution still
 needs the concrete protocol/budget decision and review or an explicit owner
 execution exception. This is not scientific evidence of improvement. PR #149
 under #126 remains parent-gated Task 4 preparation, not a launchable campaign.
+## Human scientific ownership in every session
+
+Always apply `AGENTS.md`'s "Human ownership of scientific documentation" workflow,
+including when resuming work. Agents may implement, test and analyze, and may
+execute experiments within existing readiness and compute authorization.
+Explain every proposed experiment to its human owner before execution.
+
+Scientific narrative documentation belongs to the humans. An experiment README
+may be drafted by an agent, but the agent must give its exact path and tell the
+owner to read, verify and manually modify it. Do not stage, commit or publish
+that draft before the human has done so; blanket command/commit approval does
+not satisfy this gate. Carry pending drafts and human edits into every handoff.
+
+Agents must not change `docs/0006-ai-usage.md`; tell the owner to write required
+entries manually. Keep existing disclosures and attribution accurate. PR
+comments report findings and evidence, ending with a brief truthful assistance
+disclosure rather than an activity diary. Required material-use details remain
+in the human-maintained disclosure record and PR description.
+
+These instructions must be present in a checkout to guide its future sessions.
+Existing sessions and separate worktrees need to read the updated instructions;
+do not assume they automatically receive changes made in another checkout.
 
 ## Mandatory startup behavior for every new session
 

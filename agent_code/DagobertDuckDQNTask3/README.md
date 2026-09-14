@@ -119,8 +119,8 @@ favorable standard-DQN replica as a fallback.
 Task 3 extends the Task 2 DQN with descriptive awareness of public opponents.
 The hypothesis for the downstream experiment is that direction/distance,
 public occupancy, bomb attack opportunity, and bomb-escape context provide
-useful information for hunting `peaceful_agent` and then
-`coin_collector_agent`, while preserving opponent-free Task 1/Task 2 behavior
+useful information for hunting peaceful_agent and then
+coin_collector_agent, while preserving opponent-free Task 1/Task 2 behavior
 at initialization. The representation never selects an action or predicts an
 opponent's hidden/private state.
 
@@ -181,10 +181,10 @@ rewarded once per attributable kill at `+5.0`, including terminal transitions.
 
 The issue-specific plan extends the staged runner with this explicit order:
 
-1. `classic` against one `peaceful_agent`;
-2. `classic` against one `coin_collector_agent`.
+1. classic against one peaceful_agent;
+2. classic against one coin_collector_agent.
 
-The plan also includes opponent-free `coin-heaven` and `loot-crate` regression
+The plan also includes opponent-free coin-heaven and loot-crate regression
 suites. It is a prospective integration path, not a scientific selection rule.
 The bounded smoke runs use one episode and are reported only as integration
 checks.
@@ -202,6 +202,24 @@ Unit and contract tests cover migration, masking, reward attribution,
 persistence and read-only evaluation. Passing these checks does not establish
 successful hunting or tournament readiness. Seeds, hyperparameters, artifact
 hashes and execution records remain in the linked experiment evidence.
+Tests cover blocked paths, no opponent, nearest-opponent tie-breaking, blast
+opportunities, occupancy, escape context, migration Q-value preservation,
+gradient flow, persistence, terminal elimination reward attribution, and
+reproducible run-plan expansion. The agent card records the Task 2 campaign's
+known mixed/failed gates as inherited context; it does not turn them into a
+Task 3 result.
+
+The eventual parent artifact, training seeds, evaluation seeds, numerical
+selection rule, and scientific results are intentionally not fixed here. They
+belong to the post-#107 Task 3 launch protocol.
+
+## Experiment evidence: archived 39-input runtime
+
+| Experiment | Runtime source | Eliminations per game reference / full fine-tuning / frozen treatment | Treatment minus control (95% CI) | Decision |
+| --- | --- | --- | --- | --- |
+| [#173](../../experiments/2026-09-13-task3-frozen-inheritance/README.md) | `c4ddfa4` (39 inputs; separate from this checkout's 34-input fixture) | 0.200 / 0.185 / 0.170 | -0.015 [-0.150, +0.125] | No checkpoint promoted |
+
+[Exact gates, uncertainty and retention](../../experiments/2026-09-13-task3-frozen-inheritance/results/analysis.json); [artifact provenance](../../experiments/2026-09-13-task3-frozen-inheritance/results/evidence.json).
 ## Exploration pilot result (#168)
 
 Frozen-policy probes motivated a three-replica learning comparison of stepwise
