@@ -1,13 +1,5 @@
 # 0006 AI Usage and Disclosure
 
-Issue #124 protocol (2026-09-10): OpenAI Codex prepared the matched rehearsal/
-masking matrix, fresh seed blocks, four-worker phase scheduler, detached Windows
-launcher, shared resource limits, evidence validation and prospective decision
-analyzer. The user confirmed four arms and the resource envelope. Non-author
-review must validate the prospective effect/selection rules before execution.
-Tests and dry runs verify implementation, not performance. No scientific
-training result or model adoption is claimed by this protocol PR.
-
 Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
 world-seed offsets and a read-only audit of thirty retained Issue #107 replay
 snapshots. The audit distinguishes the empty-other-partition backfill rule
@@ -97,6 +89,8 @@ AI output is a draft or suggestion, never experimental evidence.
 | 2026-09-12 | Issue #153 safety-constrained exploration for the compact tabular Task 2 agent: treatment implementation and persistence, run-plan support, tests, prospective paired protocol, autonomous local execution, compact evidence, bootstrap analysis, figures, agent-card update, and interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed without retry. The candidate was rejected under the unchanged registered rule because Classic self-kills rose from `0.045` to `0.075`, the paired interval included zero, no replica improved, and Classic collection exceeded its degradation margin. One retained control repeat had a latency timeout and different action sequence; it was not discarded or rerun. The owner must independently review the implementation, evidence, limitation, and interpretation and obtain non-author approval. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 | 2026-09-12 | Issue #144 compact post-bomb escape-status representation: feature implementation, persistence and run-plan support, tests, prospective paired protocol, autonomous clean-worktree execution, compact evidence, bootstrap analysis, figures, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed. The registered candidate was rejected: all performance, safety, and learning-efficiency outcomes were exactly identical to control, and post-hoc table inspection showed the appended category did not split any visited compact-state prefix. The owner must independently review the implementation, evidence, and interpretation and obtain non-author approval before merge. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 
+| 2026-09-12 | Issue #157 external Task 3 timestamp resume adapter | OpenAI Codex | Owner-supplied records confirm equal UTC instants spelled differently. Codex reproduced the monitor round-trip defect and tested a fail-closed in-memory adapter, checkpoint/budget guards, audit retention and original analysis/export handoff. No campaign checkout or authorization is rewritten; original accounting continues. Peer review and server confirmation remain required; no scientific result is claimed. |
+
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
 individually.
@@ -114,6 +108,31 @@ The subsequent self-review added final archive-member integrity validation
 and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
+
+- September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.
+
+- 2026-09-11, Issue #91 / PR #136: Codex corrected the missing training-only
+  runner API after an actual server startup failure. The integration test now
+  runs both phases and verifies no repeated training. Added a tested, narrowly
+  scoped pre-job recovery preserving original resource accounting and failures.
+  Earlier green tests did not cover the campaign call; they were insufficient
+  evidence for that execution path. No scientific improvement is claimed.
+
+- 2026-09-11, #91 / PR #136: Codex independently checked all 32 checkpoints,
+  reproduced server metrics/uncertainty and Q diagnostics, implemented portable
+  evidence verification and corruption/missing-file tests, published complete
+  evidence and documented the negative gamma result and review-timing deviation.
+  No new scientific run, model promotion or Task 2 completion is claimed.
+
+## September 12, 2026: Issue #91 evidence archive correction
+
+Codex addressed the PR #136 review finding that the published archive omitted
+four registered YAML plans. The replacement version preserves all existing
+member bytes and adds only original protocol-hash-matching plans. Verification
+uses a fresh extraction rather than the prior populated local import. No
+scientific run, model, observations or selection rules are changed. The previous
+claim of complete v1 portability was incorrect; the v1 archive remains available
+for history. Human review of the corrected release and reproduction is required.
 
 ### Issue #124 explicit owner execution exception
 
