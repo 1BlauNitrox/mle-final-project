@@ -85,9 +85,8 @@ $python = ".\\.venv\\Scripts\\python.exe"
 
 The archive supplied for this result is 73,183,147 bytes with SHA-256
 `38cf0b17e6cd141793432ef35efe0bc23a02e6dcafdeb57da602e1acb665152b`.
-It is currently retained at the owner's Downloads folder; a durable public
-release is still required before the result can be treated as fully reviewable
-evidence.
+The durable archive and its manifest are published in the
+[`issue179-evidence-v1` release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue179-evidence-v1).
 
 ## Limitations and next step
 
