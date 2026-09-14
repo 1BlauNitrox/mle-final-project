@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "archive": "trajectory-evidence.zip",
+  "sha256": "9def33201b89826707469fe1dde240b9a72cac3ce50d9f0913940fbde32aebe4",
+  "size_bytes": 511562,
+  "members": 32,
+  "contents": "Exact original compressed public-state trajectories and native episode summaries for all 15 jobs; original registration and source-file hash manifest. No model checkpoints or logs.",
+  "verification_command": "python -m scripts.verify_issue162_evidence --record experiments/2026-09-12-task3-hunting-diagnosis",
+  "new_games": 0
+}
