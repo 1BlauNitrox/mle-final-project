@@ -1,25 +1,28 @@
 # DagobertDuckDQNTask3
 
-The completed [Issue 147 mask comparison](../../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
-failed its registered adoption rule. Five matched 10,000-episode replicas per
-arm achieved 21% masked versus 18% unmasked peaceful elimination (paired
-difference 95% CI [-14.5, 20.5] percentage points). Masked peaceful self-kills
-were 3.5% and invalid actions 0.00382%; all collection and crate-retention gates
-still failed. All integrity, repeat, latency and resource checks passed.
-No default or checkpoint changes; no replica is selected. The owner authorized
-execution before peer review, which remains outstanding for the result.
+Task 3 remains exploratory. No trained replica passes the cumulative hunting
+and Task 1/2 retention gates, and no replica is selected. The committed
+checkpoint is a compatibility fixture, not a trained Task 3 candidate.
 
-Status: schema-4 implementation under #125 / PR #130; the completed #109
-exploratory campaign failed the peaceful-stage gates. No trained Task 3
-replica is selected. The committed checkpoint remains a compatibility fixture.
-See the [result and durable evidence](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+## Experiment findings
 
-Five 10,000-episode replicas from explicitly authorized provisional #91 A/r3
-achieved 20.5% elimination (parent 17.5%; paired improvement 95% CI
-[-12.5, 18.5] percentage points), below the required 60%. Self-kills were
-11.5%, invalid actions 6.79%, and classic collection retention failed.
-The registered decision prohibits coin-collector continuation. Runtime passed;
-this neither completes Task 2 nor establishes tournament readiness.
+| Experiment | Main result | Decision |
+| --- | --- | --- |
+| [#109 peaceful training](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md) | 20.5% elimination versus 17.5% for the parent; improvement CI [-12.5, +18.5] pp | Hunting and retention gates failed. |
+| [#147 legal masking](../../experiments/2026-09-12-task3-legal-mask/RESULTS.md) | 21% masked versus 18% unmasked; difference CI [-14.5, +20.5] pp | Adoption and collection/crate-retention gates failed. |
+| [#150 Double DQN](https://github.com/1BlauNitrox/mle-final-project/pull/161) | 23.5% elimination in each arm; difference CI [-18.5, +16.0] pp | No established Double DQN benefit; cumulative gates failed. |
+| [#163 safe-attack penalty](../../experiments/2026-09-13-task3-safe-attack-results/README.md) | 11% elimination in each arm versus 20% for the parent; treatment difference CI [0, 0] pp | No observed treatment effect; hunting and retention gates failed. |
+
+Intervals are registered 95% intervals from each experiment. Different studies
+use different seeds and budgets; their percentages are not matched comparisons.
+The linked records contain per-seed results, provenance and every gate.
+
+In #163, all five paired models have identical learned weights and training
+state apart from the treatment flag. The retained replay contains no qualifying
+safe, crate-free attack actions; it covers only the trailing buffer, not the
+whole training history. One of 880 evaluation repeat pairs failed, with a
+1,184.5 ms control decision-time spike. That failure remains part of the result.
+No default or checkpoint changes follow from either #150 or #163.
 
 ## Model and hypothesis
 
@@ -37,16 +40,22 @@ Parent masking and escape settings are preserved in acting, training and
 persistence; explicit environment mismatches fail. Fresh training resets replay,
 optimizer, epsilon, RNG and update counts, while preserving both parent networks.
 
-Inherited rewards are unchanged; attributable `KILLED_OPPONENT` adds +5 per
+By default, inherited rewards are unchanged; attributable `KILLED_OPPONENT` adds +5 per
 native event. Third-party elimination events add no reward. Exploration is
 seeded epsilon-greedy (default 1.0, decay 0.9997, floor 0.1); Adam learning rate
 0.0005, gamma 0.9, batch 64, replay 10,000, warm-up 500, target interval 500,
 gradient clip 10. Parent migration preserves applicable parent hyperparameters.
 Dependencies: NumPy and CPU PyTorch, declared in `requirements.txt`.
 
+Two training-only experiment options default to false:
+`double_dqn` selects the next legal action with the online network and evaluates
+it with the target network; `neutral_safe_attack_bombs` omits the -0.5
+wasteful-bomb penalty for confirmed safe, crate-free opponent attacks. Both flags
+are persisted. Neither introduces an evaluation-time policy override.
+
 ## Provisional fixture and reproducibility
 
-The committed `checkpoint.pt` is a fresh compatibility migration of the
+The committed `checkpoint.pt` is a compatibility migration of the
 historical corrected #85 Task 2 checkpoint, not a trained Task 3 candidate.
 Its SHA-256, byte size and lineage are in `artifact.json` and
 `parent-artifact.json`. Regenerate in an isolated worktree:
@@ -62,23 +71,16 @@ All available columns and both online/target networks are preserved; new
 columns are zero. Old 34-input Task 3 artifacts require explicit migration or
 regeneration and cannot be loaded under the new schema.
 
-## Baselines and next steps
+## Next steps and limitations
 
-The Task 2 parent is explicitly configurable. Both completed studies used the
-owner-authorized provisional #91 A/r3 with exact provenance in their records.
-A future parent requires a new prospective binding, with failed gates retained
-explicitly; no choice certifies Task 2 completion. The [#109 protocol](../../experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md)
-registers user-approved numerical gates, five 10,000-episode replicas, matched
-40-pair peaceful/classic/coin-heaven/loot-crate evaluations with repeats, a
-paired analyzer and guarded launcher. Fresh review and separate compute
-authorization are required for any distinct follow-up. #137 coin-collector
-continuation is blocked by the failed peaceful decisions; #51 retains its
-validated-parent scope. Diagnose the remaining hunting/retention limitation
-before registering another training intervention; #146's looping cause is unknown.
+First measure attack opportunities and actual reward exemptions in a bounded,
+prospectively registered diagnostic before another long reward experiment.
+Keep Task 1/2 regression gates and the exact parent configurable. The completed
+campaigns used explicitly provisional #91 A/r3; this does not certify Task 2
+completion. #137 coin-collector continuation remains blocked by the failed
+peaceful-stage decisions. #146's reported looping cause is still unknown.
 
-Unit/contract tests cover prefix equivalence, active-feature Q preservation,
-separate online/target weights, masking consistency, reward attribution,
-source checksums and read-only evaluation. Integration smoke and packaging
-checks do not establish game strength, learning convergence or tournament
-latency on the official hardware. The two exploratory results establish neither
-successful hunting nor tournament readiness.
+Unit and contract tests cover migration, masking, reward attribution,
+persistence and read-only evaluation. Passing these checks does not establish
+successful hunting or tournament readiness. Seeds, hyperparameters, artifact
+hashes and execution records remain in the linked experiment evidence.
