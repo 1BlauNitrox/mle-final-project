@@ -116,6 +116,7 @@ retention suites, tested migration from a 26-input control parent, explicit
 checksum-verified migration paths, and a launch-dependency record. The final
 #107 parent binding, numerical scientific criteria, reviewer approval and
 compute authorization remain pending. No scientific training was run.
+| 2026-09-12 | Issue #157 external Task 3 timestamp resume adapter | OpenAI Codex | Owner-supplied records confirm equal UTC instants spelled differently. Codex reproduced the monitor round-trip defect and tested a fail-closed in-memory adapter, checkpoint/budget guards, audit retention and original analysis/export handoff. No campaign checkout or authorization is rewritten; original accounting continues. Peer review and server confirmation remain required; no scientific result is claimed. |
 
 Add entries when AI materially influences agent design, implementation,
 experiments, analysis, or report drafting. Minor autocomplete need not be logged
