@@ -9,6 +9,7 @@ verifies its archive and historical source, parent, matrix, dependencies, raw
 observations and decision without launching games or changing server evidence.
 Any new scientific run needs its own prospective authorization.
 
+
 Repeated training blocks can set `world_seed_offset` in a run-plan stage.
 The runner adds it to each replica's world seed and checks the resolved seed
 against evaluation populations and the NumPy seed range. Omission preserves

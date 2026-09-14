@@ -1,5 +1,12 @@
 # 0006 AI Usage and Disclosure
 
+Issue #146 diagnosis (2026-09-12): Codex prepared prospectively bounded read-only
+trajectory instrumentation and stall tests under the owner's short-test
+authorization. It records original model/source identity, full public states,
+features, Q-values, actions and rewards without optimizer updates or policy
+overrides. Diagnostic seeds are separate from efficacy and held-out populations.
+Human review must assess the observations and any proposed causal explanation.
+
 Issue #150 preparation (2026-09-12): Codex proposed and implemented an optional
 Double DQN target under the owner's next-experiment preparation authorization,
 using retained #146 diagnostic observations and the original Double DQN paper.
@@ -78,6 +85,7 @@ For every material use of AI:
 AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
+
 
 2026-09-11, Issue #137: OpenAI Codex prepared the separately tracked exploratory
 coin-collector continuation, reusing the #109 metrics, analyzer and budget
