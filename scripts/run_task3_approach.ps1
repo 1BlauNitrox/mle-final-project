@@ -13,7 +13,7 @@ process only. Without it every stage refuses to start.
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('approach-shaping', 'update-cadence')]
+    [ValidateSet('approach-shaping', 'update-cadence', 'proximity-gating', 'opponent-shrinkage')]
     [string]$Profile = 'approach-shaping',
     [string]$Root = "training_outputs/task3-$Profile",
     [string]$Python = '.\.venv\Scripts\python.exe',
