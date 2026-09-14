@@ -122,12 +122,12 @@ def make_agent() -> SimpleNamespace:
         exploration_mode=callbacks.STANDARD_EXPLORATION,
     )
 
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     return agent
 
 
-def test_setup_training_initializes_episode_state() -> None:
+def test_training_state_helper_initializes_episode_state() -> None:
     """Training setup must initialize all per-episode attributes."""
 
     agent = SimpleNamespace(
@@ -135,7 +135,7 @@ def test_setup_training_initializes_episode_state() -> None:
         epsilon=INITIAL_EPSILON,
     )
 
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     assert agent.episode_reward == pytest.approx(0.0)
     assert agent.absolute_td_errors == []
@@ -171,6 +171,7 @@ def test_safe_bomb_exploration_is_disabled_during_evaluation() -> None:
 
 def test_fresh_training_agent_uses_parent_prior(
     model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A fresh Task 2 agent must start from the frozen Task 1 prior."""
 
@@ -180,6 +181,9 @@ def test_fresh_training_agent_uses_parent_prior(
         train=True,
         logger=Mock(),
     )
+
+    monkeypatch.setenv(callbacks.STATE_REPRESENTATION_ENV, BASELINE_STATE_REPRESENTATION)
+    monkeypatch.setenv(callbacks.INITIALIZATION_ENV, PARENT_PRIOR_INITIALIZATION)
 
     callbacks.setup(agent)
 
@@ -220,7 +224,7 @@ def test_compact_training_uses_zero_initialized_five_feature_states(
     )
 
     callbacks.setup(agent)
-    training.setup_training(agent)
+    training._initialize_training_state(agent)
 
     assert agent.state_representation == COMPACT_STATE_REPRESENTATION
     assert agent.initialization == ZERO_INITIALIZATION
@@ -617,6 +621,7 @@ def test_end_of_round_saves_model_and_decays_epsilon(
 
 def test_callbacks_resume_saved_training_state(
     model_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Training setup must resume epsilon, episode count and Q-values."""
 
@@ -647,6 +652,9 @@ def test_callbacks_resume_saved_training_state(
         train=True,
         logger=Mock(),
     )
+
+    monkeypatch.setenv(callbacks.STATE_REPRESENTATION_ENV, BASELINE_STATE_REPRESENTATION)
+    monkeypatch.setenv(callbacks.INITIALIZATION_ENV, PARENT_PRIOR_INITIALIZATION)
 
     callbacks.setup(restored_agent)
 
@@ -1102,6 +1110,8 @@ def test_safety_shaping_rejects_baseline_state(
         callbacks.POTENTIAL_SHAPING_ENV,
         potential_shaping,
     )
+
+    monkeypatch.setenv(callbacks.STATE_REPRESENTATION_ENV, BASELINE_STATE_REPRESENTATION)
 
     with pytest.raises(
         ValueError,
