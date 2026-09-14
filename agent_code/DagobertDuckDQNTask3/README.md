@@ -84,6 +84,11 @@ continuation is blocked by the failed peaceful decisions; #51 retains its
 validated-parent scope. Diagnose the remaining hunting/retention limitation
 before registering another training intervention; #146's looping cause is unknown.
 
+The [#137 continuation](../../experiments/2026-09-11-task3-coincollector/README.md)
+requires the passing peaceful decision and its mechanically selected training
+checkpoint, retains both networks, and resets training state. It uses the common
+launcher/analyzer with `--protocol coincollector`; #51 retains its validated-parent scope.
+
 Unit/contract tests cover prefix equivalence, active-feature Q preservation,
 separate online/target weights, masking consistency, reward attribution,
 source checksums and read-only evaluation. Integration smoke and packaging
