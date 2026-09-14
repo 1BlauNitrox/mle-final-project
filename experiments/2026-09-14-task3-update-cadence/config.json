@@ -3396,6 +3396,12 @@
   },
   "minimum_free_memory_bytes": 3221225472,
   "minimum_free_disk_bytes": 5368709120,
+  "expected_disk_bytes": {
+    "training": 286000000,
+    "evaluation": 216480000,
+    "latency": 4510000,
+    "note": "Measured 41 kB per retained episode directory and 3.4 MB for a final checkpoint once its replay buffer reaches capacity around episode 37. Only final checkpoints are retained: one copy per episode would be about 29 GB for this campaign, is never read, and is not part of the evidence bundle."
+  },
   "machine_allocation": {
     "training": "5 concurrent workers, one torch thread each",
     "evaluation": "5 concurrent workers, read-only replay of fixed checkpoints",

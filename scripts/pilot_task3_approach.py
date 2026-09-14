@@ -49,8 +49,8 @@ PROFILES = ("approach-shaping", "update-cadence")
 PROFILE = os.environ.get("TASK3_APPROACH_PROFILE", "approach-shaping")
 CONFIG = ROOT / f"experiments/2026-09-14-task3-{PROFILE}/config.json"
 PROFILE_HASHES = {
-    "approach-shaping": "8e05e9e5e33a03dea2799975f6a16a940fc0c9395431f22f18dd33a5ce453882",
-    "update-cadence": "ded59f9b9b299c519a05e2d3edb6f744422f95aaede0f73429d4360b7c51b63d",
+    "approach-shaping": "26e66bc192564f8ae7ee5a6d8c946b39c7458275debaab177c699defcdfd2e98",
+    "update-cadence": "8e86c781aba9c0ec3b8ecf3979e83f158cdbec194043b833798a110275dcf5b3",
 }
 STAGES = ("training", "evaluation", "latency")
 
@@ -497,6 +497,16 @@ def play(
 
 
 def train_job(root, output, arm, replica):
+    """Train one replica of one arm to its registered fixed-final checkpoint.
+
+    Only the final checkpoint is retained. A checkpoint carries its replay
+    buffer, so it grows to about 3.4 MB once replay reaches capacity around
+    episode 37; one copy per episode would be roughly 29 GB for this campaign
+    and is never read, because the design evaluates fixed-final checkpoints and
+    the runner has no within-job resume. The per-episode audit trail is the
+    chained `online_before_sha256`/`online_after_sha256` pair in
+    `episodes.json.gz`, which pins the whole trajectory at negligible size.
+    """
     cfg = config()
     setting = cfg["arm_settings"][arm]
     output.mkdir(parents=True, exist_ok=False)
@@ -523,7 +533,6 @@ def train_job(root, output, arm, replica):
         )
         if row["completed_episodes"] != index + 1:
             raise ValueError("Checkpoint episode counter mismatch")
-        shutil.copyfile(checkpoint, output / f"checkpoint-{index + 1:04d}.pt")
         rows.append(row)
         zip_json(output / "episodes.json.gz", rows)
     write(
