@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -21,6 +22,7 @@ from .replay import ReplayBuffer
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
+ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
 
 
 def setup(self) -> None:
@@ -38,7 +40,9 @@ def setup(self) -> None:
 
 def act(self, game_state: dict | None) -> str:
     """Select one seeded epsilon-greedy Task 2 action."""
-    features = state_to_features(game_state)
+    features = state_to_features(
+        game_state, include_continuation_features=self.config.escape_continuation_features
+    )
 
     if features is None:
         return "WAIT"
@@ -62,20 +66,16 @@ def _setup_training_policy(self, agent_seed: int) -> None:
     """Restore resumable training state or initialize a new one."""
     if CHECKPOINT_PATH.is_file():
         loaded = load_training_checkpoint(CHECKPOINT_PATH)
-        configured = _configured_training_config()
-        is_fresh_migration = (
-            loaded.completed_episodes == 0 and len(loaded.replay_buffer) == 0
-        )
+        configured = _configured_training_config(loaded.config)
+        is_fresh_migration = loaded.completed_episodes == 0 and len(loaded.replay_buffer) == 0
         config = loaded.config
         replay_buffer = loaded.replay_buffer
         action_rng = loaded.action_rng
-        if loaded.config.action_masking != configured.action_masking:
-            if not is_fresh_migration:
-                raise ValueError("BOMBERMAN_DQN_ACTION_MASKING does not match checkpoint mode.")
-            loaded.learner.config = configured
-            loaded.learner.online_network.config = configured
-            loaded.learner.target_network.config = configured
-            config = configured
+        if (
+            loaded.config.action_masking != configured.action_masking
+            or loaded.config.escape_continuation_features != configured.escape_continuation_features
+        ):
+            raise ValueError("Configured mask/escape mode does not match parent checkpoint")
 
         if loaded.agent_seed != agent_seed:
             if not is_fresh_migration:
@@ -125,6 +125,8 @@ def _setup_evaluation_policy(self, agent_seed: int) -> None:
     """Load a frozen evaluation network without training objects."""
     loaded = load_evaluation_checkpoint(_evaluation_checkpoint_path())
 
+    if _configured_training_config(loaded.config) != loaded.config:
+        raise ValueError("Evaluation mask/escape mode does not match checkpoint")
     self.config = loaded.config
     self.policy_network = loaded.network
     self.action_rng, _unused_replay_seed = _initial_random_streams(agent_seed)
@@ -143,9 +145,7 @@ def _evaluation_checkpoint_path() -> Path:
     if file_name is None:
         return CHECKPOINT_PATH
     if not file_name or file_name != os.path.basename(file_name):
-        raise ValueError(
-            f"{EVALUATION_CHECKPOINT_ENV} must contain one file name."
-        )
+        raise ValueError(f"{EVALUATION_CHECKPOINT_ENV} must contain one file name.")
     return CHECKPOINT_PATH.with_name(file_name)
 
 
@@ -188,11 +188,14 @@ def _read_agent_seed() -> int:
     return seed
 
 
-def _configured_training_config() -> DQNConfig:
-    """Read the run-plan's explicit treatment selector for a fresh run."""
-    mode = os.environ.get(ACTION_MASKING_ENV, "none")
-    if mode == "none":
-        return DEFAULT_CONFIG
-    if mode == "framework_legal":
-        return DQNConfig(action_masking=True)
-    raise ValueError(f"{ACTION_MASKING_ENV} must be 'none' or 'framework_legal'.")
+def _configured_training_config(base: DQNConfig = DEFAULT_CONFIG) -> DQNConfig:
+    """Absent selectors preserve persisted parent modes, including during training."""
+    mode = os.environ.get(ACTION_MASKING_ENV, "framework_legal" if base.action_masking else "none")
+    escape = os.environ.get(
+        ESCAPE_CONTINUATIONS_ENV, "on" if base.escape_continuation_features else "off"
+    )
+    if mode not in {"none", "framework_legal"} or escape not in {"off", "on"}:
+        raise ValueError("Invalid action mask or escape selector")
+    return replace(
+        base, action_masking=mode == "framework_legal", escape_continuation_features=escape == "on"
+    )

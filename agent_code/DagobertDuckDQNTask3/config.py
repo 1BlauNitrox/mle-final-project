@@ -36,12 +36,10 @@ ACTIONS: tuple[str, ...] = (
     "BOMB",
 )
 
-ACTION_TO_INDEX: dict[str, int] = {
-    action: index for index, action in enumerate(ACTIONS)
-}
+ACTION_TO_INDEX: dict[str, int] = {action: index for index, action in enumerate(ACTIONS)}
 
-FEATURE_COUNT = 34
-FEATURE_SCHEMA_VERSION = 3
+FEATURE_COUNT = 39
+FEATURE_SCHEMA_VERSION = 4
 
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
@@ -94,6 +92,7 @@ class DQNConfig:
     default_seed: int = 0
     torch_num_threads: int = 1
     action_masking: bool = False
+    escape_continuation_features: bool = False
 
     def __post_init__(self) -> None:
         """Reject internally inconsistent configurations."""
@@ -122,9 +121,7 @@ class DQNConfig:
             raise ValueError("replay_capacity must be at least batch_size.")
 
         if not self.batch_size <= self.replay_warmup <= self.replay_capacity:
-            raise ValueError(
-                "replay_warmup must be between batch_size and replay_capacity."
-            )
+            raise ValueError("replay_warmup must be between batch_size and replay_capacity.")
 
         if self.target_update_interval <= 0:
             raise ValueError("target_update_interval must be positive.")
@@ -137,6 +134,9 @@ class DQNConfig:
 
         if self.torch_num_threads != 1:
             raise ValueError("torch_num_threads must be exactly one.")
+
+        if type(self.escape_continuation_features) is not bool:
+            raise ValueError("escape_continuation_features must be a bool.")
 
         if type(self.action_masking) is not bool:
             raise ValueError("action_masking must be a bool.")

@@ -1,5 +1,18 @@
 # 0006 AI Usage and Disclosure
 
+Issue #125 preparation (2026-09-10): OpenAI Codex drafted the 26-plus-13 input
+migration requirements and regression checklist from the verified Issue #107
+limitations. This is a proposed design, not implemented or validated behavior;
+human review and selected-parent binding remain required.
+
+Issue #124 protocol (2026-09-10): OpenAI Codex prepared the matched rehearsal/
+masking matrix, fresh seed blocks, four-worker phase scheduler, detached Windows
+launcher, shared resource limits, evidence validation and prospective decision
+analyzer. The user confirmed four arms and the resource envelope. Non-author
+review must validate the prospective effect/selection rules before execution.
+Tests and dry runs verify implementation, not performance. No scientific
+training result or model adoption is claimed by this protocol PR.
+
 Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
 world-seed offsets and a read-only audit of thirty retained Issue #107 replay
 snapshots. The audit distinguishes the empty-other-partition backfill rule
@@ -28,6 +41,12 @@ For every material use of AI:
 AI output is a draft or suggestion, never experimental evidence.
 
 ## Disclosure log
+
+2026-09-11, Issue #125: OpenAI Codex reviewed the current migration against its
+contract and added tested refusal of existing successor outputs, explicit
+evaluation-only-parent rejection, and corrected the opponent-distance index
+reference. No checkpoint or scientific result changed. Human review of the
+implementation remains required; the earlier documentation approval is stale.
 
 | Date | Scope | Tool | Human verification and refinement |
 | --- | --- | --- | --- |
@@ -89,6 +108,14 @@ AI output is a draft or suggestion, never experimental evidence.
 | 2026-09-12 | Issue #153 safety-constrained exploration for the compact tabular Task 2 agent: treatment implementation and persistence, run-plan support, tests, prospective paired protocol, autonomous local execution, compact evidence, bootstrap analysis, figures, agent-card update, and interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed without retry. The candidate was rejected under the unchanged registered rule because Classic self-kills rose from `0.045` to `0.075`, the paired interval included zero, no replica improved, and Classic collection exceeded its degradation margin. One retained control repeat had a latency timeout and different action sequence; it was not discarded or rerun. The owner must independently review the implementation, evidence, limitation, and interpretation and obtain non-author approval. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 | 2026-09-12 | Issue #144 compact post-bomb escape-status representation: feature implementation, persistence and run-plan support, tests, prospective paired protocol, autonomous clean-worktree execution, compact evidence, bootstrap analysis, figures, agent-card update, and result interpretation | OpenAI Codex | At the owner's explicit request, Codex implemented and ran both arms without the intermediate approval pause; all 2,430 jobs completed. The registered candidate was rejected: all performance, safety, and learning-efficiency outcomes were exactly identical to control, and post-hoc table inspection showed the appended category did not split any visited compact-state prefix. The owner must independently review the implementation, evidence, and interpretation and obtain non-author approval before merge. Scientific values came from retained framework outputs and the committed analyzer; AI output was not treated as evidence. |
 
+| 2026-09-08 | Issue #108 CI/main-divergence fix: merged `main`'s multi-step escape features (#87/#112, Task 2 `FEATURE_COUNT` 21->26) into the Task 3 branch, corrected a stale hardcoded checkpoint checksum in CI, and fixed three Task 3 tests to construct/slice against Task 2's legacy 21-dim configuration (matching the actual frozen provisional parent) instead of Task 2's now-shifted default shape | Claude (Anthropic) | The GitHub Actions synthetic-merge run (not the raw branch) surfaced that PR #115 was far behind `main`; Claude diagnosed this as test-fixture staleness rather than a flaw in the 34-input redesign, since Task 3's provisional parent is deliberately frozen and independent of Task 2's separate ongoing evolution. The owner must confirm this interpretation before merge. Full test suite (653 tests), `ruff check`, `compileall`, and smoke games pass; all CI checks green. No scientific training result or performance claim was generated. |
+| 2026-09-08 | Issue #109 peaceful-opponent Task 3 protocol registration: three run plans (Task 3 vs. `peaceful_agent`, frozen Task 2 predecessor vs. `peaceful_agent`, Task 3 vs. `coin_collector_agent` staged but gated), experiment README and config.yaml | Claude (Anthropic) | Claude designed the comparison as five paired Task 3 replicas against one frozen Task 2 reference point (mirroring issue #107's `frozen_task1`/`untrained` pattern, since the Task 2 side is a single already-fixed artifact rather than something to retrain in parallel), proposed a resource ceiling scaled from issue #97's estimate, and left the decision rule `not_yet_fixed`. The owner must assign an owner/reviewer, set numeric elimination/paired-score/self-kill/retention criteria, authorize compute, and rebind both provisional parent artifacts once issue #107 selects the development predecessor, before this counts as more than infrastructure validation. No training was run and no scientific claim was generated. |
+
+2026-09-09, Issue #109 preparation: OpenAI Codex added matched frozen-parent
+retention suites, tested migration from a 26-input control parent, explicit
+checksum-verified migration paths, and a launch-dependency record. The final
+#107 parent binding, numerical scientific criteria, reviewer approval and
+compute authorization remain pending. No scientific training was run.
 | 2026-09-12 | Issue #157 external Task 3 timestamp resume adapter | OpenAI Codex | Owner-supplied records confirm equal UTC instants spelled differently. Codex reproduced the monitor round-trip defect and tested a fail-closed in-memory adapter, checkpoint/budget guards, audit retention and original analysis/export handoff. No campaign checkout or authorization is rewritten; original accounting continues. Peer review and server confirmation remain required; no scientific result is claimed. |
 
 Add entries when AI materially influences agent design, implementation,
@@ -109,6 +136,15 @@ and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
 
+Issue #125 implementation (2026-09-10): OpenAI Codex implemented the documented
+39-input successor, preserving active Task 2 escape features and parent
+masking, with online/target migration, fresh training state and explicit
+schema rejection. Codex integrated existing #109 plan templates, generated a
+reproducible provisional fixture and prepared a separately identified #107
+A/r2 exploratory baseline. Unit/regression, isolated integration and clean
+packaging checks verify implementation only; no Task 3 performance claim or
+scientific compute authorization is implied. Final #124 parent binding,
+numeric #109 decisions and scientific execution remain separate work.
 - September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.
 
 - 2026-09-11, Issue #91 / PR #136: Codex corrected the missing training-only
