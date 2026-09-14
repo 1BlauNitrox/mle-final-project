@@ -1,0 +1,66 @@
+{
+  "storage_journal_verified": true,
+  "resume_journal_verified": true,
+  "verified_inputs": 2479,
+  "replacement_paths": 2471,
+  "estimated_reclaimed_bytes": 8154880737,
+  "protected_checkpoint_files": 21,
+  "retries": [
+    {
+      "plan": "issue150-double",
+      "job": "eval-r2-coin-heaven-retention-repeat-seed-040",
+      "attempts": [
+        {
+          "attempt": 1,
+          "error": "Run-plan process ended before recording completion",
+          "finished_at": "2026-09-12T18:49:48.220291Z",
+          "output": "jobs/eval-r2-coin-heaven-retention-repeat-seed-040/attempt-001",
+          "started_at": "2026-09-12T17:14:38.226255Z",
+          "status": "interrupted"
+        },
+        {
+          "attempt": 2,
+          "error": null,
+          "finished_at": "2026-09-12T18:49:50.804864Z",
+          "metadata": "jobs/eval-r2-coin-heaven-retention-repeat-seed-040/attempt-002/metadata.json",
+          "output": "jobs/eval-r2-coin-heaven-retention-repeat-seed-040/attempt-002",
+          "started_at": "2026-09-12T18:49:48.243680Z",
+          "status": "completed"
+        }
+      ]
+    }
+  ],
+  "resource_before_resume": {
+    "active_root_pids": [],
+    "authorized_at": "2026-09-12T11:21:26.793224Z",
+    "cpu_seconds_consumed": 29928.01000000031,
+    "current_memory_bytes": 0,
+    "limit_reached": null,
+    "limits": {
+      "cpu_seconds": 86400,
+      "memory_bytes": 8589934592,
+      "wall_seconds": 36000
+    },
+    "peak_memory_bytes": 846143488,
+    "schema_version": 1,
+    "updated_at": "2026-09-12T17:14:40.804047Z",
+    "wall_seconds_elapsed": 21194.010812282562
+  },
+  "resource_final": {
+    "active_root_pids": [],
+    "authorized_at": "2026-09-12T11:21:26.793224Z",
+    "cpu_seconds_consumed": 33338.45999999984,
+    "current_memory_bytes": 0,
+    "limit_reached": null,
+    "limits": {
+      "cpu_seconds": 86400,
+      "memory_bytes": 8589934592,
+      "wall_seconds": 36000
+    },
+    "peak_memory_bytes": 846143488,
+    "schema_version": 1,
+    "updated_at": "2026-09-12T19:45:09.610590Z",
+    "wall_seconds_elapsed": 30222.817346334457
+  },
+  "limitation": "Archived input duplicates are omitted from compact export; journals are cross-checked against retained canonical bytes, not live server inodes or permissions. Pre-resume status bytes are absent; their hashes agree across journals and prior job counts are reconstructed from retained attempt timestamps."
+}
