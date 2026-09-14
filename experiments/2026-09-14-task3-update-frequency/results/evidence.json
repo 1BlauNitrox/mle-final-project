@@ -1,0 +1,12 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "56c029257352854696314cd5ecc1dfbec3e885d117dcbc7bc4626afa722bf3f0",
+  "archive_size_bytes": 74494938,
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue178-evidence-v1/task3-stability-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue178-evidence-v1/task3-stability-evidence.tar.gz.manifest.json",
+  "manifest_sha256": "d3e3fe9c4b795c08e90f037872700c59e5fa6abe40878a00dcb0b1839d8437e6",
+  "archive_retrieval": "PC-local archive; publish to a durable release before merge.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task3-stability-evidence.tar.gz"
+}

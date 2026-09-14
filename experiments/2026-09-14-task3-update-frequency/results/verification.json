@@ -1,0 +1,19 @@
+{
+  "scope": "completed PC run verification and registered analyzer output",
+  "archive": {
+    "filename": "task3-stability-evidence.tar.gz",
+    "size_bytes": 74494938,
+    "sha256": "56c029257352854696314cd5ecc1dfbec3e885d117dcbc7bc4626afa722bf3f0",
+    "manifest_sha256": "d3e3fe9c4b795c08e90f037872700c59e5fa6abe40878a00dcb0b1839d8437e6",
+    "public_locator": null
+  },
+  "source_commit": "a489784",
+  "tool_source": "fc11aa15cddbc47d954c5cc0d92c6f847f8df414",
+  "config_sha256": "418c29171ffc804445ed5af0a3bb74813b253f69cccf6a3f3a37134f689ff0b3",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+  "training_jobs": 10,
+  "evaluation_jobs": 44,
+  "failed_jobs": 0,
+  "analyzer": "scripts.pilot_task3_stability analyze"
+}
