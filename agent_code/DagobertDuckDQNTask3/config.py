@@ -93,9 +93,15 @@ class DQNConfig:
     torch_num_threads: int = 1
     action_masking: bool = False
     escape_continuation_features: bool = False
+    double_dqn: bool = False
+    neutral_safe_attack_bombs: bool = False
 
     def __post_init__(self) -> None:
         """Reject internally inconsistent configurations."""
+        if type(self.neutral_safe_attack_bombs) is not bool:
+            raise ValueError("neutral_safe_attack_bombs must be a boolean")
+        if type(self.double_dqn) is not bool:
+            raise ValueError("double_dqn must be a boolean")
         if self.input_dim != FEATURE_COUNT:
             raise ValueError("input_dim must match FEATURE_COUNT.")
 

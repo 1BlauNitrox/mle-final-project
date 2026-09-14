@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "analysis_code_revision": "9ff3228509bdb8b162e9485a64b803d19afede41",
+  "execution_source_unchanged": "1e18b9c659041b4044d04e9ec6563b98c8c471dc",
+  "local_checks": [
+    {
+      "command": "python -m pytest -q",
+      "passed": true,
+      "tests": 938,
+      "subtests": 11,
+      "seconds": 134.66
+    },
+    {
+      "command": "python -m ruff check tests training scripts agent_code/_team_agent_template agent_code/DagobertDuckDQNTask3",
+      "passed": true
+    },
+    {
+      "command": "python -m compileall -q -x \"(^|[\\\\/])(\\.git|\\.pytest_tmp|training_outputs|\\.venv)([\\\\/]|$)\" .",
+      "passed": true,
+      "scope": "Entire repository, excluding Git internals, generated test/output files and virtual environments."
+    },
+    {
+      "command": "python main.py play --agents random_agent --no-gui --n-rounds 1 --seed 1",
+      "passed": true,
+      "scope": "Isolated framework smoke; not scientific evidence."
+    },
+    {
+      "check": "Full exported-evidence verification and extraction, followed by independent result recomputation",
+      "passed": true,
+      "verified_files": 6016,
+      "byte_identical_analysis_files": 10
+    }
+  ],
+  "analysis_dependencies": {
+    "python": "3.13.14",
+    "matplotlib": "3.11.1",
+    "numpy": "2.5.1",
+    "psutil": "7.2.2",
+    "pygame": "2.6.1",
+    "pytest": "9.1.1",
+    "PyYAML": "6.0.3",
+    "ruff": "0.16.6",
+    "scikit-learn": "1.9.0",
+    "scipy": "1.18.0",
+    "torch": "2.13.0+cpu",
+    "tqdm": "4.70.0"
+  },
+  "ci_for_result_revision": "Final-head CI tracked on PR #165; all required checks must pass before review-ready status.",
+  "new_training_or_scientific_evaluation": false,
+  "evidence_published": true,
+  "readme_human_review": "Julius confirmed manual edits and authorized publication; resulting README/card/disclosure changes inspected.",
+  "public_download_verified_files": 6016
+}

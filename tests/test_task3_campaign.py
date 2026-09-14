@@ -121,7 +121,7 @@ def test_serial_plans_share_monitor_and_resume_authorization(tmp_path, monkeypat
     binding = tmp_path / "binding"
     binding.mkdir()
     (binding / "binding.json").write_text("{}")
-    monkeypatch.setattr(campaign, "validate_protocol", lambda _: (config, plans, report))
+    monkeypatch.setattr(campaign, "validate_protocol", lambda *_: (config, plans, report))
     monkeypatch.setattr(campaign, "git", lambda *args: "a" * 40 if args[0] == "rev-parse" else "")
     monitors, calls = [], []
 

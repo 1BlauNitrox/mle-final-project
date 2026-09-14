@@ -9,6 +9,13 @@ verifies its archive and historical source, parent, matrix, dependencies, raw
 observations and decision without launching games or changing server evidence.
 Any new scientific run needs its own prospective authorization.
 
+
+Repeated training blocks can set `world_seed_offset` in a run-plan stage.
+The runner adds it to each replica's world seed and checks the resolved seed
+against evaluation populations and the NumPy seed range. Omission preserves
+historical behavior. Keep the agent seed stable for checkpoint continuation;
+pair offsets by scenario occurrence when comparing reordered curricula.
+
 The completed #109 peaceful campaign is an exploratory negative result; its
 registered selection rule blocks automatic coin-collector continuation.
 See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
@@ -261,6 +268,16 @@ coin-collector template is gated on the peaceful decision under exploratory
 rationale, and exact commands are registered in
 `experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
 integration validation only and produces no performance evidence.
+
+### Issue #137 exploratory Task 3 coin-collector continuation
+
+The separately tracked exploratory coin-collector continuation in #137 reuses
+the Task 3 launcher/analyzer with `--protocol coincollector`. Its preparation
+helper requires a verified passing peaceful result and exactly its selected
+training checkpoint. Run `python -m training.run_task3_campaign --protocol
+coincollector --dry-run` to inspect the future matrix without running a game.
+Commands and prerequisites are in
+`experiments/2026-09-11-task3-coincollector/README.md`. #51 remains unchanged.
 
 ### Issue #107 Task 2 factorial campaign
 
@@ -1011,3 +1028,40 @@ actions, and stored numeric measurements must be finite.
 The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
+
+## Prospective Task 3 target comparison (#150)
+
+`python -m training.task3_double_campaign` prepares and validates matched standard
+and Double DQN runs, guards execution, analyzes raw observations, verifies compact
+results and exports retrievable evidence. See the [registered protocol](../experiments/2026-09-12-task3-double-dqn/README.md)
+and [server commands](../experiments/2026-09-12-task3-double-dqn/SERVER.md).
+Both arms start from the same provisional #91 parent; no passing Task 3 model is
+currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-only
+framework/agent logging in seeded runs and records that policy in job metadata.
+Episode statistics, failure metadata and scientific measurements are retained.
+Default logging and existing campaign sources remain unchanged.
+
+
+## Completed #163 evidence verification
+
+`python -m training.verify_issue163_results` audits the completed #163 run
+against its exact executed source. It verifies parent/source/checkpoint bindings,
+all registered jobs, native/scalar statistics, recovery records and resource
+amendments before applying the registered metric functions. It preserves repeat
+mismatches in a diagnostic result with no checkpoint selection. Other campaigns
+and the default evidence loader still reject deterministic-repeat mismatches.
+
+`scripts/package_issue163_evidence.py` creates a compact archive, verifies every
+file against a SHA-256/size manifest and optionally extracts into a new directory.
+The archive contains executed source bytes as well as observations and artifacts;
+this preserves Windows fingerprint ordering and line endings for reproduction.
+Existing exports and extraction directories are never overwritten. These tools
+run no games and perform no scientific continuation. See the
+[result record](../experiments/2026-09-13-task3-safe-attack-results/README.md)
+for exact commands, preserved failures and the evidence publication state.
+
+Issue #124 reduced laptop evidence is verified with
+`python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
+Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
+The verifier retains five-replica A/B/C inference and marks D exploratory; the
+original full-matrix analyzer remains strict and unchanged.

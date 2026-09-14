@@ -5,6 +5,7 @@ This is experiment instrumentation only. Submitted learned agents never import i
 
 from __future__ import annotations
 
+import logging
 import os
 import random
 import runpy
@@ -14,6 +15,19 @@ import numpy as np
 
 SUPPORTED = {"peaceful_agent", "coin_collector_agent"}
 SCHEME = "task3_per_slot_v1"
+
+
+def configure_diagnostic_logging():
+    """Optional wrapper log reduction; metrics and policies remain unchanged."""
+    import settings
+
+    mode = os.environ.get("BOMBERMAN_COMPACT_LOGS", "0")
+    if mode not in {"0", "1"}:
+        raise ValueError("BOMBERMAN_COMPACT_LOGS must be 0 or 1")
+    if mode == "1":
+        settings.LOG_GAME = logging.WARNING
+        settings.LOG_AGENT_WRAPPER = logging.WARNING
+        settings.LOG_AGENT_CODE = logging.WARNING
 
 
 def seeds(root_seed, slot):
@@ -57,6 +71,7 @@ def wrap_process_event(original, root_seed, slots):
 
 
 def main():
+    configure_diagnostic_logging()
     import agents
 
     root_seed = int(os.environ["BOMBERMAN_AGENT_SEED"])
