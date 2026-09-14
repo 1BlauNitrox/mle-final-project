@@ -1,0 +1,18 @@
+{
+  "sha256": "768e040c416730b820b42cacce3a5d113a98f7b2929a71f92f58ce1963ca6708",
+  "size_bytes": 93712377,
+  "files": 966,
+  "tool_source": "5bee5a723c7f4857c5e4f13959ef8401a14ade6c",
+  "archive_name": "issue171-pilot-evidence.tar.gz",
+  "publication_status": "published; fresh download verified",
+  "durable_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue171-pilot-evidence-v1/issue171-pilot-evidence.tar.gz",
+  "planned_release": "issue171-pilot-evidence-v1",
+  "contents": "Immutable runtime archive and manifest; protocol/binding; initial and frozen inputs; all 300 episode checkpoints plus six final checkpoints; training/evaluation attempts, native observations, timings and registered analysis.",
+  "schema": "Issue171 runner at 5bee5a723c7f4857c5e4f13959ef8401a14ade6c; JSON native episodes, restricted PyTorch checkpoints",
+  "retrieval_after_publication": "gh release download issue171-pilot-evidence-v1 --repo 1BlauNitrox/mle-final-project --dir inputs-171",
+  "verification_command": "python -m scripts.pilot_task3_learning_rate import --root training_outputs/issue171-review --archive inputs-171/issue171-pilot-evidence.tar.gz --sha256 768e040c416730b820b42cacce3a5d113a98f7b2929a71f92f58ce1963ca6708",
+  "analysis_command": "python -m scripts.pilot_task3_learning_rate analyze --root training_outputs/issue171-review --output training_outputs/issue171-review/recomputed-analysis.json",
+  "required_tool_commit": "5bee5a723c7f4857c5e4f13959ef8401a14ade6c",
+  "release_url": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue171-pilot-evidence-v1",
+  "fresh_download_verified": true
+}

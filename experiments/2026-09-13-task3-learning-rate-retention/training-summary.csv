@@ -1,0 +1,7 @@
+artifact,optimizer_updates,mean_survival_steps,attack_episodes,eliminations
+control-r1,12380,257.58,18,19
+treatment-r1,13303,276.04,16,16
+control-r2,12592,261.82,16,15
+treatment-r2,12590,261.78,11,10
+control-r3,13362,277.22,10,12
+treatment-r3,13017,270.32,9,11
