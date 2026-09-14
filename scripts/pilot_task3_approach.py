@@ -49,8 +49,8 @@ PROFILES = ("approach-shaping", "update-cadence")
 PROFILE = os.environ.get("TASK3_APPROACH_PROFILE", "approach-shaping")
 CONFIG = ROOT / f"experiments/2026-09-14-task3-{PROFILE}/config.json"
 PROFILE_HASHES = {
-    "approach-shaping": "6d8347a38e23bab4bd47a9ee5c0a5fb6edab5de4c9ec3c1613cd9790af06aec5",
-    "update-cadence": "995e17c0dbf6a30b0274a8bf9d9057018e72432f2a464223e464c899a5510aba",
+    "approach-shaping": "8e05e9e5e33a03dea2799975f6a16a940fc0c9395431f22f18dd33a5ce453882",
+    "update-cadence": "ded59f9b9b299c519a05e2d3edb6f744422f95aaede0f73429d4360b7c51b63d",
 }
 STAGES = ("training", "evaluation", "latency")
 
@@ -1169,10 +1169,11 @@ def main():
                     "arms": cfg["arms"],
                     "training_jobs": len(cfg["arms"]) * cfg["replicas"],
                     "training_episodes": cfg["training_episodes"],
-                    "training_workers": cfg["training_workers"],
+                    "stage_workers": cfg["stage_workers"],
                     "evaluation_jobs": len(artifact_names(cfg)) * len(cfg["evaluation_suites"]),
                     "evaluation_episodes": cfg["evaluation_episodes"],
                     "latency_jobs": len(artifact_names(cfg)),
+                    "latency_episodes": cfg["latency_episodes"],
                     "budgets": {k: v for k, v in cfg.items() if "limits" in k},
                 },
                 indent=2,

@@ -65,7 +65,7 @@
     "source": "completed #175 and #178 resource records on this PC",
     "training_cpu_seconds_per_episode": 7.0,
     "evaluation_cpu_seconds_per_episode": 2.41,
-    "note": "Optimizer updates cost about 0.001 CPU seconds each, so an episode costs essentially the same at either update interval; the cost is simulation and feature extraction. Laptop throughput is about three times higher and is re-measured by the preparation smoke before launch."
+    "note": "Optimizer updates cost about 0.001 CPU seconds each, so an episode costs essentially the same at either update interval; the cost is simulation and feature extraction. The evaluation allowance is widened because recording attack-opportunity exposure adds one feature computation per step that the #178 baseline did not perform. Laptop throughput is about three times higher and is re-measured by the preparation smoke before launch."
   },
   "replica_agent_seeds": [
     4185301,
@@ -3390,12 +3390,12 @@
   "scientific_gates": "Original cumulative Task 1/2/3 requirements are unchanged; this exploratory comparison cannot retrospectively establish Task 2 completion.",
   "training_limits": {
     "wall_seconds": 21600,
-    "cpu_seconds": 90000,
+    "cpu_seconds": 110000,
     "memory_bytes": 5368709120
   },
   "evaluation_limits": {
-    "wall_seconds": 10800,
-    "cpu_seconds": 28000,
+    "wall_seconds": 14400,
+    "cpu_seconds": 40000,
     "memory_bytes": 3221225472
   },
   "latency_limits": {
