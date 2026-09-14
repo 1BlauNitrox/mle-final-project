@@ -168,16 +168,10 @@ def load_plan(path: Path) -> ResolvedPlan:
     useful_bomb_reward = raw.get("useful_bomb_reward", 0.0)
     state_representation = raw.get("state_representation", "baseline")
     if state_representation not in VALID_STATE_REPRESENTATIONS:
-        raise ValueError(
-            "state_representation must be one of "
-            f"{list(VALID_STATE_REPRESENTATIONS)}"
-        )
+        raise ValueError(f"state_representation must be one of {list(VALID_STATE_REPRESENTATIONS)}")
     potential_shaping = raw.get("potential_shaping", "none")
     if potential_shaping not in VALID_POTENTIAL_SHAPING_MODES:
-        raise ValueError(
-            "potential_shaping must be one of "
-            f"{list(VALID_POTENTIAL_SHAPING_MODES)}"
-        )
+        raise ValueError(f"potential_shaping must be one of {list(VALID_POTENTIAL_SHAPING_MODES)}")
 
     tabular_exploration_mode = raw.get(
         "tabular_exploration_mode",
@@ -212,8 +206,7 @@ def load_plan(path: Path) -> ResolvedPlan:
     )
     if tabular_initialization not in VALID_TABULAR_INITIALIZATIONS:
         raise ValueError(
-            "tabular_initialization must be one of "
-            f"{list(VALID_TABULAR_INITIALIZATIONS)}"
+            f"tabular_initialization must be one of {list(VALID_TABULAR_INITIALIZATIONS)}"
         )
 
     if (
@@ -252,13 +245,8 @@ def load_plan(path: Path) -> ResolvedPlan:
     if not raw_replicas:
         raise ValueError("replicas must contain at least one replica")
     replicas = tuple(_parse_replica(item, plan_path.parent) for item in raw_replicas)
-    if (
-        tabular_initialization == "zeros"
-        and any(replica.parent_artifact for replica in replicas)
-    ):
-        raise ValueError(
-            "Zero initialization cannot use replica parent artifacts"
-        )
+    if tabular_initialization == "zeros" and any(replica.parent_artifact for replica in replicas):
+        raise ValueError("Zero initialization cannot use replica parent artifacts")
     _require_unique([replica.replica_id for replica in replicas], "replica IDs")
     if artifact_path is None and any(replica.parent_artifact for replica in replicas):
         raise ValueError("artifact_path is required when a parent_artifact is present")
@@ -481,6 +469,14 @@ def _run_job(
         return
 
     replica = next(item for item in plan.replicas if item.replica_id == job.replica)
+    storage_guard = process_monitor is not None and hasattr(process_monitor, "begin_job")
+    if storage_guard:
+        attempt_id = f"attempt-{len(job_status['attempts']) + 1:03d}"
+        process_monitor.begin_job(
+            job,
+            _alias_directory(plan, replica),
+            plan_directory / "jobs" / job.run_id / attempt_id,
+        )
     alias_directory = _prepare_replica_workspace(plan, replica, plan_directory, workspace_root)
     alias = alias_directory.name
     artifact = alias_directory / plan.artifact_path if plan.artifact_path else None
@@ -502,7 +498,10 @@ def _run_job(
     attempt_root = plan_directory / "jobs" / job.run_id
     attempt_root.mkdir(parents=True, exist_ok=True)
     attempt_input = attempt_root / f"{attempt_id}-input-agent"
-    _snapshot_workspace(alias_directory, attempt_input)
+    if process_monitor is not None and hasattr(process_monitor, "snapshot_input"):
+        process_monitor.snapshot_input(alias_directory, attempt_input)
+    else:
+        _snapshot_workspace(alias_directory, attempt_input)
     with lock:
         job_status["status"] = "running"
         job_status["attempts"].append(attempt)
@@ -571,7 +570,13 @@ def _run_job(
                 }
             },
             process_monitor=process_monitor,
+            seed_opponents=(getattr(process_monitor, "campaign_metadata", None) or {}).get(
+                "opponent_seed_policy"
+            )
+            == "task3_per_slot_v1",
         )
+        if storage_guard:
+            process_monitor.check()
         if job.kind == "evaluation":
             artifact_after = _sha256_file(artifact) if artifact and artifact.is_file() else None
             if artifact_before != artifact_after:
@@ -626,6 +631,8 @@ def _run_job(
         with lock:
             status["updated_at"] = _timestamp()
             _write_json_atomic(status_path, status)
+        if storage_guard:
+            process_monitor.end_job(job)
 
 
 def _prepare_replica_workspace(

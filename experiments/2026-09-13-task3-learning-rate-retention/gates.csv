@@ -1,0 +1,16 @@
+scope,gate,passed
+overall,genuine_updates,True
+overall,behavioral_repeats,True
+overall,task1_improvement,False
+overall,hunting_control_retention,False
+overall,hunting_parent_retention,True
+overall,nonworse_replicas,True
+overall,earlier_task_retention,False
+overall,invalid_actions,False
+overall,latency,True
+coin-heaven,coins,True
+coin-heaven,self_kills,True
+loot-crate,coins,False
+loot-crate,self_kills,True
+classic-empty,coins,False
+classic-empty,self_kills,False

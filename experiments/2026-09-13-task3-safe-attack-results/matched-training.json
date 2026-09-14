@@ -1,0 +1,72 @@
+[
+  {
+    "replica": "r1",
+    "checkpoint_differences": [
+      "/config/neutral_safe_attack_bombs"
+    ],
+    "paired_training_episodes": 5000,
+    "differing_nonlatency_training_episodes": 0,
+    "control_retained_replay_transitions": 10000,
+    "bomb_actions": 1360,
+    "safe_attack_states": 3,
+    "safe_cratefree_attack_states": 0,
+    "eligible_bomb_actions": 0,
+    "eligible_nonterminal_bomb_actions": 0
+  },
+  {
+    "replica": "r2",
+    "checkpoint_differences": [
+      "/config/neutral_safe_attack_bombs"
+    ],
+    "paired_training_episodes": 5000,
+    "differing_nonlatency_training_episodes": 0,
+    "control_retained_replay_transitions": 10000,
+    "bomb_actions": 1330,
+    "safe_attack_states": 0,
+    "safe_cratefree_attack_states": 0,
+    "eligible_bomb_actions": 0,
+    "eligible_nonterminal_bomb_actions": 0
+  },
+  {
+    "replica": "r3",
+    "checkpoint_differences": [
+      "/config/neutral_safe_attack_bombs"
+    ],
+    "paired_training_episodes": 5000,
+    "differing_nonlatency_training_episodes": 0,
+    "control_retained_replay_transitions": 10000,
+    "bomb_actions": 1361,
+    "safe_attack_states": 0,
+    "safe_cratefree_attack_states": 0,
+    "eligible_bomb_actions": 0,
+    "eligible_nonterminal_bomb_actions": 0
+  },
+  {
+    "replica": "r4",
+    "checkpoint_differences": [
+      "/config/neutral_safe_attack_bombs"
+    ],
+    "paired_training_episodes": 5000,
+    "differing_nonlatency_training_episodes": 0,
+    "control_retained_replay_transitions": 10000,
+    "bomb_actions": 1345,
+    "safe_attack_states": 0,
+    "safe_cratefree_attack_states": 0,
+    "eligible_bomb_actions": 0,
+    "eligible_nonterminal_bomb_actions": 0
+  },
+  {
+    "replica": "r5",
+    "checkpoint_differences": [
+      "/config/neutral_safe_attack_bombs"
+    ],
+    "paired_training_episodes": 5000,
+    "differing_nonlatency_training_episodes": 0,
+    "control_retained_replay_transitions": 10000,
+    "bomb_actions": 1383,
+    "safe_attack_states": 0,
+    "safe_cratefree_attack_states": 0,
+    "eligible_bomb_actions": 0,
+    "eligible_nonterminal_bomb_actions": 0
+  }
+]

@@ -1,0 +1,76 @@
+{
+  "issue": 162,
+  "scope": "development_diagnosis_not_efficacy",
+  "executed_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+  "instrumentation_source": "e960bcc21dbe8b03343b85587a3af725c415616d",
+  "input_release": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue150-evidence-v1",
+  "replicas": [
+    {
+      "arm": "control",
+      "replica": "r1",
+      "episodes": "10000",
+      "producing_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+      "archive_path": "campaign/plans/issue150-control/artifacts/r1/classic-peaceful/checkpoint.pt",
+      "sha256": "125b8e1511648b87d53fee060b50f9425c9ffb7e62c5c244170a7d5addaffb02",
+      "size_bytes": "3436215"
+    },
+    {
+      "arm": "control",
+      "replica": "r2",
+      "episodes": "10000",
+      "producing_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+      "archive_path": "campaign/plans/issue150-control/artifacts/r2/classic-peaceful/checkpoint.pt",
+      "sha256": "5a08c2a67dcdcbd95ecbb9a9b641952ada7f02eca145803eeb385def7d32f3f6",
+      "size_bytes": "3436215"
+    },
+    {
+      "arm": "control",
+      "replica": "r3",
+      "episodes": "10000",
+      "producing_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+      "archive_path": "campaign/plans/issue150-control/artifacts/r3/classic-peaceful/checkpoint.pt",
+      "sha256": "a3725ed1751919ebcd87d76eee08cb4b6e8347498985b7613cd7a3c693402858",
+      "size_bytes": "3436215"
+    },
+    {
+      "arm": "control",
+      "replica": "r4",
+      "episodes": "10000",
+      "producing_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+      "archive_path": "campaign/plans/issue150-control/artifacts/r4/classic-peaceful/checkpoint.pt",
+      "sha256": "33e06761765a4752e085effa76eb7a490a3eb1ad533ae744b765ee123f675420",
+      "size_bytes": "3436215"
+    },
+    {
+      "arm": "control",
+      "replica": "r5",
+      "episodes": "10000",
+      "producing_source": "6f014485a3026cc3707fa2cc3a379880dd0b74bd",
+      "archive_path": "campaign/plans/issue150-control/artifacts/r5/classic-peaceful/checkpoint.pt",
+      "sha256": "10f507a211caa9b5da3e8f7b8b7d02ec653541b29898e95b550e2cb0dcd8844a",
+      "size_bytes": "3436215"
+    }
+  ],
+  "cases": [
+    {
+      "world_seed": 1501101,
+      "opponent": "peaceful_agent"
+    },
+    {
+      "world_seed": 1501102,
+      "opponent": "peaceful_agent"
+    },
+    {
+      "world_seed": 1501201,
+      "opponent": null
+    }
+  ],
+  "agent_seed_offset": 1000000,
+  "max_episodes": 15,
+  "wall_seconds": 1800,
+  "cpu_seconds": 1800,
+  "memory_bytes": 4294967296,
+  "per_episode_seconds": 120,
+  "training_episodes": 0,
+  "checkpoint_selection": null
+}

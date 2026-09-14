@@ -1,0 +1,44 @@
+{
+  "scope": "technical preflight, not performance evidence",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "tool_source": "5ef341a53b4432fdfb6b54ae372e8514eb06dff9",
+  "full_repository_tests": "921 passed, 11 subtests (before two additional tests); six focused tests subsequently passed",
+  "lint": "passed",
+  "compile": "passed",
+  "framework_smoke": "passed random_agent seed1",
+  "frozen_real_game_smoke": {
+    "scope": "mechanical_smoke_excluded_from_pilot",
+    "training_episodes": 2,
+    "evaluation_episodes": 7,
+    "optimizer_updates": 301,
+    "checkpoint_sha256": "32f9f71dce93a39f20cfb8f0100083516df5d51f4e879310411e35666d26b174"
+  },
+  "smoke_resources": {
+    "cpu_seconds": 49.15625,
+    "wall_seconds": 49.73370059998706,
+    "peak_memory_bytes": 301744128
+  },
+  "opponent_free_smoke": "exact native behavior (excluding timing) and selected-action digest equal reference in coin-heaven, loot-crate and classic-empty",
+  "upstream_revision": "0f55c1d207e586e6fe6db95e64302ed32281e370",
+  "upstream_smoke": {
+    "world_seed": 7973899,
+    "agent_seed": 8973801,
+    "scope": "one extra technical compatibility episode, excluded from scientific populations",
+    "opponents": [
+      "random_agent",
+      "random_agent",
+      "random_agent"
+    ],
+    "exit_code": 0
+  },
+  "estimate": {
+    "training_minutes": 125,
+    "evaluation_minutes": 170,
+    "range_hours": [
+      5,
+      6
+    ],
+    "basis": "prior matched #171:2237s/300 training and808s/280 evaluation; current smoke49.7s/2training+7evaluation, peak302MB; budget limits unchanged"
+  },
+  "execution": "PC serial; both arms and all evaluations; user authorized issue173; no scientific jobs started at record creation"
+}
