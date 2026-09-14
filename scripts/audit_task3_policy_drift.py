@@ -10,6 +10,8 @@ from pathlib import Path
 
 import torch
 
+DISCOUNT_FACTOR = 0.9
+
 
 def q_values(state, inputs):
     value = inputs
@@ -64,6 +66,46 @@ def compare(initial, learned, replay):
     return result
 
 
+def td_error_diagnostics(initial_online, initial_target, learned_online,
+                         learned_target, replay):
+    """Compare signed Bellman TD errors on the same deterministic sample."""
+    size = len(replay["states"])
+    if size == 0:
+        raise ValueError("Empty replay cannot diagnose TD errors")
+    idx = torch.linspace(0, size - 1, min(512, size)).long()
+    states = replay["states"][idx]
+    actions = replay["action_indices"][idx].long()
+    rewards = replay["rewards"][idx]
+    next_states = replay["next_states"][idx]
+    terminals = replay["terminals"][idx].bool()
+    masks = replay["next_action_masks"][idx].bool()
+    if not masks.any(dim=1).all():
+        raise ValueError("No eligible next action")
+
+    def errors(online, target):
+        current = q_values(online, states).gather(1, actions[:, None]).squeeze(1)
+        next_values = q_values(target, next_states).masked_fill(~masks, -torch.inf)
+        targets = rewards + DISCOUNT_FACTOR * (~terminals).float() * next_values.max(1).values
+        return targets - current
+
+    with torch.no_grad():
+        before = errors(initial_online, initial_target)
+        after = errors(learned_online, learned_target)
+    sign_before = torch.sign(before)
+    sign_after = torch.sign(after)
+    return {
+        "samples": len(idx),
+        "sample_indices": idx.tolist(),
+        "mean_signed_td_initial": float(before.mean()),
+        "mean_signed_td_final": float(after.mean()),
+        "mean_abs_td_initial": float(before.abs().mean()),
+        "mean_abs_td_final": float(after.abs().mean()),
+        "td_sign_changed_fraction": float((sign_before != sign_after).float().mean()),
+        "td_sign_initial": torch.bincount((sign_before + 1).long(), minlength=3).tolist(),
+        "td_sign_final": torch.bincount((sign_after + 1).long(), minlength=3).tolist(),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
@@ -94,9 +136,20 @@ def main():
         digest = sha(path)
         if digest != json.loads(path.with_name("result.json").read_text())["checkpoint_sha256"]:
             raise ValueError("Checkpoint changed")
+        initial_online = initial["learner_state"]["online_network"]
+        initial_target = initial["learner_state"]["target_network"]
+        learned_online = payload["learner_state"]["online_network"]
+        learned_target = payload["learner_state"]["target_network"]
         row = compare(
-            initial["learner_state"]["online_network"],
-            payload["learner_state"]["online_network"],
+            initial_online,
+            learned_online,
+            payload["replay_state"],
+        )
+        row["td_errors"] = td_error_diagnostics(
+            initial_online,
+            initial_target,
+            learned_online,
+            learned_target,
             payload["replay_state"],
         )
         row["checkpoint_sha256"] = digest

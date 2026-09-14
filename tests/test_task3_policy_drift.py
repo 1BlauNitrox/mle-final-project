@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from scripts.audit_task3_policy_drift import compare
+from scripts.audit_task3_policy_drift import compare, td_error_diagnostics
 
 
 def fixture():
@@ -44,3 +44,17 @@ def test_empty_and_ineligible_replay_rejected():
     replay["states"] = torch.zeros(0, 39)
     with pytest.raises(ValueError, match="Empty"):
         compare(state, state, replay)
+
+
+def test_td_error_diagnostics_reports_direction_and_does_not_mutate_inputs():
+    state, replay = fixture()
+    replay["action_indices"] = torch.tensor([0, 0])
+    replay["terminals"] = torch.tensor([True, False])
+    learned = {key: value.clone() for key, value in state.items()}
+    learned["layers.4.bias"][0] = -1
+    result = td_error_diagnostics(state, state, learned, learned, replay)
+    assert result["samples"] == 2
+    assert result["mean_signed_td_initial"] == pytest.approx(-0.55)
+    assert result["mean_signed_td_final"] == pytest.approx(1.0)
+    assert result["td_sign_changed_fraction"] == pytest.approx(1)
+    assert torch.equal(state["layers.4.bias"], torch.tensor([1.0, 0, 0, 0, 0, 0]))
