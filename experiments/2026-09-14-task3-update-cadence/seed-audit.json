@@ -1,0 +1,41 @@
+{
+  "profile": "update-cadence",
+  "scope": "opaque collision-only audit; no held-out values exposed or games run",
+  "populations": {
+    "training_including_opponents": 6005,
+    "development": 480,
+    "smoke": 11
+  },
+  "remote_revisions": {
+    "refs/remotes/origin/archive/130-before-scope-repair": "05cde8b5251e5c771610912707da8f5b31896211",
+    "refs/remotes/origin/dependabot/pip/torch-2.14.0cpu": "b62ce51e5e5f7dabf170f9c61c9bea4a58e4f49e",
+    "refs/remotes/origin/docs/task3-agent-card-fix": "a2a20f5bcf25128aa07e602cac6b706c08fda809",
+    "refs/remotes/origin/experiment/177-policy-drift": "f08f9086c5188e8d564d47c99dc5e989f859acd0",
+    "refs/remotes/origin/experiment/178-update-frequency": "7286aa1661d9a22ba6af9e0d48ef68bab3711b2b",
+    "refs/remotes/origin/experiment/179-opponent-regularization": "b551f91dfb13346c62373e060ae4e8b9a45d631d",
+    "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
+    "refs/remotes/origin/main": "90b036dc007a4d4cf6ce3dd3f5e4a598273c98b4",
+    "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
+  },
+  "unique_text_blobs": 628,
+  "blob_set_sha256": "cfde7c6333c661699212bfb326a5c8a0b2adfde955fb1bffb549662c05c21dc4",
+  "colliding_files": [],
+  "cross_profile_separation": {
+    "profiles": {
+      "approach-shaping": {
+        "training_including_opponents": 6005,
+        "development": 480,
+        "smoke": 11
+      },
+      "update-cadence": {
+        "training_including_opponents": 6005,
+        "development": 480,
+        "smoke": 11
+      }
+    },
+    "shared_seed_count": 0,
+    "passed": true
+  },
+  "passed": true,
+  "method": "all integer literals, literal Python ranges and inclusive written ranges across remote tracked registrations; no dynamic code executed"
+}
