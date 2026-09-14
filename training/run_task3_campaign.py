@@ -1,4 +1,4 @@
-"""Guard the registered Issue #109 campaign; dry-run never starts a game."""
+"""Guard the registered Task 3 campaigns; dry-run never starts a game."""
 
 from __future__ import annotations
 
@@ -50,8 +50,17 @@ def portable_plan(plan):
     return data
 
 
-def validate_protocol(binding_directory=None):
-    config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+def protocol_path(protocol):
+    if protocol == "peaceful":
+        return CONFIG
+    if protocol == "coincollector":
+        return ROOT / "experiments/2026-09-11-task3-coincollector/config.yaml"
+    raise ValueError("Unknown Task 3 protocol")
+
+
+def validate_protocol(binding_directory=None, protocol="peaceful"):
+    config_path = protocol_path(protocol)
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
     require(config["schema_version"] == 2, "Unsupported Task 3 protocol")
     templates = {name: load_plan(ROOT / path) for name, path in config["plans"].items()}
     expected = {"candidate": (50000, 1600), "reference": (0, 320)}
@@ -84,7 +93,7 @@ def validate_protocol(binding_directory=None):
         seed for start, stop in config["protected_seed_ranges"] for seed in range(start, stop + 1)
     }
     require(not registered & protected, "Confirmation seeds would be consumed")
-    excluded = {ROOT / p for p in config["plans"].values()} | {CONFIG}
+    excluded = {ROOT / p for p in config["plans"].values()} | {config_path}
     excluded.add(ROOT / "training/run_plans/issue109-task3-vs-coincollector.yaml")
     audit = {}
     for path in sorted(
@@ -112,7 +121,9 @@ def validate_protocol(binding_directory=None):
                 sha256(path) == record["sha256"] and path.stat().st_size == record["size_bytes"],
                 f"{key} artifact hash/size mismatch",
             )
-        verify_migration(directory, binding)
+        verify_migration(directory, binding, parent_agent=templates["reference"].agent)
+        if protocol == "coincollector":
+            verify_prerequisite(directory, binding)
         plans = {}
         for name, template in templates.items():
             record = binding["plans"][name]
@@ -135,12 +146,12 @@ def validate_protocol(binding_directory=None):
             require(actual == expected_plan, f"Bound {name} differs from registered matrix")
             plans[name] = plan
     report = {
-        "issue": 109,
+        "issue": config["issue"],
         "exploratory": True,
         "task2_complete": False,
         "training_episodes": 50000,
         "evaluation_episodes": 1920,
-        "protocol_sha256": sha256(CONFIG),
+        "protocol_sha256": sha256(config_path),
         "seed_audit": audit,
         "parent_bound": binding is not None,
         "compute_authorized": False,
@@ -148,11 +159,14 @@ def validate_protocol(binding_directory=None):
     return config, plans, report
 
 
-def verify_migration(directory, binding):
+def verify_migration(directory, binding, parent_agent="DagobertDuckDQNTask2"):
     """Verify function-preserving lineage, not just two unrelated file hashes."""
     import torch
 
-    from agent_code.DagobertDuckDQNTask2.persistence import load_evaluation_checkpoint
+    if parent_agent == "DagobertDuckDQNTask2":
+        from agent_code.DagobertDuckDQNTask2.persistence import load_evaluation_checkpoint
+    else:
+        from agent_code.DagobertDuckDQNTask3.persistence import load_evaluation_checkpoint
     from agent_code.DagobertDuckDQNTask3.migration import successor_config
     from agent_code.DagobertDuckDQNTask3.persistence import load_training_checkpoint
 
@@ -160,7 +174,12 @@ def verify_migration(directory, binding):
     parent = load_evaluation_checkpoint(parent_path)
     successor = load_training_checkpoint(relative_file(directory, binding["successor"]["path"]))
     require(
-        successor.config == successor_config(parent.config),
+        successor.config
+        == (
+            successor_config(parent.config)
+            if parent_agent == "DagobertDuckDQNTask2"
+            else parent.config
+        ),
         "Migration changed inherited hyperparameters",
     )
     require(
@@ -206,7 +225,7 @@ def git(*args):
 
 
 def execute(args):
-    config, plans, report = validate_protocol(args.binding_dir)
+    config, plans, report = validate_protocol(args.binding_dir, args.protocol)
     require(args.authorize_compute, "Execution requires --authorize-compute")
     require(args.binding_dir is not None, "Execution requires --binding-dir")
     require(args.reviewed_commit == git("rev-parse", "HEAD"), "Reviewed commit must equal HEAD")
@@ -229,7 +248,7 @@ def execute(args):
     try:
         auth_path = root / "authorization.json"
         identity = {
-            "issue": 109,
+            "issue": config["issue"],
             "reviewed_commit": args.reviewed_commit,
             "authorized_by": args.authorized_by,
             "hardware_description": args.hardware_description,
@@ -259,7 +278,7 @@ def execute(args):
                 json.dumps(report, indent=2) + "\n", encoding="utf-8"
             )
         campaign = {
-            "issue": 109,
+            "issue": config["issue"],
             "opponent_seed_policy": "task3_per_slot_v1",
             "authorization_sha256": sha256(auth_path),
             "reviewed_commit": args.reviewed_commit,
@@ -291,11 +310,10 @@ def execute(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--protocol", choices=("peaceful", "coincollector"), default="peaceful")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--binding-dir", type=Path)
-    parser.add_argument(
-        "--output-root", type=Path, default=ROOT / "training_outputs/issue109-campaign"
-    )
+    parser.add_argument("--output-root", type=Path)
     parser.add_argument("--authorize-compute", action="store_true")
     parser.add_argument("--reviewed-commit")
     parser.add_argument("--authorized-by")
@@ -303,10 +321,32 @@ def main(argv=None):
     parser.add_argument("--available-memory-gib", type=float)
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args(argv)
+    if args.output_root is None:
+        issue = 109 if args.protocol == "peaceful" else 137
+        args.output_root = ROOT / "training_outputs" / f"issue{issue}-campaign"
     if args.dry_run:
-        print(json.dumps(validate_protocol(args.binding_dir)[2], indent=2))
+        print(json.dumps(validate_protocol(args.binding_dir, args.protocol)[2], indent=2))
     else:
         execute(args)
+
+
+def verify_prerequisite(directory, binding):
+    from training.analyze_task3_campaign import verify_compact
+
+    prerequisite = relative_file(directory, binding["prerequisite"]["path"])
+    require(
+        sha256(prerequisite / "result.json") == binding["prerequisite"]["result_sha256"],
+        "Peaceful result changed",
+    )
+    require(
+        verify_compact(prerequisite)["status"] == "exploratory_pass",
+        "Coin-collector requires a passing peaceful decision",
+    )
+    result = read_json(prerequisite / "result.json")
+    require(
+        result.get("selected_artifact_sha256") == binding["parent"]["sha256"],
+        "Parent is not the mechanically selected peaceful checkpoint",
+    )
 
 
 if __name__ == "__main__":
