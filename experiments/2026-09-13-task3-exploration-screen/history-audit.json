@@ -1,0 +1,958 @@
+{
+  "source_observations_sha256": "f57fd556883d717b3dd1a05bb846b4e81b0dd2578edcdd3f8a029738ee06ecc3",
+  "control_episodes": 25000,
+  "opponents_eliminated": 2,
+  "blocks": [
+    {
+      "replica": "r1",
+      "episode_start": 1,
+      "episode_end": 1000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 9482,
+        "mean": 9.482
+      },
+      "coins_collected": {
+        "total": 18,
+        "mean": 0.018
+      },
+      "crates_destroyed": {
+        "total": 3250,
+        "mean": 3.25
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 864.0504068557141,
+        "mean": 0.8640504068557141
+      },
+      "shaped_reward": {
+        "total": -15850.6,
+        "mean": -15.8506
+      }
+    },
+    {
+      "replica": "r1",
+      "episode_start": 1001,
+      "episode_end": 2000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 10899,
+        "mean": 10.899
+      },
+      "coins_collected": {
+        "total": 46,
+        "mean": 0.046
+      },
+      "crates_destroyed": {
+        "total": 3570,
+        "mean": 3.57
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 640.0754751794823,
+        "mean": 0.6400754751794823
+      },
+      "shaped_reward": {
+        "total": -15112.1,
+        "mean": -15.1121
+      }
+    },
+    {
+      "replica": "r1",
+      "episode_start": 2001,
+      "episode_end": 3000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 12288,
+        "mean": 12.288
+      },
+      "coins_collected": {
+        "total": 77,
+        "mean": 0.077
+      },
+      "crates_destroyed": {
+        "total": 4002,
+        "mean": 4.002
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 474.15823275534177,
+        "mean": 0.47415823275534175
+      },
+      "shaped_reward": {
+        "total": -14281.400000000001,
+        "mean": -14.281400000000001
+      }
+    },
+    {
+      "replica": "r1",
+      "episode_start": 3001,
+      "episode_end": 4000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 15453,
+        "mean": 15.453
+      },
+      "coins_collected": {
+        "total": 128,
+        "mean": 0.128
+      },
+      "crates_destroyed": {
+        "total": 4915,
+        "mean": 4.915
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 351.2492485774835,
+        "mean": 0.3512492485774835
+      },
+      "shaped_reward": {
+        "total": -12605.400000000001,
+        "mean": -12.605400000000001
+      }
+    },
+    {
+      "replica": "r1",
+      "episode_start": 4001,
+      "episode_end": 5000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 18579,
+        "mean": 18.579
+      },
+      "coins_collected": {
+        "total": 190,
+        "mean": 0.19
+      },
+      "crates_destroyed": {
+        "total": 5833,
+        "mean": 5.833
+      },
+      "opponents_eliminated": {
+        "total": 2,
+        "mean": 0.002
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 260.20013173515196,
+        "mean": 0.26020013173515194
+      },
+      "shaped_reward": {
+        "total": -10822.800000000001,
+        "mean": -10.8228
+      }
+    },
+    {
+      "replica": "r2",
+      "episode_start": 1,
+      "episode_end": 1000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 9602,
+        "mean": 9.602
+      },
+      "coins_collected": {
+        "total": 16,
+        "mean": 0.016
+      },
+      "crates_destroyed": {
+        "total": 3167,
+        "mean": 3.167
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 864.0504068557141,
+        "mean": 0.8640504068557141
+      },
+      "shaped_reward": {
+        "total": -15964.300000000001,
+        "mean": -15.964300000000001
+      }
+    },
+    {
+      "replica": "r2",
+      "episode_start": 1001,
+      "episode_end": 2000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 10550,
+        "mean": 10.55
+      },
+      "coins_collected": {
+        "total": 38,
+        "mean": 0.038
+      },
+      "crates_destroyed": {
+        "total": 3447,
+        "mean": 3.447
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 640.0754751794823,
+        "mean": 0.6400754751794823
+      },
+      "shaped_reward": {
+        "total": -15390.0,
+        "mean": -15.39
+      }
+    },
+    {
+      "replica": "r2",
+      "episode_start": 2001,
+      "episode_end": 3000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 12625,
+        "mean": 12.625
+      },
+      "coins_collected": {
+        "total": 82,
+        "mean": 0.082
+      },
+      "crates_destroyed": {
+        "total": 4066,
+        "mean": 4.066
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 474.15823275534177,
+        "mean": 0.47415823275534175
+      },
+      "shaped_reward": {
+        "total": -14091.5,
+        "mean": -14.0915
+      }
+    },
+    {
+      "replica": "r2",
+      "episode_start": 3001,
+      "episode_end": 4000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 15057,
+        "mean": 15.057
+      },
+      "coins_collected": {
+        "total": 135,
+        "mean": 0.135
+      },
+      "crates_destroyed": {
+        "total": 4877,
+        "mean": 4.877
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 351.2492485774835,
+        "mean": 0.3512492485774835
+      },
+      "shaped_reward": {
+        "total": -12575.6,
+        "mean": -12.575600000000001
+      }
+    },
+    {
+      "replica": "r2",
+      "episode_start": 4001,
+      "episode_end": 5000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 19278,
+        "mean": 19.278
+      },
+      "coins_collected": {
+        "total": 221,
+        "mean": 0.221
+      },
+      "crates_destroyed": {
+        "total": 6054,
+        "mean": 6.054
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 260.20013173515196,
+        "mean": 0.26020013173515194
+      },
+      "shaped_reward": {
+        "total": -10219.6,
+        "mean": -10.219600000000002
+      }
+    },
+    {
+      "replica": "r3",
+      "episode_start": 1,
+      "episode_end": 1000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 9661,
+        "mean": 9.661
+      },
+      "coins_collected": {
+        "total": 20,
+        "mean": 0.02
+      },
+      "crates_destroyed": {
+        "total": 3258,
+        "mean": 3.258
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 864.0504068557141,
+        "mean": 0.8640504068557141
+      },
+      "shaped_reward": {
+        "total": -15859.900000000001,
+        "mean": -15.859900000000001
+      }
+    },
+    {
+      "replica": "r3",
+      "episode_start": 1001,
+      "episode_end": 2000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 10785,
+        "mean": 10.785
+      },
+      "coins_collected": {
+        "total": 33,
+        "mean": 0.033
+      },
+      "crates_destroyed": {
+        "total": 3507,
+        "mean": 3.507
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 640.0754751794823,
+        "mean": 0.6400754751794823
+      },
+      "shaped_reward": {
+        "total": -15373.1,
+        "mean": -15.3731
+      }
+    },
+    {
+      "replica": "r3",
+      "episode_start": 2001,
+      "episode_end": 3000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 12050,
+        "mean": 12.05
+      },
+      "coins_collected": {
+        "total": 73,
+        "mean": 0.073
+      },
+      "crates_destroyed": {
+        "total": 3943,
+        "mean": 3.943
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 474.15823275534177,
+        "mean": 0.47415823275534175
+      },
+      "shaped_reward": {
+        "total": -14379.2,
+        "mean": -14.3792
+      }
+    },
+    {
+      "replica": "r3",
+      "episode_start": 3001,
+      "episode_end": 4000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 15104,
+        "mean": 15.104
+      },
+      "coins_collected": {
+        "total": 113,
+        "mean": 0.113
+      },
+      "crates_destroyed": {
+        "total": 4855,
+        "mean": 4.855
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 351.2492485774835,
+        "mean": 0.3512492485774835
+      },
+      "shaped_reward": {
+        "total": -12835.5,
+        "mean": -12.835500000000001
+      }
+    },
+    {
+      "replica": "r3",
+      "episode_start": 4001,
+      "episode_end": 5000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 17841,
+        "mean": 17.841
+      },
+      "coins_collected": {
+        "total": 165,
+        "mean": 0.165
+      },
+      "crates_destroyed": {
+        "total": 5597,
+        "mean": 5.597
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 260.20013173515196,
+        "mean": 0.26020013173515194
+      },
+      "shaped_reward": {
+        "total": -11400.900000000001,
+        "mean": -11.400900000000002
+      }
+    },
+    {
+      "replica": "r4",
+      "episode_start": 1,
+      "episode_end": 1000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 9250,
+        "mean": 9.25
+      },
+      "coins_collected": {
+        "total": 14,
+        "mean": 0.014
+      },
+      "crates_destroyed": {
+        "total": 3116,
+        "mean": 3.116
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 864.0504068557141,
+        "mean": 0.8640504068557141
+      },
+      "shaped_reward": {
+        "total": -16100.400000000001,
+        "mean": -16.1004
+      }
+    },
+    {
+      "replica": "r4",
+      "episode_start": 1001,
+      "episode_end": 2000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 10882,
+        "mean": 10.882
+      },
+      "coins_collected": {
+        "total": 39,
+        "mean": 0.039
+      },
+      "crates_destroyed": {
+        "total": 3554,
+        "mean": 3.554
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 640.0754751794823,
+        "mean": 0.6400754751794823
+      },
+      "shaped_reward": {
+        "total": -15198.0,
+        "mean": -15.198
+      }
+    },
+    {
+      "replica": "r4",
+      "episode_start": 2001,
+      "episode_end": 3000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 12417,
+        "mean": 12.417
+      },
+      "coins_collected": {
+        "total": 62,
+        "mean": 0.062
+      },
+      "crates_destroyed": {
+        "total": 4004,
+        "mean": 4.004
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 474.15823275534177,
+        "mean": 0.47415823275534175
+      },
+      "shaped_reward": {
+        "total": -14401.5,
+        "mean": -14.4015
+      }
+    },
+    {
+      "replica": "r4",
+      "episode_start": 3001,
+      "episode_end": 4000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 14906,
+        "mean": 14.906
+      },
+      "coins_collected": {
+        "total": 104,
+        "mean": 0.104
+      },
+      "crates_destroyed": {
+        "total": 4710,
+        "mean": 4.71
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 351.2492485774835,
+        "mean": 0.3512492485774835
+      },
+      "shaped_reward": {
+        "total": -13081.0,
+        "mean": -13.081000000000001
+      }
+    },
+    {
+      "replica": "r4",
+      "episode_start": 4001,
+      "episode_end": 5000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 18584,
+        "mean": 18.584
+      },
+      "coins_collected": {
+        "total": 199,
+        "mean": 0.199
+      },
+      "crates_destroyed": {
+        "total": 5809,
+        "mean": 5.809
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 260.20013173515196,
+        "mean": 0.26020013173515194
+      },
+      "shaped_reward": {
+        "total": -10758.1,
+        "mean": -10.7581
+      }
+    },
+    {
+      "replica": "r5",
+      "episode_start": 1,
+      "episode_end": 1000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 9385,
+        "mean": 9.385
+      },
+      "coins_collected": {
+        "total": 9,
+        "mean": 0.009
+      },
+      "crates_destroyed": {
+        "total": 3129,
+        "mean": 3.129
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 864.0504068557141,
+        "mean": 0.8640504068557141
+      },
+      "shaped_reward": {
+        "total": -16123.6,
+        "mean": -16.1236
+      }
+    },
+    {
+      "replica": "r5",
+      "episode_start": 1001,
+      "episode_end": 2000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 10842,
+        "mean": 10.842
+      },
+      "coins_collected": {
+        "total": 26,
+        "mean": 0.026
+      },
+      "crates_destroyed": {
+        "total": 3628,
+        "mean": 3.628
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 640.0754751794823,
+        "mean": 0.6400754751794823
+      },
+      "shaped_reward": {
+        "total": -15321.300000000001,
+        "mean": -15.3213
+      }
+    },
+    {
+      "replica": "r5",
+      "episode_start": 2001,
+      "episode_end": 3000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 12640,
+        "mean": 12.64
+      },
+      "coins_collected": {
+        "total": 75,
+        "mean": 0.075
+      },
+      "crates_destroyed": {
+        "total": 4066,
+        "mean": 4.066
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 474.15823275534177,
+        "mean": 0.47415823275534175
+      },
+      "shaped_reward": {
+        "total": -14161.900000000001,
+        "mean": -14.161900000000001
+      }
+    },
+    {
+      "replica": "r5",
+      "episode_start": 3001,
+      "episode_end": 4000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 15173,
+        "mean": 15.173
+      },
+      "coins_collected": {
+        "total": 116,
+        "mean": 0.116
+      },
+      "crates_destroyed": {
+        "total": 4857,
+        "mean": 4.857
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 351.2492485774835,
+        "mean": 0.3512492485774835
+      },
+      "shaped_reward": {
+        "total": -12800.5,
+        "mean": -12.800500000000001
+      }
+    },
+    {
+      "replica": "r5",
+      "episode_start": 4001,
+      "episode_end": 5000,
+      "episodes": 1000,
+      "survival_steps": {
+        "total": 17662,
+        "mean": 17.662
+      },
+      "coins_collected": {
+        "total": 196,
+        "mean": 0.196
+      },
+      "crates_destroyed": {
+        "total": 5609,
+        "mean": 5.609
+      },
+      "opponents_eliminated": {
+        "total": 0,
+        "mean": 0
+      },
+      "self_kills": {
+        "total": 1000,
+        "mean": 1
+      },
+      "survived": {
+        "total": 0,
+        "mean": 0
+      },
+      "epsilon": {
+        "total": 260.20013173515196,
+        "mean": 0.26020013173515194
+      },
+      "shaped_reward": {
+        "total": -10943.500000000002,
+        "mean": -10.9435
+      }
+    }
+  ],
+  "scope": "Retrospective motivation, not independent confirmation of the next treatment"
+}

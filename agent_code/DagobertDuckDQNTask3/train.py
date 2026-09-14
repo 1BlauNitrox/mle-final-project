@@ -76,16 +76,18 @@ def game_events_occurred(
     """Finalize the previous transition and retain the current one."""
     _finalize_pending_transition(self)
 
-    diagnostic_events = tuple(
-        event for event in events if event in DIAGNOSTIC_EVENTS
-    )
+    diagnostic_events = tuple(event for event in events if event in DIAGNOSTIC_EVENTS)
     self.episode_event_counts.update(diagnostic_events)
 
     if old_game_state is None or new_game_state is None or self_action not in ACTION_TO_INDEX:
         return
 
-    old_features = state_to_features(old_game_state)
-    new_features = state_to_features(new_game_state)
+    old_features = state_to_features(
+        old_game_state, include_continuation_features=self.config.escape_continuation_features
+    )
+    new_features = state_to_features(
+        new_game_state, include_continuation_features=self.config.escape_continuation_features
+    )
 
     if old_features is None or new_features is None:
         return
@@ -101,7 +103,12 @@ def game_events_occurred(
     if movement_event is not None:
         training_events.append(movement_event)
 
-    bomb_event = _bomb_usefulness_event(old_game_state, events)
+    bomb_event = _bomb_usefulness_event(
+        old_game_state,
+        events,
+        neutral_safe_attack_bombs=self.config.neutral_safe_attack_bombs,
+        old_features=old_features,
+    )
 
     if bomb_event is not None:
         training_events.append(bomb_event)
@@ -116,9 +123,7 @@ def game_events_occurred(
         reward=reward_from_events(training_events),
         next_state=normalize_features(new_features),
         next_action_mask=(
-            framework_legal_action_mask(new_game_state)
-            if self.config.action_masking
-            else None
+            framework_legal_action_mask(new_game_state) if self.config.action_masking else None
         ),
     )
 
@@ -166,13 +171,14 @@ def end_of_round(
         )
         self.pending_transition = None
     else:
-        self.episode_event_counts.update(
-            event for event in events if event in DIAGNOSTIC_EVENTS
-        )
+        self.episode_event_counts.update(event for event in events if event in DIAGNOSTIC_EVENTS)
         _finalize_pending_transition(self)
 
         if last_game_state is not None and last_action in ACTION_TO_INDEX:
-            last_features = state_to_features(last_game_state)
+            last_features = state_to_features(
+                last_game_state,
+                include_continuation_features=self.config.escape_continuation_features,
+            )
 
             if last_features is not None:
                 _record_transition(
@@ -196,12 +202,9 @@ def end_of_round(
         "mean_loss": mean_loss,
         "mean_abs_td_error": mean_abs_td_error,
         "target_synchronizations": (
-            self.learner.update_steps
-            // self.config.target_update_interval
+            self.learner.update_steps // self.config.target_update_interval
         ),
-        "episode_target_synchronizations": (
-            self.episode_target_synchronizations
-        ),
+        "episode_target_synchronizations": (self.episode_target_synchronizations),
     }
 
     for event_name in DIAGNOSTIC_EVENTS:
@@ -324,8 +327,11 @@ def _coin_movement_event(
 def _bomb_usefulness_event(
     old_game_state: dict,
     events: list[str],
+    *,
+    neutral_safe_attack_bombs: bool = False,
+    old_features=None,
 ) -> str | None:
-    """Return a shaping event rewarding a bomb placement by its crate target.
+    """Classify confirmed placement, optionally exempting safe crate-free attacks.
 
     Only fires when the framework itself confirms the bomb was actually
     placed (`BOMB_DROPPED` in `events`); an attempted-but-invalid `BOMB`
@@ -339,6 +345,11 @@ def _bomb_usefulness_event(
 
     if crates_destroyed_by_bomb_at(position, field) > 0:
         return "USEFUL_BOMB_PLACED"
+
+    if neutral_safe_attack_bombs:
+        features = old_features if old_features is not None else state_to_features(old_game_state)
+        if features is not None and features[31]:
+            return None
 
     return "WASTEFUL_BOMB_PLACED"
 

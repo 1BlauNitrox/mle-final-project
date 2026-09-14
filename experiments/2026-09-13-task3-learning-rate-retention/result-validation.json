@@ -1,0 +1,61 @@
+{
+  "scope": "post-run result exporter and complete local regression suite",
+  "python": "3.13.14",
+  "pytest": {
+    "command": "python -m pytest -q",
+    "passed": 934,
+    "subtests_passed": 11,
+    "wall_seconds": 90.82
+  },
+  "focused_tests": {
+    "passed": 17
+  },
+  "ruff": "passed",
+  "compileall": {
+    "command": "python -m compileall -q scripts tests training agent_code",
+    "passed": true
+  },
+  "figure_visually_inspected": true,
+  "new_scientific_games": 0,
+  "remote_ci": {
+    "head": "02f65f286b8dfe1909928cc2f7174760a37f7e8a",
+    "checks_passed": 9,
+    "results_commit_ci": "pending push"
+  },
+  "source_files": {
+    "scripts/export_task3_retention_results.py": "4d700205e5ac52776a643cc2465e4a7d25e08c283b726a13c4b67ccca1a3f856",
+    "tests/test_task3_retention_export.py": "8a39c41b2bcfe5ad85393e539bb77a1c9625705006a135294425ad011defcbe2"
+  },
+  "supplements": {
+    "chain-completion.json": {
+      "sha256": "b470a41ab642056b7f730f0abd085ad61878f95ea17db004bccbcd128c018470",
+      "size_bytes": 264,
+      "source": "training_outputs/pilot-ready/chain-state.json",
+      "in_experiment_archive": false
+    },
+    "smoke-result.json": {
+      "sha256": "a4964401224aa2b8640607a3da0c62d761f4b3b55947262e242bfd230be14417",
+      "size_bytes": 234,
+      "source": "training_outputs/retention-smoke-01/result.json",
+      "in_experiment_archive": false
+    },
+    "smoke-resources.json": {
+      "sha256": "f7020c8f7b4cb3ceaca83e363f61e5c57c8e4cad77eba006a18b9d23b257695a",
+      "size_bytes": 106,
+      "source": "training_outputs/retention-smoke-01.resources.json",
+      "in_experiment_archive": false
+    }
+  },
+  "exporter_commit": "f671b45",
+  "result_links_checked": true,
+  "compact_episode_counts_verified": {
+    "training": 300,
+    "evaluation": 280
+  },
+  "analysis_export": {
+    "semantic_equality": true,
+    "only_serialization_difference": "CRLF normalized to LF for Git",
+    "saved_and_fresh_reanalysis_sha256": "f83eb0333c813d6e67dc62cb72f759f8f865ebd4cf0c8d0114f7adf198d212fc",
+    "exported_sha256": "5113ba52e89b1bf27392b06ac311186f70a88b458176f12799afcb2b5be8bcf4"
+  }
+}

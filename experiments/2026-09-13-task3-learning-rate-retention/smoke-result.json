@@ -1,0 +1,7 @@
+{
+  "scope": "mechanical_smoke_excluded_from_pilot",
+  "training_episodes": 2,
+  "evaluation_episodes": 4,
+  "optimizer_updates": 301,
+  "checkpoint_sha256": "f405b2ceaf34318a0130a0ee7a3a9edb97a021d247042fcae5f159a01775a512"
+}

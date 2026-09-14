@@ -1,0 +1,9 @@
+{
+  "archive_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue171-pilot-evidence-v1/issue171-pilot-evidence.tar.gz",
+  "sha256": "768e040c416730b820b42cacce3a5d113a98f7b2929a71f92f58ce1963ca6708",
+  "size_bytes": 93712377,
+  "fresh_download_sha256_matches": true,
+  "manifest_downloads_match": true,
+  "fresh_download_directory": "training_outputs/release-download-verification-01",
+  "analysis_reproduction": "Downloaded archive is byte-identical to archive already imported and reanalyzed; no new games or repeated analysis required."
+}

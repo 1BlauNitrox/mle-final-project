@@ -1,0 +1,18 @@
+[
+  {
+    "artifact": "control-r2",
+    "suite": "classic-peaceful",
+    "world_seed": 5931405,
+    "repeat": 0,
+    "invalid_actions": 1,
+    "cause": "not established by aggregate native observations; no new replay run"
+  },
+  {
+    "artifact": "control-r2",
+    "suite": "classic-peaceful",
+    "world_seed": 5931405,
+    "repeat": 1,
+    "invalid_actions": 1,
+    "cause": "not established by aggregate native observations; no new replay run"
+  }
+]

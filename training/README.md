@@ -1,17 +1,34 @@
 # Training Orchestration
 
-For the interrupted, pinned Issue #150 server campaign, use the external
-[timestamp resume adapter](../experiments/2026-09-12-task3-resume-recovery/README.md)
-after storage recovery. It preserves original authorization and resource limits
-while handling equivalent UTC timestamp spellings in memory. It is restricted
-to completing evaluations after all ten training jobs have finished; do not
-pull new source into an existing campaign checkout.
+[Issue 126 Task 4 preparation](../experiments/2026-09-12-task4-opponent-distribution/README.md)
+has matched strong/mixed/reference matrices and a statistics-only decision
+function. `python -m training.task4_protocol --dry-run` reports concrete blockers;
+it cannot authorize a run or substitute for verified raw evidence and parent binding.
+
+
+The completed [Issue 147 matched Task 3 mask study](../experiments/2026-09-12-task3-legal-mask/RESULTS.md)
+reuses the guarded campaign executor and raw evidence checks with an explicit
+issue/validator, preserving #109's defaults. `training.task3_mask_campaign`
+provides prepare, dry-run, run/resume, analyze, verify and compact export.
+The registered result rejects continuation. `training.verify_task3_mask_results`
+verifies its archive and historical source, parent, matrix, dependencies, raw
+observations and decision without launching games or changing server evidence.
+Any new scientific run needs its own prospective authorization.
+
 
 Repeated training blocks can set `world_seed_offset` in a run-plan stage.
 The runner adds it to each replica's world seed and checks the resolved seed
 against evaluation populations and the NumPy seed range. Omission preserves
 historical behavior. Keep the agent seed stable for checkpoint continuation;
 pair offsets by scenario occurrence when comparing reordered curricula.
+
+The completed #109 peaceful campaign is an exploratory negative result; its
+registered selection rule blocks automatic coin-collector continuation.
+See [results and exact verification commands](../experiments/2026-09-08-dqn-task3-peaceful-opponent/RESULTS.md).
+`python -m training.verify_task3_results` verifies the historical server campaign
+against its executed Git source and recorded dependencies without launching
+games or changing original bindings. `training.analyze_task3_campaign
+--verify-evidence` recomputes decisions from portable lossless observations.
 
 This directory is for tooling shared across experiments and agents:
 
@@ -230,6 +247,43 @@ Example plans are in `training/run_plans/`:
 - `tasks1-3-smoke.yaml`: three one-round integration checks; and
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
+
+### Issue #109 Task 3 peaceful-opponent comparison
+
+Issue #109 pairs five freshly-trained Task 3 replicas (`classic` against
+`peaceful_agent`) against one frozen Task 2 predecessor evaluated on the same
+seeds, plus the standard opponent-free retention battery. A third plan against
+`coin_collector_agent` is prepared but gated on the peaceful-stage decision.
+Validate the full matrix, seed populations, and budgets without starting a run:
+
+```bash
+python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml --dry-run
+python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
+```
+
+The user-approved numerical gates and 40-pair development suites are registered.
+The parent remains explicitly configurable: historical #107 A/r2 can support
+exploratory work before Task 2 completes, while a later selected Task 2 artifact
+requires a new binding. Use `python -m training.run_task3_campaign --dry-run`
+for matrix/seed preflight, the same launcher with a binding and separate human
+authorization for budget-enforced execution, and
+`python -m training.analyze_task3_campaign` for verified paired analysis.
+Fresh peer review and server compute authorization remain required. The
+coin-collector template is gated on the peaceful decision under exploratory
+#137; #51 retains its validated-predecessor scope. Full protocol,
+rationale, and exact commands are registered in
+`experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
+integration validation only and produces no performance evidence.
+
+### Issue #137 exploratory Task 3 coin-collector continuation
+
+The separately tracked exploratory coin-collector continuation in #137 reuses
+the Task 3 launcher/analyzer with `--protocol coincollector`. Its preparation
+helper requires a verified passing peaceful result and exactly its selected
+training checkpoint. Run `python -m training.run_task3_campaign --protocol
+coincollector --dry-run` to inspect the future matrix without running a game.
+Commands and prerequisites are in
+`experiments/2026-09-11-task3-coincollector/README.md`. #51 remains unchanged.
 
 ### Issue #107 Task 2 factorial campaign
 
@@ -621,6 +675,17 @@ error.
 
 ## Metric interpretation
 
+### Task 3 match outcomes
+
+The optional CSV fields `opponents_eliminated` (native attributable `kills`),
+`opponent_count`, `score_margin`, `first_place` and `tied_first` retain match
+outcomes for each participant. `score_margin` is own score minus the highest
+other score. `first_place` means strictly greater score than every opponent;
+ties at the highest score are recorded separately in `tied_first`. Opponent-free
+episodes have no match outcome (empty fields), and historical missing kill
+counts remain unavailable rather than becoming zero. An observed-agent analyzer
+must filter by `metadata.json`'s `observed_agent`, not aggregate opponent rows.
+
 ### Invalid-action rate
 
 The per-episode rate is:
@@ -763,7 +828,7 @@ agent:
 - satisfies the Task 1 completion contract; or
 - is tournament-ready.
 
-A 5–10 episode smoke run verifies only that the instrumentation works. Any
+A 5â€“10 episode smoke run verifies only that the instrumentation works. Any
 performance conclusion requires a preregistered experiment with controlled
 variables, fixed seed populations, appropriate baselines, and uncertainty
 reporting.
@@ -970,8 +1035,119 @@ The generic pipeline records observations only. It does not interpret a smoke
 run as evidence of agent quality, learning progress, convergence, or Task 1
 completion.
 
+## Prospective Task 3 target comparison (#150)
+
+`python -m training.task3_double_campaign` prepares and validates matched standard
+and Double DQN runs, guards execution, analyzes raw observations, verifies compact
+results and exports retrievable evidence. See the [registered protocol](../experiments/2026-09-12-task3-double-dqn/README.md)
+and [server commands](../experiments/2026-09-12-task3-double-dqn/SERVER.md).
+Both arms start from the same provisional #91 parent; no passing Task 3 model is
+currently selected. The scoped `BOMBERMAN_COMPACT_LOGS=1` option sets warning-only
+framework/agent logging in seeded runs and records that policy in job metadata.
+Episode statistics, failure metadata and scientific measurements are retained.
+Default logging and existing campaign sources remain unchanged.
+
+
+## Completed #163 evidence verification
+
+`python -m training.verify_issue163_results` audits the completed #163 run
+against its exact executed source. It verifies parent/source/checkpoint bindings,
+all registered jobs, native/scalar statistics, recovery records and resource
+amendments before applying the registered metric functions. It preserves repeat
+mismatches in a diagnostic result with no checkpoint selection. Other campaigns
+and the default evidence loader still reject deterministic-repeat mismatches.
+
+`scripts/package_issue163_evidence.py` creates a compact archive, verifies every
+file against a SHA-256/size manifest and optionally extracts into a new directory.
+The archive contains executed source bytes as well as observations and artifacts;
+this preserves Windows fingerprint ordering and line endings for reproduction.
+Existing exports and extraction directories are never overwritten. These tools
+run no games and perform no scientific continuation. See the
+[result record](../experiments/2026-09-13-task3-safe-attack-results/README.md)
+for exact commands, preserved failures and the evidence publication state.
+
+## Issue #91 discount-horizon server comparison
+
+`python -m training.run_issue91 --prepare --output-root <new-directory>`
+binds two fresh gamma configurations to unchanged initial network weights and
+generates matched five-replica plans. `--dry-run` validates source/artifact
+fingerprints, seed inventories and matrix expansion without training.
+Scientific execution requires the reviewed clean commit, explicit authorizer
+and hardware flags, and the registered shared resource budget. Training has
+two workers; evaluation is serial and followed by `training.analyze_issue91`.
+See `experiments/2026-09-11-task2-discount-horizon/README.md` for exact commands,
+criteria and limitations; no performance improvement is claimed by this tooling.
+
+The `execute_plan` Python API supports `training_only=True` for campaign phase
+separation. It retains the full resolved plan and pending evaluation jobs; resume
+without this flag evaluates after skipping completed training. It cannot be
+combined with `evaluation_only=True`. A training-only return has status
+`training_complete`, not campaign completion.
+
+Completed #91 server evidence can be verified portably with
+`python -m training.verify_issue91_results --campaign-root <extracted-issue91-fixed> --output <verification.json>`.
+It checks all required bytes, models, registered conditions, diagnostics, repeats
+and statistics without playing games. See the experiment RESULTS.md for retrieval.
+
 Issue #124 reduced laptop evidence is verified with
 `python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
 The verifier retains five-replica A/B/C inference and marks D exploratory; the
 original full-matrix analyzer remains strict and unchanged.
+
+## Offline immutable-snapshot link recovery
+
+`scripts/recover_snapshot_links.py` repairs a stopped campaign whose private
+content-addressed input objects exhausted filesystem hard-link capacity. It
+requires completed training and fewer than 936 pending evaluation jobs. It
+checks object hashes, protected checkpoint/plan/authorization/resource bytes,
+and inactive process records before making changes.
+
+```powershell
+python scripts/recover_snapshot_links.py --root $campaignRoot
+python scripts/recover_snapshot_links.py --root $campaignRoot --apply --audit "$campaignRoot/recovery-166-001"
+```
+
+The default is read-only. Apply requires a new audit directory. Saturated objects
+are independently copied and the original inodes remain in the audit directory;
+all old snapshot links keep their bytes. Incomplete pre-launch snapshots are
+renamed with `.failed-storage` and retained, with their hashes and the original
+error log. The helper changes no campaign source, model, seed, status,
+authorization or resource limit. Resume remains subject to the original budget;
+this storage operation does not authorize an extension. Retain the complete
+recovery directory alongside the final compact campaign evidence.
+The explicitly approved #163 two-hour wall amendment is applied only by the
+external `scripts/resume_issue163.py` adapter. `--root` points to the existing
+campaign root and `--repo` to the clean original `1e18b9c` checkout. Run once
+with `--prepare` to bind the helper hash and create separate amended records;
+then use `--execute` for detached execution. Do not repeat preparation or edit
+its bound helper while running. Re-execution uses retained amended usage.
+
+The adapter preserves original timestamps and records, extends only the wall
+ceilings (12-hour campaign / 14-hour full pipeline from the original start),
+and keeps 12 CPU-hours / 2 GiB. The outer record starts with the conservative
+sum of original inner and outer CPU usage because the historical outer sampler
+undercounted exited descendants. The replacement outer sampler retains each
+observed descendant's CPU by PID and process creation time.
+
+Remaining jobs are evaluation-only. Native source, raw/CSV, checkpoint, mode,
+seed, and repeat validation and registered metric computation remain unchanged.
+The final `analysis-amended166/result.json` reports the original wall gate
+separately and disables automatic promotion. `performance-decision.json` is
+only the conditional registered metric calculation; its original resource
+record covers the initial execution segment, not the complete recovered run.
+The amended result includes both resource records and the owner amendment.
+`completed-amended166.json` signals successful evaluation, analysis and export.
+Two compact archives retain campaign evidence and the storage/budget recovery
+trail. Preserve both and their manifests. Do not use the original supervisor to
+resume this amended run, because it does not read the amended budget records.
+Issue #168's bounded exploration probes and small learning pilot use
+`scripts/probe_task3_exploration.py` and
+`scripts/pilot_task3_episode_exploration.py`. The prospective configurations,
+compact probe evidence and analyzers are under
+`experiments/2026-09-13-task3-exploration-screen/`.
+See [the pilot command reference](issue168-pilot-commands.md) for source-pinned
+preparation, detached Windows launch, progress, budget-limited resume and compact
+results. The completed pilot ran training and evaluation on the same PC. Its
+negative result and exact archive reproduction are linked from the command
+reference; new comparisons require a separate prospective protocol.
