@@ -1,0 +1,42 @@
+{
+  "episode_metrics_verified": true,
+  "metadata_jobs_verified": 2750,
+  "training_episodes": 100000,
+  "evaluation_episodes": 2720,
+  "primary_episodes": 1360,
+  "determinism_verified": true,
+  "all_episode_latency_checks_passed": true,
+  "reported_statistics_reproduced": true,
+  "python_versions": [
+    "3.14.4"
+  ],
+  "missing_checkpoint_files": [],
+  "artifact_bytes_verified": true,
+  "initial_networks_identical": true,
+  "all_stage_gammas_verified": true,
+  "q_probe_rtol": 1e-05,
+  "q_probe_atol": 1e-05,
+  "maximum_q_probe_absolute_difference": 1.9073486328125e-05,
+  "primary": {
+    "mean_difference": -0.1438888888888889,
+    "ci95_lower": -0.23,
+    "ci95_upper": -0.04831944444444463,
+    "bonferroni_98_75_lower": -0.25250347222222225,
+    "bonferroni_98_75_upper": -0.02194097222222201,
+    "resamples": 10000,
+    "resampler_seed": 9101,
+    "paired_models": 5,
+    "paired_seeds_per_model": 40
+  },
+  "decision": "retain_gamma_0_90",
+  "selection": {
+    "artifact": {
+      "path": "artifacts/r3/classic/checkpoint.pt",
+      "selection": "final checkpoint after the exact stage budget",
+      "sha256": "c0b6081acf5a733258005d46b9430f3ef50e403470a3bb5428661729f9aeedf7"
+    },
+    "cell": "A",
+    "replica": "r3",
+    "task2_complete": false
+  }
+}
