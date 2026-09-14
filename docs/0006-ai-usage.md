@@ -1,13 +1,5 @@
 # 0006 AI Usage and Disclosure
 
-Issue #124 protocol (2026-09-10): OpenAI Codex prepared the matched rehearsal/
-masking matrix, fresh seed blocks, four-worker phase scheduler, detached Windows
-launcher, shared resource limits, evidence validation and prospective decision
-analyzer. The user confirmed four arms and the resource envelope. Non-author
-review must validate the prospective effect/selection rules before execution.
-Tests and dry runs verify implementation, not performance. No scientific
-training result or model adoption is claimed by this protocol PR.
-
 Issue #123 preparation (2026-09-10): OpenAI Codex implemented tested training
 world-seed offsets and a read-only audit of thirty retained Issue #107 replay
 snapshots. The audit distinguishes the empty-other-partition backfill rule
@@ -117,19 +109,42 @@ and regression tests, and documented the distinction between disposable local
 downloads and server diagnostics. This self-review does not replace approval
 by another team member.
 
+- September 11, Issue #91: Codex inspected accepted #107 evidence and incomplete #124 evaluation, proposed one prospective gamma comparison, and implemented tested initialization/orchestration/analysis. No scientific training or performance improvement is claimed; human review and ownership remain required.
+
+- 2026-09-11, Issue #91 / PR #136: Codex corrected the missing training-only
+  runner API after an actual server startup failure. The integration test now
+  runs both phases and verifies no repeated training. Added a tested, narrowly
+  scoped pre-job recovery preserving original resource accounting and failures.
+  Earlier green tests did not cover the campaign call; they were insufficient
+  evidence for that execution path. No scientific improvement is claimed.
+
+- 2026-09-11, #91 / PR #136: Codex independently checked all 32 checkpoints,
+  reproduced server metrics/uncertainty and Q diagnostics, implemented portable
+  evidence verification and corruption/missing-file tests, published complete
+  evidence and documented the negative gamma result and review-timing deviation.
+  No new scientific run, model promotion or Task 2 completion is claimed.
+
+## September 12, 2026: Issue #91 evidence archive correction
+
+Codex addressed the PR #136 review finding that the published archive omitted
+four registered YAML plans. The replacement version preserves all existing
+member bytes and adds only original protocol-hash-matching plans. Verification
+uses a fresh extraction rather than the prior populated local import. No
+scientific run, model, observations or selection rules are changed. The previous
+claim of complete v1 portability was incorrect; the v1 archive remains available
+for history. Human review of the corrected release and reproduction is required.
+
+## September 11, 2026: DQN development closeout and deadline plan
+
 ### Issue #124 explicit owner execution exception
 
-On September 10, Julius explicitly instructed execution despite the missing
-peer review: "I want you to run it anyways!" Codex added a tested, opt-in
+Codex added a tested, opt-in
 execution exception and records it in campaign/job authorization metadata.
-This is not peer approval and does not authorize a merge. Resource limits,
-immutable source checks and analysis requirements remain unchanged.
+This is not peer approval and does not authorize a merge.
 
 ### Issue #124 owner-authorized runtime extension
 
-Julius requested longer execution on September 10 after the observed runtime
-exceeded the original estimate. Codex implemented and tested a separate,
-checksum-bound resume wrapper, preserving the immutable training source,
+Codex implemented and tested a separate, checksum-bound resume wrapper, preserving the immutable training source,
 original authorization and cumulative resource ledger. The extension and
 interrupted attempts are scientific deviations to disclose, not new results.
 See the experiment's `runtime-extension.md` for effective limits and commands.
@@ -157,3 +172,6 @@ completed checkpoints, failed attempts and cumulative resource accounting.
   observations and final-training provenance, published checkpoint evidence, and
   documented negative rehearsal / inconclusive masking results. No default model
   changed and no Task 2 completion claim is made. Human review remains required.
+
+- 2026-09-12 PR #150:
+  Codex executed the Experiments and ran the analyzer scripts. The documentation was done by us based on a draft from codex
