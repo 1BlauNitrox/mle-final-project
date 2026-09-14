@@ -47,4 +47,3 @@ See [config.json](config.json) for the registered protocol and
 [results/analysis.json](results/analysis.json) for every gate and confidence
 interval. [results/observations.csv](results/observations.csv) retains all
 per-episode metrics.
-
