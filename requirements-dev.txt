@@ -4,4 +4,4 @@ matplotlib>=3.10.9
 psutil>=7.0.0
 pytest>=9.1.1
 PyYAML>=6.0.2
-ruff>=0.16.5
+ruff>=0.16.6
