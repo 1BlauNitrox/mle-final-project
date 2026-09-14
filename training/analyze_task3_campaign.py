@@ -218,8 +218,34 @@ def decide(rows, config):
     }
 
 
+def repeat_difference(first, repeat):
+    """Compare exactly the registered non-latency fields without excluding failures."""
+    require(set(first) == set(repeat), "Different repeat observation schema")
+    return {
+        key: [first[key], repeat[key]]
+        for key in first
+        if key not in (*LATENCY, "decision_times_ms", "suite") and first[key] != repeat[key]
+    }
+
+
+def check_repeat(first, repeat, key, failures=None):
+    """Remain strict by default; explicitly retain diagnostics for an ineligible result."""
+    differences = repeat_difference(first, repeat)
+    if failures is None:
+        require(not differences, "Deterministic repeat mismatch")
+    elif differences:
+        failures.append({"pair": list(key), "differences": differences})
+
+
 def load_evidence(
-    root, binding_directory, protocol="peaceful", *, validator=None, config_path=None, issue=None
+    root,
+    binding_directory,
+    protocol="peaceful",
+    *,
+    validator=None,
+    config_path=None,
+    issue=None,
+    repeat_failures=None,
 ):
     if validator is not None:
         config, plans, _report = validator(binding_directory)
@@ -430,14 +456,7 @@ def load_evidence(
         )
         first = primary[key]
         require(first["executed_action_sequence_sha256"], "Missing action-sequence evidence")
-        require(
-            all(
-                first[k] == repeat[k]
-                for k in first
-                if k not in (*LATENCY, "decision_times_ms", "suite")
-            ),
-            "Deterministic repeat mismatch",
-        )
+        check_repeat(first, repeat, key, repeat_failures)
     return config, evidence, training, manifest, auth, resources
 
 

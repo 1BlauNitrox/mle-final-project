@@ -1,0 +1,48 @@
+{
+  "scope": "implementation_mechanics_and_workload_estimate_not_efficacy",
+  "source": "8f10634",
+  "smoke_training_episodes": 400,
+  "smoke_evaluation_episodes": 24,
+  "resources": {
+    "active_root_pids": [],
+    "authorized_at": "2026-09-12T21:54:21.177800Z",
+    "cpu_seconds_consumed": 158.390625,
+    "current_memory_bytes": 0,
+    "limit_reached": null,
+    "limits": {
+      "cpu_seconds": 900.0,
+      "memory_bytes": 2147483648,
+      "wall_seconds": 900.0
+    },
+    "peak_memory_bytes": 305356800,
+    "schema_version": 1,
+    "updated_at": "2026-09-12T21:57:31.929236Z",
+    "wall_seconds_elapsed": 190.75141716003418
+  },
+  "evaluation_job_mean_seconds": 5.686194687499665,
+  "training_200_episode_job_seconds": [
+    20.519607299997006,
+    20.789609300001757
+  ],
+  "scientific_analyzer_rejects_smoke_matrix": true,
+  "final_prospective_workload": {
+    "training_episodes": 50000,
+    "evaluation_episodes": 1760,
+    "replicas_per_arm": 5,
+    "evaluation_pairs_per_suite": 20,
+    "expected_complete_hours": [
+      6,
+      9
+    ],
+    "campaign_wall_cap_hours": 10,
+    "whole_allocation_wall_cap_hours": 12,
+    "whole_allocation_cpu_cap_hours": 12,
+    "ram_gib": 2,
+    "free_disk_gib": 35
+  },
+  "limitations": [
+    "Early exploratory training episodes are faster than late survival-heavy episodes; timing is not a completion guarantee.",
+    "Evaluation startup cost included; no host-confounded arm comparison.",
+    "This mechanics run used the earlier prospective full-size protocol sliced to isolated smoke seeds; no scientific matrix was executed."
+  ]
+}

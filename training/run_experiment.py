@@ -116,7 +116,9 @@ def run_experiment(
                 if git_dirty
                 else None
             ),
+            snapshot_copy=getattr(process_monitor, "snapshot_input", None),
         ),
+        "snapshot_storage": getattr(process_monitor, "snapshot_storage", "independent_copies"),
         "command": command,
         "git_commit": git_commit,
         "git_dirty": git_dirty,
@@ -354,6 +356,7 @@ def _agent_configuration_reference(
     agent: str,
     *,
     snapshot_directory: Path | None = None,
+    snapshot_copy=None,
 ) -> dict[str, str | None]:
     """Fingerprint an agent and optionally preserve its dirty state."""
     agent_directory = REPOSITORY_ROOT / "agent_code" / agent
@@ -370,7 +373,9 @@ def _agent_configuration_reference(
     ignored_parts = {"__pycache__", "logs"}
     ignored_files = {STAGED_EVALUATION_CHECKPOINT_NAME}
 
-    if snapshot_directory is not None:
+    if snapshot_directory is not None and snapshot_copy is not None:
+        snapshot_copy(agent_directory, snapshot_directory)
+    elif snapshot_directory is not None:
         shutil.copytree(
             agent_directory,
             snapshot_directory,

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "publication_status": "published_and_download_verified",
+  "release_exists": true,
+  "archive": {
+    "filename": "issue163-evidence-v1.tar.gz",
+    "sha256": "5448c44be9c2ee797a28ec1b875f88f80dd0236ea3332312feb8bcf1a2fc9602",
+    "size_bytes": 103891774,
+    "verified_regular_files": 6016,
+    "download_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue163-evidence-v1/issue163-evidence-v1.tar.gz",
+    "github_asset_id": "RA_kwDOTjHaOs4hcbFT",
+    "github_digest": "sha256:5448c44be9c2ee797a28ec1b875f88f80dd0236ea3332312feb8bcf1a2fc9602"
+  },
+  "manifest": {
+    "filename": "issue163-evidence-v1.tar.gz.manifest.json",
+    "size_bytes": 1458977,
+    "sha256": "d57e7d6d85effb88aca92ed2eba8041ab688baed25aa7812d2d1d0fd14d82279",
+    "download_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue163-evidence-v1/issue163-evidence-v1.tar.gz.manifest.json",
+    "github_asset_id": "RA_kwDOTjHaOs4hcbFU",
+    "github_digest": "sha256:d57e7d6d85effb88aca92ed2eba8041ab688baed25aa7812d2d1d0fd14d82279"
+  },
+  "contents": {
+    "campaign-root": "Native per-episode framework statistics and scalar observations, completed jobs/status/fingerprints, exact final checkpoints and parent binding, original/amended resources and authorization, storage recovery evidence and error history.",
+    "source": "Exact tracked executed source bytes plus source-record.json; validated against Git commit 1e18b9c659041b4044d04e9ec6563b98c8c471dc, preserving Windows CRLF where executed.",
+    "analysis": "Full per-episode observations including all recorded latency samples, matched training/replay audit, metrics, intervals, gate failures and file inventory."
+  },
+  "verification_command": "python scripts/package_issue163_evidence.py --archive issue163-evidence-v1.tar.gz --extract evidence163",
+  "analysis_command": "python -m training.verify_issue163_results --root evidence163/campaign-root --source evidence163/source --output reproduced163",
+  "analysis_code_revision": "9ff3228509bdb8b162e9485a64b803d19afede41",
+  "scientific_execution_source": "1e18b9c659041b4044d04e9ec6563b98c8c471dc",
+  "selected_checkpoint": null,
+  "roundtrip_validation": "All 10 original derived result files reproduced byte-for-byte from the extracted archive on Windows; no new training or evaluation.",
+  "cross_platform_validation": "Windows component ordering and line endings are explicitly preserved and unit tested; a Linux execution of the verifier has not been performed.",
+  "release_url": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue163-evidence-v1",
+  "retrieval_command": "gh release download issue163-evidence-v1 --repo 1BlauNitrox/mle-final-project --pattern issue163-evidence-v1.tar.gz --pattern issue163-evidence-v1.tar.gz.manifest.json",
+  "public_download_validation": "Both assets downloaded from the public release; archive and manifest digests/sizes match, and all 6016 member hashes/sizes pass verification."
+}

@@ -1040,6 +1040,25 @@ framework/agent logging in seeded runs and records that policy in job metadata.
 Episode statistics, failure metadata and scientific measurements are retained.
 Default logging and existing campaign sources remain unchanged.
 
+
+## Completed #163 evidence verification
+
+`python -m training.verify_issue163_results` audits the completed #163 run
+against its exact executed source. It verifies parent/source/checkpoint bindings,
+all registered jobs, native/scalar statistics, recovery records and resource
+amendments before applying the registered metric functions. It preserves repeat
+mismatches in a diagnostic result with no checkpoint selection. Other campaigns
+and the default evidence loader still reject deterministic-repeat mismatches.
+
+`scripts/package_issue163_evidence.py` creates a compact archive, verifies every
+file against a SHA-256/size manifest and optionally extracts into a new directory.
+The archive contains executed source bytes as well as observations and artifacts;
+this preserves Windows fingerprint ordering and line endings for reproduction.
+Existing exports and extraction directories are never overwritten. These tools
+run no games and perform no scientific continuation. See the
+[result record](../experiments/2026-09-13-task3-safe-attack-results/README.md)
+for exact commands, preserved failures and the evidence publication state.
+
 Issue #124 reduced laptop evidence is verified with
 `python -m training.analyze_issue124_reduced --evidence experiments/2026-09-10-task2-rehearsal-mask/laptop-results/evidence.json.gz --output training_outputs/issue124-recomputed`.
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.

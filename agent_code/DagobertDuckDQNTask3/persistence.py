@@ -325,6 +325,9 @@ def _restore_config(value: Any) -> DQNConfig:
     if "double_dqn" not in value:
         value = {**value, "double_dqn": False}
 
+    if "neutral_safe_attack_bombs" not in value:
+        value = {**value, "neutral_safe_attack_bombs": False}
+
     if set(value) != set(expected_defaults):
         raise ValueError("Stored configuration has unexpected fields.")
 
