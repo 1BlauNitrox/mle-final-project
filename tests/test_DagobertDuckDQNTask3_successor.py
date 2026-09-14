@@ -89,8 +89,8 @@ def make_agent() -> SimpleNamespace:
 
 
 def test_schema_and_action_order_extend_task2_without_reordering() -> None:
-    assert FEATURE_COUNT == 34
-    assert FEATURE_SCHEMA_VERSION == 3
+    assert FEATURE_COUNT == 39
+    assert FEATURE_SCHEMA_VERSION == 4
     assert ACTIONS == ("UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB")
 
 
@@ -124,11 +124,7 @@ def test_task1_and_task2_prefix_is_preserved() -> None:
     assert task2_features is not None
     assert task3_features is not None
     assert task3_features[:8] == task1_features
-    # Task2's own feature vector is now permanently 26-wide (issue #87's
-    # continuation columns are always present, zero-gated rather than
-    # shape-gated) but Task3 was migrated from the frozen pre-#87 21-wide
-    # checkpoint, so only the shared 21-element prefix is comparable.
-    assert task3_features[:21] == task2_features[:21]
+    assert task3_features[:26] == task2_features
     assert len(task3_features) == FEATURE_COUNT
 
 
@@ -247,13 +243,13 @@ def test_terminal_elimination_preserves_genuine_event_multiplicity(
 
 
 def test_task3_normalization_preserves_binary_and_signed_domains() -> None:
-    raw = tuple(range(21)) + (1, -1, 1, 3, 1, 0, 1, 0, 1, 0, -1, 1, 3)
+    raw = tuple(range(26)) + (1, -1, 1, 3, 1, 0, 1, 0, 1, 0, -1, 1, 3)
     normalized = normalize_features(raw)
 
     assert normalized.shape == (FEATURE_COUNT,)
-    assert normalized[22] == -1.0
-    assert normalized[24] == 1.0
-    assert normalized[27] == 1.0
-    assert normalized[28] == 0.0
-    assert normalized[31] == -1.0
-    assert normalized[33] == 1.0
+    assert normalized[27] == -1.0
+    assert normalized[29] == 1.0
+    assert normalized[32] == 1.0
+    assert normalized[33] == 0.0
+    assert normalized[36] == -1.0
+    assert normalized[38] == 1.0
