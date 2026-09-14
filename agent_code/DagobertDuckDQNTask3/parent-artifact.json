@@ -8,7 +8,7 @@
   },
   "source_commit": "933a8fe11440e0f7645254390928da6af5dad46d",
   "framework_revision": "0f55c1d",
-  "selection_status": "provisional_fixture_pending_issue_107",
+  "selection_status": "provisional_fixture_pending_issue_124",
   "task2_gate_status": "mixed_negative_issue_46; Task 2 feasibility and Task 1 retention gates failed",
-  "binding_rule": "Replace this provisional parent metadata after issue #107 selects the development artifact, before scientific Task 3 training."
+  "binding_rule": "Replace this provisional parent metadata after issue #124 selects the development artifact, before scientific Task 3 training."
 }

@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "issue": 168,
+  "phase": "D",
+  "publication_status": "Published at issue168-pilot-evidence-v1; archive and manifest downloaded from GitHub and verified against the approved exact SHA-256 and byte sizes.",
+  "archive": {
+    "name": "issue168-pilot-evidence.tar.gz",
+    "sha256": "d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071",
+    "size_bytes": 48744548,
+    "release_tag": "issue168-pilot-evidence-v1",
+    "contents": "663 members: exact runtime source tar, binding/config/source hashes, 300 training and 280 evaluation observations/native statistics, eight initial/reference/final checkpoints, complete stage records and registered analysis. No model selected.",
+    "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz"
+  },
+  "source": {
+    "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "tool_source": "dcff79fefe812becbe76e7bdf2d1718a9eda4cea",
+    "tool_hashes": {
+      "scripts/pilot_task3_episode_exploration.py": "458c4e540d96b9215692346881f0d287ddda3e6d55aa846c0325f87472ddcaa4",
+      "scripts/probe_task3_exploration.py": "6ae19ab621e52a8cc85d40e6f2bde09f9845591cf475d2a0dfd45f871d6c8087",
+      "scripts/task3_episode_exploration.py": "00bf2b70bd0253ef4dd171c3bbdca52ad9f658ea81776615e5bb07d9bb23db98",
+      "scripts/analyze_task3_exploration.py": "96b3ee79b99557cc5030da7e635cdeefb4f04d65615d9cb28a55908d1c923f4f",
+      "scripts/analyze_task3_episode_pilot.py": "69e7c4876514d05de06813ea50e0c8668558b04abef21ef5ddfd5e3bfb59f680",
+      "scripts/run_issue168_pilot.ps1": "713f69e11ff3dc3ad1a831751de4d6322fbadac428f8d2a8dd6735ef7bb96f91"
+    },
+    "config_sha256": "a0ba6e5e30de80c635610259b084b570914d1efb5ebdc3646dcd8dc334c97fb2",
+    "prepared_environment": {
+      "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+      "platform": "Windows-11-10.0.26200-SP0",
+      "host": "DESKTOP-4QELBC5",
+      "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+      "packages": {
+        "numpy": "2.5.1",
+        "torch": "2.13.0+cpu",
+        "pygame": "2.6.1",
+        "psutil": "7.2.2"
+      },
+      "omp_threads": null,
+      "mkl_threads": null
+    }
+  },
+  "stages": {
+    "training": {
+      "status": "completed",
+      "cpu_seconds": 1162.5,
+      "wall_seconds": 1180.2286272000056,
+      "peak_memory_bytes": 325996544,
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        }
+      },
+      "completed_jobs": 6,
+      "attempts": 6
+    },
+    "evaluation": {
+      "status": "completed",
+      "cpu_seconds": 703.921875,
+      "wall_seconds": 719.7429185000365,
+      "peak_memory_bytes": 231260160,
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        }
+      },
+      "completed_jobs": 28,
+      "attempts": 28
+    }
+  },
+  "checkpoints": {
+    "stepwise-r1": {
+      "relative_path": "training/stepwise-r1/attempt-001/checkpoint.pt",
+      "sha256": "f7945796abf88f0083f7d771dd4f15cd22f633c876a6500b04d217bb329e7766",
+      "size_bytes": 425655,
+      "arm": "stepwise",
+      "replica": 0,
+      "episodes": 50,
+      "checkpoint_sha256": "f7945796abf88f0083f7d771dd4f15cd22f633c876a6500b04d217bb329e7766",
+      "checkpoint_size_bytes": 425655,
+      "optimizer_updates": 406,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "992a53cce36451da7013438067fced60b21d1c77c83cee82c9127678aaf74424",
+      "episodes_sha256": "5d1fd431e1ed57ac0b41fb573db3175d677b18cd6c2753c97b83929c84759aad",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 15.390625,
+      "wall_seconds": 16.737291399971582
+    },
+    "episode_mixture-r1": {
+      "relative_path": "training/episode_mixture-r1/attempt-002/checkpoint.pt",
+      "sha256": "32a2d9e072998cd313f75a02dc5a2bcdc105eba81eb635cf79107059634ec685",
+      "size_bytes": 3436279,
+      "arm": "episode_mixture",
+      "replica": 0,
+      "episodes": 50,
+      "checkpoint_sha256": "32a2d9e072998cd313f75a02dc5a2bcdc105eba81eb635cf79107059634ec685",
+      "checkpoint_size_bytes": 3436279,
+      "optimizer_updates": 13855,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "97f30e442e007be1f884dcd7fd0e6d8337288d88d3324898f6c4671bea6ce7e9",
+      "episodes_sha256": "72004d2dd7bf8d51597455913903b72f1ea40f616e7c74f4993eef24205795b6",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 385.765625,
+      "wall_seconds": 390.00459510000655
+    },
+    "stepwise-r2": {
+      "relative_path": "training/stepwise-r2/attempt-003/checkpoint.pt",
+      "sha256": "a5fbcada323a4784a20742ddda82ed683be9be294d6a26591a08a80c23dad8dd",
+      "size_bytes": 484279,
+      "arm": "stepwise",
+      "replica": 1,
+      "episodes": 50,
+      "checkpoint_sha256": "a5fbcada323a4784a20742ddda82ed683be9be294d6a26591a08a80c23dad8dd",
+      "checkpoint_size_bytes": 484279,
+      "optimizer_updates": 583,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "0d57d781a8eba165d10f4c1d894f9d0c5c95fdc20dc851ddb54e412f7f6300b7",
+      "episodes_sha256": "6de50a3f3a1219fffa8831ad83c1de4ff517eb6002ca99e89fcede1697170006",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 18.84375,
+      "wall_seconds": 20.064492999983486
+    },
+    "episode_mixture-r2": {
+      "relative_path": "training/episode_mixture-r2/attempt-004/checkpoint.pt",
+      "sha256": "4506c98ad6840fc41c5c787a73f5d23b05caf2459c21bae13752f63ca7d77960",
+      "size_bytes": 3436279,
+      "arm": "episode_mixture",
+      "replica": 1,
+      "episodes": 50,
+      "checkpoint_sha256": "4506c98ad6840fc41c5c787a73f5d23b05caf2459c21bae13752f63ca7d77960",
+      "checkpoint_size_bytes": 3436279,
+      "optimizer_updates": 13690,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "517e53b73b2fa9be048b98d166538acec7b702c00943d038427c70bbf2ca06fd",
+      "episodes_sha256": "a8682e857f51e6d3ef83ecb7ca6bd5d744bbc2328bb92881048347c512250eec",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 401.765625,
+      "wall_seconds": 405.7195989000029
+    },
+    "stepwise-r3": {
+      "relative_path": "training/stepwise-r3/attempt-005/checkpoint.pt",
+      "sha256": "1953079fcf2f39428c9b2418b5e9d9451e2ef433ccc0f29481fa1dfbed71cb7f",
+      "size_bytes": 501111,
+      "arm": "stepwise",
+      "replica": 2,
+      "episodes": 50,
+      "checkpoint_sha256": "1953079fcf2f39428c9b2418b5e9d9451e2ef433ccc0f29481fa1dfbed71cb7f",
+      "checkpoint_size_bytes": 501111,
+      "optimizer_updates": 634,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "de5fd135edf1ff7510d3116abfe8ca5c99847ccf8819c1d13f6808a1248a7385",
+      "episodes_sha256": "686fa976bda56de30849a4d65369dbe5392b8c74ee81c597db535ef19ff9bf8b",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 19.171875,
+      "wall_seconds": 20.23438099998748
+    },
+    "episode_mixture-r3": {
+      "relative_path": "training/episode_mixture-r3/attempt-006/checkpoint.pt",
+      "sha256": "529b25da619af455726ff75a4e5077a02d92bccd07a8092df9b0a659a3b0af5b",
+      "size_bytes": 3436279,
+      "arm": "episode_mixture",
+      "replica": 2,
+      "episodes": 50,
+      "checkpoint_sha256": "529b25da619af455726ff75a4e5077a02d92bccd07a8092df9b0a659a3b0af5b",
+      "checkpoint_size_bytes": 3436279,
+      "optimizer_updates": 11223,
+      "initial_online_sha256": "0e805741f6ce8f4b871224ce1bf8bddbbbecca5882b72bdd817e17a1158a3373",
+      "final_online_sha256": "0262bb822b4f62bb9d0681e373a45e8947551ea766e127987fd64978e2471572",
+      "episodes_sha256": "58dc168ec4866163a66570a5b1844f74a923bdf9e5c37ab678769891572db2a5",
+      "environment": {
+        "python": "3.13.14 (tags/v3.13.14:fd17997, Jun 10 2026, 13:03:48) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-11-10.0.26200-SP0",
+        "host": "DESKTOP-4QELBC5",
+        "processor": "AMD64 Family 23 Model 8 Stepping 2, AuthenticAMD",
+        "packages": {
+          "numpy": "2.5.1",
+          "torch": "2.13.0+cpu",
+          "pygame": "2.6.1",
+          "psutil": "7.2.2"
+        },
+        "omp_threads": "1",
+        "mkl_threads": "1"
+      },
+      "cpu_seconds": 317.03125,
+      "wall_seconds": 321.6728992999997
+    }
+  },
+  "compact_files": {
+    "phase-d-analysis.json": {
+      "sha256": "ccaf577a1f3a4ffde541a16c4fda8db3dd411af73b69b3bf2c6cc5ae5ea5f0df",
+      "size_bytes": 28033
+    },
+    "phase-d-observations.json.gz": {
+      "sha256": "e9cece00ddf98631460c389136a21273645f7bf25d703f917aeff18cf0572962",
+      "size_bytes": 1325246
+    },
+    "phase-d-summary.csv": {
+      "sha256": "584b1645af457b171bb5e06787e03a56f21d484d145c67a36e97cc78a0d5dcfd",
+      "size_bytes": 2289
+    }
+  },
+  "reproduction": "phase-d-reproduction.md",
+  "archive_reanalysis": "Independently extracted and reanalyzed with the registered analyzer; exact JSON equality with the execution result.",
+  "task2_complete": false,
+  "selected_checkpoint": null,
+  "published_manifest": {
+    "name": "issue168-pilot-evidence.tar.gz.manifest.json",
+    "size_bytes": 192,
+    "sha256": "0a6cf648cad1f2fd82b294a18875d0c33c4b03375ac58775a8778ef0b0241951",
+    "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz.manifest.json"
+  }
+}

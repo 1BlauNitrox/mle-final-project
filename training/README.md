@@ -224,6 +224,27 @@ Example plans are in `training/run_plans/`:
 - `issue88-dqn-protected-replay-smoke.yaml`: a four-episode coin-heaven to
   loot-crate replay-treatment integration check; it is not scientific evidence.
 
+### Issue #109 Task 3 peaceful-opponent comparison
+
+Issue #109 pairs five freshly-trained Task 3 replicas (`classic` against
+`peaceful_agent`) against one frozen Task 2 predecessor evaluated on the same
+seeds, plus the standard opponent-free retention battery. A third plan against
+`coin_collector_agent` is prepared but gated on the peaceful-stage decision.
+Validate the full matrix, seed populations, and budgets without starting a run:
+
+```bash
+python -m training.run_plan training/run_plans/issue109-task3-vs-peaceful.yaml --dry-run
+python -m training.run_plan training/run_plans/issue109-task2-predecessor-vs-peaceful.yaml --dry-run
+```
+
+Both provisional starting artifacts, the resource ceiling, and the numeric
+decision criteria are unresolved pending owner review and Issue #124's
+development-predecessor selection; `issue109-task3-vs-coincollector.yaml` must
+not be started until the peaceful stage's outcome is decided. Full protocol,
+rationale, and exact commands are registered in
+`experiments/2026-09-08-dqn-task3-peaceful-opponent/README.md`. A dry run is
+integration validation only and produces no performance evidence.
+
 ### Issue #107 Task 2 factorial campaign
 
 Issue #107 uses four paired treatment plans plus untrained and frozen-Task-1
@@ -756,7 +777,7 @@ agent:
 - satisfies the Task 1 completion contract; or
 - is tournament-ready.
 
-A 5–10 episode smoke run verifies only that the instrumentation works. Any
+A 5â€“10 episode smoke run verifies only that the instrumentation works. Any
 performance conclusion requires a preregistered experiment with controlled
 variables, fixed seed populations, appropriate baselines, and uncertainty
 reporting.
@@ -991,3 +1012,14 @@ Issue #124 reduced laptop evidence is verified with
 Use `--checkpoints` with the documented release ZIP to recheck all artifact bytes.
 The verifier retains five-replica A/B/C inference and marks D exploratory; the
 original full-matrix analyzer remains strict and unchanged.
+
+Issue #168's bounded exploration probes and small learning pilot use
+`scripts/probe_task3_exploration.py` and
+`scripts/pilot_task3_episode_exploration.py`. The prospective configurations,
+compact probe evidence and analyzers are under
+`experiments/2026-09-13-task3-exploration-screen/`.
+See [the pilot command reference](issue168-pilot-commands.md) for source-pinned
+preparation, detached Windows launch, progress, budget-limited resume and compact
+results. The completed pilot ran training and evaluation on the same PC. Its
+negative result and exact archive reproduction are linked from the command
+reference; new comparisons require a separate prospective protocol.
