@@ -1,0 +1,445 @@
+import copy
+import json
+from types import SimpleNamespace
+
+import pytest
+
+torch = pytest.importorskip("torch")
+from scripts.analyze_task3_kill_reward import behavioral, interval  # noqa: E402
+from scripts.frozen_opponent_inputs import FrozenOpponentInputs, validate_frozen  # noqa: E402
+from scripts.pilot_task3_kill_reward import config, episode_epsilon  # noqa: E402
+
+
+def learner():
+    torch.set_num_threads(1)
+    torch.manual_seed(173)
+    network = torch.nn.Module()
+    network.layers = torch.nn.Sequential(
+        torch.nn.Linear(39, 64),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, 64),
+        torch.nn.ReLU(),
+        torch.nn.Linear(64, 6),
+    )
+    return SimpleNamespace(
+        online_network=network,
+        optimizer=torch.optim.Adam(network.parameters(), lr=0.0005),
+        target_network=copy.deepcopy(network),
+    )
+
+
+def update(subject):
+    torch.manual_seed(42)
+    inputs = torch.randn(64, 39)
+    subject.optimizer.zero_grad(set_to_none=True)
+    torch.nn.functional.smooth_l1_loss(
+        subject.online_network.layers(inputs), torch.ones(64, 6)
+    ).backward()
+    torch.nn.utils.clip_grad_norm_(subject.online_network.parameters(), 10)
+    subject.optimizer.step()
+
+
+def test_frozen_weights_q_equivalence_and_checkpoint_resume(tmp_path):
+    subject = learner()
+    anchor = copy.deepcopy(subject.online_network.state_dict())
+    guard = FrozenOpponentInputs(subject, anchor)
+    x = torch.randn(100, 39)
+    x[:, 26:] = 0
+    before = subject.online_network.layers(x).detach().clone()
+    for _ in range(3):
+        update(subject)
+    guard.validate()
+    assert torch.equal(before, subject.online_network.layers(x))
+    assert not torch.equal(
+        anchor["layers.0.weight"][:, 26:],
+        subject.online_network.state_dict()["layers.0.weight"][:, 26:],
+    )
+    path = tmp_path / "checkpoint.pt"
+    torch.save(
+        {
+            "network": subject.online_network.state_dict(),
+            "optimizer": subject.optimizer.state_dict(),
+        },
+        path,
+    )
+    restored = learner()
+    state = torch.load(path, weights_only=True)
+    restored.online_network.load_state_dict(state["network"])
+    restored.optimizer.load_state_dict(state["optimizer"])
+    restored_guard = FrozenOpponentInputs(restored, anchor)
+    update(restored)
+    update(subject)
+    restored_guard.validate()
+    assert all(
+        torch.equal(v, restored.online_network.state_dict()[k])
+        for k, v in subject.online_network.state_dict().items()
+    )
+    # Target remains free to follow the normal hard-sync schedule.
+    restored.target_network.load_state_dict(restored.online_network.state_dict())
+    assert all(
+        torch.equal(v, restored.target_network.state_dict()[k])
+        for k, v in restored.online_network.state_dict().items()
+    )
+
+
+def test_guard_rejects_frozen_momentum_drift_and_nonfinite():
+    subject = learner()
+    anchor = copy.deepcopy(subject.online_network.state_dict())
+    guard = FrozenOpponentInputs(subject, anchor)
+    update(subject)
+    first = dict(subject.online_network.named_parameters())["layers.0.weight"]
+    subject.optimizer.state[first]["exp_avg"][0, 0] = 1
+    with pytest.raises(ValueError, match="Adam moment"):
+        guard.validate()
+    subject.optimizer.state[first]["exp_avg"][0, 0] = 0
+    with torch.no_grad():
+        first[0, 0] += 1
+    with pytest.raises(ValueError, match="moved"):
+        guard.validate()
+    with torch.no_grad():
+        first[0, 0] = float("nan")
+    with pytest.raises(ValueError, match="Nonfinite"):
+        validate_frozen(subject.online_network.state_dict(), anchor)
+
+
+def test_control_really_updates_inherited_weights():
+    subject = learner()
+    anchor = copy.deepcopy(subject.online_network.state_dict())
+    update(subject)
+    with pytest.raises(ValueError, match="moved"):
+        validate_frozen(subject.online_network.state_dict(), anchor)
+
+
+def test_registered_matrix_exploration_and_uncertainty():
+    cfg = config()
+    train = [s for group in cfg["training_world_seeds"] for s in group]
+    dev = [s for suite in cfg["evaluation_suites"].values() for s in suite["world_seeds"]]
+    assert len(train) == len(set(train)) == 500
+    assert len(dev) == len(set(dev)) == 160
+    assert not set(train) & set(dev)
+    assert len(train) * 2 == cfg["training_episodes"] == 1000
+    assert len(dev) * 11 * 2 == cfg["evaluation_episodes"] == 3520
+    for seed in cfg["replica_agent_seeds"]:
+        eps = [episode_epsilon("treatment", seed, i) for i in range(100)]
+        assert eps == [episode_epsilon("control", seed, i) for i in range(100)]
+        assert sum(eps) == 20
+        assert all(sum(eps[i : i + 5]) == 1 for i in range(0, 100, 5))
+    assert interval([[0.2] * 40 for _ in range(5)]) == pytest.approx([0.2, 0.2])
+    assert behavioral({"score": 1, "decision_times_ms": [2]}) == {"score": 1}
+    assert behavioral({"score": 2}) != behavioral({"score": 1})
+
+
+def test_full_synthetic_pilot_preserves_negative_retention_and_host_gates(tmp_path, monkeypatch):
+    import scripts.analyze_task3_kill_reward as analysis
+    from scripts.pilot_task3_kill_reward import sha, write, zip_json
+
+    monkeypatch.setattr(analysis, "verify", lambda root: None)
+    monkeypatch.setattr(analysis, "verify_training_tensors", lambda root: "initial")
+    monkeypatch.setattr(analysis, "interval", lambda matrix: [0.01, 0.3])
+    cfg = config()
+    (tmp_path / "reference.pt").write_bytes(b"reference")
+    training = {
+        "status": "completed",
+        "completed": {},
+        "cpu_seconds": 10,
+        "wall_seconds": 12,
+        "peak_memory_bytes": 1000,
+    }
+    model_paths = {"reference": tmp_path / "reference.pt"}
+    for replica in range(5):
+        for arm in cfg["arms"]:
+            key = f"{arm}-r{replica + 1}"
+            directory = tmp_path / "training" / key
+            directory.mkdir(parents=True)
+            (directory / "checkpoint.pt").write_bytes(key.encode())
+            model_paths[key] = directory / "checkpoint.pt"
+            rows = []
+            for index, seed in enumerate(cfg["training_world_seeds"][replica]):
+                own = {
+                    "score": 2,
+                    "initially_available_coins": 10,
+                    "coins": 5,
+                    "crates_destroyed": 2,
+                    "kills": 0,
+                    "survived": True,
+                    "survival_steps": 100,
+                    "self_kills": 0,
+                    "invalid": 0,
+                    "action_bomb": 2,
+                }
+                rows.append(
+                    {
+                        "world_seed": seed,
+                        "agent_seed": cfg["replica_agent_seeds"][replica],
+                        "training": True,
+                        "completed_episodes": index + 1,
+                        "behavior_epsilon": episode_epsilon(
+                            arm, cfg["replica_agent_seeds"][replica], index
+                        ),
+                        "native": {"agents": {"DagobertDuckDQNTask3": own}},
+                        "attack_steps": 1,
+                        "freeze_mode": cfg["freeze_modes"][arm],
+                        "kill_reward": cfg["kill_rewards"][arm],
+                    }
+                )
+            zip_json(directory / "episodes.json.gz", rows)
+            write(
+                directory / "result.json",
+                {
+                    "episodes": 100,
+                    "arm": arm,
+                    "replica": replica,
+                    "checkpoint_sha256": sha(directory / "checkpoint.pt"),
+                    "initial_online_sha256": "initial",
+                    "environment": {"host": "PC"},
+                    "final_online_sha256": key,
+                    "optimizer_updates": 50,
+                    "episodes_sha256": sha(directory / "episodes.json.gz"),
+                },
+            )
+            training["completed"][key] = directory.relative_to(tmp_path).as_posix()
+    write(tmp_path / "training-state.json", training)
+    evaluation = {
+        "status": "completed",
+        "completed": {},
+        "cpu_seconds": 10,
+        "wall_seconds": 12,
+        "peak_memory_bytes": 1000,
+    }
+    for artifact, path in model_paths.items():
+        for suite, setting in cfg["evaluation_suites"].items():
+            key = f"{artifact}-{suite}"
+            directory = tmp_path / "evaluation" / key
+            directory.mkdir(parents=True)
+            rows = []
+            for repeat in range(2):
+                for index, seed in enumerate(setting["world_seeds"]):
+                    kills = int(
+                        index
+                        < (
+                            8
+                            if artifact.startswith("treatment")
+                            else 1
+                            if artifact == "reference"
+                            else 0
+                        )
+                    )
+                    if suite != "classic-peaceful":
+                        kills = 0
+                    own = {
+                        "score": 2,
+                        "initially_available_coins": 10,
+                        "coins": 5,
+                        "crates_destroyed": 2,
+                        "kills": kills,
+                        "survived": True,
+                        "survival_steps": 100,
+                        "self_kills": 0,
+                        "invalid": 0,
+                        "action_bomb": 2,
+                        "decision_times_ms": [1, 2],
+                    }
+                    rows.append(
+                        {
+                            "world_seed": seed,
+                            "agent_seed": seed + 1000000,
+                            "repeat": repeat,
+                            "suite": suite,
+                            "artifact": artifact,
+                            "training": False,
+                            "behavior_epsilon": 0,
+                            "greedy_actions_sha256": "same-actions",
+                            "kill_reward": cfg["kill_rewards"][
+                                "treatment" if artifact.startswith("treatment") else "control"
+                            ],
+                            "online_before_sha256": artifact,
+                            "online_after_sha256": artifact,
+                            "native": {"agents": {"DagobertDuckDQNTask3": own}},
+                        }
+                    )
+            zip_json(directory / "episodes.json.gz", rows)
+            write(
+                directory / "result.json",
+                {
+                    "artifact": artifact,
+                    "suite": suite,
+                    "environment": {"host": "PC"},
+                    "checkpoint_sha256": sha(path),
+                    "episodes_sha256": sha(directory / "episodes.json.gz"),
+                },
+            )
+            evaluation["completed"][key] = directory.relative_to(tmp_path).as_posix()
+    write(tmp_path / "evaluation-state.json", evaluation)
+    result = analysis.analyze(tmp_path)
+    assert result["pilot_screen_passed"]
+    assert result["selected_checkpoint"] is None
+    assert not result["next_long_experiment_authorized"]
+
+    import gzip
+    from copy import deepcopy
+
+    for suite, field, value, gate in (
+        ("coin-heaven", "coins", 4, "opponent_free_invariance"),
+        ("classic-peaceful", "kills", 0, "hunting_parent_retention"),
+        ("loot-crate", "self_kills", 1, "earlier_task_retention"),
+        ("classic-empty", "invalid", 1, "invalid_actions"),
+        ("classic-empty", "decision_times_ms", [100], "latency"),
+    ):
+        backups = []
+        for replica in range(1, 6):
+            directory = tmp_path / f"evaluation/treatment-r{replica}-{suite}"
+            with gzip.open(directory / "episodes.json.gz", "rt") as file:
+                original = json.load(file)
+            metadata = json.loads((directory / "result.json").read_text())
+            backups.append((directory, original, deepcopy(metadata)))
+            changed = deepcopy(original)
+            for row in changed:
+                row["native"]["agents"]["DagobertDuckDQNTask3"][field] = value
+            zip_json(directory / "episodes.json.gz", changed)
+            metadata["episodes_sha256"] = sha(directory / "episodes.json.gz")
+            write(directory / "result.json", metadata)
+        negative = analysis.analyze(tmp_path)
+        assert not negative["pilot_screen_passed"]
+        assert not negative["gates"][gate]
+        for directory, original, metadata in backups:
+            zip_json(directory / "episodes.json.gz", original)
+            write(directory / "result.json", metadata)
+
+    # Round-trip the same portable transfer layout using explicitly synthetic bytes.
+    import tarfile
+
+    import scripts.pilot_task3_kill_reward as pilot
+
+    monkeypatch.setattr(pilot, "verify", lambda root: None)
+    for name, value in (
+        ("binding.json", {"tool_source": "synthetic-test"}),
+        ("config.json", cfg),
+        ("source-manifest.json", {}),
+    ):
+        write(tmp_path / name, value)
+    (tmp_path / "initial.pt").write_bytes(b"synthetic-initial")
+    (tmp_path / "initial-control.pt").write_bytes(b"control")
+    (tmp_path / "initial-treatment.pt").write_bytes(b"treatment")
+    write(tmp_path / "initialization-verification.json", {})
+    with tarfile.open(tmp_path / "runtime-source.tar", "w"):
+        pass
+    transfer = tmp_path / "transfer.tar.gz"
+    pilot.bundle(tmp_path, transfer)
+    with pytest.raises(ValueError, match="checksum"):
+        pilot.import_bundle(tmp_path / "bad-import", transfer, "0" * 64)
+    assert not (tmp_path / "bad-import").exists()
+    pilot.import_bundle(tmp_path / "imported", transfer, sha(transfer))
+    assert set(pilot.artifacts(tmp_path / "imported")) == set(model_paths)
+    # A legitimate negative result must fail the pilot, even with positive hunting.
+    import gzip
+
+    for replica in range(1, 6):
+        directory = tmp_path / f"evaluation/treatment-r{replica}-coin-heaven"
+        with gzip.open(directory / "episodes.json.gz", "rt") as file:
+            rows = json.load(file)
+        for row in rows:
+            row["native"]["agents"]["DagobertDuckDQNTask3"]["coins"] = 0
+        zip_json(directory / "episodes.json.gz", rows)
+        metadata = json.loads((directory / "result.json").read_text())
+        metadata["episodes_sha256"] = sha(directory / "episodes.json.gz")
+        write(directory / "result.json", metadata)
+    result = analysis.analyze(tmp_path)
+    assert not result["pilot_screen_passed"]
+    assert not result["retention_suites"]["coin-heaven"]["coins"]
+    metadata["environment"] = {"host": "different-treatment-machine"}
+    write(directory / "result.json", metadata)
+    with pytest.raises(ValueError, match="mixed evaluation environment"):
+        analysis.analyze(tmp_path)
+    metadata["environment"] = {"host": "PC"}
+    write(directory / "result.json", metadata)
+    training_directory = tmp_path / "training/control-r1"
+    with gzip.open(training_directory / "episodes.json.gz", "rt") as file:
+        training_rows = json.load(file)
+    training_rows[0]["behavior_epsilon"] = 0.7
+    zip_json(training_directory / "episodes.json.gz", training_rows)
+    training_metadata = json.loads((training_directory / "result.json").read_text())
+    training_metadata["episodes_sha256"] = sha(training_directory / "episodes.json.gz")
+    write(training_directory / "result.json", training_metadata)
+    with pytest.raises(ValueError, match="exploration schedule"):
+        analysis.analyze(tmp_path)
+
+
+def test_guard_with_real_dqn_loss_clipping_sync_and_reload(monkeypatch):
+    import numpy as np
+
+    from agent_code.DagobertDuckDQNTask3 import config as agent_config
+    from agent_code.DagobertDuckDQNTask3.model import DQNLearner
+
+    # Main has a 34-input fixture; this test supplies the archived 39-input shape.
+    monkeypatch.setattr(agent_config, "FEATURE_COUNT", 39)
+    cfg = agent_config.DQNConfig(input_dim=39, target_update_interval=2)
+    subject = DQNLearner(config=cfg, seed=173)
+    anchor = copy.deepcopy(subject.online_network.state_dict())
+    FrozenOpponentInputs(subject, anchor)
+    rng = np.random.default_rng(173)
+    batch = SimpleNamespace(
+        states=rng.normal(size=(64, 39)).astype(np.float32),
+        next_states=rng.normal(size=(64, 39)).astype(np.float32),
+        action_indices=np.zeros(64, dtype=np.int64),
+        rewards=np.ones(64, dtype=np.float32),
+        terminals=np.zeros(64, dtype=np.bool_),
+        next_action_masks=np.ones((64, 6), dtype=np.bool_),
+    )
+    assert not subject.train_batch(batch).target_synchronized
+    assert subject.train_batch(batch).target_synchronized
+    assert all(
+        torch.equal(v, subject.target_network.state_dict()[k])
+        for k, v in subject.online_network.state_dict().items()
+    )
+    restored = DQNLearner(config=cfg, seed=173)
+    restored.load_state_dict(subject.state_dict())
+    FrozenOpponentInputs(restored, anchor)
+    subject.train_batch(batch)
+    restored.train_batch(batch)
+    assert all(
+        torch.equal(v, restored.online_network.state_dict()[k])
+        for k, v in subject.online_network.state_dict().items()
+    )
+
+
+def test_reward_only_changes_native_kill_and_restores_on_exception(tmp_path):
+    from agent_code.DagobertDuckDQNTask3 import config as agent_config
+    from agent_code.DagobertDuckDQNTask3.rewards import reward_from_events
+    from scripts.pilot_task3_kill_reward import arm_payload, payload_equal
+    from scripts.task3_reward_configuration import configured_rewards, export_agent
+
+    original = dict(agent_config.REWARDS)
+    initial = {
+        "rewards": original,
+        "config": {"learning_rate": 0.0005},
+        "learner_state": {
+            "optimizer": {"param_groups": [{"lr": 0.0005}]},
+            "online_network": {"weight": torch.ones(1)},
+        },
+        "replay_state": {},
+    }
+    payload = arm_payload(initial, "treatment")
+    expected = copy.deepcopy(initial)
+    expected["rewards"]["KILLED_OPPONENT"] = 20.0
+    assert payload_equal(payload, expected)
+    assert payload_equal(arm_payload(initial, "control"), initial)
+    baseline = reward_from_events(["KILLED_OPPONENT", "COIN_COLLECTED", "GOT_KILLED"])
+    with pytest.raises(RuntimeError), configured_rewards(agent_config.REWARDS, 20.0):
+        assert (
+            reward_from_events(["KILLED_OPPONENT", "COIN_COLLECTED", "GOT_KILLED"]) == baseline + 15
+        )
+        assert {k: v for k, v in agent_config.REWARDS.items() if k != "KILLED_OPPONENT"} == {
+            k: v for k, v in original.items() if k != "KILLED_OPPONENT"
+        }
+        raise RuntimeError("restore even after failed game")
+    assert original == agent_config.REWARDS
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "config.py").write_text('REWARDS = {"KILLED_OPPONENT": 5.0,}\n')
+    checkpoint = tmp_path / "input.pt"
+    torch.save(payload, checkpoint)
+    target = tmp_path / "export"
+    export_agent(source, checkpoint, target, 20.0)
+    assert (target / "checkpoint.pt").read_bytes() == checkpoint.read_bytes()
+    assert "20.0" in (target / "config.py").read_text()
+    assert "5.0" in (source / "config.py").read_text()

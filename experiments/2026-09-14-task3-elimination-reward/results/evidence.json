@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "publication_status": "public; downloaded copies verified against exact SHA-256 and byte size",
+  "contents": "Archived runtime and tool source, initialization and all ten final checkpoints, per-episode training/evaluation observations, execution/resource metadata and registered analysis. No model adoption.",
+  "files": [
+    {
+      "name": "issue175-pilot-evidence.tar.gz",
+      "sha256": "791257ca81e075e2e8b394f71c2e295d0ba06c35ab7fb61624a6da482131cedd",
+      "size_bytes": 74407180,
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue175-evidence-v1/issue175-pilot-evidence.tar.gz"
+    },
+    {
+      "name": "issue175-pilot-evidence.tar.gz.manifest.json",
+      "sha256": "05f03f5ce6aee1edae96326e72b9a8516f779e70b971d93b3b94c6d77c6df8b5",
+      "size_bytes": 193,
+      "url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue175-evidence-v1/issue175-pilot-evidence.tar.gz.manifest.json"
+    }
+  ],
+  "import_command": "python -m scripts.pilot_task3_kill_reward import --root evidence-verified --archive issue175-pilot-evidence.tar.gz --sha256 791257ca81e075e2e8b394f71c2e295d0ba06c35ab7fb61624a6da482131cedd",
+  "analysis_command": "python -m scripts.pilot_task3_kill_reward analyze --root evidence-verified --output recomputed-analysis.json",
+  "source_commit": "1aae01e1536ec31d3c2e336968fde42ad81dc606",
+  "release_url": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue175-evidence-v1"
+}
