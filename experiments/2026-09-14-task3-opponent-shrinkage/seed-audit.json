@@ -29,7 +29,7 @@
         "development": 480,
         "smoke": 11
       },
-      "proximity-gating": {
+      "compensated-kill-reward": {
         "training_including_opponents": 8010,
         "development": 320,
         "smoke": 11

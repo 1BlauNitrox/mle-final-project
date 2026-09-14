@@ -10,7 +10,7 @@ this host before anyone authorizes the run.
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('approach-shaping', 'update-cadence', 'proximity-gating', 'opponent-shrinkage')]
+    [ValidateSet('approach-shaping', 'update-cadence', 'compensated-kill-reward', 'opponent-shrinkage')]
     [string]$Profile = 'approach-shaping',
     [string]$Root = "training_outputs/task3-$Profile",
     [string]$Archive = 'training_outputs/inputs/issue175-pilot-evidence.tar.gz',

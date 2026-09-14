@@ -136,8 +136,11 @@ def test_an_unregistered_coefficient_is_refused():
 
 # --- registered configurations ----------------------------------------------
 
-FOLLOW_UPS = ("proximity-gating", "opponent-shrinkage")
-EXPECTED_FACTOR = {"proximity-gating": "proximity_gate", "opponent-shrinkage": "l2_opponent"}
+FOLLOW_UPS = ("compensated-kill-reward", "opponent-shrinkage")
+EXPECTED_FACTOR = {
+    "compensated-kill-reward": "kill_reward",
+    "opponent-shrinkage": "l2_opponent",
+}
 
 
 def load(profile):
@@ -156,9 +159,10 @@ def test_follow_up_varies_exactly_its_intended_factor(profile):
         if len({settings[arm][key] for arm in cfg["arms"]}) > 1
     }
     assert varying == {EXPECTED_FACTOR[profile]}
-    # Every arm sits on the best measured baseline from the first pair.
-    assert all(s["potential_scale"] == 1.0 and s["update_every"] == 8 for s in settings.values())
-    assert all(s["kill_reward"] == 5.0 for s in settings.values())
+    # Every arm sits on one shared baseline carried from the first pair.
+    assert len({s["potential_scale"] for s in settings.values()}) == 1
+    assert all(s["update_every"] == 8 for s in settings.values())
+    assert all(s["proximity_gate"] is None for s in settings.values())
 
 
 @pytest.mark.parametrize("profile", FOLLOW_UPS)

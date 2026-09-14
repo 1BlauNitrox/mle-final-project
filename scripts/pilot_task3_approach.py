@@ -3,7 +3,8 @@
 Four profiles share this runner, each varying exactly one factor.
 `approach-shaping` compares three opponent-approach potential scales;
 `update-cadence` re-runs the #178 update interval contrast at higher power;
-`proximity-gating` compares which experience is admitted to replay; and
+`compensated-kill-reward` restores a strong elimination signal under the
+approach pressure that raised exposure most; and
 `opponent-shrinkage` sweeps an L2 coefficient on the opponent columns, which
 dials continuously between training them freely and leaving them at the
 reference. All four keep the #175 frozen-inheritance restriction, the #168
@@ -49,14 +50,14 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
 
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
-PROFILES = ("approach-shaping", "update-cadence", "proximity-gating", "opponent-shrinkage")
+PROFILES = ("approach-shaping", "update-cadence", "compensated-kill-reward", "opponent-shrinkage")
 PROFILE = os.environ.get("TASK3_APPROACH_PROFILE", "approach-shaping")
 CONFIG = ROOT / f"experiments/2026-09-14-task3-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "approach-shaping": "26e66bc192564f8ae7ee5a6d8c946b39c7458275debaab177c699defcdfd2e98",
     "update-cadence": "8e86c781aba9c0ec3b8ecf3979e83f158cdbec194043b833798a110275dcf5b3",
-    "proximity-gating": "3a4003c3ec8118bdc27f97542e0c9633b56ac58eddc874c266584278cb0bcc4d",
-    "opponent-shrinkage": "8cea4996550c93a7f286a8c89b2ad28b6f2bb3d208dc224934c957526e61fcdf",
+    "compensated-kill-reward": "dfbf9d3a956cdf543e617ca8fa5122303c57b23795d5f234c354a10c133c7538",
+    "opponent-shrinkage": "596288c23cba655d9e20aeb5a102699a54471587d2fbe3ffa0b90a00f363533a",
 }
 ARM_FACTORS = (
     "potential_scale",

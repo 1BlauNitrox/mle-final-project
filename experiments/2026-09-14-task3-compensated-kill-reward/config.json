@@ -1,5 +1,5 @@
 {
-  "profile": "proximity-gating",
+  "profile": "compensated-kill-reward",
   "issue": null,
   "issue_reference": "Deliberately unset. The first pair of approach pilots pre-guessed issue numbers that GitHub then allocated to other work, and their frozen configs now carry stale references. The authoritative issue for this protocol is recorded in the registration pull request and in results/verification.json.",
   "scope": "exploratory_frozen_inheritance_task3_comparison",
@@ -7,12 +7,13 @@
   "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
   "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
   "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
-  "hypothesis": "The 832 trainable opponent columns degrade the policy because they absorb temporal-difference error from the great majority of states in which no opponent is near enough to matter. Admitting only transitions whose start state has an opponent within eight tiles should leave the inherited policy closer to the reference while keeping the whole kill signal. The update schedule counts every post-warmup transition in both arms, so the arms perform essentially the same number of optimizer steps and the comparison isolates which experience supplies the gradient.",
+  "hypothesis": "Approach shaping at scale 3.0 raised attack exposure more than any other setting measured, but it also lowered the immediate reward of an eliminating transition from +5 to +2.3, and its arm lost strict wins and collection. Restoring a strongly positive kill signal under that same approach pressure should let the exposure it creates actually be reinforced. #175 compared +5 with +20 without shaping and found nothing, but that was in a regime where the agent reached almost no attack opportunities to reinforce.",
   "prior_evidence": {
     "issue_175": "frozen inheritance preserves opponent-free behaviour exactly",
     "issue_178_and_update_cadence": "one update per eight eligible transitions beat one per transition in the same direction on two hosts, without either run establishing the effect; the limit of that trend is zero updates, which is the reference",
     "update_cadence": "both trained arms were worse than the unchanged reference on eliminations, score and collection with intervals excluding zero, and mean opponent distance rose against the reference in both arms: training teaches opponent avoidance",
-    "approach_shaping": "potential scale 1.0 removed that avoidance - control's gaps to the reference on eliminations and distance exclude zero while the shaped arm's do not - and scale 3.0 was harmful; scale 1.0 is therefore the fixed baseline in both arms here",
+    "approach_shaping": "potential scale 1.0 removed that avoidance - control's gaps to the reference on eliminations and distance exclude zero while the shaped arm's do not - but it did not raise attack exposure; scale 3.0 raised exposure most and lost strict wins and collection, consistent with its registered erosion of the elimination reward",
+    "exposure_preflight": "A bounded preflight probe of five greedy training episodes under the unchanged reference measured an opponent within eight tiles on 1.5% of steps, with three of the five episodes never reaching that range at all and mean opponent distance between 12.1 and 22.6. Opportunity, not policy quality, remains the binding constraint, and a replay filter at that radius was rejected before registration because it would admit too little experience to train on.",
     "power": "tripling hunting worlds from 40 to 120 moved the elimination interval width from 0.180 to 0.177 because the variance is between replicas, so these comparisons buy replicas instead of worlds"
   },
   "arms": [
@@ -21,7 +22,7 @@
   ],
   "arm_settings": {
     "control": {
-      "potential_scale": 1.0,
+      "potential_scale": 3.0,
       "update_every": 8,
       "kill_reward": 5.0,
       "learning_rate": 0.0005,
@@ -29,11 +30,11 @@
       "l2_opponent": 0.0
     },
     "treatment": {
-      "potential_scale": 1.0,
+      "potential_scale": 3.0,
       "update_every": 8,
-      "kill_reward": 5.0,
+      "kill_reward": 20.0,
       "learning_rate": 0.0005,
-      "proximity_gate": 8,
+      "proximity_gate": null,
       "l2_opponent": 0.0
     }
   },
@@ -42,12 +43,12 @@
     "treatment": "opponent_columns_only"
   },
   "intervention": {
-    "changed_factor": "which transitions are admitted to replay",
+    "changed_factor": "attributable opponent-elimination reward",
     "trainable_parameter": "layers.0.weight[:, 26:]",
     "trainable_scalar_count": 832,
     "frozen_reference": "all inherited columns, hidden layers, biases and outputs",
-    "baseline_shared_by_every_arm": "frozen inheritance, #168 episode mixture, approach potential scale 1.0, one optimizer update per eight eligible transitions, native +5 kill reward",
-    "baseline_caveat": "Potential scale 1.0 is the best configuration measured so far but was not itself established as better than the reference; it is a design choice, not an adopted default.",
+    "baseline_shared_by_every_arm": "frozen inheritance, #168 episode mixture, approach potential scale 3.0, one optimizer update per eight eligible transitions",
+    "baseline_caveat": "Approach potential scale 3.0 is a design choice carried from the completed shaping comparison, not an adopted default: no scale was established as better than the unchanged reference.",
     "persistence": "training-only; evaluation loads the unchanged archived agent",
     "evaluation_time_policy_override": false
   },
