@@ -1,0 +1,35 @@
+{
+  "scope": "analysis-only verification of completed diagnosis",
+  "full_pytest": {
+    "command": "python -m pytest -q",
+    "passed": 960,
+    "subtests_passed": 11,
+    "wall_seconds": 167.05
+  },
+  "focused_and_repository_tests": {
+    "passed": 26
+  },
+  "ruff": "passed for all team-owned Python paths",
+  "compileall": {
+    "command": "python -m compileall -q .",
+    "passed": true
+  },
+  "framework_smoke": {
+    "command": "python main.py play --agents random_agent --no-gui --n-rounds 1 --seed 1",
+    "passed": true,
+    "scientific_evidence": false
+  },
+  "new_diagnostic_episodes": 0,
+  "verifier_checks": [
+    "15 exact compressed trajectory checksums",
+    "all saved diagnostic metrics and stall windows",
+    "all 6000 compact CSV rows",
+    "two public-state excerpts",
+    "seed and checkpoint identity binding"
+  ],
+  "source_sha256": {
+    "scripts/verify_issue162_evidence.py": "cb13280e42a0e8bbe8c702edefb58951562a11e08f3fda80cf803c9d2bfde428",
+    "tests/test_verify_issue162_evidence.py": "09429129620fe29361d3db7260bcd2f10c03f1111186eecebda5d9252a9512bd"
+  },
+  "ci": "check on final pushed head before marking PR ready"
+}
