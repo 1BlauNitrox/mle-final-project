@@ -1,9 +1,24 @@
 # DagobertDuckDQNTask3
 
-> Status: Task 3 implementation successor prepared under issue #108. This PR
-> contains contract decisions, tests, migration, and bounded integration
-> validation only. It contains no scientific training result or performance
-> claim.
+## Completed Double DQN comparison (#150)
+
+The [registered result](../../experiments/2026-09-12-task3-double-dqn-results/README.md)
+compared five matched standard/Double DQN replicas, 10,000 training episodes
+each, from provisional #91 A/r3. Both arms achieved 23.5% peaceful elimination;
+the Double-minus-standard difference was 0 percentage points, 95% CI
+[-18.5, +16.0]. Double DQN's registered benefit and cumulative hunting/retention
+gates failed. No arm or replica is selected, and Task 2 remains incomplete.
+Runtime and deterministic-repeat gates passed.
+
+The executed 39-input implementation is pinned at
+`6f014485a3026cc3707fa2cc3a379880dd0b74bd` in PR #154. This result PR retains
+the older 34-input implementation described below; it does not install or
+promote the experimental model. Full metrics, parent/checkpoint hashes, seeds
+and retrievable evidence are in the linked result record.
+
+The next step is bounded hunting/retention diagnosis before another registered
+intervention. This result does not justify adopting Double DQN or choosing a
+favorable standard-DQN replica as a fallback.
 
 ## Purpose and hypothesis
 
@@ -30,10 +45,11 @@ sha256: 3edb2e7196030fcb52af6c7dc9ee69d9fc1259898ea674002fe06fbe93468015
 source commit: 933a8fe11440e0f7645254390928da6af5dad46d (current main at branch creation)
 ```
 
-Issue #107 is the final Task 2 selection campaign. After it selects the
-development artifact, the parent source/artifact hashes in `artifact.json`
-must be rebound before scientific Task 3 training. This provisional fixture is
-not evidence and does not close that dependency.
+This is the historical compatibility fixture, not the parent used for the
+completed #150 experiment. That experiment used explicitly authorized
+provisional #91 A/r3, with its exact binding retained in the result record.
+Future training requires a prospectively registered parent; it does not need
+to wait for Task 2 to be declared complete.
 
 Migration copies the 21 Task 2 input columns, both 64-unit hidden layers, and
 all six output rows. The thirteen Task 3 input columns are zero-initialized, so
@@ -90,3 +106,7 @@ belong to the post-#107 Task 3 launch protocol.
 | [#175](../../experiments/2026-09-14-task3-elimination-reward/README.md) | `c4ddfa4` (39 inputs; separate from this checkout's 34-input fixture) | +5 / +20 | 0.250 / 0.080 / 0.090 | No checkpoint promoted |
 
 [Exact gates, uncertainty and retention](../../experiments/2026-09-14-task3-elimination-reward/results/analysis.json); [artifact provenance](../../experiments/2026-09-14-task3-elimination-reward/results/evidence.json).
+
+The historical implementation and smoke checks below the result summary do
+not establish performance. The #150 result record defines the exact executed
+implementation, parent, seeds, decision rules and failed scientific gates.
