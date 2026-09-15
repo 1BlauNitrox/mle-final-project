@@ -72,13 +72,52 @@ REGISTERED_SCOPES = ("opponent_columns", "all_weights")
 STAGES = ("training", "evaluation", "latency")
 
 
+def _durable_replace(temporary, path):
+    """Rename only after the bytes are on the platter, then persist the rename.
+
+    os.replace is atomic against a concurrent reader but says nothing about
+    power loss: the directory entry can reach disk before the file content
+    does. That is how a previous run came back from a blackout holding a
+    zero-length training-state.json and had to restart from episode zero. A run
+    measured in days cannot afford that, so callers flush and fsync the file
+    before the rename and the containing directory is fsynced after it.
+    """
+    os.replace(temporary, path)
+    try:
+        handle = os.open(path.parent, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory for fsync; the file's own fsync is
+        # what carries the durability guarantee there.
+        return
+    try:
+        os.fsync(handle)
+    finally:
+        os.close(handle)
+
+
 def _write(path, value):
     # `.gitattributes` pins *.json to LF precisely so a Windows writer cannot
     # reintroduce CRLF and break a byte comparison against a clean checkout.
     path = Path(path)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8", newline="\n")
-    os.replace(temporary, path)
+    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(value, indent=2) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
+
+
+def write_checkpoint(payload, path):
+    """Persist a torch checkpoint through the same durable rename discipline."""
+    import torch
+
+    path = Path(path)
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("wb") as stream:
+        torch.save(payload, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
 
 
 def write(path, value):
@@ -162,8 +201,52 @@ def episode_epsilon(arm, agent_seed, episode):
 
 
 def zip_json(path, data):
-    with gzip.GzipFile(filename=str(path), mode="wb", mtime=0) as file:
-        file.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
+    # Durable for the same reason every other progress write is: a run measured
+    # in days must not lose its audit trail to a truncated write.
+    path = Path(path)
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("wb") as stream:
+        with gzip.GzipFile(fileobj=stream, mode="wb", mtime=0) as file:
+            file.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
+
+
+def read_zip_json(path):
+    with gzip.open(path, "rb") as file:
+        return json.loads(file.read().decode("utf-8"))
+
+
+def resume_state(resume_dir):
+    """Where a restarted training job continues, and the trail it continues from.
+
+    The agent persists its checkpoint at the end of each episode and this module
+    writes the audit trail afterwards, so a crash can leave the checkpoint one
+    episode ahead of the trail it must stay consistent with. The rolling resume
+    copy is taken by this module after the trail is on disk, so that pair is
+    always consistent with each other; the trail is truncated to the copy's
+    episode count and every episode the copy did not cover is simply replayed.
+
+    Returns (completed_episodes, rows). A job with nothing to resume gets
+    (0, []) and starts from its registered initialization.
+    """
+    checkpoint = Path(resume_dir) / "resume.pt"
+    trail = Path(resume_dir) / "episodes.json.gz"
+    if not checkpoint.exists() or not trail.exists():
+        return 0, []
+    import torch
+
+    completed = torch.load(checkpoint, map_location="cpu", weights_only=True)[
+        "completed_episodes"
+    ]
+    rows = read_zip_json(trail)
+    if len(rows) < completed:
+        raise ValueError(
+            "Resume trail is behind its checkpoint; the audit chain cannot be "
+            "reconstructed, so this replica must restart rather than resume"
+        )
+    return completed, rows[:completed]
 
 
 def read_json(path):
@@ -539,25 +622,63 @@ def play(
 
 
 def train_job(root, output, arm, replica):
-    """Train one replica of one arm to its registered fixed-final checkpoint.
+    """Train one replica of one arm, retaining what a long run has to retain.
 
-    Only the final checkpoint is retained. A checkpoint carries its replay
-    buffer, so it grows to about 3.4 MB once replay reaches capacity around
-    episode 37; one copy per episode would be roughly 29 GB for this campaign
-    and is never read, because the design evaluates fixed-final checkpoints and
-    the runner has no within-job resume. The per-episode audit trail is the
+    A checkpoint carries its replay buffer, so one copy per episode would be
+    tens of gigabytes and is never read. Two cadences are kept instead, both
+    registered and both cheap:
+
+    `resume.pt` is a rolling copy taken every `resume_checkpoint_every`
+    episodes so a job killed by a blackout continues from minutes ago rather
+    than from episode zero. It lives beside the audit trail in a per-replica
+    directory that survives the attempt it was written by, because the
+    supervisor gives every retry a fresh output directory.
+
+    `milestone-<episode>.pt` is retained at each registered milestone, so a
+    trajectory can be evaluated where it was rather than only where it stopped.
+    Training is sequential, so the milestone at episode N is exactly the agent a
+    run of N episodes would have produced from the same seeds - which is why a
+    budget question needs one long run and not one run per budget.
+
+    Both default to off, so a registration that asks for neither behaves exactly
+    as the fixed-final design did. The per-episode audit trail remains the
     chained `online_before_sha256`/`online_after_sha256` pair in
     `episodes.json.gz`, which pins the whole trajectory at negligible size.
     """
     cfg = config()
     setting = cfg["arm_settings"][arm]
-    output.mkdir(parents=True, exist_ok=False)
+    output.mkdir(parents=True, exist_ok=True)
     checkpoint = output / "checkpoint.pt"
-    shutil.copyfile(root / f"initial-{arm}.pt", checkpoint)
-    rows = []
+    retained = root / "training-resume" / f"{arm}-r{replica + 1}"
+    retained.mkdir(parents=True, exist_ok=True)
+    milestones = set(cfg.get("checkpoint_milestones", []))
+    resume_every = cfg.get("resume_checkpoint_every", 0)
+
+    completed, rows = resume_state(retained)
+    if completed:
+        shutil.copyfile(retained / "resume.pt", checkpoint)
+        zip_json(output / "episodes.json.gz", rows)
+    else:
+        shutil.copyfile(root / f"initial-{arm}.pt", checkpoint)
+
+    total = len(cfg["training_world_seeds"][replica])
+
+    def retain(index):
+        episode = index + 1
+        if episode in milestones:
+            shutil.copyfile(checkpoint, retained / f"milestone-{episode:06d}.pt")
+        if resume_every and (episode % resume_every == 0 or episode == total):
+            # The trail is durable before the copy is taken, so the pair a
+            # restart reads can never disagree in the dangerous direction.
+            zip_json(retained / "episodes.json.gz", rows)
+            shutil.copyfile(checkpoint, retained / "resume.pt.tmp")
+            _durable_replace(retained / "resume.pt.tmp", retained / "resume.pt")
+
     started, cpu = time.monotonic(), time.process_time()
     seed = cfg["replica_agent_seeds"][replica]
     for index, world_seed in enumerate(cfg["training_world_seeds"][replica]):
+        if index < completed:
+            continue
         row = play(
             root,
             checkpoint,
@@ -579,6 +700,7 @@ def train_job(root, output, arm, replica):
             raise ValueError("Checkpoint episode counter mismatch")
         rows.append(row)
         zip_json(output / "episodes.json.gz", rows)
+        retain(index)
     write(
         output / "result.json",
         {
