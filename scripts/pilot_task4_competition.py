@@ -351,7 +351,12 @@ def bind(root):
     report = {
         "initial_sha256": sha(root / "initial.pt"),
         "reference_sha256": sha(root / "reference.pt"),
-        "training_restriction": cfg["freeze_modes"],
+        "trainable_scopes": {
+            arm: cfg["arm_settings"][arm]["trainable_scope"] for arm in cfg["arms"]
+        },
+        "training_opponents": {
+            arm: cfg["arm_settings"][arm]["training_opponents"] for arm in cfg["arms"]
+        },
         "identical_online_and_target_weights": True,
         "arms": {},
     }
