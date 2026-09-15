@@ -35,6 +35,7 @@ VALID_STATE_REPRESENTATIONS = (
     "baseline",
     "compact_decision",
     "compact_post_bomb_escape",
+    "compact_opponent",
 )
 VALID_POTENTIAL_SHAPING_MODES = (
     "none",
@@ -43,7 +44,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
     "escape_distance_half",
     "escape_distance_half_full_no_route",
 )
-VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros")
+VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros", "task2_prior")
 VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
@@ -215,6 +216,13 @@ def load_plan(path: Path) -> ResolvedPlan:
     ):
         raise ValueError(
             "compact state representations require tabular_initialization=zeros"
+        )
+    if (
+        state_representation == "compact_opponent"
+        and tabular_initialization != "task2_prior"
+    ):
+        raise ValueError(
+            "compact_opponent requires tabular_initialization=task2_prior"
         )
     if (
         isinstance(useful_bomb_reward, bool)
