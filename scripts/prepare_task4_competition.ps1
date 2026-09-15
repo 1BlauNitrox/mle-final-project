@@ -27,11 +27,11 @@ $env:OMP_NUM_THREADS = '1'
 $env:MKL_NUM_THREADS = '1'
 
 Write-Host "== seed audit ==" -ForegroundColor Cyan
-& $python -m scripts.audit_task4_competition_seeds --profile $Profile
+& $python -m scripts.audit_task4_seeds --profile $Profile
 if (-not $?) { throw 'Seed audit failed' }
 
 Write-Host "== inputs ==" -ForegroundColor Cyan
-& $python -m scripts.fetch_task4_competition_inputs --archive $Archive --output training_outputs/inputs/$Profile --download
+& $python -m scripts.fetch_task4_inputs --archive $Archive --output training_outputs/inputs/$Profile --download
 if (-not $?) { throw 'Input retrieval failed' }
 
 Write-Host "== prepare ==" -ForegroundColor Cyan
