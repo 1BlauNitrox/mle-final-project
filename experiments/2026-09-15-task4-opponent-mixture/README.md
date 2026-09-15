@@ -63,7 +63,16 @@ line-up passes all three. The treatment still degrades slightly on each suite �
 
 This replicates across experiments. The control arm here is the same configuration
 as the trainable-scope comparison's treatment arm, and it failed retention there
-too. The line-up, not the scope, is what decides retention.
+too.
+
+It does not follow that the line-up is what decides retention, and the
+dose-response run afterwards shows why. Every arm of that ladder trained against
+the hard line-up, and its middle dose — learning rate 0.0002 — passed all three
+retention gates at this same budget. Both arms here ran at 0.0005, a rate at which
+the hard line-up loses capability whatever it trains against, so this comparison
+cannot separate the line-up from the rate it was measured at. The registered
+`lineup-trajectory` comparison varies the line-up alone at the selected rate and
+is what settles the question.
 
 ### Gates
 
@@ -97,9 +106,10 @@ score against differences of a fifth of that. The campaign's variance is at the
 replica level, so a real tournament gain has to be established with more replicas
 rather than more evaluation worlds.
 
-What the pair of completed comparisons now supports is a configuration nobody has
-run: the `all_weights` scope, which is the only thing that has moved tournament
-score, trained against the mixed line-up, which is the only thing that has held
-retention.
+What the completed comparisons support is the `all_weights` scope, which is the
+only thing that has moved tournament score, trained at the learning rate the
+dose-response selected, which is what has held retention. Whether the mixed
+line-up adds anything on top of the right rate is the question those runs leave
+open, and it is the one `lineup-trajectory` was registered to answer.
 
 Refs [PR #196](https://github.com/1BlauNitrox/mle-final-project/pull/196)
