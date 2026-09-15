@@ -1,0 +1,21 @@
+{
+  "scope": "independent archive verification and registered analyzer reproduction",
+  "archive": {
+    "filename": "task3-stability-evidence.tar.gz",
+    "size_bytes": 73183147,
+    "sha256": "38cf0b17e6cd141793432ef35efe0bc23a02e6dcafdeb57da602e1acb665152b",
+    "owner_path": "C:/Users/Julius/Downloads/task3-stability-evidence.tar.gz",
+    "public_locator": null
+  },
+  "source_commit": "08ecb39e32c2790b5e7e573efb91f058ea81eb0b",
+  "config_sha256": "992563d97e3524fdac26f240836e7e7356aed6a4d608b3674e03f411ff113cd2",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "training_jobs": 10,
+  "evaluation_jobs": 44,
+  "training_failed_jobs": 0,
+  "evaluation_failed_jobs": 0,
+  "analyzer": "scripts.pilot_task3_stability analyze",
+  "reproduced_analysis_sha256": "derived from analysis-reproduced.json"
+}
