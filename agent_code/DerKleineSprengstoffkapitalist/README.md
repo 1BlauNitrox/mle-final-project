@@ -1,9 +1,11 @@
 # DerKleineSprengstoffkapitalist
 
-> Status: implemented tabular Task 2 successor.
+> Status: vorläufig eingefrorener tabellarischer Task-2-Agent (Issue #183).
 >
-> Current capability: coin collection, bomb placement, crate destruction,
-> explosion-danger representation and escape-aware movement.
+> Das eingefrorene Modell ist der Control-Run r2 aus Issue #153.
+> Die unabhängige Bestätigung hat nicht alle vorab festgelegten Kriterien
+> erfüllt. Dies ist ausdrücklich **kein Nachweis, dass Task 2 abgeschlossen ist**.
+> Training dieses Agenten ist gesperrt.
 
 ## Purpose
 
@@ -67,20 +69,21 @@ interpreted as a Task 2 successor configuration or as new successor evidence.
 
 ## Current behavior contract
 
-Each Task 2 state maps to six Q-values in the fixed action order:
+The frozen Issue #183 artifact is the Issue #153 control replica r2. It uses
+the `compact_decision` representation (five features), zero initialization,
+standard exploration, no action masking, and no potential shaping. Its six
+Q-values follow the fixed action order `UP, RIGHT, DOWN, LEFT, WAIT, BOMB`.
 
-```text
-UP, RIGHT, DOWN, LEFT, WAIT, BOMB
-```
-
-For a previously unseen Task 2 state, the first five action values are
-initialized from the corresponding frozen eight-feature Task 1 state. The
-initial BOMB value is set below the minimum parent value by the configured
-bomb-prior margin.
-The Task 2 Q-table remains sparse and materializes states only when they are
-updated during training.
+The frozen `model.npz` is loaded for evaluation only. Training is blocked.
+`artifact.json` and `frozen-config.yaml` record its identity and provenance.
 
 ## State representation
+
+The frozen model uses compact feature schema version `1` with five values:
+`danger_level`, `safe_directions_mask`, `coin_direction`,
+`crate_direction`, and `bomb_status`. The 17-value schema described below
+belongs to the earlier baseline representation, **not** to the frozen model.
+It is retained to document the agent's development history.
 
 Feature schema version `2` contains 17 categorical values. Indices `0-7`
 remain the exact Task 1 projection:
@@ -130,6 +133,9 @@ UP, RIGHT, DOWN, LEFT, WAIT, BOMB
 For unseen Task 2 states, the first five Q-values are initialized from the
 corresponding frozen Task 1 state. The BOMB value is initialized below the
 minimum parent value by the configured bomb-prior margin.
+
+The frozen Issue #183 model uses the five-feature compact_decision state and
+zero initialization.
 
 The learning rate remains 0.05 and the discount factor remains 0.9.
 Issue #45 extends the state and action contracts without changing the
@@ -205,12 +211,11 @@ that are legal yet tactically unsafe.
 
 ## Training status
 
-Task 2 training is implemented and enabled. A newly initialized agent starts
-from the frozen Task 1 parent prior and extends it with the `BOMB` action.
-
-The implementation may be exercised with short deterministic smoke tests.
-Scientific training runs and hyperparameter changes must be performed as
-separately preregistered experiments.
+The frozen artifact is evaluation-only. `setup_training()` rejects training.
+Further training or a changed policy requires a separate issue and a new,
+preregistered experiment. The parent-prior initialization described earlier
+was part of the historical development path; it is not the initialization
+of the frozen Issue #183 model.
 
 ## Evaluation
 
@@ -232,8 +237,31 @@ not performance evidence.
 The checksum before and after evaluation must remain:
 
 ```text
-8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb
+93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e
 ```
+
+## Issue #183 freeze confirmation
+
+The selected artifact is Issue #153 control replica r2, trained for 10,000
+episodes. Issue #183 evaluated this unchanged checkpoint on 100 held-out seed
+pairs per scenario in Classic, Coin Heaven, and Loot Crate. Each evaluation
+was repeated with the same seeds; all 300 primary/repeat pairs were
+deterministic. The model SHA-256 remained unchanged.
+
+| Scenario | Mean coin collection | Self-kills | Bomb actions |
+| --- | ---: | ---: | ---: |
+| Classic | 0.213333 | 13/100 | — |
+| Coin Heaven | 0.9716 | 3/100 | 33 |
+| Loot Crate | 0.2626 | 28/100 | — |
+
+The confirmation **did not pass**: Classic self-kills exceeded the registered
+maximum of 10/100, and Coin Heaven had 33 bomb actions instead of zero.
+Classic collection met its minimum of 0.15, and Coin Heaven collection met
+its minimum of 0.95. The artifact is therefore frozen only as an interim
+checkpoint for further project work, not as a Task 2 completion claim.
+
+Protocol: `training/run_plans/issue183-tabular-task2-freeze-confirmation.yaml`.
+Local raw results: `training_outputs/confirmation-issue183/`.
 
 ## Validation
 
@@ -287,7 +315,7 @@ Parent imports are permitted only in repository-level differential tests.
 
 ## Experimental evidence and limitations
 
-Issue #102 established the current unmasked Task 2 development baseline.
+Issue #102 established the historical unmasked Task 2 development baseline.
 
 Issue #110 evaluated optional framework-legal masking. The retained execution
 eliminated invalid actions and reduced aggregate self-kills, but did not improve
@@ -338,5 +366,3 @@ difference and confidence interval of zero. Post-hoc Q-table inspection found
 no compact-state prefix split across multiple status values, so the added value
 acted as a relabeling on visited states. The candidate was rejected and
 `compact_decision` remains the default.
-- retains inherited non-potential-based movement shaping;
-- can select actions that are framework-legal but tactically unsafe.
