@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "frozen_task3_incumbent",
+  "issue": 188,
+  "selection": {
+    "decision": "descriptive_owner_selection",
+    "selected_by": "repository_owner",
+    "gate_status": "not_passed",
+    "claim": "Best available Task 3 artifact by the recorded descriptive measures; this does not establish Task 2 or Task 3 completion."
+  },
+  "artifact": {
+    "path": "checkpoint.pt",
+    "sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "size_bytes": 64301,
+    "source": "Issue 168 public evidence archive",
+    "archive_sha256": "d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071",
+    "archive_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/issue168-pilot-evidence-v1/issue168-pilot-evidence.tar.gz",
+    "runtime_source_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+    "previous_fixture_sha256": "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599"
+  },
+  "training": {
+    "scientific_training_authorized": false,
+    "frozen_for_task4_handoff": true,
+    "future_training": "Create a separate Task 4 successor and protocol; do not resume this checkpoint."
+  },
+  "evidence": {
+    "experiments": [168, 171, 173, 175, 178, 179, 180, 181, 182, 187],
+    "selected_checkpoint_in_registered_records": null,
+    "original_cumulative_gates": "not_passed"
+  }
+}
