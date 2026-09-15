@@ -29,6 +29,7 @@ the latency gate.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import gzip
 import hashlib
 import importlib.metadata
@@ -422,6 +423,51 @@ def payload_equal(a, b):
     return a == b
 
 
+@contextlib.contextmanager
+def released_agent_log_handlers():
+    """Close the per-episode log handlers the framework opens and never closes.
+
+    `AgentRunner.__init__` attaches a fresh `logging.FileHandler` to the module
+    level `<agent>_wrapper` and `<agent>_code` loggers every time an agent
+    starts. Those loggers are global singletons keyed by name, so a process that
+    plays many episodes accumulates one open descriptor per agent per episode
+    and eventually dies with `OSError: [Errno 24] Too many open files`. It did:
+    the line-up rehearsal lost every replica between episodes 1,425 and 1,625,
+    which is roughly where four agents times one handler each crosses the
+    per-process limit.
+
+    That ceiling is invisible at the 400-episode budgets the campaign screened
+    at and fatal for a run measured in days, so the handlers a round opened are
+    closed and detached when it ends. This touches only the loggers the agent
+    backends create; the pinned runtime is not modified, and nothing about the
+    agent's behaviour, its seeds or its decisions changes - only whether the
+    operating system's descriptors come back.
+    """
+    import logging
+
+    def close_new(before):
+        for logger in list(logging.Logger.manager.loggerDict.values()):
+            if not isinstance(logger, logging.Logger):
+                continue
+            if not logger.name.endswith(("_wrapper", "_code")):
+                continue
+            for handler in list(logger.handlers):
+                if isinstance(handler, logging.FileHandler) and handler not in before:
+                    logger.removeHandler(handler)
+                    handler.close()
+
+    existing = {
+        handler
+        for logger in list(logging.Logger.manager.loggerDict.values())
+        if isinstance(logger, logging.Logger)
+        for handler in logger.handlers
+    }
+    try:
+        yield
+    finally:
+        close_new(existing)
+
+
 def payload_difference_paths(a, b, prefix=""):
     """Every leaf path at which two checkpoint payloads disagree."""
     if isinstance(a, dict) and isinstance(b, dict):
@@ -585,6 +631,7 @@ def play(
     )
     target.mkdir(parents=True, exist_ok=False)
     with (
+        released_agent_log_handlers(),
         configured_rewards(agent_config.REWARDS, kill_reward),
         training_intervention(
             train,
