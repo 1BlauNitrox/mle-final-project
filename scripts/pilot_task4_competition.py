@@ -422,6 +422,33 @@ def payload_equal(a, b):
     return a == b
 
 
+def payload_difference_paths(a, b, prefix=""):
+    """Every leaf path at which two checkpoint payloads disagree."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        paths = set()
+        for key in a.keys() | b.keys():
+            where = f"{prefix}.{key}" if prefix else str(key)
+            if key not in a or key not in b:
+                paths.add(where)
+            else:
+                paths |= payload_difference_paths(a[key], b[key], where)
+        return paths
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)) and len(a) == len(b):
+        paths = set()
+        for index, (x, y) in enumerate(zip(a, b, strict=True)):
+            paths |= payload_difference_paths(x, y, f"{prefix}[{index}]")
+        return paths
+    return set() if payload_equal(a, b) else {prefix}
+
+
+# The only places an arm's registration is permitted to reach into a checkpoint.
+ARM_PAYLOAD_PATHS = {
+    "rewards.KILLED_OPPONENT",
+    "config.learning_rate",
+    "learner_state.optimizer.param_groups[0].lr",
+}
+
+
 def arm_payload(initial, arm):
     from copy import deepcopy
 
@@ -449,8 +476,18 @@ def bind(root):
         or len(initial["replay_state"]["states"]) != 0
     ):
         raise ValueError("Need fresh initialization, empty optimizer and replay")
-    if not payload_equal(initial, arm_payload(initial, "control")):
-        raise ValueError("Control arm does not match the #168 initialization")
+    # The control arm used to be required to byte-match the initialization, which
+    # assumed a campaign's baseline is always the checkpoint's own defaults. Once
+    # a comparison registers a shared non-default baseline - every arm at the
+    # learning rate a previous ladder selected - that is no longer true, and the
+    # assumption would forbid the registration rather than protect it. What the
+    # check is actually for is that no arm differs from the verified
+    # initialization in anything the registration did not declare, so that is
+    # what is asserted, for every arm rather than only the control.
+    for arm in cfg["arms"]:
+        changed = payload_difference_paths(initial, arm_payload(initial, arm))
+        if not changed <= ARM_PAYLOAD_PATHS:
+            raise ValueError(f"Arm {arm} alters the initialization outside its registration")
     for network in ("online_network", "target_network"):
         if not payload_equal(
             initial["learner_state"][network], reference["learner_state"][network]
