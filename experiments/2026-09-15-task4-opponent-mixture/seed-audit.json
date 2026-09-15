@@ -17,8 +17,8 @@
     "refs/remotes/origin/task/freeze-task3-incumbent": "50a0080463eac058f6b880b5773b0891550a997c",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 661,
-  "blob_set_sha256": "9852bd35edea372b02b00a98aedad90c2b40580df0a0bc35cedb131641654d85",
+  "unique_text_blobs": 662,
+  "blob_set_sha256": "537364d69002dfb5858fe7aae208f38043d8fcd5a5aa69fc99539f9f0df4b080",
   "excluded_own_registration": "experiments/2026-09-15-task4-opponent-mixture/",
   "excluded_own_branch_revision": "refs/remotes/origin/experiment/task4-opponent-training",
   "colliding_files": [],
