@@ -61,15 +61,27 @@ def audit(profile):
     # evidence of reuse, so the profile's own registration directory is excluded
     # and the audit stays rerunnable after registration.
     own = f"experiments/2026-09-15-task4-{profile}/"
+    # The report also has to converge. Preparation requires a committed report,
+    # committing and pushing it advances the branch that carries it, and the
+    # branch's own revision is part of what the report records - so each run
+    # produced a different report than the one just committed and preparation
+    # could never reach a clean tree. That branch's blobs are still scanned; only
+    # its revision is left out of the record, which is the one field that cannot
+    # be recorded without describing the act of recording it.
+    head = subprocess.check_output(
+        ["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=ROOT, text=True
+    ).strip()
+    own_ref = f"refs/remotes/origin/{head}" if head != "HEAD" else None
     refs = subprocess.check_output(
         ["git", "for-each-ref", "--format=%(refname)", "refs/remotes/origin"], cwd=ROOT, text=True
     ).splitlines()
     refs = [r for r in refs if not r.endswith("/HEAD") and "task3-approach" not in r]
     objects, revisions = {}, {}
     for ref in refs:
-        revisions[ref] = subprocess.check_output(
-            ["git", "rev-parse", ref], cwd=ROOT, text=True
-        ).strip()
+        if ref != own_ref:
+            revisions[ref] = subprocess.check_output(
+                ["git", "rev-parse", ref], cwd=ROOT, text=True
+            ).strip()
         listing = subprocess.check_output(
             ["git", "ls-tree", "-r", ref, "--", "training", "experiments", "docs", "scripts",
              "tests"],
@@ -133,6 +145,7 @@ def audit(profile):
         "unique_text_blobs": len(objects),
         "blob_set_sha256": hashlib.sha256("\n".join(sorted(objects)).encode()).hexdigest(),
         "excluded_own_registration": own,
+        "excluded_own_branch_revision": own_ref,
         "colliding_files": sorted(collisions),
         "cross_profile_separation": cross_profile(),
         "passed": not collisions,
