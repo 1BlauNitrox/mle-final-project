@@ -21,7 +21,7 @@
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
   "unique_text_blobs": 676,
-  "blob_set_sha256": "981756ffead0fb6e83226bca9024c82d6bd50c37fb2a73e938a3b9eb0a6b6d17",
+  "blob_set_sha256": "e8afb11d7898fa9feef500ed375f9eec1535320d7b42dafc7f6b9c720d395dec",
   "excluded_own_registration": "experiments/2026-09-15-task4-lineup-trajectory/",
   "excluded_own_branch_revision": "refs/remotes/origin/feat/task4-checkpoint-resume",
   "colliding_files": [],
