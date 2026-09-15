@@ -1041,6 +1041,8 @@ def smoke_worker(root, output):
         evaluation_seconds.append(time.monotonic() - started)
     from scripts.analyze_task4_competition import behavioral
 
+    opponent_free_unchanged = []
+
     for index, (suite, setting) in enumerate(cfg["evaluation_suites"].items()):
         if setting["opponents"]:
             continue
@@ -1056,10 +1058,15 @@ def smoke_worker(root, output):
             output / (suite + "-reference"),
             kill_reward=cfg["arm_settings"]["control"]["kill_reward"],
         )
-        if behavioral(reference["native"]) != behavioral(evaluation[index]["native"]):
-            raise ValueError("Opponent-free smoke behavior changed")
-        if reference["greedy_actions_sha256"] != evaluation[index]["greedy_actions_sha256"]:
-            raise ValueError("Opponent-free smoke actions changed")
+        # Only the frozen scope promises opponent-free behaviour is untouched.
+        # Full fine-tuning is expected to change it, and the retention suites in
+        # the real evaluation are what gate how far it may drift.
+        unchanged = behavioral(reference["native"]) == behavioral(
+            evaluation[index]["native"]
+        ) and reference["greedy_actions_sha256"] == evaluation[index]["greedy_actions_sha256"]
+        if arm_setting["trainable_scope"] == "opponent_columns" and not unchanged:
+            raise ValueError("Opponent-free smoke behavior changed under a frozen scope")
+        opponent_free_unchanged.append(unchanged)
     verify(root)
     zip_json(
         output / "smoke-observations.json.gz", {"training": training, "evaluation": evaluation}
@@ -1078,6 +1085,9 @@ def smoke_worker(root, output):
             "training_seconds_per_episode": training_seconds,
             "training_survival_steps": [row["native"]["steps"] for row in training],
             "evaluation_seconds_per_episode": evaluation_seconds,
+            "trainable_scope": arm_setting["trainable_scope"],
+            "training_opponents": arm_setting["training_opponents"],
+            "opponent_free_behaviour_unchanged": opponent_free_unchanged,
             "evaluation_survival_steps": [row["native"]["steps"] for row in evaluation],
         },
     )
