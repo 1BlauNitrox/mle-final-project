@@ -1,0 +1,44 @@
+{
+  "scope": "completed run verification and registered analyzer output",
+  "host": "Lenovo",
+  "archive": {
+    "filename": "task4-competition-evidence.tar.gz",
+    "size_bytes": 128602270,
+    "sha256": "e07df56ed384275139f4bb16252343efc81805e197f1b31844a1fd708f4ac754",
+    "manifest_sha256": "f132bb97cc318cedb4a5d3d347836839de4f39c6f9b95046c8a009d76f7a5ab3",
+    "public_locator": "task4-opponent-mixture-evidence-v1"
+  },
+  "tool_source": "3bec44eb757cbbc6cc1fc32e662c1e8a6793d46b",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "config_sha256": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+  "seed_audit_sha256": "840d0aa88a0c49dca183d637ecd11fa92c69cb333004e72fa20fe38609252e8c",
+  "training_jobs": 12,
+  "evaluation_jobs": 52,
+  "latency_jobs": 13,
+  "failed_jobs": 0,
+  "resources": {
+    "training": {
+      "cpu_seconds": 12817.515625,
+      "wall_seconds": 3250.081957200018,
+      "peak_memory_bytes": 1765457920,
+      "passed": true
+    },
+    "evaluation": {
+      "cpu_seconds": 9546.0,
+      "wall_seconds": 1986.0239076999715,
+      "peak_memory_bytes": 1181294592,
+      "passed": true
+    },
+    "latency": {
+      "cpu_seconds": 229.78125,
+      "wall_seconds": 252.72272060002433,
+      "peak_memory_bytes": 234102784,
+      "passed": true
+    }
+  },
+  "analyzer": "scripts.pilot_task4_competition analyze",
+  "registered_screen_passed": false,
+  "selected_checkpoint": null
+}
