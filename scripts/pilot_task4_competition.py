@@ -12,13 +12,18 @@ episode-mixture exploration schedule and the unchanged reference as a
 no-training incumbent.
 
 Training and evaluation jobs run concurrently: the handout permits
-multiprocessing during training, and evaluation here is read-only replay of
-fixed checkpoints on fixed seeds, which is deterministic however many run at
-once. Every job is an isolated subprocess with one torch thread, so
-concurrency changes throughput only. Decision latency is therefore *not* taken
-from the contended evaluation stage: a separate serial `latency` stage replays
-a registered subset on an otherwise idle machine, and only that stage feeds the
-latency gate.
+multiprocessing during training, and evaluation is read-only replay of fixed
+checkpoints on fixed seeds. That replay was described here as deterministic
+however many run at once, and the dose-response comparison showed it is not.
+Four of its 3,040 repeated evaluations disagreed, three of them on the
+*unchanged* reference, each losing or gaining a single action in a 400-step
+episode before diverging - a step exceeding its decision-time budget while the
+machine was loaded. Concurrency therefore changes throughput and, rarely,
+outcome; the `behavioral_repeats` gate is what detects it, and an evaluation
+stage wants an otherwise idle machine. Decision latency is for the same reason
+*not* taken from the contended evaluation stage: a separate serial `latency`
+stage replays a registered subset on an idle machine, and only that stage feeds
+the latency gate.
 """
 
 from __future__ import annotations
@@ -50,12 +55,19 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
 
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
-PROFILES = ("trainable-scope", "opponent-mixture")
+PROFILES = (
+    "trainable-scope",
+    "opponent-mixture",
+    "lineup-trajectory",
+    "exploration-period",
+)
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
+    "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
+    "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
 }
 ARM_FACTORS = (
     "trainable_scope",
@@ -64,6 +76,7 @@ ARM_FACTORS = (
     "update_every",
     "kill_reward",
     "learning_rate",
+    "random_episode_period",
 )
 # Everything the agent may be trained against, so an unregistered opponent
 # cannot reach a training game through a configuration edit alone.
@@ -192,12 +205,26 @@ def arm_of(artifact):
 
 
 def episode_epsilon(arm, agent_seed, episode):
-    """Return the #168 episode mixture: one fully random episode per five."""
+    """Return the #168 episode mixture: one fully random episode per period.
+
+    The mixture is binary by design - an episode is explored or exploited, never
+    partly both - which is why the `initial_epsilon`, `epsilon_decay` and
+    `epsilon_floor` fields registered alongside it do not reach the agent. The
+    exploration knob that does is how often a random episode comes round, and a
+    period of five means a fifth of a long run is spent on fully random play.
+
+    The default period of five reproduces the registered schedule exactly,
+    including its seed stream, so configurations that do not set it are
+    unaffected.
+    """
     cfg = config()
     if arm not in cfg["arms"] or not 0 <= episode < cfg["episodes_per_replica_arm"]:
         raise ValueError("Unknown arm or episode")
-    chosen = random.Random(agent_seed + 168000000 + episode // 5).randrange(5)
-    return 1.0 if episode % 5 == chosen else 0.0
+    period = cfg["arm_settings"][arm].get("random_episode_period", 5)
+    if not isinstance(period, int) or period < 2:
+        raise ValueError("Unregistered random episode period")
+    chosen = random.Random(agent_seed + 168000000 + episode // period).randrange(period)
+    return 1.0 if episode % period == chosen else 0.0
 
 
 def zip_json(path, data):

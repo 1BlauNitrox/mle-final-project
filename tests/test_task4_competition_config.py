@@ -22,10 +22,13 @@ FACTORS = (
     "update_every",
     "kill_reward",
     "learning_rate",
+    "random_episode_period",
 )
 EXPECTED_FACTOR = {
     "trainable-scope": "trainable_scope",
     "opponent-mixture": "training_opponents",
+    "lineup-trajectory": "training_opponents",
+    "exploration-period": "random_episode_period",
 }
 
 
@@ -45,7 +48,7 @@ def test_each_comparison_varies_exactly_its_intended_factor(profile):
     varying = {
         key
         for key in FACTORS
-        if len({_hashable(settings[arm][key]) for arm in cfg["arms"]}) > 1
+        if len({_hashable(settings[arm].get(key)) for arm in cfg["arms"]}) > 1
     }
     assert varying == {EXPECTED_FACTOR[profile]}
 
@@ -109,8 +112,9 @@ def test_training_evaluation_and_smoke_seeds_stay_separate(profile):
 
 def test_no_seed_is_shared_with_the_other_task4_profile_or_with_task3():
     spaces = {p: seed_space(load(p)) for p in PROFILES}
-    first, second = PROFILES
-    assert not spaces[first] & spaces[second]
+    for index, first in enumerate(PROFILES):
+        for second in PROFILES[index + 1 :]:
+            assert not spaces[first] & spaces[second], f"{first} reuses seeds from {second}"
 
     task3 = {}
     for name in ("approach-shaping", "update-cadence", "compensated-kill-reward",
