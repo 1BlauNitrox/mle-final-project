@@ -1,5 +1,13 @@
 # DagobertDuckDQNTask3
 
+The frozen checkpoint is `checkpoint.pt` (SHA-256
+`99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113`, 64,301
+bytes), retrieved from the public Issue 168 evidence archive. Its exact
+provenance and the replaced compatibility-fixture hash are recorded in
+[`freeze.json`](freeze.json) and [`artifact.json`](artifact.json). The runtime
+lineage is commit `c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113`; the archive SHA-256
+is `d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071`.
+
 Task 3 remains exploratory. No trained replica passes the cumulative hunting
 and Task 1/2 retention gates, and no replica is selected. The committed
 checkpoint is a compatibility fixture, not a trained Task 3 candidate.
@@ -58,8 +66,8 @@ uncertainty, resource accounting and reproducible analysis.
 > provisional #91-derived parent. Its learning pilot failed; no default model
 > or fixture was replaced, and cumulative Task 2/3 success is not established.
 
-Status: schema-4 implementation and provisional compatibility fixture under
-#125 / PR #130. No Task 3 scientific training result is claimed.
+The schema-4 implementation is retained for the frozen incumbent under #188.
+No new Task 3 scientific training result is claimed.
 
 ## Model and hypothesis
 
@@ -90,7 +98,7 @@ it with the target network; `neutral_safe_attack_bombs` omits the -0.5
 wasteful-bomb penalty for confirmed safe, crate-free opponent attacks. Both flags
 are persisted. Neither introduces an evaluation-time policy override.
 
-## Provisional fixture and reproducibility
+## Historical fixture lineage and reproducibility
 
 The committed `checkpoint.pt` is a compatibility migration of the
 historical corrected #85 Task 2 checkpoint, not a trained Task 3 candidate.
