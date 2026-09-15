@@ -99,4 +99,4 @@ existing opponent block are not worth more compute. The reference remains the
 selected Task 3 artifact, and the honest reading is that Task 3's gains would
 have to come from a change of mechanism rather than a change of coefficient.
 
-Refs [PR #187](https://github.com/1BlauNitrox/mle-final-project/pull/187). 
+Refs [PR #187](https://github.com/1BlauNitrox/mle-final-project/pull/187).

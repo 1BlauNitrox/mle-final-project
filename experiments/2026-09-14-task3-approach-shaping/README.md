@@ -123,4 +123,4 @@ non-significant contrast is not evidence of an optimum, and these development
 seeds must not become a confirmation set. Nothing here establishes Task 2
 completion or tournament readiness.
 
-Refs [PR #187](https://github.com/1BlauNitrox/mle-final-project/pull/187). 
+Refs [PR #187](https://github.com/1BlauNitrox/mle-final-project/pull/187).
