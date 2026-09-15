@@ -1,13 +1,16 @@
 {
   "manifest_schema_version": 1,
-  "status": "task3_opponent_awareness_provisional",
+  "status": "frozen_task3_incumbent_descriptive_selection",
   "agent": "DagobertDuckDQNTask3",
   "capability": "task1_task2_behavior_plus_public_opponent_awareness",
   "artifact": {
     "path": "checkpoint.pt",
-    "sha256": "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599",
-    "size_bytes": 64237,
-    "note": "Fresh provisional Task 3 migration checkpoint; no scientific training or evaluation evidence."
+    "sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "size_bytes": 64301,
+    "note": "Frozen incumbent selected descriptively by the owner for the Task 4 handoff. No registered gate passed and no Task 3 completion claim is made.",
+    "source": "Issue 168 public evidence archive",
+    "archive_sha256": "d9f1a1e14ebb0734ba3cfddafa58e34aabd07393f962394f3d9625a3fe5b4071",
+    "runtime_source_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
   },
   "model_contract": {
     "algorithm": "deep_q_network",
