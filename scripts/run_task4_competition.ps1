@@ -13,7 +13,7 @@ process only. Without it every stage refuses to start.
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('trainable-scope', 'opponent-mixture')]
+    [ValidateSet('trainable-scope', 'opponent-mixture', 'lineup-trajectory', 'exploration-period')]
     [string]$Profile = 'trainable-scope',
     [string]$Root = "training_outputs/task4-$Profile",
     [string]$Python = '.\.venv\Scripts\python.exe',

@@ -12,13 +12,18 @@ episode-mixture exploration schedule and the unchanged reference as a
 no-training incumbent.
 
 Training and evaluation jobs run concurrently: the handout permits
-multiprocessing during training, and evaluation here is read-only replay of
-fixed checkpoints on fixed seeds, which is deterministic however many run at
-once. Every job is an isolated subprocess with one torch thread, so
-concurrency changes throughput only. Decision latency is therefore *not* taken
-from the contended evaluation stage: a separate serial `latency` stage replays
-a registered subset on an otherwise idle machine, and only that stage feeds the
-latency gate.
+multiprocessing during training, and evaluation is read-only replay of fixed
+checkpoints on fixed seeds. That replay was described here as deterministic
+however many run at once, and the dose-response comparison showed it is not.
+Four of its 3,040 repeated evaluations disagreed, three of them on the
+*unchanged* reference, each losing or gaining a single action in a 400-step
+episode before diverging - a step exceeding its decision-time budget while the
+machine was loaded. Concurrency therefore changes throughput and, rarely,
+outcome; the `behavioral_repeats` gate is what detects it, and an evaluation
+stage wants an otherwise idle machine. Decision latency is for the same reason
+*not* taken from the contended evaluation stage: a separate serial `latency`
+stage replays a registered subset on an idle machine, and only that stage feeds
+the latency gate.
 """
 
 from __future__ import annotations
@@ -50,12 +55,19 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
 
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
-PROFILES = ("trainable-scope", "opponent-mixture")
+PROFILES = (
+    "trainable-scope",
+    "opponent-mixture",
+    "lineup-trajectory",
+    "exploration-period",
+)
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
+    "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
+    "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
 }
 ARM_FACTORS = (
     "trainable_scope",
@@ -64,6 +76,7 @@ ARM_FACTORS = (
     "update_every",
     "kill_reward",
     "learning_rate",
+    "random_episode_period",
 )
 # Everything the agent may be trained against, so an unregistered opponent
 # cannot reach a training game through a configuration edit alone.
@@ -72,13 +85,52 @@ REGISTERED_SCOPES = ("opponent_columns", "all_weights")
 STAGES = ("training", "evaluation", "latency")
 
 
+def _durable_replace(temporary, path):
+    """Rename only after the bytes are on the platter, then persist the rename.
+
+    os.replace is atomic against a concurrent reader but says nothing about
+    power loss: the directory entry can reach disk before the file content
+    does. That is how a previous run came back from a blackout holding a
+    zero-length training-state.json and had to restart from episode zero. A run
+    measured in days cannot afford that, so callers flush and fsync the file
+    before the rename and the containing directory is fsynced after it.
+    """
+    os.replace(temporary, path)
+    try:
+        handle = os.open(path.parent, os.O_RDONLY)
+    except OSError:
+        # Windows cannot open a directory for fsync; the file's own fsync is
+        # what carries the durability guarantee there.
+        return
+    try:
+        os.fsync(handle)
+    finally:
+        os.close(handle)
+
+
 def _write(path, value):
     # `.gitattributes` pins *.json to LF precisely so a Windows writer cannot
     # reintroduce CRLF and break a byte comparison against a clean checkout.
     path = Path(path)
     temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8", newline="\n")
-    os.replace(temporary, path)
+    with temporary.open("w", encoding="utf-8", newline="\n") as stream:
+        stream.write(json.dumps(value, indent=2) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
+
+
+def write_checkpoint(payload, path):
+    """Persist a torch checkpoint through the same durable rename discipline."""
+    import torch
+
+    path = Path(path)
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("wb") as stream:
+        torch.save(payload, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
 
 
 def write(path, value):
@@ -153,17 +205,75 @@ def arm_of(artifact):
 
 
 def episode_epsilon(arm, agent_seed, episode):
-    """Return the #168 episode mixture: one fully random episode per five."""
+    """Return the #168 episode mixture: one fully random episode per period.
+
+    The mixture is binary by design - an episode is explored or exploited, never
+    partly both - which is why the `initial_epsilon`, `epsilon_decay` and
+    `epsilon_floor` fields registered alongside it do not reach the agent. The
+    exploration knob that does is how often a random episode comes round, and a
+    period of five means a fifth of a long run is spent on fully random play.
+
+    The default period of five reproduces the registered schedule exactly,
+    including its seed stream, so configurations that do not set it are
+    unaffected.
+    """
     cfg = config()
     if arm not in cfg["arms"] or not 0 <= episode < cfg["episodes_per_replica_arm"]:
         raise ValueError("Unknown arm or episode")
-    chosen = random.Random(agent_seed + 168000000 + episode // 5).randrange(5)
-    return 1.0 if episode % 5 == chosen else 0.0
+    period = cfg["arm_settings"][arm].get("random_episode_period", 5)
+    if not isinstance(period, int) or period < 2:
+        raise ValueError("Unregistered random episode period")
+    chosen = random.Random(agent_seed + 168000000 + episode // period).randrange(period)
+    return 1.0 if episode % period == chosen else 0.0
 
 
 def zip_json(path, data):
-    with gzip.GzipFile(filename=str(path), mode="wb", mtime=0) as file:
-        file.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
+    # Durable for the same reason every other progress write is: a run measured
+    # in days must not lose its audit trail to a truncated write.
+    path = Path(path)
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("wb") as stream:
+        with gzip.GzipFile(fileobj=stream, mode="wb", mtime=0) as file:
+            file.write(json.dumps(data, sort_keys=True, separators=(",", ":")).encode())
+        stream.flush()
+        os.fsync(stream.fileno())
+    _durable_replace(temporary, path)
+
+
+def read_zip_json(path):
+    with gzip.open(path, "rb") as file:
+        return json.loads(file.read().decode("utf-8"))
+
+
+def resume_state(resume_dir):
+    """Where a restarted training job continues, and the trail it continues from.
+
+    The agent persists its checkpoint at the end of each episode and this module
+    writes the audit trail afterwards, so a crash can leave the checkpoint one
+    episode ahead of the trail it must stay consistent with. The rolling resume
+    copy is taken by this module after the trail is on disk, so that pair is
+    always consistent with each other; the trail is truncated to the copy's
+    episode count and every episode the copy did not cover is simply replayed.
+
+    Returns (completed_episodes, rows). A job with nothing to resume gets
+    (0, []) and starts from its registered initialization.
+    """
+    checkpoint = Path(resume_dir) / "resume.pt"
+    trail = Path(resume_dir) / "episodes.json.gz"
+    if not checkpoint.exists() or not trail.exists():
+        return 0, []
+    import torch
+
+    completed = torch.load(checkpoint, map_location="cpu", weights_only=True)[
+        "completed_episodes"
+    ]
+    rows = read_zip_json(trail)
+    if len(rows) < completed:
+        raise ValueError(
+            "Resume trail is behind its checkpoint; the audit chain cannot be "
+            "reconstructed, so this replica must restart rather than resume"
+        )
+    return completed, rows[:completed]
 
 
 def read_json(path):
@@ -312,6 +422,33 @@ def payload_equal(a, b):
     return a == b
 
 
+def payload_difference_paths(a, b, prefix=""):
+    """Every leaf path at which two checkpoint payloads disagree."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        paths = set()
+        for key in a.keys() | b.keys():
+            where = f"{prefix}.{key}" if prefix else str(key)
+            if key not in a or key not in b:
+                paths.add(where)
+            else:
+                paths |= payload_difference_paths(a[key], b[key], where)
+        return paths
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)) and len(a) == len(b):
+        paths = set()
+        for index, (x, y) in enumerate(zip(a, b, strict=True)):
+            paths |= payload_difference_paths(x, y, f"{prefix}[{index}]")
+        return paths
+    return set() if payload_equal(a, b) else {prefix}
+
+
+# The only places an arm's registration is permitted to reach into a checkpoint.
+ARM_PAYLOAD_PATHS = {
+    "rewards.KILLED_OPPONENT",
+    "config.learning_rate",
+    "learner_state.optimizer.param_groups[0].lr",
+}
+
+
 def arm_payload(initial, arm):
     from copy import deepcopy
 
@@ -339,8 +476,18 @@ def bind(root):
         or len(initial["replay_state"]["states"]) != 0
     ):
         raise ValueError("Need fresh initialization, empty optimizer and replay")
-    if not payload_equal(initial, arm_payload(initial, "control")):
-        raise ValueError("Control arm does not match the #168 initialization")
+    # The control arm used to be required to byte-match the initialization, which
+    # assumed a campaign's baseline is always the checkpoint's own defaults. Once
+    # a comparison registers a shared non-default baseline - every arm at the
+    # learning rate a previous ladder selected - that is no longer true, and the
+    # assumption would forbid the registration rather than protect it. What the
+    # check is actually for is that no arm differs from the verified
+    # initialization in anything the registration did not declare, so that is
+    # what is asserted, for every arm rather than only the control.
+    for arm in cfg["arms"]:
+        changed = payload_difference_paths(initial, arm_payload(initial, arm))
+        if not changed <= ARM_PAYLOAD_PATHS:
+            raise ValueError(f"Arm {arm} alters the initialization outside its registration")
     for network in ("online_network", "target_network"):
         if not payload_equal(
             initial["learner_state"][network], reference["learner_state"][network]
@@ -539,25 +686,63 @@ def play(
 
 
 def train_job(root, output, arm, replica):
-    """Train one replica of one arm to its registered fixed-final checkpoint.
+    """Train one replica of one arm, retaining what a long run has to retain.
 
-    Only the final checkpoint is retained. A checkpoint carries its replay
-    buffer, so it grows to about 3.4 MB once replay reaches capacity around
-    episode 37; one copy per episode would be roughly 29 GB for this campaign
-    and is never read, because the design evaluates fixed-final checkpoints and
-    the runner has no within-job resume. The per-episode audit trail is the
+    A checkpoint carries its replay buffer, so one copy per episode would be
+    tens of gigabytes and is never read. Two cadences are kept instead, both
+    registered and both cheap:
+
+    `resume.pt` is a rolling copy taken every `resume_checkpoint_every`
+    episodes so a job killed by a blackout continues from minutes ago rather
+    than from episode zero. It lives beside the audit trail in a per-replica
+    directory that survives the attempt it was written by, because the
+    supervisor gives every retry a fresh output directory.
+
+    `milestone-<episode>.pt` is retained at each registered milestone, so a
+    trajectory can be evaluated where it was rather than only where it stopped.
+    Training is sequential, so the milestone at episode N is exactly the agent a
+    run of N episodes would have produced from the same seeds - which is why a
+    budget question needs one long run and not one run per budget.
+
+    Both default to off, so a registration that asks for neither behaves exactly
+    as the fixed-final design did. The per-episode audit trail remains the
     chained `online_before_sha256`/`online_after_sha256` pair in
     `episodes.json.gz`, which pins the whole trajectory at negligible size.
     """
     cfg = config()
     setting = cfg["arm_settings"][arm]
-    output.mkdir(parents=True, exist_ok=False)
+    output.mkdir(parents=True, exist_ok=True)
     checkpoint = output / "checkpoint.pt"
-    shutil.copyfile(root / f"initial-{arm}.pt", checkpoint)
-    rows = []
+    retained = root / "training-resume" / f"{arm}-r{replica + 1}"
+    retained.mkdir(parents=True, exist_ok=True)
+    milestones = set(cfg.get("checkpoint_milestones", []))
+    resume_every = cfg.get("resume_checkpoint_every", 0)
+
+    completed, rows = resume_state(retained)
+    if completed:
+        shutil.copyfile(retained / "resume.pt", checkpoint)
+        zip_json(output / "episodes.json.gz", rows)
+    else:
+        shutil.copyfile(root / f"initial-{arm}.pt", checkpoint)
+
+    total = len(cfg["training_world_seeds"][replica])
+
+    def retain(index):
+        episode = index + 1
+        if episode in milestones:
+            shutil.copyfile(checkpoint, retained / f"milestone-{episode:06d}.pt")
+        if resume_every and (episode % resume_every == 0 or episode == total):
+            # The trail is durable before the copy is taken, so the pair a
+            # restart reads can never disagree in the dangerous direction.
+            zip_json(retained / "episodes.json.gz", rows)
+            shutil.copyfile(checkpoint, retained / "resume.pt.tmp")
+            _durable_replace(retained / "resume.pt.tmp", retained / "resume.pt")
+
     started, cpu = time.monotonic(), time.process_time()
     seed = cfg["replica_agent_seeds"][replica]
     for index, world_seed in enumerate(cfg["training_world_seeds"][replica]):
+        if index < completed:
+            continue
         row = play(
             root,
             checkpoint,
@@ -579,6 +764,7 @@ def train_job(root, output, arm, replica):
             raise ValueError("Checkpoint episode counter mismatch")
         rows.append(row)
         zip_json(output / "episodes.json.gz", rows)
+        retain(index)
     write(
         output / "result.json",
         {
