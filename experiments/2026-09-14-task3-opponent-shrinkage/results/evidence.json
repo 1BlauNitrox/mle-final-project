@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "2dca7ca139ab025ecd5e25fcdd2f4924b988b0b80f14aba7e261b40331d771be",
+  "archive_size_bytes": 177676231,
+  "manifest_sha256": "9a7e1d6ee30419f3ce121d83426193073ed05ee2fe0d300eaf8ab90d25054f3b",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task3-opponent-shrinkage-evidence-v1/task3-approach-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task3-opponent-shrinkage-evidence-v1/task3-approach-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; downloaded and checksum-verified on the PC before analysis.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task3-approach-evidence.tar.gz",
+  "reproduce_command": "$env:TASK3_APPROACH_PROFILE='opponent-shrinkage'; python -m scripts.pilot_task3_approach import --root <root> --archive task3-approach-evidence.tar.gz --sha256 2dca7ca139ab025ecd5e25fcdd2f4924b988b0b80f14aba7e261b40331d771be; python -m scripts.pilot_task3_approach analyze --root <root> --output <root>/analysis-reproduced.json"
+}
