@@ -20,8 +20,8 @@
     "refs/remotes/origin/task/freeze-task3-incumbent": "50a0080463eac058f6b880b5773b0891550a997c",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 675,
-  "blob_set_sha256": "50c6e9bb1774618d06eaf7cf1d1dbfa9fea261cef74972110f612f7708d2d5bf",
+  "unique_text_blobs": 676,
+  "blob_set_sha256": "981756ffead0fb6e83226bca9024c82d6bd50c37fb2a73e938a3b9eb0a6b6d17",
   "excluded_own_registration": "experiments/2026-09-15-task4-lineup-trajectory/",
   "excluded_own_branch_revision": "refs/remotes/origin/feat/task4-checkpoint-resume",
   "colliding_files": [],
