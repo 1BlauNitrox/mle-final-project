@@ -56,6 +56,11 @@ def cross_profile():
 def audit(profile):
     groups = populations(profile_config(profile))
     candidates = set().union(*groups.values())
+    # Once a registration is pushed its own blobs are tracked, and every one of
+    # its seeds then "collides" with itself. A file matching itself is not
+    # evidence of reuse, so the profile's own registration directory is excluded
+    # and the audit stays rerunnable after registration.
+    own = f"experiments/2026-09-15-task4-{profile}/"
     refs = subprocess.check_output(
         ["git", "for-each-ref", "--format=%(refname)", "refs/remotes/origin"], cwd=ROOT, text=True
     ).splitlines()
@@ -73,6 +78,8 @@ def audit(profile):
         )
         for line in listing.splitlines():
             meta, name = line.split("\t", 1)
+            if name.startswith(own):
+                continue
             if Path(name).suffix in {".json", ".yaml", ".yml", ".py", ".md"}:
                 objects.setdefault(meta.split()[2], name)
     # Stream immutable blobs once. Values from old/final registrations are never output.
@@ -125,6 +132,7 @@ def audit(profile):
         "remote_revisions": revisions,
         "unique_text_blobs": len(objects),
         "blob_set_sha256": hashlib.sha256("\n".join(sorted(objects)).encode()).hexdigest(),
+        "excluded_own_registration": own,
         "colliding_files": sorted(collisions),
         "cross_profile_separation": cross_profile(),
         "passed": not collisions,

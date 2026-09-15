@@ -11,13 +11,16 @@
     "refs/remotes/origin/chore/188-freeze-task3-incumbent": "ebaedd8f49cc3c59e96895f0bfc74b9d29aef414",
     "refs/remotes/origin/docs/task3-agent-card-fix": "a2a20f5bcf25128aa07e602cac6b706c08fda809",
     "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
+    "refs/remotes/origin/experiment/task4-finetune-dose": "34d8336cfcb345c39d86d2977f7eed214d4fc529",
+    "refs/remotes/origin/experiment/task4-opponent-training": "7296d65a70b352c82baca869d48ca239ab90f241",
     "refs/remotes/origin/feature/183-freeze-tabular-task2": "ae6b883685972c4154030e4547e4c43a45458596",
     "refs/remotes/origin/main": "72f63ba98caa454f170d536c963f5e0bcab98a70",
-    "refs/remotes/origin/task/freeze-task3-incumbent": "3427ab048b22c14f60a69848eff6124ccb504d0a",
+    "refs/remotes/origin/task/freeze-task3-incumbent": "50a0080463eac058f6b880b5773b0891550a997c",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 650,
-  "blob_set_sha256": "7f7c20e5f0828886e5c221108f2e1a583da0336a969f164004ffdff80f8a0ccc",
+  "unique_text_blobs": 661,
+  "blob_set_sha256": "ec4936ab7e95280eca36459886be6baad8948ce393beee405ecab59e4d20cc56",
+  "excluded_own_registration": "experiments/2026-09-15-task4-opponent-mixture/",
   "colliding_files": [],
   "cross_profile_separation": {
     "profiles": {
@@ -30,9 +33,14 @@
         "training_including_opponents": 4806,
         "development": 320,
         "smoke": 11
+      },
+      "finetune-dose": {
+        "training_including_opponents": 4806,
+        "development": 320,
+        "smoke": 11
       }
     },
-    "compared_pairs": 1,
+    "compared_pairs": 3,
     "shared_seed_count": 0,
     "passed": true
   },
