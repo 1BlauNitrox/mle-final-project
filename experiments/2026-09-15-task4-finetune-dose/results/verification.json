@@ -1,0 +1,44 @@
+{
+  "scope": "completed run verification and registered analyzer output",
+  "host": "DESKTOP-4QELBC5",
+  "archive": {
+    "filename": "task4-competition-evidence.tar.gz",
+    "size_bytes": 167655627,
+    "sha256": "0a2dc0bde30bca4e191ba1b7a2d1c3afb0afff617233a416894c814f3465c052",
+    "manifest_sha256": "d2e44e78c4ae23f7973cb8daeff760e9832eefaee0376694c5f601b3a23f0f07",
+    "public_locator": "task4-finetune-dose-evidence-v1"
+  },
+  "tool_source": "aa2cf5cc4b1664fcec241d353678f32e19ba2a9b",
+  "runtime_source": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "config_sha256": "75403e404fe3c150ae075415d20a7a287bce3bdeca9848d58864f8c6218e321d",
+  "input_sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+  "initial_sha256": "8076ea7ddcf2c934a9a9ef21d3dc87833ededf860cf8fd8bf486d1e222c2ccf2",
+  "seed_audit_sha256": "8f3c2d1094eb95e623912d0b3bd71f7ebbfc43ea2f911bb84d7375966c70e2f4",
+  "training_jobs": 18,
+  "evaluation_jobs": 76,
+  "latency_jobs": 19,
+  "failed_jobs": 0,
+  "resources": {
+    "training": {
+      "cpu_seconds": 33949.28125,
+      "wall_seconds": 7715.528904400002,
+      "peak_memory_bytes": 1724014592,
+      "passed": true
+    },
+    "evaluation": {
+      "cpu_seconds": 30622.390625,
+      "wall_seconds": 6522.0537030999985,
+      "peak_memory_bytes": 1181663232,
+      "passed": true
+    },
+    "latency": {
+      "cpu_seconds": 792.484375,
+      "wall_seconds": 845.2771610000054,
+      "peak_memory_bytes": 234053632,
+      "passed": true
+    }
+  },
+  "analyzer": "scripts.pilot_task4_competition analyze",
+  "registered_screen_passed": false,
+  "selected_checkpoint": null
+}
