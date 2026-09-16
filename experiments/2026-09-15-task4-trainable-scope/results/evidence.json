@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "cac3eae88f2ca8b269222eb48983b7d150043aadfbe2f3ede5e6b1d36c3f85d0",
+  "archive_size_bytes": 125455794,
+  "manifest_sha256": "745a4192a1260f28fb677b59413d81dd2574b6b06774689a5585a10954001fb5",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-trainable-scope-evidence-v1/task4-competition-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-trainable-scope-evidence-v1/task4-competition-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; download both assets and verify the archive checksum before import.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task4-competition-evidence.tar.gz",
+  "reproduce_command": "$env:TASK4_PROFILE='trainable-scope'; python -m scripts.pilot_task4_competition import --root <root> --archive task4-competition-evidence.tar.gz --sha256 cac3eae88f2ca8b269222eb48983b7d150043aadfbe2f3ede5e6b1d36c3f85d0; python -m scripts.pilot_task4_competition analyze --root <root> --output <root>/analysis-reproduced.json"
+}
