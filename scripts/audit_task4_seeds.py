@@ -17,11 +17,14 @@ import re
 import subprocess
 from pathlib import Path
 
-from scripts.pilot_task4_competition import PROFILES, ROOT, write
+from scripts.pilot_task4_competition import PROFILE_DATE, PROFILES, ROOT, write
 
 
 def profile_config(profile):
-    path = ROOT / f"experiments/2026-09-15-task4-{profile}/config.json"
+    from scripts.pilot_task4_competition import PROFILE_DATE
+
+    date = PROFILE_DATE.get(profile, "2026-09-15")
+    path = ROOT / f"experiments/{date}-task4-{profile}/config.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -60,7 +63,7 @@ def audit(profile):
     # its seeds then "collides" with itself. A file matching itself is not
     # evidence of reuse, so the profile's own registration directory is excluded
     # and the audit stays rerunnable after registration.
-    own = f"experiments/2026-09-15-task4-{profile}/"
+    own = f"experiments/{PROFILE_DATE.get(profile, '2026-09-15')}-task4-{profile}/"
     # The report also has to converge. Preparation requires a committed report,
     # committing and pushing it advances the branch that carries it, and the
     # branch's own revision is part of what the report records - so each run
@@ -166,7 +169,8 @@ def main():
     ))
     args = parser.parse_args()
     result = audit(args.profile)
-    write(ROOT / f"experiments/2026-09-15-task4-{args.profile}/seed-audit.json", result)
+    date = PROFILE_DATE.get(args.profile, "2026-09-15")
+    write(ROOT / f"experiments/{date}-task4-{args.profile}/seed-audit.json", result)
     print(json.dumps({k: v for k, v in result.items() if k != "remote_revisions"}, indent=2))
 
 

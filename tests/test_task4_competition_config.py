@@ -23,17 +23,22 @@ FACTORS = (
     "kill_reward",
     "learning_rate",
     "random_episode_period",
+    "replay_capacity",
 )
 EXPECTED_FACTOR = {
     "trainable-scope": "trainable_scope",
     "opponent-mixture": "training_opponents",
     "lineup-trajectory": "training_opponents",
     "exploration-period": "random_episode_period",
+    "replay-capacity": "replay_capacity",
 }
 
 
 def load(profile):
-    path = ROOT / f"experiments/2026-09-15-task4-{profile}/config.json"
+    from scripts.pilot_task4_competition import PROFILE_DATE
+
+    date = PROFILE_DATE.get(profile, "2026-09-15")
+    path = ROOT / f"experiments/{date}-task4-{profile}/config.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 

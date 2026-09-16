@@ -61,14 +61,19 @@ PROFILES = (
     "opponent-mixture",
     "lineup-trajectory",
     "exploration-period",
+    "replay-capacity",
 )
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
-CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
+PROFILE_DATE = {"replay-capacity": "2026-09-16"}
+CONFIG = ROOT / (
+    f"experiments/{PROFILE_DATE.get(PROFILE, '2026-09-15')}-task4-{PROFILE}/config.json"
+)
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
     "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
+    "replay-capacity": "3d74e123c277e9fe24dabebe998ddab7bc78ae4283c5d690e6c032df2e76a6e1",
 }
 ARM_FACTORS = (
     "trainable_scope",
@@ -78,6 +83,7 @@ ARM_FACTORS = (
     "kill_reward",
     "learning_rate",
     "random_episode_period",
+    "replay_capacity",
 )
 # Everything the agent may be trained against, so an unregistered opponent
 # cannot reach a training game through a configuration edit alone.
@@ -491,6 +497,7 @@ def payload_difference_paths(a, b, prefix=""):
 ARM_PAYLOAD_PATHS = {
     "rewards.KILLED_OPPONENT",
     "config.learning_rate",
+    "config.replay_capacity",
     "learner_state.optimizer.param_groups[0].lr",
 }
 
@@ -503,6 +510,11 @@ def arm_payload(initial, arm):
     result["rewards"]["KILLED_OPPONENT"] = setting["kill_reward"]
     rate = setting["learning_rate"]
     result["config"]["learning_rate"] = rate
+    # The agent rebuilds its buffer at config.replay_capacity when it restores a
+    # checkpoint, and asserts the two agree, so the capacity travels with the
+    # initialization like any other registered arm setting.
+    if "replay_capacity" in setting:
+        result["config"]["replay_capacity"] = setting["replay_capacity"]
     for group in result["learner_state"]["optimizer"]["param_groups"]:
         group["lr"] = rate
     return result
