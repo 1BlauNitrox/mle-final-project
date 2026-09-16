@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "9328f356fb5e2bf8fd434103f199ad84e0cb408341887b7fcd90bb903e08ae93",
+  "archive_size_bytes": 176085335,
+  "manifest_sha256": "1f4bdb4719fb75c860541346d248be16d7cddb75603a459a442b149194bc687c",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-kill-reward-alignment-evidence-v1/task4-competition-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-kill-reward-alignment-evidence-v1/task4-competition-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; download both assets and verify the archive checksum before import.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task4-competition-evidence.tar.gz",
+  "reproduce_command": "$env:TASK4_PROFILE='kill-reward-alignment'; python -m scripts.pilot_task4_competition import --root <root> --archive task4-competition-evidence.tar.gz --sha256 9328f356fb5e2bf8fd434103f199ad84e0cb408341887b7fcd90bb903e08ae93; python -m scripts.pilot_task4_competition analyze --root <root> --output <root>/analysis-reproduced.json"
+}
