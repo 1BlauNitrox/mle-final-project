@@ -498,6 +498,7 @@ ARM_PAYLOAD_PATHS = {
     "rewards.KILLED_OPPONENT",
     "config.learning_rate",
     "config.replay_capacity",
+    "replay_state.capacity",
     "learner_state.optimizer.param_groups[0].lr",
 }
 
@@ -510,11 +511,18 @@ def arm_payload(initial, arm):
     result["rewards"]["KILLED_OPPONENT"] = setting["kill_reward"]
     rate = setting["learning_rate"]
     result["config"]["learning_rate"] = rate
-    # The agent rebuilds its buffer at config.replay_capacity when it restores a
-    # checkpoint, and asserts the two agree, so the capacity travels with the
-    # initialization like any other registered arm setting.
+    # A checkpoint records its replay capacity twice: in the config, and in the
+    # serialized buffer state. The agent rebuilds the buffer at the config value
+    # and then refuses a state whose own capacity disagrees, so both have to move
+    # together or nothing loads. Shrinking is only well defined while the buffer
+    # is empty, which a fresh initialization is and a resumed checkpoint is not.
     if "replay_capacity" in setting:
-        result["config"]["replay_capacity"] = setting["replay_capacity"]
+        capacity = setting["replay_capacity"]
+        state = result["replay_state"]
+        if len(state["states"]) and capacity < state["capacity"]:
+            raise ValueError("Cannot shrink a populated replay buffer")
+        result["config"]["replay_capacity"] = capacity
+        state["capacity"] = capacity
     for group in result["learner_state"]["optimizer"]["param_groups"]:
         group["lr"] = rate
     return result
