@@ -1,0 +1,22 @@
+{
+  "bound_source": "fc11aa15cddbc47d954c5cc0d92c6f847f8df414",
+  "full_suite_passed": 925,
+  "full_suite_subtests": 11,
+  "focused_latest_passed": 9,
+  "lint": "passed",
+  "compile": "passed",
+  "framework_smoke": "passed",
+  "smoke": {
+    "scope": "mechanical_smoke_excluded_from_pilot",
+    "training_episodes": 2,
+    "evaluation_episodes": 7,
+    "optimizer_updates": 37,
+    "checkpoint_sha256": "433ef24c516ef5931f791d1a2c1e6631a776736e163384be818b2f98004181bf"
+  },
+  "smoke_resources": {
+    "cpu_seconds": 39.71875,
+    "wall_seconds": 40.4803694000002,
+    "peak_memory_bytes": 302104576
+  },
+  "scientific_execution_started": false
+}

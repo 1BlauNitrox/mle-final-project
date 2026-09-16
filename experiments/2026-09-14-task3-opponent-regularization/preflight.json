@@ -1,0 +1,25 @@
+{
+  "bound_source": "fca919c",
+  "full_suite_passed": 926,
+  "full_suite_subtests": 11,
+  "lint": "passed",
+  "compile": "passed",
+  "smoke": {
+    "scope": "mechanical_smoke_excluded_from_pilot",
+    "training_episodes": 2,
+    "evaluation_episodes": 7,
+    "optimizer_updates": 301,
+    "checkpoint_sha256": "d2bd206139361a424fffb51c4a4c1038de85939007229f32819791367e0bf6af"
+  },
+  "smoke_resources": {
+    "cpu_seconds": 42.28125,
+    "wall_seconds": 43.174197799991816,
+    "peak_memory_bytes": 302080000
+  },
+  "scientific_execution_started": false,
+  "timing_reference_training_seconds": 7343.208165599965,
+  "timing_reference_evaluation_seconds": 8506.818724699959,
+  "timing_reference_issue": 175,
+  "estimate_safety_factor": 1.2,
+  "timing_limitation": "Matched smoke scaling is an estimate, not a guarantee; fixed cumulative resource limits remain authoritative."
+}
