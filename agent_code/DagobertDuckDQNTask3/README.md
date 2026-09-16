@@ -4,6 +4,21 @@ Task 3 remains exploratory. No trained replica passes the cumulative hunting
 and Task 1/2 retention gates, and no replica is selected. The committed
 checkpoint is a compatibility fixture, not a trained Task 3 candidate.
 
+## Task 4 runs inside this agent
+
+The Task 4 tournament campaign was carried out in this agent directory rather than
+in a separate `DagobertDuckDQNTask4`, because Task 4 needed no new infrastructure.
+The 39-input feature schema already carries public-opponent awareness, the network
+shape, action order, legality masking and persistence format are unchanged, and the
+Task 4 question was never architectural - it was how to train the existing network
+against competitive opponents. Every Task 4 comparison therefore plays this agent
+under this name, takes a Task 3 artifact as its starting point, and differs from
+Task 3 only in the training opponents and the registered training factor.
+
+Nothing about a Task 4 run is a Task 3 result. The Task 3 gates, the Task 3
+selection status and the committed checkpoint below are unaffected by it, and no
+Task 4 comparison has promoted a checkpoint into this directory.
+
 ## Experiment findings
 
 | Experiment | Main result | Decision |
