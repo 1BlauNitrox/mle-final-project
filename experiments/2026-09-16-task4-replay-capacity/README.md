@@ -86,9 +86,9 @@ verification command are in `results/evidence.json` and `results/verification.js
 ## Limitations and next step
 
 Four replicas and 1,000 episodes can exclude a large capacity effect at this
-Budget. They cannot exclude a small one, and they say nothing about capacity at the
+budget. They cannot exclude a small one, and they say nothing about capacity at the
 budgets a long run would reach, which is where the argument for a larger buffer was
-always strongest. N no effect is visible where this campaign can see, so
+always strongest. No effect is visible where this campaign can see, so
 the inherited value is kept because nothing justifies changing
 it, not because a larger buffer has been shown to be useless.
 
