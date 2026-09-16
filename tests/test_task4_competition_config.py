@@ -26,6 +26,7 @@ FACTORS = (
 EXPECTED_FACTOR = {
     "trainable-scope": "trainable_scope",
     "opponent-mixture": "training_opponents",
+    "finetune-dose": "learning_rate",
 }
 
 
@@ -109,8 +110,9 @@ def test_training_evaluation_and_smoke_seeds_stay_separate(profile):
 
 def test_no_seed_is_shared_with_the_other_task4_profile_or_with_task3():
     spaces = {p: seed_space(load(p)) for p in PROFILES}
-    first, second = PROFILES
-    assert not spaces[first] & spaces[second]
+    for index, first in enumerate(PROFILES):
+        for second in PROFILES[index + 1 :]:
+            assert not spaces[first] & spaces[second], f"{first} reuses seeds from {second}"
 
     task3 = {}
     for name in ("approach-shaping", "update-cadence", "compensated-kill-reward",
