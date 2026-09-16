@@ -7512,7 +7512,7 @@
   "scientific_gates": "Original cumulative Task 1/2/3 requirements are unchanged; this exploratory comparison cannot retrospectively establish any of them.",
   "known_gate_defect": "The frozen_online_weights gate is reported as not applicable here, because every arm registers the scope whose purpose is to move those weights. The invalid-action gate compares each trained artifact against the unchanged reference rather than demanding a global zero it could never reach.",
   "training_limits": {
-    "wall_seconds": 28800,
+    "wall_seconds": 43200,
     "cpu_seconds": 150000,
     "memory_bytes": 5368709120
   },
@@ -7550,5 +7550,6 @@
       271990010
     ],
     "agent_seed": 271999999
-  }
+  },
+  "budget_amendment": "Owner-authorized on 16 September 2026, after the training stage stopped itself at its registered 28,800 second wall ceiling with five of six replicas complete and treatment-r3 at 1,375 of 2,400 episodes. The ceiling was mis-sized at registration: six jobs on five workers leave the sixth to run alone once the first finishes, a serial tail worth its whole runtime, and 14,400 episodes needed about nine and a half hours rather than eight. CPU and memory ceilings were not approached - 104,615 of 150,000 CPU seconds and 2.1 of 5.0 GiB. Only the wall ceiling is raised, to 43,200 seconds; no arm, seed, endpoint, gate, threshold or selection rule is touched, and a resource ceiling is not a scientific gate. The run resumes treatment-r3 from its retained checkpoint rather than restarting."
 }
