@@ -2,21 +2,13 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 import pytest
 
-from scripts.analyze_task4_competition import (
+from scripts.analyze_task4_competition_v2 import (
     blocking_gates,
     legality_not_worse,
     median_replica_by_score,
-)
-
-ROOT = Path(__file__).resolve().parents[1]
-COMPLETED = (
-    "experiments/2026-09-15-task4-trainable-scope/results/analysis.json",
-    "experiments/2026-09-15-task4-opponent-mixture/results/analysis.json",
+    require_versioned_registration,
 )
 
 
@@ -42,22 +34,8 @@ def test_the_median_replica_is_selected_by_score_and_the_best_one_is_not():
     assert suite["treatment-r3"]["score"] == ordered[1]["score"]
 
 
-@pytest.mark.parametrize("path", COMPLETED)
-def test_the_respecified_rule_does_not_retrospectively_promote_a_completed_comparison(path):
-    """The rule was re-specified because it could never pass, not to make ours pass.
-
-    Both completed comparisons stay non-promotable under it, and the reasons are
-    now substantive - no arm has significantly beaten the incumbent on score -
-    rather than structural.
-    """
-    record = ROOT / path
-    if not record.exists():
-        pytest.skip(f"{path} lands with its own results branch")
-    analysis = json.loads(record.read_text(encoding="utf-8"))
-    invalid = analysis["invalid_actions_by_artifact"]
-    assert not legality_not_worse(invalid), "a trained artifact exceeded the reference"
-    for arm, differences in analysis["paired_differences"]["classic-rule-based"].items():
-        if arm == "control":
-            continue
-        lower = differences["reference"]["score"]["paired_crossed_bootstrap"][0]
-        assert lower <= 0, f"{arm} would now clear the score gate; re-check the disclosure"
+def test_corrected_rule_requires_a_new_registered_protocol_version():
+    with pytest.raises(ValueError, match="promotion_rule_version=2"):
+        require_versioned_registration({"profile": "completed-v1"})
+    registered = require_versioned_registration({"promotion_rule_version": 2})
+    assert registered["promotion_rule_version"] == 2
