@@ -62,9 +62,10 @@ PROFILES = (
     "lineup-trajectory",
     "exploration-period",
     "replay-capacity",
+    "kill-reward-alignment",
 )
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
-PROFILE_DATE = {"replay-capacity": "2026-09-16"}
+PROFILE_DATE = {"replay-capacity": "2026-09-16", "kill-reward-alignment": "2026-09-16"}
 CONFIG = ROOT / (
     f"experiments/{PROFILE_DATE.get(PROFILE, '2026-09-15')}-task4-{PROFILE}/config.json"
 )
@@ -74,6 +75,7 @@ PROFILE_HASHES = {
     "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
     "replay-capacity": "b70fb6062180f4da414890ecf2a69547d32fb4370a4eca901af6a314256c2b61",
+    "kill-reward-alignment": "0e16dca57bea5ad1f7198a15927f2783dfda446069ac3696eef25c2b0ed23877",
 }
 ARM_FACTORS = (
     "trainable_scope",

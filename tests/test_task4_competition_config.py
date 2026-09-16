@@ -31,6 +31,7 @@ EXPECTED_FACTOR = {
     "lineup-trajectory": "training_opponents",
     "exploration-period": "random_episode_period",
     "replay-capacity": "replay_capacity",
+    "kill-reward-alignment": "kill_reward",
 }
 
 
