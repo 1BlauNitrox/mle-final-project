@@ -9,10 +9,10 @@ from pathlib import Path
 from statistics import fmean
 from typing import Any
 
+from training.aggregate import read_episodes_csv
 from training.analyze_issue135_escape_distance import (
     DETERMINISTIC_COLUMNS,
     _read_json,
-    _suite_rows,
 )
 from training.run_experiment import REPOSITORY_ROOT
 
@@ -26,6 +26,59 @@ SUITES = {
     "coin-heaven-primary": "coin-heaven",
     "loot-crate-primary": "loot-crate",
 }
+
+
+def _suite_rows(
+    plan_directory: Path,
+    status: dict[str, Any],
+    resolved: dict[str, Any],
+    replica: str,
+    suite_id: str,
+) -> list[dict[str, Any]]:
+    """Return only the observed agent row from each multi-agent episode."""
+    prefix = f"eval-{replica}-{suite_id}-seed-"
+    keys = sorted(key for key in status["jobs"] if key.startswith(prefix))
+    expected = {
+        job["run_id"]: job
+        for job in resolved["jobs"]
+        if job["kind"] == "evaluation"
+        and job["replica"] == replica
+        and job["stage_or_suite"] == suite_id
+    }
+    if set(keys) != set(expected):
+        raise ValueError(f"Evaluation matrix mismatch for {prefix}")
+
+    result: list[dict[str, Any]] = []
+    for key in keys:
+        job = status["jobs"][key]
+        attempts = job.get("attempts", [])
+        if job.get("status") != "completed" or not attempts:
+            raise ValueError(f"Evaluation job is not complete: {key}")
+        run_directory = plan_directory / attempts[-1]["output"]
+        metadata = _read_json(run_directory / "metadata.json")
+        registered = expected[key]
+        for field in ("world_seed", "agent_seed", "scenario", "rounds"):
+            if metadata.get(field) != registered[field]:
+                raise ValueError(f"Metadata mismatch for {key}: {field}")
+        if (
+            metadata.get("mode") != "evaluation"
+            or metadata.get("opponents") != registered["opponents"]
+        ):
+            raise ValueError(f"Metadata mismatch for {key}: evaluation conditions")
+
+        observed_agent = metadata.get("observed_agent")
+        episode_rows = [
+            row
+            for row in read_episodes_csv(run_directory / "episodes.csv")
+            if row.get("agent") == observed_agent
+        ]
+        if len(episode_rows) != 1:
+            raise ValueError(f"Expected one observed-agent episode row for {key}")
+        row = dict(episode_rows[0])
+        row["world_seed"] = metadata["world_seed"]
+        row["agent_seed"] = metadata["agent_seed"]
+        result.append(row)
+    return result
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = OUTPUT) -> dict[str, Any]:

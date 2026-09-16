@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 186
-status: preregistered
+status: completed_failed
 agent: DerKleineKonkurrenzvernichter
 hypothesis: Opponent-aware tabular training can learn non-zero peaceful-agent elimination while retaining earlier-task behavior.
 independent_change: Three public-opponent state values appended to the frozen five-value Task 2 state.
