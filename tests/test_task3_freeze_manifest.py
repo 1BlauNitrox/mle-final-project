@@ -16,11 +16,13 @@ def test_frozen_incumbent_manifest_matches_checkpoint() -> None:
     checkpoint = (AGENT / "checkpoint.pt").read_bytes()
     digest = hashlib.sha256(checkpoint).hexdigest()
 
-    assert artifact["status"] == "task3_closed_incumbent_selected_descriptively"
+    assert artifact["status"] == "task3_opponent_awareness_provisional"
     assert artifact["artifact"]["sha256"] == digest
     assert artifact["artifact"]["size_bytes"] == len(checkpoint)
-    assert freeze["selection"]["decision"] == "descriptive_owner_selection"
-    assert freeze["selection"]["gate_status"] == "not_passed"
+    assert freeze["selection"]["decision"] == "no_checkpoint_selected"
+    assert freeze["selection"]["selected_by"] is None
     assert freeze["training"]["scientific_training_authorized"] is False
     assert freeze["artifact"]["sha256"] == digest
-    assert freeze["artifact"]["previous_fixture_sha256"] != digest
+    assert freeze["artifact"]["sha256"] != json.loads(
+        (AGENT / "candidate-artifact.json").read_text(encoding="utf-8")
+    )["artifact"]["sha256"]
