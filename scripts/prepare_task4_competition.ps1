@@ -10,7 +10,6 @@ this host before anyone authorizes the run.
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('trainable-scope', 'opponent-mixture', 'lineup-trajectory', 'exploration-period')]
     [string]$Profile = 'trainable-scope',
     [string]$Root = "training_outputs/task4-$Profile",
     [string]$Archive = 'training_outputs/inputs/issue175-pilot-evidence.tar.gz',
