@@ -64,7 +64,15 @@ def test_selects_median_only_with_benefit_and_all_original_gates():
 
 
 def test_masked_copy_changes_only_flag_and_rejects_trained_or_tampered_state(tmp_path):
-    source = mask.ROOT / "agent_code/DagobertDuckDQNTask3/checkpoint.pt"
+    # The helper exists to add the masking flag to an unmasked fresh migration,
+    # so it needs an unmasked source. The installed incumbent already carries
+    # masking, so derive the source instead of relying on the agent's default.
+    installed = torch.load(
+        mask.ROOT / "agent_code/DagobertDuckDQNTask3/checkpoint.pt", weights_only=True
+    )
+    installed["config"]["action_masking"] = False
+    source = tmp_path / "unmasked.pt"
+    torch.save(installed, source)
     original_hash = mask.sha256(source)
     target = tmp_path / "masked.pt"
     mask.masked_initialization(source, target)
