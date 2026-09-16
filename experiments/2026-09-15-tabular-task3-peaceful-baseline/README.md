@@ -12,7 +12,7 @@
 
 ## Hypothesis
 
-Adding a publich opponent description while retaining task 2 capabilities 
+Adding a publich opponent description while retaining task 2 capabilities
 make a working task 3 baseline.
 
 ## Protocol

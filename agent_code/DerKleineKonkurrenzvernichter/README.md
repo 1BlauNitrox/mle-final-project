@@ -40,4 +40,3 @@ a Task 3 candidate. Earlier-task collection gates passed (`0.207` Classic,
 decision-time observation exceeded the registered limit; both remain explicit
 limitations. The Task 2 parent itself failed its full Issue #183 confirmation,
 and that limitation also remains part of this successor's provenance.
-
