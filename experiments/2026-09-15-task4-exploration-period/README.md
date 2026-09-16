@@ -45,11 +45,18 @@ Score against the unchanged incumbent, every interval excluding zero:
 | reduced — period 10 | +1.0625 | [+0.1313, +2.0000] |
 | sparse — period 20 | +0.8000 | [+0.1187, +1.4751] |
 
-The registered hypothesis is contradicted, and monotonically. Less random play is
-worse, not more efficient: score, strict wins, eliminations and collection all
-fall as the random episode becomes rarer. The exploration the schedule buys is
-still paying for itself at 1,200 episodes, and the existing period of five is the
-best of the three.
+The registered hypothesis is not supported, but neither is it refuted at this
+precision. Point estimates fall monotonically as the random episode becomes rarer —
+score, strict wins, eliminations and collection all decline — yet the direct
+contrasts against the control arm both include zero by wide margins: period 10 is
+−0.3625 [−1.4000, +0.7875] on score and period 20 is −0.6250 [−1.4688, +0.1187].
+Those intervals permit a meaningful benefit from reducing random play as well as
+the harm the point estimates suggest.
+
+What the comparison does establish is that all three arms beat the unchanged
+incumbent, each with its interval excluding zero. What it cannot establish is an
+ordering between them. The period of five is the best of the three by point
+estimate only.
 
 The control arm eliminates 0.144 opponents per game against the incumbent's 0.025,
 and collects 0.256 against 0.164, while cutting self-kills from 0.650 to 0.512.
@@ -105,12 +112,16 @@ the run is unaffected; a longer budget on this tool would not have completed.
 ## Limitations and next step
 
 Four replicas is thin, and the intervals are correspondingly wide — the control
-arm's spans 0.52 to 2.51. The ordering across the three arms is consistent on every
-endpoint, which is the stronger evidence here than any single interval.
+arm's spans 0.52 to 2.51, and every between-arm contrast includes zero. The
+ordering is consistent across endpoints, which makes it worth recording, but a
+consistent ordering of imprecise estimates is a weaker thing than it looks: with
+four replicas the comparison cannot separate the arms, and no equivalence margin
+was registered that would let it claim they are the same either.
 
 Two things this comparison hands the long training run. The exploration period
-stays at five, because reducing it costs performance monotonically. And the budget
-signal is encouraging: the same family of configuration gained 0.708 score over the
+stays at five, because nothing here gives a reason to change it — not because
+reducing it has been shown to cost performance. And the budget signal is
+encouraging: the same family of configuration gained 0.708 score over the
 incumbent at 400 episodes and 1.425 at 1,200, so the gain is still growing where
 the campaign has so far stopped looking.
 
