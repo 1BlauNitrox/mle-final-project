@@ -1,0 +1,67 @@
+{
+  "profile": "final-training",
+  "scope": "opaque collision-only audit; no held-out values exposed or games run",
+  "populations": {
+    "training_including_opponents": 180003,
+    "development": 400,
+    "smoke": 11
+  },
+  "remote_revisions": {
+    "refs/remotes/origin/archive/130-before-scope-repair": "05cde8b5251e5c771610912707da8f5b31896211",
+    "refs/remotes/origin/chore/188-freeze-task3-incumbent": "ebaedd8f49cc3c59e96895f0bfc74b9d29aef414",
+    "refs/remotes/origin/docs/task4-inside-task3-agent": "c4e65e08e871a3d7ca5e6601f3108d93c78e643d",
+    "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
+    "refs/remotes/origin/experiment/task4-exploration-period-results": "16d4f2dd7fa3455aa33620da0302a29a134da133",
+    "refs/remotes/origin/experiment/task4-kill-reward-alignment": "66d9a8432c2db1c2e1677e082a45a0bada1469c2",
+    "refs/remotes/origin/experiment/task4-kill-reward-results": "be2d1257a0d740c85ab1695fb770dbf8306e3ee5",
+    "refs/remotes/origin/experiment/task4-lineup-trajectory-results": "a3499ad2eee851bb436fc72ce9e6f92dfaa56248",
+    "refs/remotes/origin/experiment/task4-replay-capacity": "ac55615681614b61924841c6acf5b78be0ef92ee",
+    "refs/remotes/origin/experiment/task4-replay-capacity-results": "537aafa371cd3de88e2c56797f4988e2a877cc01",
+    "refs/remotes/origin/fix/task4-promotion-rule-control": "1629846034d5acceb1d7bebd845f8b7c5f35ea51",
+    "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
+  },
+  "unique_text_blobs": 734,
+  "blob_set_sha256": "0517e594ad5405c5f9bd9ede3d93f3ffe28d00a80d41be03d48cb3cf9be8d82a",
+  "excluded_own_registration": "experiments/2026-09-15-task4-final-training/",
+  "excluded_own_branch_revision": "refs/remotes/origin/main",
+  "colliding_files": [],
+  "cross_profile_separation": {
+    "profiles": {
+      "trainable-scope": {
+        "training_including_opponents": 4806,
+        "development": 320,
+        "smoke": 11
+      },
+      "opponent-mixture": {
+        "training_including_opponents": 4806,
+        "development": 320,
+        "smoke": 11
+      },
+      "finetune-dose": {
+        "training_including_opponents": 4806,
+        "development": 320,
+        "smoke": 11
+      },
+      "lineup-trajectory": {
+        "training_including_opponents": 14403,
+        "development": 320,
+        "smoke": 11
+      },
+      "exploration-period": {
+        "training_including_opponents": 9604,
+        "development": 320,
+        "smoke": 11
+      },
+      "final-training": {
+        "training_including_opponents": 180003,
+        "development": 400,
+        "smoke": 11
+      }
+    },
+    "compared_pairs": 15,
+    "shared_seed_count": 0,
+    "passed": true
+  },
+  "passed": true,
+  "method": "all integer literals, literal Python ranges and inclusive written ranges across remote tracked registrations; no dynamic code executed"
+}

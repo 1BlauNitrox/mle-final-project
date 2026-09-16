@@ -1,0 +1,215 @@
+"""Build the tournament submission directory and zip from a selected checkpoint.
+
+The trained agent lives in ``agent_code/DagobertDuckDQNTask3`` because every
+Task 4 tool pins that name. The tournament ships a differently named copy, so
+packaging copies the code verbatim and installs one selected checkpoint. Code is
+never edited here: a drift between the trained and the shipped agent would make
+the submitted artifact unexplainable.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+import zipfile
+from pathlib import Path
+
+CODE_FILES = (
+    "callbacks.py",
+    "config.py",
+    "legality.py",
+    "migration.py",
+    "model.py",
+    "persistence.py",
+    "replay.py",
+    "rewards.py",
+    "train.py",
+    "requirements.txt",
+)
+CODE_DIRS = ("features",)
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def git_rev() -> str:
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except subprocess.CalledProcessError:
+        return "unknown"
+
+
+def build_directory(source: Path, target: Path, checkpoint: Path) -> None:
+    if target.exists():
+        shutil.rmtree(target)
+    target.mkdir(parents=True)
+
+    for name in CODE_FILES:
+        shutil.copy2(source / name, target / name)
+    for name in CODE_DIRS:
+        shutil.copytree(source / name, target / name, ignore=shutil.ignore_patterns("__pycache__"))
+
+    shutil.copy2(checkpoint, target / "checkpoint.pt")
+
+
+def write_artifact(
+    target: Path, source: Path, checkpoint: Path, selection_basis: str
+) -> dict:
+    artifact = {
+        "schema_version": 1,
+        "agent_name": target.name,
+        "packaged_from": str(source.relative_to(REPO_ROOT)).replace("\\", "/"),
+        "packaging_commit": git_rev(),
+        "checkpoint": {
+            "installed_as": "checkpoint.pt",
+            "source_path": str(checkpoint),
+            "sha256": sha256_file(target / "checkpoint.pt"),
+            "size_bytes": (target / "checkpoint.pt").stat().st_size,
+        },
+        "selection_basis": selection_basis,
+        "code_provenance": (
+            "Code copied verbatim from the trained agent directory; packaging "
+            "never edits agent code."
+        ),
+    }
+    path = target / "artifact.json"
+    path.write_text(json.dumps(artifact, indent=2) + "\n", encoding="utf-8", newline="\n")
+    return artifact
+
+
+def check_no_absolute_paths(target: Path) -> list[str]:
+    offenders = []
+    needles = (":\\", ":/", "/home/", "/Users/", "C:\\")
+    for path in target.rglob("*"):
+        if path.suffix not in {".py", ".txt", ".yaml", ".yml"} or not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for line_no, line in enumerate(text.splitlines(), 1):
+            if any(n in line for n in needles) and "http" not in line:
+                offenders.append(f"{path.relative_to(target)}:{line_no}: {line.strip()[:90]}")
+    return offenders
+
+
+def smoke_run(agent_name: str, rounds: int) -> tuple[bool, str]:
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "main.py",
+            "play",
+            "--agents",
+            agent_name,
+            "random_agent",
+            "random_agent",
+            "random_agent",
+            "--n-rounds",
+            str(rounds),
+            "--no-gui",
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    combined = (proc.stdout + proc.stderr)[-3000:]
+    failed = proc.returncode != 0 or "Traceback" in combined or "Error" in combined
+    return (not failed), combined
+
+
+def build_zip(target: Path, out_zip: Path) -> None:
+    out_zip.parent.mkdir(parents=True, exist_ok=True)
+    if out_zip.exists():
+        out_zip.unlink()
+    with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in sorted(target.rglob("*")):
+            if "__pycache__" in path.parts or path.name.endswith(".pyc"):
+                continue
+            if path.is_dir():
+                continue
+            zf.write(path, f"{target.name}/{path.relative_to(target).as_posix()}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--name", default="Bomb-omb")
+    parser.add_argument("--source", default="agent_code/DagobertDuckDQNTask3")
+    parser.add_argument(
+        "--checkpoint",
+        default="agent_code/DagobertDuckDQNTask3/checkpoint.pt",
+        help="Checkpoint installed as the shipped policy.",
+    )
+    parser.add_argument(
+        "--selection-basis",
+        default="UNSELECTED provisional compatibility fixture; not a trained policy.",
+    )
+    parser.add_argument("--zip", default=None, help="Output zip path.")
+    parser.add_argument("--rounds", type=int, default=3)
+    parser.add_argument("--skip-smoke", action="store_true")
+    args = parser.parse_args()
+
+    source = (REPO_ROOT / args.source).resolve()
+    target = (REPO_ROOT / "agent_code" / args.name).resolve()
+    checkpoint = (REPO_ROOT / args.checkpoint).resolve()
+
+    if not source.is_dir():
+        print(f"FAIL: source {source} missing", file=sys.stderr)
+        return 1
+    if not checkpoint.is_file():
+        print(f"FAIL: checkpoint {checkpoint} missing", file=sys.stderr)
+        return 1
+
+    print(f"source     : {source}")
+    print(f"target     : {target}")
+    print(f"checkpoint : {checkpoint}  ({sha256_file(checkpoint)[:16]}...)")
+
+    build_directory(source, target, checkpoint)
+    artifact = write_artifact(target, source, checkpoint, args.selection_basis)
+    print(f"installed  : sha256 {artifact['checkpoint']['sha256'][:16]}...")
+
+    offenders = check_no_absolute_paths(target)
+    if offenders:
+        print("FAIL: absolute paths found:")
+        for line in offenders:
+            print("   ", line)
+        return 1
+    print("check      : no absolute paths")
+
+    if not args.skip_smoke:
+        ok, output = smoke_run(args.name, args.rounds)
+        if not ok:
+            print("FAIL: evaluation smoke run errored:")
+            print(output)
+            return 1
+        print(f"check      : {args.rounds} evaluation rounds vs 3 random_agents, no errors")
+
+    out_zip = Path(args.zip) if args.zip else REPO_ROOT / "final-project-agent-code.zip"
+    build_zip(target, out_zip)
+    with zipfile.ZipFile(out_zip) as zf:
+        names = zf.namelist()
+        cb_dirs = sorted({n.rsplit("/", 1)[0] for n in names if n.endswith("callbacks.py")})
+    print(f"zip        : {out_zip}  ({out_zip.stat().st_size} bytes, {len(names)} entries)")
+    print(f"callbacks  : {cb_dirs}")
+    if len(cb_dirs) != 1:
+        print("FAIL: zip must contain exactly one directory with callbacks.py")
+        return 1
+    print("OK")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

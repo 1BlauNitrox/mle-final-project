@@ -12,6 +12,7 @@ from scripts.pilot_task4_competition import (
     REGISTERED_OPPONENTS,
     REGISTERED_SCOPES,
     _hashable,
+    profile_dir,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,11 +31,12 @@ EXPECTED_FACTOR = {
     "finetune-dose": "learning_rate",
     "lineup-trajectory": "training_opponents",
     "exploration-period": "random_episode_period",
+    "final-training": "learning_rate",
 }
 
 
 def load(profile):
-    path = ROOT / f"experiments/2026-09-15-task4-{profile}/config.json"
+    path = ROOT / f"experiments/{profile_dir(profile)}/config.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 

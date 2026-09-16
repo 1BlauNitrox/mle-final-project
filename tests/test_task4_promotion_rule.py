@@ -41,21 +41,42 @@ def test_corrected_rule_requires_a_new_registered_protocol_version():
     assert registered["promotion_rule_version"] == 2
 
 
-def test_the_analyzer_follows_the_registration_not_the_newest_rule():
+def test_the_analyzer_follows_the_registration_not_the_newest_rule(monkeypatch):
     """A completed protocol must reproduce the decision it actually made.
 
     The corrected rule lives in a separate module so re-analysing an older
     campaign with the repository's current code cannot silently apply rules it
     was never registered under. Opting in is explicit.
     """
-    from scripts.pilot_task4_competition import code_hashes, registered_analyzer
+    import json
+    from pathlib import Path
 
-    # None of the shipped registrations declare version 2, so every one of them
-    # resolves to the analyzer it executed under.
-    assert registered_analyzer().__module__ == "scripts.analyze_task4_competition"
+    from scripts import pilot_task4_competition as pilot
+
+    for declared, expected in (
+        (None, "scripts.analyze_task4_competition"),
+        (1, "scripts.analyze_task4_competition"),
+        (2, "scripts.analyze_task4_competition_v2"),
+    ):
+        registration = {} if declared is None else {"promotion_rule_version": declared}
+        monkeypatch.setattr(pilot, "config", lambda registration=registration: registration)
+        assert pilot.registered_analyzer().__module__ == expected
+
+    # The five screens ran before the rule was corrected and must keep the rule
+    # they executed under; only the final training run opts in.
+    root = Path(pilot.ROOT)
+    for profile in pilot.PROFILES:
+        shipped = json.loads(
+            (root / f"experiments/{pilot.profile_dir(profile)}/config.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        opted_in = shipped.get("promotion_rule_version") == 2
+        assert opted_in == (profile == "final-training"), profile
+
     # Both analyzers are bound into the run's provenance, so neither can change
     # under a prepared campaign without the binding noticing.
-    hashes = code_hashes()
+    hashes = pilot.code_hashes()
     assert "scripts/analyze_task4_competition.py" in hashes
     assert "scripts/analyze_task4_competition_v2.py" in hashes
 
