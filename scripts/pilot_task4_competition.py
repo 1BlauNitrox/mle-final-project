@@ -67,7 +67,7 @@ CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
-    "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
+    "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
 }
 ARM_FACTORS = (
