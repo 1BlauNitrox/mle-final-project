@@ -50,12 +50,13 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
 
 INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
-PROFILES = ("trainable-scope", "opponent-mixture")
+PROFILES = ("trainable-scope", "opponent-mixture", "finetune-dose")
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
+    "finetune-dose": "75403e404fe3c150ae075415d20a7a287bce3bdeca9848d58864f8c6218e321d",
 }
 ARM_FACTORS = (
     "trainable_scope",
