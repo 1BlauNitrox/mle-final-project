@@ -5,9 +5,11 @@
 The registered screen did not pass and no checkpoint was selected. The installed
 Task 3 incumbent remains the submission candidate.
 
-The comparison answers its question clearly in the negative: over a ten-fold range
-the replay capacity does not measurably change anything. That removes a
-hyperparameter from the final training run's design, which is what it was run to do.
+The comparison detected no effect of replay capacity over a ten-fold range. It
+does not establish that there is none: the between-arm intervals are wide enough to
+contain large effects in either direction, and no equivalence margin was registered
+that would allow an equivalence claim. The result is a reason to leave the
+inherited capacity alone, not a demonstration that capacity does not matter.
 
 ## Question and protocol
 
@@ -39,10 +41,14 @@ Score against the unchanged incumbent, none excluding zero: control +0.8562
 [−0.1750, +1.8625], wide +0.7063 [−0.3375, +1.7000], widest +0.8500
 [−0.1187, +1.7875].
 
-The three arms are indistinguishable on score, 2.731, 2.581, 2.725 across a
-ten-fold capacity range, with the smallest buffer neither better nor worse than
-the largest. **Replay capacity is not a lever at this budget**, and the final training
-can keep the inherited 10,000 without further thought.
+The three arms are separated by less than this comparison can resolve: 2.731,
+2.581 and 2.725 across a ten-fold capacity range. The direct contrasts against the
+control are −0.1500 [−1.1917, +0.7605] for 50,000 and −0.0063 [−0.9625, +0.8250]
+for 100,000. Those intervals admit a gain of nearly a full point of score and a
+loss of more than one, so **no effect was detected and none is excluded**.
+
+The final training run keeps the inherited 10,000 on that basis: nothing here
+justifies changing it, and nothing here shows a larger buffer would not help.
 
 The one direction worth noting is survival: the widest arm survives 0.431 against
 the control's 0.287 and kills itself least, 0.456 against 0.562. That did not
@@ -85,11 +91,16 @@ verification command are in `results/evidence.json` and `results/verification.js
 
 ## Limitations and next step
 
-Four replicas and 1,000 episodes can exclude a large capacity effect at this
-budget. They cannot exclude a small one, and they say nothing about capacity at the
-budgets a long run would reach, which is where the argument for a larger buffer was
-always strongest. No effect is visible where this campaign can see, so
-the inherited value is kept because nothing justifies changing
-it, not because a larger buffer has been shown to be useless.
+Four replicas and 1,000 episodes cannot resolve the differences this comparison
+produced. The between-arm intervals span roughly two points of score, so they
+exclude neither a large benefit nor a large harm from a wider buffer, and no
+equivalence margin was registered that would let the arms be called equivalent.
+The comparison also says nothing about capacity at the budgets a long run would
+reach, which is where the argument for a larger buffer was always strongest.
+
+The inherited value is kept because nothing here justifies changing it, not
+because a larger buffer has been shown to be useless. Establishing that capacity
+genuinely does not matter would need either many more replicas or a registered
+equivalence margin, and this comparison had neither.
 
 Refs [PR #200](https://github.com/1BlauNitrox/mle-final-project/pull/200)
