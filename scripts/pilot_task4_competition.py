@@ -82,7 +82,7 @@ PROFILE_HASHES = {
     "finetune-dose": "75403e404fe3c150ae075415d20a7a287bce3bdeca9848d58864f8c6218e321d",
     "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
-    "final-training": "7d2faa19fa80a33f4fef505711e02bfc8207aeb0a5a10dc167093429697d39e9",
+    "final-training": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
 }
 ARM_FACTORS = (
     "trainable_scope",

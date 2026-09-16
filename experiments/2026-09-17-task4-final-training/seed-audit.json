@@ -2,7 +2,7 @@
   "profile": "final-training",
   "scope": "opaque collision-only audit; no held-out values exposed or games run",
   "populations": {
-    "training_including_opponents": 180003,
+    "training_including_opponents": 144003,
     "development": 400,
     "smoke": 11
   },
@@ -18,12 +18,13 @@
     "refs/remotes/origin/experiment/task4-replay-capacity": "ac55615681614b61924841c6acf5b78be0ef92ee",
     "refs/remotes/origin/experiment/task4-replay-capacity-results": "537aafa371cd3de88e2c56797f4988e2a877cc01",
     "refs/remotes/origin/fix/task4-promotion-rule-control": "1629846034d5acceb1d7bebd845f8b7c5f35ea51",
+    "refs/remotes/origin/main": "6724f715bbe0b5130556c661ddc06d2989f69123",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
   "unique_text_blobs": 734,
   "blob_set_sha256": "0517e594ad5405c5f9bd9ede3d93f3ffe28d00a80d41be03d48cb3cf9be8d82a",
   "excluded_own_registration": "experiments/2026-09-15-task4-final-training/",
-  "excluded_own_branch_revision": "refs/remotes/origin/main",
+  "excluded_own_branch_revision": "refs/remotes/origin/experiment/task4-final-training",
   "colliding_files": [],
   "cross_profile_separation": {
     "profiles": {
@@ -53,7 +54,7 @@
         "smoke": 11
       },
       "final-training": {
-        "training_including_opponents": 180003,
+        "training_including_opponents": 144003,
         "development": 400,
         "smoke": 11
       }

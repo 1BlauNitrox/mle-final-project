@@ -94,6 +94,31 @@ def write_artifact(
     return artifact
 
 
+def check_matches_trained_code(target: Path, source: Path, commit: str) -> list[str]:
+    """The shipped policy must run the code it was trained with.
+
+    Training imports the agent from the runtime pinned at `commit`, not from the
+    working tree, so packaging from a drifted checkout would ship an agent whose
+    behaviour was never the one measured.
+    """
+    mismatches = []
+    for name in (*CODE_FILES, *(f"{d}/{p.name}" for d in CODE_DIRS for p in (source / d).glob("*.py"))):
+        if name == "requirements.txt":
+            continue  # declares the grader's install, not the policy
+        pinned = subprocess.run(
+            ["git", "show", f"{commit}:{source.relative_to(REPO_ROOT).as_posix()}/{name}"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+        )
+        if pinned.returncode != 0:
+            mismatches.append(f"{name}: absent from pinned runtime {commit[:12]}")
+            continue
+        shipped = (target / name).read_bytes()
+        if hashlib.sha256(pinned.stdout).hexdigest() != hashlib.sha256(shipped).hexdigest():
+            mismatches.append(f"{name}: differs from pinned runtime {commit[:12]}")
+    return mismatches
+
+
 def check_no_absolute_paths(target: Path) -> list[str]:
     offenders = []
     needles = (":\\", ":/", "/home/", "/Users/", "C:\\")
@@ -160,6 +185,11 @@ def main() -> int:
     parser.add_argument("--zip", default=None, help="Output zip path.")
     parser.add_argument("--rounds", type=int, default=3)
     parser.add_argument("--skip-smoke", action="store_true")
+    parser.add_argument(
+        "--trained-runtime",
+        default="c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+        help="Commit the training runtime is pinned to; shipped code must match it.",
+    )
     args = parser.parse_args()
 
     source = (REPO_ROOT / args.source).resolve()
@@ -180,6 +210,14 @@ def main() -> int:
     build_directory(source, target, checkpoint)
     artifact = write_artifact(target, source, checkpoint, args.selection_basis)
     print(f"installed  : sha256 {artifact['checkpoint']['sha256'][:16]}...")
+
+    drift = check_matches_trained_code(target, source, args.trained_runtime)
+    if drift:
+        print("FAIL: shipped code does not match the trained runtime:")
+        for line in drift:
+            print("   ", line)
+        return 1
+    print(f"check      : code matches trained runtime {args.trained_runtime[:12]}")
 
     offenders = check_no_absolute_paths(target)
     if offenders:
