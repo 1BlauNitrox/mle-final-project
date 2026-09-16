@@ -28,6 +28,51 @@ from scripts.pilot_task4_competition import (
 AGENT = "DagobertDuckDQNTask3"
 
 
+def require_versioned_registration(cfg):
+    """Allow the corrected rule only for a protocol registered as version 2."""
+    if cfg.get("promotion_rule_version") != 2:
+        raise ValueError("Corrected promotion rule requires promotion_rule_version=2")
+    return cfg
+
+
+def config_v2():
+    return require_versioned_registration(config())
+
+
+def blocking_gates(integrity):
+    """Integrity verdicts that can veto promotion.
+
+    A gate reported as null is not applicable to the programme that ran - an arm
+    registered to move the inherited weights cannot also be required to have left
+    them frozen - and a gate that cannot apply must not be able to veto.
+    """
+    return [value for value in integrity.values() if value is not None]
+
+
+def legality_not_worse(invalid_by_artifact):
+    """Did training make legality worse than leaving the agent untrained?
+
+    The original gate summed invalid actions over every artifact, the unchanged
+    reference included, and required zero. The reference emits its own, so the
+    gate could only ever veto. Each trained artifact is compared against the
+    reference instead, with no tolerance.
+    """
+    reference = invalid_by_artifact["reference"]
+    return all(
+        count <= reference
+        for artifact, count in invalid_by_artifact.items()
+        if artifact != "reference"
+    )
+
+
+def median_replica_by_score(suite_summary, arm, replicas):
+    """The median-final replica by hunting score; the best-looking one is not selectable."""
+    ordered = sorted(
+        range(replicas), key=lambda r: (suite_summary[f"{arm}-r{r + 1}"]["score"], r)
+    )
+    return ordered[len(ordered) // 2]
+
+
 def metrics(row):
     agents = row["native"]["agents"]
     own = agents[AGENT]
@@ -96,7 +141,7 @@ def verify_training_tensors(root):
     from scripts.frozen_opponent_inputs import validate_frozen
 
     torch.set_num_threads(1)
-    cfg = config()
+    cfg = config_v2()
     initial = torch.load(root / "initial.pt", map_location="cpu", weights_only=True)
 
     def digest(state):
@@ -178,7 +223,7 @@ def _load_stage(root, stage, models, cfg, *, expected_jobs):
 
 def analyze(root):
     verify(root)
-    cfg = config()
+    cfg = config_v2()
     models = artifacts(root)
     initial_network_hash = verify_training_tensors(root)
     arms = cfg["arms"]
@@ -381,11 +426,18 @@ def analyze(root):
     frozen_programme = all(
         cfg["arm_settings"][arm]["trainable_scope"] == "opponent_columns" for arm in arms
     )
+    invalid_by_artifact = {
+        a: sum(metrics(row)["invalid_actions"] for key, row in data.items() if key[0] == a)
+        for a in artifact_names(cfg)
+    }
     integrity = {
         "resources": all(r["passed"] for r in resources.values()),
         "genuine_updates": bool(updated),
         "behavioral_repeats": repeat_ok,
-        "frozen_online_weights": frozen_programme,
+        # Null means "not applicable to this programme" and does not block promotion;
+        # an arm registered to move the inherited weights cannot also be required to
+        # have left them frozen.
+        "frozen_online_weights": frozen_programme or None,
         "opponent_free_invariance": (not frozen_programme)
         or all(
             behavioral(data[(f"{arm}-r{r + 1}", s, w, 0)]["native"])
@@ -398,13 +450,13 @@ def analyze(root):
             for arm in arms
             for r in range(replicas)
         ),
-        "invalid_actions": sum(metrics(row)["invalid_actions"] for row in data.values()) == 0,
+        "invalid_actions": legality_not_worse(invalid_by_artifact),
         "latency": latency["p95_ms"] < cfg["decision_time_limits"]["p95_ms"]
         and latency["max_ms"] < cfg["decision_time_limits"]["max_ms"],
     }
 
     thresholds = cfg["decision_thresholds"]
-    efficacy, promotable = {}, []
+    efficacy, diagnostics, promotable = {}, {}, []
     for arm in treatments:
         versus_control = hunting[arm]["control"]
         versus_reference = hunting[arm]["reference"]
@@ -413,7 +465,28 @@ def analyze(root):
             for suite in retention
             for key in ("coins", "self_kills")
         )
+        # Re-specified: the registered primary endpoint is score, because tournament
+        # placing is decided by score. The +0.10 elimination thresholds were carried
+        # over from the Task 3 hunting programme, where eliminations was the endpoint;
+        # here they demanded roughly tripling the reference's elimination rate before
+        # any score gain could be promoted. They are retained as reported diagnostics
+        # and eliminations keeps a non-worse guard, so an arm cannot buy score by
+        # abandoning opponents entirely.
         checks = {
+            "score_versus_reference_ci": versus_reference["score"]["paired_crossed_bootstrap"][0]
+            > 0,
+            "eliminations_not_worse_than_reference": versus_reference["eliminations"][
+                "mean_difference"
+            ]
+            >= -thresholds["self_kills"],
+            "self_kills_versus_control": versus_control["self_kills"]["mean_difference"]
+            <= thresholds["self_kills"],
+            "self_kills_versus_reference": versus_reference["self_kills"]["mean_difference"]
+            <= thresholds["self_kills"],
+            "nonworse_replicas": nonworse[arm] >= thresholds["nonworse_replicas"],
+            "earlier_task_retention": arm_retention,
+        }
+        diagnostics[arm] = {
             "exposure_increase": versus_control["attack_opportunities_per_100_steps"][
                 "mean_difference"
             ]
@@ -434,44 +507,31 @@ def analyze(root):
                 "paired_crossed_bootstrap"
             ][0]
             > 0,
-            "score_versus_reference_ci": versus_reference["score"]["paired_crossed_bootstrap"][0]
-            > 0,
-            "self_kills_versus_control": versus_control["self_kills"]["mean_difference"]
-            <= thresholds["self_kills"],
-            "self_kills_versus_reference": versus_reference["self_kills"]["mean_difference"]
-            <= thresholds["self_kills"],
-            "nonworse_replicas": nonworse[arm] >= thresholds["nonworse_replicas"],
-            "earlier_task_retention": arm_retention,
         }
         efficacy[arm] = checks
-        if all(integrity.values()) and all(checks.values()):
+        if all(blocking_gates(integrity)) and all(checks.values()):
             promotable.append(arm)
 
-    # Registered selection: the promotable arm with the largest mean elimination
-    # gain over the reference, then its median-final replica by the same metric.
-    # The best-looking replica is deliberately not selectable.
+    # Registered selection, as the configuration states it: "the largest mean score
+    # gain over the unchanged incumbent is chosen, and within it the median-final
+    # replica by that score". The implementation ranked by eliminations instead,
+    # which contradicted the registration it was supposed to execute. The
+    # best-looking replica remains deliberately not selectable.
     selection = {"promotable_arms": promotable, "selected_arm": None, "selected_checkpoint": None}
     if promotable:
         chosen = max(
             promotable,
             key=lambda arm: (
-                hunting[arm]["reference"]["eliminations"]["mean_difference"],
                 hunting[arm]["reference"]["score"]["mean_difference"],
+                hunting[arm]["reference"]["eliminations"]["mean_difference"],
                 -arms.index(arm),
             ),
         )
-        ordered = sorted(
-            range(replicas),
-            key=lambda r: (
-                summary[hunting_suite][f"{chosen}-r{r + 1}"]["eliminations"],
-                r,
-            ),
-        )
-        median_replica = ordered[len(ordered) // 2]
+        median_replica = median_replica_by_score(summary[hunting_suite], chosen, replicas)
         selection["selected_arm"] = chosen
         selection["selected_checkpoint"] = {
             "artifact": f"{chosen}-r{median_replica + 1}",
-            "rule": "median_final_replica_by_hunting_eliminations",
+            "rule": "median_final_replica_by_hunting_score",
             "sha256": sha(models[f"{chosen}-r{median_replica + 1}"]),
         }
 
@@ -480,6 +540,7 @@ def analyze(root):
         "registered_screen_passed": bool(promotable),
         "integrity_gates": integrity,
         "efficacy_gates": efficacy,
+        "reported_diagnostics_not_gating": diagnostics,
         "retention_suites": retention,
         "selection": selection,
         "interval_percent": percent,
@@ -490,10 +551,7 @@ def analyze(root):
         "latency_serial_stage": latency,
         "latency_contended_evaluation_stage_not_gated": distribution(contended),
         "resources": resources,
-        "invalid_actions_by_artifact": {
-            a: sum(metrics(row)["invalid_actions"] for key, row in data.items() if key[0] == a)
-            for a in artifact_names(cfg)
-        },
+        "invalid_actions_by_artifact": invalid_by_artifact,
         "nonworse_replicas": nonworse,
         "task2_complete": False,
         "original_cumulative_gates": "not_established_by_this_exploratory_pilot",
