@@ -5,9 +5,11 @@
 The registered screen did not pass and no checkpoint was selected. The installed
 Task 3 incumbent remains the submission candidate.
 
-The comparison refutes the hypothesis it was built on, and does so in the most
-useful way available: not by finding no effect, but by finding the opposite of the
-predicted one on the endpoint the hypothesis was about.
+The comparison found no support for the hypothesis it was built on, and it is
+important to be precise about what that does and does not mean. On the endpoint the
+hypothesis was about, eliminations, the point estimates did not rise — but the
+intervals are wide enough to contain the rise the hypothesis predicted. The
+hypothesis is unsupported by this comparison, not refuted by it.
 
 ## Question and protocol
 
@@ -43,9 +45,13 @@ Arm means on the tournament suite (`classic`, three `rule_based_agent`s):
 | weighted — kill 20 | 2.413 | 0.150 | 0.094 | 0.216 | 0.275 | 0.631 |
 | aligned — kill 50 | 2.325 | 0.175 | 0.081 | 0.213 | 0.250 | 0.662 |
 
-**Eliminations did not rise.** 0.094, 0.094, 0.081 across a ten-fold increase in
-what a kill is worth to the agent. The endpoint the intervention was designed to
-move did not move, and if anything moved down.
+**No rise in eliminations was detected.** 0.094, 0.094, 0.081 across a ten-fold
+increase in what a kill is worth to the agent. The direct contrasts against the
+control are +0.0000 [−0.1250, +0.1500] for reward 20 and −0.0125 [−0.1500, +0.1437]
+for reward 50. Those intervals permit increases larger than the whole baseline
+elimination rate of roughly 0.1 per game, so the comparison cannot exclude the
+effect it was designed to find. What it can say is that no effect large enough to
+see at this precision appeared.
 
 Score fell monotonically with the reward: 2.631, 2.413, 2.325. Survival fell,
 0.375 to 0.250, and self-kills rose, 0.588 to 0.662. Aligned minus control on score
@@ -58,18 +64,25 @@ Training improves coin collection. It does not improve hunting.
 
 ### What this means
 
-Paying more for eliminations bought more dying without buying more killing. The
-misalignment identified in the reward table is real, the ratio genuinely is
-inverted relative to the Tournament, but correcting it does not help, which says
-the agent's low elimination rate is not an incentive problem.
+The misalignment identified in the reward table is real — the ratio genuinely is
+inverted relative to the tournament — but correcting it produced no measurable
+gain in eliminations here, and the point estimates for survival and score moved the
+wrong way. This comparison therefore gives no reason to change the elimination
+reward, and some reason to suspect that raising it carries a cost.
 
-Across every Task 4 comparison the elimination rate sits near 0.08 to 0.10 per game
+Across every Task 4 comparison the elimination rate sits near 0.08 to 0.15 per game
 regardless of trainable scope, learning rate, exploration schedule, training
-line-up, replay capacity and now the elimination reward itself. The most economical
-explanation is that the agent does not know how to kill an opponent, and that
-raising the price of something it cannot do only makes it accept worse risks
-trying. That is a capability question, not a reward question, and nothing in this
-campaign has addressed it.
+line-up, replay capacity and now the elimination reward. One reading is that the
+rate is capability-bound rather than incentive-bound. This comparison is consistent
+with that reading but does not establish it: each individual contrast is too
+imprecise to exclude an incentive effect, and a consistent pattern across
+underpowered comparisons is suggestive rather than conclusive.
+
+Context for the rate itself: `rule_based_agent`, the hand-written reference
+implementation, achieves 0.188 eliminations per game against three copies of itself
+over 40 games, while killing itself 0.544 times per game and never surviving. The
+agent's rate is therefore within the range the reference implementation reaches,
+which is a different situation from being unable to attack.
 
 ### Gates
 
@@ -99,14 +112,16 @@ training game through a configuration edit alone.
 
 ## Limitations and next step
 
-Four replicas at 800 episodes can exclude a large effect on eliminations and cannot
-exclude a small one. The reading above does not rest on the score ordering, which
-is not individually significant, but on the elimination rate being flat across a
-ten-fold change in its own price, which is the cleaner observation.
+Four replicas at 800 episodes cannot resolve the effects this comparison produced.
+The elimination contrasts span roughly ±0.15, which is larger than the baseline
+rate itself, so the comparison excludes neither a substantial increase nor a
+substantial decrease. No equivalence margin was registered, so the arms cannot be
+called equivalent either. Every statement above is bounded by that.
 
-The registered follow-up is not another reward or hyperparameter. If the
-elimination rate is capability-bound, the question is whether the agent's features
-and horizon can represent an attack at all: the discount factor is 0.9, giving an
+A follow-up worth considering is not another reward or hyperparameter. If the
+elimination rate is capability-bound — which this comparison suggests without
+establishing — the question is whether the agent's features and horizon can
+represent an attack at all: the discount factor is 0.9, giving an
 effective horizon of about ten steps, and a bomb takes four steps to explode plus
 the steps needed to corner an opponent and survive the blast. That is the first
 thing to check before spending a long training run on an objective the agent may be
