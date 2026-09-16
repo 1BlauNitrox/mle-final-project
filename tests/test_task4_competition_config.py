@@ -22,11 +22,14 @@ FACTORS = (
     "update_every",
     "kill_reward",
     "learning_rate",
+    "random_episode_period",
 )
 EXPECTED_FACTOR = {
     "trainable-scope": "trainable_scope",
     "opponent-mixture": "training_opponents",
     "finetune-dose": "learning_rate",
+    "lineup-trajectory": "training_opponents",
+    "exploration-period": "random_episode_period",
 }
 
 
@@ -46,7 +49,7 @@ def test_each_comparison_varies_exactly_its_intended_factor(profile):
     varying = {
         key
         for key in FACTORS
-        if len({_hashable(settings[arm][key]) for arm in cfg["arms"]}) > 1
+        if len({_hashable(settings[arm].get(key)) for arm in cfg["arms"]}) > 1
     }
     assert varying == {EXPECTED_FACTOR[profile]}
 
