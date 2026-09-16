@@ -2,7 +2,7 @@
   "profile": "replay-capacity",
   "scope": "opaque collision-only audit; no held-out values exposed or games run",
   "populations": {
-    "training_including_opponents": 6003,
+    "training_including_opponents": 8004,
     "development": 320,
     "smoke": 11
   },
@@ -23,8 +23,8 @@
     "refs/remotes/origin/task/freeze-task3-incumbent": "0ec851a96dd644f21e384e11c14f11f2d378f1a7",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 698,
-  "blob_set_sha256": "2a9a7a53d0e0c572fcf31e58bb2bff1bc591d070b4c172ffe16cd12815838b48",
+  "unique_text_blobs": 701,
+  "blob_set_sha256": "a31501ad46e6531884f263189b4f45500464400219fc59691d38242363c23b68",
   "excluded_own_registration": "experiments/2026-09-16-task4-replay-capacity/",
   "excluded_own_branch_revision": "refs/remotes/origin/experiment/task4-replay-capacity",
   "colliding_files": [],
@@ -51,7 +51,7 @@
         "smoke": 11
       },
       "replay-capacity": {
-        "training_including_opponents": 6003,
+        "training_including_opponents": 8004,
         "development": 320,
         "smoke": 11
       }

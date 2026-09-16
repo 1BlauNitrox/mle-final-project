@@ -73,7 +73,7 @@ PROFILE_HASHES = {
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
     "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
-    "replay-capacity": "3d74e123c277e9fe24dabebe998ddab7bc78ae4283c5d690e6c032df2e76a6e1",
+    "replay-capacity": "b70fb6062180f4da414890ecf2a69547d32fb4370a4eca901af6a314256c2b61",
 }
 ARM_FACTORS = (
     "trainable_scope",
