@@ -216,14 +216,17 @@ def analyze(root):
     models = artifacts(root)
     initial_network_hash = verify_training_tensors(root)
     arms = cfg["arms"]
-    treatments = [arm for arm in arms if arm != "control"]
     replicas = cfg["replicas"]
     uncertainty = cfg["uncertainty"]
     # The promotion rule is conjunctive, so its individual tests need no
     # adjustment (an intersection-union test holds its level). The multiplicity
-    # that does inflate the error rate is the number of treatment arms that each
-    # get a chance to be promoted, so the family size is that arm count.
-    percent = 100.0 - (100.0 - uncertainty["interval_percent"]) / max(len(treatments), 1)
+    # that does inflate the error rate is the number of arms that each get a
+    # chance to be promoted. That used to be the treatment count; now that the
+    # control arm is judged too it is every arm, which widens the intervals. The
+    # correction has to follow the rule it protects, and the conservative
+    # direction is the correct one to move in.
+    family = max(len(arms), 1)
+    percent = 100.0 - (100.0 - uncertainty["interval_percent"]) / family
 
     data, environments = _load_stage(
         root,
@@ -446,8 +449,15 @@ def analyze(root):
 
     thresholds = cfg["decision_thresholds"]
     efficacy, diagnostics, promotable = {}, {}, []
-    for arm in treatments:
-        versus_control = hunting[arm]["control"]
+    # Re-specified: every arm is judged, not only the treatments. The control arm
+    # is a trained agent like any other - it is the *reference* that is untrained -
+    # so a rule that skips it cannot select the best available agent whenever the
+    # baseline setting happens to win. The exploration comparison produced exactly
+    # that: its control beat the unchanged incumbent by 1.425 score and passed
+    # every gate, while being structurally unselectable. Gates defined against the
+    # control are not applicable to the control itself and are reported as null.
+    for arm in arms:
+        versus_control = None if arm == "control" else hunting[arm]["control"]
         versus_reference = hunting[arm]["reference"]
         arm_retention = all(
             retention[suite][arm][key]
@@ -468,28 +478,30 @@ def analyze(root):
                 "mean_difference"
             ]
             >= -thresholds["self_kills"],
-            "self_kills_versus_control": versus_control["self_kills"]["mean_difference"]
-            <= thresholds["self_kills"],
+            "self_kills_versus_control": None
+            if versus_control is None
+            else versus_control["self_kills"]["mean_difference"] <= thresholds["self_kills"],
             "self_kills_versus_reference": versus_reference["self_kills"]["mean_difference"]
             <= thresholds["self_kills"],
             "nonworse_replicas": nonworse[arm] >= thresholds["nonworse_replicas"],
             "earlier_task_retention": arm_retention,
         }
         diagnostics[arm] = {
-            "exposure_increase": versus_control["attack_opportunities_per_100_steps"][
-                "mean_difference"
-            ]
-            > 0,
-            "exposure_increase_ci": versus_control["attack_opportunities_per_100_steps"][
+            "exposure_increase": None
+            if versus_control is None
+            else versus_control["attack_opportunities_per_100_steps"]["mean_difference"] > 0,
+            "exposure_increase_ci": None
+            if versus_control is None
+            else versus_control["attack_opportunities_per_100_steps"][
                 "paired_crossed_bootstrap"
             ][0]
             > 0,
-            "hunting_improvement": versus_control["eliminations"]["mean_difference"]
-            >= thresholds["eliminations"],
-            "hunting_improvement_ci": versus_control["eliminations"][
-                "paired_crossed_bootstrap"
-            ][0]
-            > 0,
+            "hunting_improvement": None
+            if versus_control is None
+            else versus_control["eliminations"]["mean_difference"] >= thresholds["eliminations"],
+            "hunting_improvement_ci": None
+            if versus_control is None
+            else versus_control["eliminations"]["paired_crossed_bootstrap"][0] > 0,
             "hunting_versus_reference": versus_reference["eliminations"]["mean_difference"]
             >= thresholds["eliminations"],
             "hunting_versus_reference_ci": versus_reference["eliminations"][
@@ -498,7 +510,7 @@ def analyze(root):
             > 0,
         }
         efficacy[arm] = checks
-        if all(blocking_gates(integrity)) and all(checks.values()):
+        if all(blocking_gates(integrity)) and all(blocking_gates(checks)):
             promotable.append(arm)
 
     # Registered selection, as the configuration states it: "the largest mean score
@@ -533,7 +545,7 @@ def analyze(root):
         "retention_suites": retention,
         "selection": selection,
         "interval_percent": percent,
-        "bonferroni_family_size": max(len(treatments), 1),
+        "bonferroni_family_size": family,
         "summary": summary,
         "paired_differences": paired,
         "training_summary": training_summary,

@@ -61,3 +61,27 @@ def test_the_respecified_rule_does_not_retrospectively_promote_a_completed_compa
             continue
         lower = differences["reference"]["score"]["paired_crossed_bootstrap"][0]
         assert lower <= 0, f"{arm} would now clear the score gate; re-check the disclosure"
+
+
+def test_a_gate_defined_against_the_control_cannot_veto_the_control():
+    # The control arm is a trained agent; only the reference is untrained. Gates
+    # phrased "versus control" are undefined for it and are reported as null, so
+    # they must not block it the way a real failure would.
+    control_checks = {
+        "score_versus_reference_ci": True,
+        "self_kills_versus_control": None,
+        "earlier_task_retention": True,
+    }
+    assert all(blocking_gates(control_checks))
+    assert not all(blocking_gates({**control_checks, "earlier_task_retention": False}))
+
+
+def test_the_multiplicity_correction_covers_every_arm_that_can_be_promoted():
+    # Judging the control too adds a hypothesis, so the family grows and the
+    # intervals widen. The correction has to follow the rule it protects.
+    def percent(arm_count, registered=95.0):
+        return 100.0 - (100.0 - registered) / max(arm_count, 1)
+
+    assert percent(2) == 97.5
+    assert percent(3) > percent(2), "a third promotable arm must widen the interval"
+    assert round(percent(3), 4) == round(100.0 - 5.0 / 3, 4)
