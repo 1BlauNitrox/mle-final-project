@@ -297,11 +297,29 @@ def environment():
     }
 
 
+def registered_analyzer():
+    """Return the analyze function the profile's registration asks for.
+
+    The promotion rule was corrected after several protocols had already run, so
+    the corrected rule lives in a separate versioned analyzer rather than
+    replacing the original. A protocol opts in by registering
+    `promotion_rule_version: 2`; anything without it keeps the rule it was
+    registered and executed under, and re-analysing a completed campaign
+    reproduces the decision it actually made.
+    """
+    if config().get("promotion_rule_version") == 2:
+        from scripts.analyze_task4_competition_v2 import analyze
+    else:
+        from scripts.analyze_task4_competition import analyze
+    return analyze
+
+
 def code_hashes():
     names = [
         "scripts/pilot_task4_competition.py",
         "scripts/task4_interventions.py",
         "scripts/analyze_task4_competition.py",
+        "scripts/analyze_task4_competition_v2.py",
         "scripts/audit_task4_seeds.py",
         "scripts/fetch_task4_inputs.py",
         "scripts/task3_pilot_resources.py",
@@ -1173,9 +1191,7 @@ def bundle(root, output, results=False):
         ):
             paths.append((path, path.relative_to(root).as_posix()))
     if results:
-        from scripts.analyze_task4_competition import analyze
-
-        write(root / "analysis.json", analyze(root))
+        write(root / "analysis.json", registered_analyzer()(root))
         paths.extend(
             (root / name, name)
             for name in ("evaluation-state.json", "latency-state.json", "analysis.json")
@@ -1516,9 +1532,7 @@ def main():
     elif args.mode in {"bundle", "results"}:
         bundle(root, args.output.resolve(), args.mode == "results")
     elif args.mode == "analyze":
-        from scripts.analyze_task4_competition import analyze
-
-        write(args.output, analyze(root))
+        write(args.output, registered_analyzer()(root))
     elif args.mode == "import":
         import_bundle(root, args.archive, args.sha256)
     elif args.mode == "smoke":

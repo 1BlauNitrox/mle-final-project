@@ -39,3 +39,31 @@ def test_corrected_rule_requires_a_new_registered_protocol_version():
         require_versioned_registration({"profile": "completed-v1"})
     registered = require_versioned_registration({"promotion_rule_version": 2})
     assert registered["promotion_rule_version"] == 2
+
+
+def test_the_analyzer_follows_the_registration_not_the_newest_rule():
+    """A completed protocol must reproduce the decision it actually made.
+
+    The corrected rule lives in a separate module so re-analysing an older
+    campaign with the repository's current code cannot silently apply rules it
+    was never registered under. Opting in is explicit.
+    """
+    from scripts.pilot_task4_competition import code_hashes, registered_analyzer
+
+    # None of the shipped registrations declare version 2, so every one of them
+    # resolves to the analyzer it executed under.
+    assert registered_analyzer().__module__ == "scripts.analyze_task4_competition"
+    # Both analyzers are bound into the run's provenance, so neither can change
+    # under a prepared campaign without the binding noticing.
+    hashes = code_hashes()
+    assert "scripts/analyze_task4_competition.py" in hashes
+    assert "scripts/analyze_task4_competition_v2.py" in hashes
+
+
+def test_the_corrected_rule_refuses_an_unversioned_registration():
+    from scripts.analyze_task4_competition_v2 import require_versioned_registration
+
+    require_versioned_registration({"promotion_rule_version": 2})
+    for cfg in ({}, {"promotion_rule_version": 1}):
+        with pytest.raises(ValueError, match="promotion_rule_version=2"):
+            require_versioned_registration(cfg)
