@@ -370,12 +370,13 @@ def test_corrupt_archive_is_rejected(
         load_model(corrupt_path)
 
 
-def test_checked_in_schema_three_model_loads_as_legacy_baseline() -> None:
+def test_checked_in_model_uses_frozen_compact_state() -> None:
     loaded = load_model(MODEL_PATH)
 
-    assert loaded.state_representation == BASELINE_STATE_REPRESENTATION
-    assert loaded.initialization == PARENT_PRIOR_INITIALIZATION
-    assert loaded.q_table.feature_count == 17
+    assert loaded.state_representation == COMPACT_STATE_REPRESENTATION
+    assert loaded.initialization == ZERO_INITIALIZATION
+    assert loaded.q_table.feature_count == 5
+    assert loaded.completed_episodes == 10000
 
 
 def test_compact_representation_rejects_baseline_q_table(
