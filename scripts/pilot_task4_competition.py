@@ -91,6 +91,26 @@ def evaluated_suites(cfg):
     }
 
 
+# The final run slowed from 8 to about 13 seconds per episode as the agent
+# learned to survive longer, and at that pace it would outrun its registered
+# 85-hour training wall. We agreed on 17 September to let it finish, with
+# Monday 06:00 as the latest end. The registration cannot change while its
+# workers run, so the raise lives here and in the binding. A running supervisor
+# keeps the limits it started with; a resumed one picks these up.
+LIMIT_AMENDMENTS = {
+    "final-training": {"training_limits": {"wall_seconds": 363600, "cpu_seconds": 2400000}},
+}
+
+
+def stage_limits(cfg, stage):
+    limits = dict(cfg[f"{stage}_limits"])
+    for key, value in LIMIT_AMENDMENTS.get(cfg["profile"], {}).get(f"{stage}_limits", {}).items():
+        if value < limits[key]:
+            raise ValueError("A limit amendment may only raise a registered limit")
+        limits[key] = value
+    return limits
+
+
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/{profile_dir(PROFILE)}/config.json"
 PROFILE_HASHES = {
@@ -1060,7 +1080,7 @@ def supervise(root, stage, resume=False):
             "peak_memory_bytes": 0,
             "active": [],
         }
-    limits = cfg[f"{stage}_limits"]
+    limits = stage_limits(cfg, stage)
     if (
         state["cpu_seconds"] >= limits["cpu_seconds"]
         or state["wall_seconds"] >= limits["wall_seconds"]
