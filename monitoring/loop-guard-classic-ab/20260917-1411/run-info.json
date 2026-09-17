@@ -1,0 +1,23 @@
+﻿{
+    "hostname":  "LENOVO",
+    "python_version":  "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "torch_version":  "2.13.0+cpu",
+    "evaluated_commit":  "68af777",
+    "commands":  [
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\loopguard-ab\\root --agent Bomb-omb --registration experiments\\2026-09-17-loop-guard-classic-ab\\config.json --episodes 4000 --jobs 2 --out C:\\loopguard-ab\\classic-Bomb-omb",
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\loopguard-ab\\root --agent Bomb-omb-loopguard --registration experiments\\2026-09-17-loop-guard-classic-ab\\config.json --episodes 4000 --jobs 2 --out C:\\loopguard-ab\\classic-Bomb-omb-loopguard",
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\loopguard-ab\\root --agent Bomb-omb --suite coin-heaven --episodes 4000 --jobs 2 --out C:\\loopguard-ab\\coin-heaven-Bomb-omb",
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\loopguard-ab\\root --agent Bomb-omb-loopguard --suite coin-heaven --episodes 4000 --jobs 2 --out C:\\loopguard-ab\\coin-heaven-Bomb-omb-loopguard"
+                 ],
+    "jobs":  2,
+    "start_time":  "2026-09-17T13:20:47.7533677+02:00",
+    "end_time":  "2026-09-17T14:11:09.5947599+02:00",
+    "games_per_folder":  {
+                             "classic-Bomb-omb":  700,
+                             "classic-Bomb-omb-loopguard":  700,
+                             "coin-heaven-Bomb-omb":  280,
+                             "coin-heaven-Bomb-omb-loopguard":  280
+                         },
+    "total_games":  1960,
+    "bundle_sha256":  "8574e14f3cf82a9f6a2b16a06fe783490e9d6e7c7ef2657943738c951a9d1c7e"
+}

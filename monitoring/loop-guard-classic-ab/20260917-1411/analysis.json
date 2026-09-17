@@ -1,0 +1,171 @@
+{
+  "registration": "loop-guard-classic-ab",
+  "decision": "DO NOT SHIP the guard in this form",
+  "checks": [
+    "FAIL score lower bound -0.497 is above -0.30",
+    "FAIL score point estimate -0.102 is at least +0.00",
+    "FAIL self-kill upper bound +0.137 is at most +0.10"
+  ],
+  "guarded_minus_unguarded": {
+    "score": {
+      "mean_difference": -0.1017,
+      "low": -0.4967,
+      "high": 0.27
+    },
+    "self_kills": {
+      "mean_difference": 0.05,
+      "low": -0.0417,
+      "high": 0.1367
+    },
+    "survived": {
+      "mean_difference": -0.0017,
+      "low": -0.0767,
+      "high": 0.0733
+    },
+    "coins": {
+      "mean_difference": -0.0017,
+      "low": -0.185,
+      "high": 0.1817
+    },
+    "kills": {
+      "mean_difference": -0.02,
+      "low": -0.0817,
+      "high": 0.04
+    },
+    "invalid": {
+      "mean_difference": 0.4917,
+      "low": 0.15,
+      "high": 0.88
+    }
+  },
+  "per_checkpoint": {
+    "control-r1@4000": {
+      "score": {
+        "unguarded": 2.82,
+        "guarded": 3.01
+      },
+      "self_kills": {
+        "unguarded": 0.62,
+        "guarded": 0.7
+      },
+      "coins": {
+        "unguarded": 2.42,
+        "guarded": 2.41
+      }
+    },
+    "control-r2@4000": {
+      "score": {
+        "unguarded": 2.72,
+        "guarded": 2.58
+      },
+      "self_kills": {
+        "unguarded": 0.62,
+        "guarded": 0.6
+      },
+      "coins": {
+        "unguarded": 2.07,
+        "guarded": 2.13
+      }
+    },
+    "control-r3@4000": {
+      "score": {
+        "unguarded": 2.91,
+        "guarded": 3.03
+      },
+      "self_kills": {
+        "unguarded": 0.57,
+        "guarded": 0.64
+      },
+      "coins": {
+        "unguarded": 2.36,
+        "guarded": 2.48
+      }
+    },
+    "halved-r1@4000": {
+      "score": {
+        "unguarded": 3.31,
+        "guarded": 2.64
+      },
+      "self_kills": {
+        "unguarded": 0.45,
+        "guarded": 0.57
+      },
+      "coins": {
+        "unguarded": 2.56,
+        "guarded": 2.44
+      }
+    },
+    "halved-r2@4000": {
+      "score": {
+        "unguarded": 2.75,
+        "guarded": 2.61
+      },
+      "self_kills": {
+        "unguarded": 0.45,
+        "guarded": 0.55
+      },
+      "coins": {
+        "unguarded": 2.3,
+        "guarded": 2.21
+      }
+    },
+    "halved-r3@4000": {
+      "score": {
+        "unguarded": 2.6,
+        "guarded": 2.63
+      },
+      "self_kills": {
+        "unguarded": 0.65,
+        "guarded": 0.6
+      },
+      "coins": {
+        "unguarded": 2.2,
+        "guarded": 2.23
+      }
+    }
+  },
+  "coin_heaven_descriptive": {
+    "control-r1@4000": {
+      "coins_unguarded": 16.68,
+      "coins_guarded": 23.18,
+      "self_kills_unguarded": 0.0,
+      "self_kills_guarded": 0.0
+    },
+    "control-r2@4000": {
+      "coins_unguarded": 17.75,
+      "coins_guarded": 38.55,
+      "self_kills_unguarded": 0.0,
+      "self_kills_guarded": 0.0
+    },
+    "control-r3@4000": {
+      "coins_unguarded": 46.88,
+      "coins_guarded": 48.58,
+      "self_kills_unguarded": 0.0,
+      "self_kills_guarded": 0.0
+    },
+    "halved-r1@4000": {
+      "coins_unguarded": 7.02,
+      "coins_guarded": 32.2,
+      "self_kills_unguarded": 0.0,
+      "self_kills_guarded": 0.0
+    },
+    "halved-r2@4000": {
+      "coins_unguarded": 24.92,
+      "coins_guarded": 39.2,
+      "self_kills_unguarded": 0.0,
+      "self_kills_guarded": 0.0
+    },
+    "halved-r3@4000": {
+      "coins_unguarded": 41.25,
+      "coins_guarded": 49.08,
+      "self_kills_unguarded": 0.025,
+      "self_kills_guarded": 0.025
+    }
+  },
+  "games_per_agent": 600,
+  "agent_code_matches_registration": {
+    "unguarded_callbacks": true,
+    "guarded_callbacks": true,
+    "guarded_loop_guard": true
+  }
+}
