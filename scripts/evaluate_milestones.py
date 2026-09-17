@@ -85,7 +85,7 @@ def round_record(stats: dict, agent: str) -> dict:
     }
 
 
-def play(agent: str, staged: str, seed: int, opponents: list[str]) -> dict:
+def play(agent: str, staged: str, seed: int, opponents: list[str], scenario: str) -> dict:
     handle, stats_path = tempfile.mkstemp(suffix=".json")
     os.close(handle)
     try:
@@ -93,6 +93,7 @@ def play(agent: str, staged: str, seed: int, opponents: list[str]) -> dict:
             [
                 sys.executable, "main.py", "play",
                 "--agents", agent, *opponents,
+                "--scenario", scenario,
                 "--n-rounds", "1", "--seed", str(seed),
                 "--no-gui", "--save-stats", stats_path,
             ],
@@ -202,7 +203,8 @@ def main() -> int:
     opponents = suite["opponents"]
 
     root = args.root.resolve()
-    out = (args.out or root / "milestone-evaluation").resolve()
+    default_out = "milestone-evaluation" if args.suite == "classic-rule-based" else f"milestone-evaluation-{args.suite}"
+    out = (args.out or root / default_out).resolve()
     out.mkdir(parents=True, exist_ok=True)
     artifacts = discover(root, args.latest_only, set(args.episodes) if args.episodes else None)
     if REFERENCE not in artifacts:
@@ -212,6 +214,9 @@ def main() -> int:
 
     log = out / "games.jsonl"
     games = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()] if log.is_file() else []
+    recorded = {g.get("suite", "classic-rule-based") for g in games}
+    if recorded - {args.suite}:
+        raise SystemExit(f"{log} already holds {sorted(recorded)}; use a separate --out per suite")
     done = {(g["artifact"], g["world_seed"]) for g in games}
     pending = [(a, s) for a in artifacts for s in seeds if (a, s) not in done]
     print(f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  pending: {len(pending)}")
@@ -226,11 +231,17 @@ def main() -> int:
     lock = threading.Lock()
     try:
         with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
-            futures = {pool.submit(play, args.agent, staged[a], s, opponents): (a, s) for a, s in pending}
+            futures = {
+                pool.submit(play, args.agent, staged[a], s, opponents, suite["scenario"]): (a, s)
+                for a, s in pending
+            }
             for index, future in enumerate(as_completed(futures), 1):
                 artifact, seed = futures[future]
                 arm, episode = arm_and_episode(artifact)
-                row = {"artifact": artifact, "arm": arm, "episode": episode, "world_seed": seed, **future.result()}
+                row = {
+                    "artifact": artifact, "arm": arm, "episode": episode,
+                    "suite": args.suite, "world_seed": seed, **future.result(),
+                }
                 with lock, log.open("a", encoding="utf-8") as handle:
                     handle.write(json.dumps(row) + "\n")
                     handle.flush()
