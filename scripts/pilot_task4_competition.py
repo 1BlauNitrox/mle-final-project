@@ -74,6 +74,23 @@ def profile_dir(profile):
     return PROFILE_DIRS.get(profile, f"2026-09-15-task4-{profile}")
 
 
+# A held-out suite is registered so its worlds are fixed in advance, but it is
+# never played by the evaluate stage and never read by the analyzer: selection
+# must not have seen it. It is played once, for the artifact selection has
+# already fixed. Keyed by profile because the registration is hash-pinned and
+# cannot gain a field without invalidating a run already in progress.
+HELD_OUT_SUITES = {"final-training": ("holdout-rule-based",)}
+
+
+def evaluated_suites(cfg):
+    held_out = HELD_OUT_SUITES.get(cfg["profile"], ())
+    return {
+        name: setting
+        for name, setting in cfg["evaluation_suites"].items()
+        if name not in held_out
+    }
+
+
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/{profile_dir(PROFILE)}/config.json"
 PROFILE_HASHES = {
@@ -972,7 +989,7 @@ def stage_jobs(root, stage, cfg):
         return [
             (f"{artifact}-{suite}", ["_evaluate", "--artifact", artifact, "--suite", suite])
             for artifact in artifacts(root)
-            for suite in cfg["evaluation_suites"]
+            for suite in evaluated_suites(cfg)
         ]
     return [
         (f"{artifact}-{cfg['latency_suite']}", [
@@ -1526,8 +1543,12 @@ def main():
                     "training_jobs": len(cfg["arms"]) * cfg["replicas"],
                     "training_episodes": cfg["training_episodes"],
                     "stage_workers": cfg["stage_workers"],
-                    "evaluation_jobs": len(artifact_names(cfg)) * len(cfg["evaluation_suites"]),
-                    "evaluation_episodes": cfg["evaluation_episodes"],
+                    "evaluation_jobs": len(artifact_names(cfg)) * len(evaluated_suites(cfg)),
+                    "evaluation_episodes_registered": cfg["evaluation_episodes"],
+                    "evaluation_episodes_played": cfg["evaluation_repeats"]
+                    * sum(len(s["world_seeds"]) for s in evaluated_suites(cfg).values())
+                    * len(artifact_names(cfg)),
+                    "held_out_suites": list(HELD_OUT_SUITES.get(cfg["profile"], ())),
                     "latency_jobs": len(artifact_names(cfg)),
                     "latency_episodes": cfg["latency_episodes"],
                     "budgets": {k: v for k, v in cfg.items() if "limits" in k},

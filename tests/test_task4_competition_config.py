@@ -7,11 +7,14 @@ from pathlib import Path
 
 import pytest
 
+from scripts import pilot_task4_competition as pilot
 from scripts.pilot_task4_competition import (
+    HELD_OUT_SUITES,
     PROFILES,
     REGISTERED_OPPONENTS,
     REGISTERED_SCOPES,
     _hashable,
+    evaluated_suites,
     profile_dir,
 )
 
@@ -127,3 +130,48 @@ def test_no_seed_is_shared_with_the_other_task4_profile_or_with_task3():
     for profile, space in spaces.items():
         for name, other in task3.items():
             assert not space & other, f"{profile} reuses seeds from task3 {name}"
+
+
+def test_completed_screens_play_every_registered_suite():
+    # A completed campaign must reproduce the evaluation it actually ran.
+    for profile in PROFILES:
+        if profile in HELD_OUT_SUITES:
+            continue
+        cfg = load(profile)
+        assert evaluated_suites(cfg) == cfg["evaluation_suites"], profile
+
+
+def test_held_out_worlds_are_registered_and_disjoint_from_every_played_world():
+    for profile, held_out in HELD_OUT_SUITES.items():
+        cfg = load(profile)
+        played = {
+            seed
+            for setting in evaluated_suites(cfg).values()
+            for seed in setting["world_seeds"]
+        }
+        played |= {seed + 1000000 for seed in set(played)}
+        for suite in held_out:
+            assert suite in cfg["evaluation_suites"], f"{profile}: {suite} not registered"
+            worlds = set(cfg["evaluation_suites"][suite]["world_seeds"])
+            assert worlds, f"{profile}: {suite} registers no worlds"
+            assert not worlds & played, f"{profile}: {suite} shares worlds with a played suite"
+
+
+def test_the_evaluate_stage_never_schedules_a_held_out_suite(monkeypatch):
+    cfg = load("final-training")
+    models = [f"{arm}-r{r + 1}" for arm in cfg["arms"] for r in range(cfg["replicas"])]
+    monkeypatch.setattr(pilot, "artifacts", lambda root: [*models, "reference"])
+    jobs = pilot.stage_jobs(None, "evaluation", cfg)
+    scheduled = {command[command.index("--suite") + 1] for _, command in jobs}
+    assert scheduled == {"classic-rule-based", "classic-peaceful", "coin-heaven", "loot-crate"}
+    assert len(jobs) == (len(models) + 1) * len(scheduled)
+
+
+def test_no_held_out_suite_can_become_a_promotion_gate():
+    # Every non-hunting suite the analyzer iterates becomes a retention gate, so
+    # the analyzer must only ever iterate the suites the evaluate stage played.
+    source = (ROOT / "scripts/analyze_task4_competition_v2.py").read_text(encoding="utf-8")
+    assert 'cfg["evaluation_suites"]' not in source
+    cfg = load("final-training")
+    gated = set(evaluated_suites(cfg)) - {cfg["hunting_suite"]}
+    assert gated == {"classic-peaceful", "coin-heaven", "loot-crate"}
