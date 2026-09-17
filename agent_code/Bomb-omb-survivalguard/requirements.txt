@@ -1,0 +1,2 @@
+# 2.11 is what the course Docker image ships; verified to load our checkpoint.
+torch>=2.11

@@ -36,6 +36,10 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CONFIG = REPO_ROOT / "experiments/2026-09-17-task4-final-training/config.json"
 METRICS = ("score", "kills", "self_kills", "survived", "coins", "collection_fraction", "invalid")
 REFERENCE = "reference"
+# An agent variant switched on by environment variables looks exactly like the
+# unswitched one in the output, so we stamp the label into every row and refuse
+# to mix labels in one folder. That is how an A/B keeps its cells apart.
+VARIANT_ENV = "BOMBERMAN_EVALUATION_VARIANT"
 
 
 def discover(root: Path, latest_only: bool, episodes: set[int] | None) -> dict[str, Path]:
@@ -53,6 +57,12 @@ def discover(root: Path, latest_only: bool, episodes: set[int] | None) -> dict[s
         for episode, path in milestones:
             found[f"{job_dir.name}@{episode}"] = path
     return found
+
+
+def variant_conflict(games: list[dict], variant: str) -> list[str]:
+    """Labels already in this log that the current run is not. Rows written
+    before variants existed count as the unlabelled default."""
+    return sorted({game.get("variant", "") for game in games} - {variant})
 
 
 def arm_and_episode(artifact: str) -> tuple[str, int]:
@@ -236,9 +246,17 @@ def main() -> int:
     agents = {g.get("agent", "Bomb-omb") for g in games}
     if agents - {args.agent}:
         raise SystemExit(f"{log} already holds games of {sorted(agents)}; use a separate --out per agent")
+    variant = os.environ.get(VARIANT_ENV, "")
+    conflict = variant_conflict(games, variant)
+    if conflict:
+        raise SystemExit(
+            f"{log} already holds variant {conflict}, not {variant!r}; "
+            f"use a separate --out per variant"
+        )
     done = {(g["artifact"], g["world_seed"]) for g in games}
     pending = [(a, s) for a in artifacts for s in seeds if (a, s) not in done]
-    print(f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  pending: {len(pending)}")
+    print(f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  "
+          f"pending: {len(pending)}  agent: {args.agent}  variant: {variant or '(none)'}")
 
     agent_dir = REPO_ROOT / "agent_code" / args.agent
     staged = {}
@@ -259,7 +277,8 @@ def main() -> int:
                 arm, episode = arm_and_episode(artifact)
                 row = {
                     "artifact": artifact, "arm": arm, "episode": episode, "agent": args.agent,
-                    "suite": suite_name, "world_seed": seed, **future.result(),
+                    "variant": variant, "suite": suite_name, "world_seed": seed,
+                    **future.result(),
                 }
                 with lock, log.open("a", encoding="utf-8") as handle:
                     handle.write(json.dumps(row) + "\n")
