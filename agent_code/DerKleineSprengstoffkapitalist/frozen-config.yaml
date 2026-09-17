@@ -1,0 +1,35 @@
+schema_version: 1
+issue: 183
+status: frozen_task2_interim
+
+agent:
+  name: DerKleineSprengstoffkapitalist
+  state_representation: compact_decision
+  initialization: zeros
+  action_order: [UP, RIGHT, DOWN, LEFT, WAIT, BOMB]
+  training_allowed: false
+
+artifact:
+  path: model.npz
+  sha256: 93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e
+  size_bytes: 41780
+
+origin:
+  issue: 153
+  treatment: control
+  replica: r2
+  training_world_seed: 171002
+  training_agent_seed: 271002
+  completed_episodes: 10000
+  experiment_commit: 7c4f11191d76efdb33f5e80a5e686dd4e7907544
+
+confirmation:
+  passed: false
+  classic_collection_fraction: 0.213333
+  classic_self_kill_rate: 0.13
+  coin_heaven_collection_fraction: 0.9716
+  coin_heaven_bomb_actions: 33
+
+claim:
+  task2_completed: false
+  rationale: Interim freeze for continued project work; confirmation criteria were not fully met.

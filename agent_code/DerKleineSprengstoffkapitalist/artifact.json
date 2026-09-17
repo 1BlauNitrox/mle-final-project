@@ -1,16 +1,19 @@
 {
     "manifest_schema_version": 1,
-    "status": "task2_tabular_successor",
+    "status": "frozen_task2_interim",
     "agent": "DerKleineSprengstoffkapitalist",
     "capability": "task2_tabular_successor",
     "artifact": {
       "path": "model.npz",
-      "sha256": "8f2e618bfb38d690b565be1d3034f153d120887a36d90a61f8adcc1a765c1bbb",
-      "size_bytes": 1150
+      "sha256": "93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e",
+      "size_bytes": 41780
     },
     "model_contract": {
-      "model_schema_version": 3,
-      "feature_schema_version": 2,
+      "model_schema_version": 6,
+      "feature_schema_version": 1,
+      "feature_count": 5,
+      "state_representation": "compact_decision",
+      "initialization": "zeros",
       "action_order": [
         "UP",
         "RIGHT",
@@ -30,7 +33,26 @@
       "producing_experiment_commit": "5af393d4c2c5b46d04751b270f4d865aec41ccaf",
       "framework_revision": "0f55c1d"
     },
+    "origin": {
+      "issue": "153",
+      "treatment": "control",
+      "replica": "r2",
+      "training_world_seed": 171002,
+      "training_agent_seed": 271002,
+      "completed_episodes": 10000,
+      "experiment_commit": "7c4f11191d76efdb33f5e80a5e686dd4e7907544"
+    },
+    "confirmation": {
+      "passed": false,
+      "classic_collection_fraction": 0.213333,
+      "classic_self_kill_rate": 0.13,
+      "coin_heaven_collection_fraction": 0.9716,
+      "coin_heaven_bomb_actions": 33
+    },
     "policy": {
+      "training_allowed": false,
+      "task_2_completion_claimed": false,
+      "retraining_requires_new_issue": true,
       "task2_features_present": true,
       "bomb_action_present": true,
       "scientific_training_authorized": false

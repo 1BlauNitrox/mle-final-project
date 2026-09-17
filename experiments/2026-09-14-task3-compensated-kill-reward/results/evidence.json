@@ -5,9 +5,9 @@
   "archive_sha256": "353507db8dbaba879240a8e9b7d07d5b2afc6a724a31a14d740d67c93d1dd8ac",
   "archive_size_bytes": 142040788,
   "manifest_sha256": "fcae3d8f56987d0e52f41caaba7869125b870f1cd43f552756beef60e9e3cb7d",
-  "archive_public_url": null,
-  "manifest_public_url": null,
-  "archive_retrieval": "Local archive; publish to a durable release before merge.",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task3-compensated-kill-reward-evidence-v1/task3-approach-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task3-compensated-kill-reward-evidence-v1/task3-approach-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; download both assets and verify the archive checksum before import.",
   "verify_command": "Get-FileHash -Algorithm SHA256 task3-approach-evidence.tar.gz",
   "reproduce_command": "$env:TASK3_APPROACH_PROFILE='compensated-kill-reward'; python -m scripts.pilot_task3_approach import --root <root> --archive task3-approach-evidence.tar.gz --sha256 353507db8dbaba879240a8e9b7d07d5b2afc6a724a31a14d740d67c93d1dd8ac; python -m scripts.pilot_task3_approach analyze --root <root> --output <root>/analysis-reproduced.json"
 }
