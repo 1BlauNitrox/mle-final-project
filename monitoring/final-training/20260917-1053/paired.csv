@@ -1,0 +1,41 @@
+candidate,metric,worlds,mean_difference_vs_reference,ci95_low,ci95_high
+control-r1@2000,score,40,0.25,-0.55,1.05
+control-r1@2000,kills,40,-0.025,-0.125,0.075
+control-r1@2000,self_kills,40,-0.15,-0.35,0.05
+control-r1@2000,survived,40,0.1,-0.1,0.275
+control-r1@2000,collection_fraction,40,0.0417,-0.0167,0.1
+control-r2@2000,score,40,0.675,-0.15,1.475
+control-r2@2000,kills,40,-0.025,-0.15,0.075
+control-r2@2000,self_kills,40,-0.175,-0.4,0.05
+control-r2@2000,survived,40,0.05,-0.125,0.225
+control-r2@2000,collection_fraction,40,0.0889,0.0306,0.15
+control-r3@2000,score,40,1.3,0.175,2.45
+control-r3@2000,kills,40,0.1,-0.05,0.25
+control-r3@2000,self_kills,40,-0.175,-0.375,0.025
+control-r3@2000,survived,40,-0.05,-0.225,0.125
+control-r3@2000,collection_fraction,40,0.0889,0.0194,0.1583
+control@2000 (pooled),score,40,0.7417,-0.0917,1.5167
+control@2000 (pooled),kills,40,0.0167,-0.0917,0.1083
+control@2000 (pooled),self_kills,40,-0.1667,-0.325,0.0083
+control@2000 (pooled),survived,40,0.0333,-0.125,0.175
+control@2000 (pooled),collection_fraction,40,0.0731,0.0194,0.1287
+halved-r1@2000,score,40,0.375,-0.45,1.2
+halved-r1@2000,kills,40,0,-0.125,0.125
+halved-r1@2000,self_kills,40,-0.2,-0.375,-0.025
+halved-r1@2000,survived,40,0.175,0,0.35
+halved-r1@2000,collection_fraction,40,0.0417,-0.0167,0.1
+halved-r2@2000,score,40,1.2,0.175,2.25
+halved-r2@2000,kills,40,-0.025,-0.125,0.075
+halved-r2@2000,self_kills,40,-0.35,-0.55,-0.15
+halved-r2@2000,survived,40,0.25,0.05,0.45
+halved-r2@2000,collection_fraction,40,0.1472,0.0806,0.2167
+halved-r3@2000,score,40,0.375,-0.575,1.325
+halved-r3@2000,kills,40,0,-0.125,0.125
+halved-r3@2000,self_kills,40,-0.275,-0.475,-0.075
+halved-r3@2000,survived,40,0.225,0.025,0.425
+halved-r3@2000,collection_fraction,40,0.0417,-0.0222,0.1028
+halved@2000 (pooled),score,40,0.65,-0.1833,1.4583
+halved@2000 (pooled),kills,40,-0.0083,-0.1083,0.0833
+halved@2000 (pooled),self_kills,40,-0.275,-0.4333,-0.1083
+halved@2000 (pooled),survived,40,0.2167,0.05,0.375
+halved@2000 (pooled),collection_fraction,40,0.0769,0.025,0.1306

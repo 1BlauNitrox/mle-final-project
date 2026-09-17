@@ -1,0 +1,14 @@
+﻿{
+    "hostname":  "LENOVO",
+    "python_version":  "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "torch_version":  "2.13.0+cpu",
+    "evaluated_commit":  "9ffc6db",
+    "command":  ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\milestones\\final-training --jobs 2",
+    "jobs":  2,
+    "start_time":  "2026-09-17T10:46:51.1231395+02:00",
+    "end_time":  "2026-09-17T10:53:22.3241686+02:00",
+    "total_games":  280,
+    "bundle_sha256":  {
+                          "final-training-ep2000.zip":  "cd3ce3fbc2f64327319bacd0e1c8a87a98047270256e95642e7de2369cb5c9b1"
+                      }
+}

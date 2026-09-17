@@ -1,0 +1,37 @@
+{
+  "created_readable": "2026-09-17 10:04:21",
+  "run_root": "C:\\task4-final-training",
+  "profile": "final-training",
+  "config_sha256": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
+  "use": "development-world monitoring only; the held-out suite is not evaluated from this bundle",
+  "files": {
+    "reference.pt": {
+      "sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+      "size_bytes": 64301
+    },
+    "training-resume/control-r1/milestone-002000.pt": {
+      "sha256": "64687e4bf7b623a916d70c827fb89e9df835e7987754beaae5a0d4e674d67c17",
+      "size_bytes": 3436279
+    },
+    "training-resume/control-r2/milestone-002000.pt": {
+      "sha256": "c150472dde67eed9a2239c34ecf9a50afa117bdc1bc5cd4ae3e1e9d10998194d",
+      "size_bytes": 3436279
+    },
+    "training-resume/control-r3/milestone-002000.pt": {
+      "sha256": "8c423e1591ca58439b87acaffb5a5e0656775e192146fa887a734882107117a5",
+      "size_bytes": 3436279
+    },
+    "training-resume/halved-r1/milestone-002000.pt": {
+      "sha256": "362655491bd56a1845eeb517975da91ed054c279caf10110f7cf3a2d84bdd313",
+      "size_bytes": 3436279
+    },
+    "training-resume/halved-r2/milestone-002000.pt": {
+      "sha256": "34399e332a112b100abf487578eb457e1fd2a4019e33e29c440441e8e268c0d4",
+      "size_bytes": 3436279
+    },
+    "training-resume/halved-r3/milestone-002000.pt": {
+      "sha256": "302e196f81cda9584caf2c9685780c923a70399fd8e79c8dbc363a78c2d917bf",
+      "size_bytes": 3436279
+    }
+  }
+}

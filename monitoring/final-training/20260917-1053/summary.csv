@@ -1,0 +1,8 @@
+artifact,arm,episode,games,score,kills,self_kills,survived,coins,collection_fraction,invalid
+reference,reference,0,40,1.825,0.075,0.8,0.175,1.45,0.1611,0.5
+control-r1@2000,control,2000,40,2.075,0.05,0.65,0.275,1.825,0.2028,0.9
+control-r2@2000,control,2000,40,2.5,0.05,0.625,0.225,2.25,0.25,1
+control-r3@2000,control,2000,40,3.125,0.175,0.625,0.125,2.25,0.25,1.125
+halved-r1@2000,halved,2000,40,2.2,0.075,0.6,0.35,1.825,0.2028,0.75
+halved-r2@2000,halved,2000,40,3.025,0.05,0.45,0.425,2.775,0.3083,1.175
+halved-r3@2000,halved,2000,40,2.2,0.075,0.525,0.4,1.825,0.2028,1.35
