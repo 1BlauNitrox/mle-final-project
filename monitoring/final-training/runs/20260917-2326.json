@@ -1,0 +1,83 @@
+﻿{
+    "hostname":  "LENOVO",
+    "python_version":  "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:05:39) [MSC v.1944 64 bit (AMD64)]",
+    "torch_version":  "2.13.0+cpu",
+    "git_commit_evaluated":  "39e0053",
+    "commands":  [
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments\\2026-09-17-final-training-monitoring\\config.json --jobs 2",
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\milestones\\final-training --suite coin-heaven --jobs 2",
+                     ".\\.venv\\Scripts\\python.exe scripts\\evaluate_milestones.py --root C:\\milestones\\final-training --suite loot-crate --jobs 2"
+                 ],
+    "jobs":  2,
+    "start_time":  "2026-09-17T22:12:48.7595698+02:00",
+    "end_time":  "2026-09-17T23:26:28.8701378+02:00",
+    "newly_evaluated":  {
+                            "classic-monitoring-100":  [
+                                                           "control-r1@2000",
+                                                           "control-r1@4000",
+                                                           "control-r1@6000",
+                                                           "control-r2@2000",
+                                                           "control-r2@4000",
+                                                           "control-r2@6000",
+                                                           "control-r3@2000",
+                                                           "control-r3@4000",
+                                                           "control-r3@6000",
+                                                           "halved-r1@2000",
+                                                           "halved-r1@4000",
+                                                           "halved-r1@6000",
+                                                           "halved-r2@2000",
+                                                           "halved-r2@4000",
+                                                           "halved-r2@6000",
+                                                           "halved-r3@2000",
+                                                           "halved-r3@4000",
+                                                           "halved-r3@6000",
+                                                           "reference"
+                                                       ],
+                            "coin-heaven":  [
+                                                "control-r1@2000",
+                                                "control-r1@4000",
+                                                "control-r1@6000",
+                                                "control-r2@2000",
+                                                "control-r2@4000",
+                                                "control-r2@6000",
+                                                "control-r3@2000",
+                                                "control-r3@4000",
+                                                "control-r3@6000",
+                                                "halved-r1@2000",
+                                                "halved-r1@4000",
+                                                "halved-r1@6000",
+                                                "halved-r2@2000",
+                                                "halved-r2@4000",
+                                                "halved-r2@6000",
+                                                "halved-r3@2000",
+                                                "halved-r3@4000",
+                                                "halved-r3@6000",
+                                                "reference"
+                                            ],
+                            "loot-crate":  [
+                                               "control-r1@6000",
+                                               "control-r2@6000",
+                                               "control-r3@6000",
+                                               "halved-r1@6000",
+                                               "halved-r2@6000",
+                                               "halved-r3@6000"
+                                           ]
+                        },
+    "games_per_suite":  {
+                            "classic-monitoring-100":  1900,
+                            "coin-heaven":  760,
+                            "loot-crate":  760
+                        },
+    "new_games_per_suite":  {
+                                "classic-monitoring-100":  1900,
+                                "coin-heaven":  760,
+                                "loot-crate":  240
+                            },
+    "total_games":  3420,
+    "new_total_games":  2900,
+    "bundle_sha256":  {
+                          "final-training-ep2000.zip":  "cd3ce3fbc2f64327319bacd0e1c8a87a98047270256e95642e7de2369cb5c9b1",
+                          "final-training-ep4000.zip":  "8574e14f3cf82a9f6a2b16a06fe783490e9d6e7c7ef2657943738c951a9d1c7e",
+                          "final-training-ep006000.zip":  "b5a961462927cbe01f9226d93a65f063696ff3780811f87d9c85824c779d491f"
+                      }
+}
