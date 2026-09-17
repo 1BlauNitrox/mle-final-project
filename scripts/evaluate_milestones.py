@@ -187,7 +187,9 @@ def main() -> int:
                         help="Directory holding reference.pt and training-resume/*/milestone-*.pt")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--suite", default="classic-rule-based")
-    parser.add_argument("--worlds", type=int, default=40)
+    parser.add_argument("--registration", type=Path,
+                        help="Play the world set of a registered experiment instead of a config suite.")
+    parser.add_argument("--worlds", type=int, help="Only the first N worlds (default: all).")
     parser.add_argument("--agent", default="Bomb-omb")
     parser.add_argument("--jobs", type=int, default=2)
     parser.add_argument("--latest-only", action="store_true")
@@ -196,14 +198,28 @@ def main() -> int:
     args = parser.parse_args()
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
-    if args.suite not in cfg["evaluation_suites"] or "holdout" in args.suite:
-        raise SystemExit(f"refusing suite {args.suite!r}: monitoring reads development suites only")
-    suite = cfg["evaluation_suites"][args.suite]
-    seeds = suite["world_seeds"][: args.worlds]
+    held_out = {
+        seed
+        for name, setting in cfg["evaluation_suites"].items()
+        if "holdout" in name
+        for seed in setting["world_seeds"]
+    }
+    if args.registration:
+        registered = json.loads(args.registration.read_text(encoding="utf-8"))["suite"]
+        suite_name, suite = registered["name"], registered
+        if set(suite["world_seeds"]) & held_out:
+            raise SystemExit("refusing registration: it reuses held-out worlds")
+    else:
+        if args.suite not in cfg["evaluation_suites"] or "holdout" in args.suite:
+            raise SystemExit(f"refusing suite {args.suite!r}: monitoring reads development suites only")
+        suite_name, suite = args.suite, cfg["evaluation_suites"][args.suite]
+    seeds = suite["world_seeds"][: args.worlds] if args.worlds else list(suite["world_seeds"])
     opponents = suite["opponents"]
 
     root = args.root.resolve()
-    default_out = "milestone-evaluation" if args.suite == "classic-rule-based" else f"milestone-evaluation-{args.suite}"
+    default_out = "milestone-evaluation" if suite_name == "classic-rule-based" else f"milestone-evaluation-{suite_name}"
+    if args.agent != "Bomb-omb":
+        default_out += f"-{args.agent}"
     out = (args.out or root / default_out).resolve()
     out.mkdir(parents=True, exist_ok=True)
     artifacts = discover(root, args.latest_only, set(args.episodes) if args.episodes else None)
@@ -215,8 +231,11 @@ def main() -> int:
     log = out / "games.jsonl"
     games = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()] if log.is_file() else []
     recorded = {g.get("suite", "classic-rule-based") for g in games}
-    if recorded - {args.suite}:
+    if recorded - {suite_name}:
         raise SystemExit(f"{log} already holds {sorted(recorded)}; use a separate --out per suite")
+    agents = {g.get("agent", "Bomb-omb") for g in games}
+    if agents - {args.agent}:
+        raise SystemExit(f"{log} already holds games of {sorted(agents)}; use a separate --out per agent")
     done = {(g["artifact"], g["world_seed"]) for g in games}
     pending = [(a, s) for a in artifacts for s in seeds if (a, s) not in done]
     print(f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  pending: {len(pending)}")
@@ -239,8 +258,8 @@ def main() -> int:
                 artifact, seed = futures[future]
                 arm, episode = arm_and_episode(artifact)
                 row = {
-                    "artifact": artifact, "arm": arm, "episode": episode,
-                    "suite": args.suite, "world_seed": seed, **future.result(),
+                    "artifact": artifact, "arm": arm, "episode": episode, "agent": args.agent,
+                    "suite": suite_name, "world_seed": seed, **future.result(),
                 }
                 with lock, log.open("a", encoding="utf-8") as handle:
                     handle.write(json.dumps(row) + "\n")
@@ -255,7 +274,7 @@ def main() -> int:
 
     summarize(games, out)
     print()
-    print(f"worlds : {args.suite} development seeds {seeds[0]}..{seeds[-1]} (not held out)")
+    print(f"worlds : {suite_name}, seeds {seeds[0]}..{seeds[-1]} (not held out)")
     print(f"results: {out}  (games.jsonl, summary.csv, paired.csv)")
     return 0
 
