@@ -2,7 +2,7 @@
   "schema_version": 1,
   "agent_name": "Bomb-omb",
   "packaged_from": "agent_code/DagobertDuckDQNTask3",
-  "packaging_commit": "11782a1e1ba8bed4e09cb64381328034a65c4261",
+  "packaging_commit": "68af7773e7605ff96dc0c2d9c1dd27599473ff60",
   "checkpoint": {
     "installed_as": "checkpoint.pt",
     "source_path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\agent_code\\DagobertDuckDQNTask3\\checkpoint.pt",

@@ -15,19 +15,21 @@ import json
 import shutil
 import subprocess
 import sys
+import tarfile
+import tempfile
 import zipfile
 from pathlib import Path
 
+# Only what the framework loads when it plays with train=False. The framework
+# imports callbacks.py and nothing else unless it is training, and nothing that
+# callbacks.py pulls in reaches train.py, rewards.py or migration.py.
 CODE_FILES = (
     "callbacks.py",
     "config.py",
     "legality.py",
-    "migration.py",
     "model.py",
     "persistence.py",
     "replay.py",
-    "rewards.py",
-    "train.py",
     "requirements.txt",
 )
 CODE_DIRS = ("features",)
@@ -156,17 +158,51 @@ def smoke_run(agent_name: str, rounds: int) -> tuple[bool, str]:
     return (not failed), combined
 
 
+def shipped_names(target: Path) -> list[str]:
+    """Exactly what goes into the zip, independent of whatever else sits in the folder.
+
+    Playing writes logs/ and __pycache__/ into the agent directory, and a running
+    milestone evaluation stages checkpoints there, so the zip is built from this
+    list and never from the folder's contents.
+    """
+    features = sorted(f"{d}/{p.name}" for d in CODE_DIRS for p in (target / d).glob("*.py"))
+    return sorted([*CODE_FILES, *features, "checkpoint.pt"])
+
+
+def fresh_framework_check(out_zip: Path, agent_name: str) -> tuple[bool, str]:
+    """Play one game from the zip alone, the way the graders do.
+
+    A fresh copy of the framework gets no copy of the agent except the one in
+    the zip, so a file the agent needs but the zip lacks fails here instead of
+    being quietly found in our own agent_code folder.
+    """
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
+        tmp = Path(tmp)
+        archive = tmp / "framework.tar"
+        subprocess.run(["git", "archive", "--format=tar", f"--output={archive}", "HEAD"], cwd=REPO_ROOT, check=True)
+        root = tmp / "framework"
+        root.mkdir()
+        with tarfile.open(archive) as tar:
+            tar.extractall(root, filter="data")
+        shutil.rmtree(root / "agent_code" / agent_name, ignore_errors=True)
+        with zipfile.ZipFile(out_zip) as zf:
+            zf.extractall(root / "agent_code")
+        proc = subprocess.run(
+            [sys.executable, "main.py", "play", "--agents", agent_name,
+             "random_agent", "random_agent", "random_agent", "--n-rounds", "1", "--no-gui"],
+            cwd=root, capture_output=True, text=True,
+        )
+        output = (proc.stdout + proc.stderr)[-2000:]
+        return proc.returncode == 0 and "Traceback" not in output, output
+
+
 def build_zip(target: Path, out_zip: Path) -> None:
     out_zip.parent.mkdir(parents=True, exist_ok=True)
     if out_zip.exists():
         out_zip.unlink()
     with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
-        for path in sorted(target.rglob("*")):
-            if "__pycache__" in path.parts or path.name.endswith(".pyc"):
-                continue
-            if path.is_dir():
-                continue
-            zf.write(path, f"{target.name}/{path.relative_to(target).as_posix()}")
+        for name in shipped_names(target):
+            zf.write(target / name, f"{target.name}/{name}")
 
 
 def main() -> int:
@@ -245,6 +281,17 @@ def main() -> int:
     if len(cb_dirs) != 1:
         print("FAIL: zip must contain exactly one directory with callbacks.py")
         return 1
+    expected = sorted(f"{args.name}/{n}" for n in shipped_names(target))
+    if sorted(names) != expected:
+        print("FAIL: zip contents differ from the runtime file list:", sorted(set(names) ^ set(expected)))
+        return 1
+    if not args.skip_smoke:
+        ok, output = fresh_framework_check(out_zip, args.name)
+        if not ok:
+            print("FAIL: the zip alone does not play in a fresh framework copy:")
+            print(output)
+            return 1
+        print("check      : zip alone plays one game in a fresh framework copy")
     print("OK")
     return 0
 
