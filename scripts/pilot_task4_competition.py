@@ -54,7 +54,7 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
     stop_owned,
 )
 
-INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
+DEFAULT_INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
 PROFILES = (
     "trainable-scope",
@@ -117,6 +117,16 @@ def stage_limits(cfg, stage):
 
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/{profile_dir(PROFILE)}/config.json"
+# Every screen and the final run continue from the Task 3 incumbent, so the
+# pinned input is the same for all of them. The warm-lineup run continues from
+# our own agent instead, and its reference has to be the milestone it started
+# from: bind() requires the initialization's networks to match the reference,
+# and the analyzer measures every arm against that same artifact played
+# unchanged. Keyed by profile because the registration is hash-pinned.
+PROFILE_INPUTS = {
+    "warm-lineup": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+}
+INPUT = PROFILE_INPUTS.get(PROFILE, DEFAULT_INPUT)
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
@@ -124,7 +134,7 @@ PROFILE_HASHES = {
     "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
     "final-training": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
-    "warm-lineup": "564c1b3c614d8d33423ddb59546e7279b221d28b0afceb0b3179a8a5b0e99a9a",
+    "warm-lineup": "516b34e9b7c449daad691ae962b08b7f350c31c86618bfa8534bcc44577f3ff1",
 }
 ARM_FACTORS = (
     "trainable_scope",
