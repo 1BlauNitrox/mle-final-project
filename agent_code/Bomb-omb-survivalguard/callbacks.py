@@ -18,6 +18,7 @@ from .persistence import (
     load_evaluation_checkpoint,
     load_training_checkpoint,
 )
+from .attack_rule import AttackRule, attack_mode
 from .replay import ReplayBuffer
 from .survival_guard import SurvivalGuard, guard_modes
 
@@ -40,10 +41,12 @@ def setup(self) -> None:
     # recording an unguarded cell under a guarded name.
     veto_bomb, veto_move = guard_modes()
     self.survival_guard = SurvivalGuard(veto_bomb=veto_bomb, veto_move=veto_move)
+    self.attack_rule = AttackRule(enabled=attack_mode())
     self.logger.info(
-        "Survival guard: bomb veto %s, move veto %s",
+        "Survival guard: bomb veto %s, move veto %s | attack rule %s",
         "on" if veto_bomb else "off",
         "on" if veto_move else "off",
+        "on" if self.attack_rule.active else "off",
     )
 
     torch.set_num_threads(self.config.torch_num_threads)
@@ -70,8 +73,19 @@ def act(self, game_state: dict | None) -> str:
         rng=self.action_rng,
         action_mask=mask,
     )
+    if self.train:
+        return action
+
+    # The attack rule proposes the bomb the policy declines; the survival guard
+    # then has the last word on whether any action is survivable. Their order
+    # matters: a bomb the attack rule places has already passed the same escape
+    # check the guard would apply to it.
+    attack = getattr(self, "attack_rule", None)
+    if attack is not None and attack.active:
+        action = attack.choose(game_state, action)
+
     guard = getattr(self, "survival_guard", None)
-    if self.train or guard is None or not guard.active:
+    if guard is None or not guard.active:
         return action
 
     def q_values():

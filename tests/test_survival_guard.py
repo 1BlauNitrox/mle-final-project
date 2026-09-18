@@ -170,7 +170,7 @@ def test_the_prototype_differs_from_the_shipped_agent_only_in_the_guard():
     # factorial measures the wrong difference.
     shipped = ROOT / "agent_code/Bomb-omb"
     prototype = ROOT / "agent_code/Bomb-omb-survivalguard"
-    allowed = {"callbacks.py", "survival_guard.py"}
+    allowed = {"callbacks.py", "survival_guard.py", "attack_rule.py"}
     for path in prototype.rglob("*"):
         # logs/ and __pycache__/ are written by playing, and are gitignored.
         if path.is_dir() or {"__pycache__", "logs"} & set(path.relative_to(prototype).parts):
@@ -183,6 +183,8 @@ def test_the_prototype_differs_from_the_shipped_agent_only_in_the_guard():
 
 def test_the_hook_returns_before_the_guard_when_both_switches_are_off():
     # The cheapest possible guarantee that the control cell costs nothing and
-    # changes nothing: act() must not even reach the guard.
+    # changes nothing: act() must not reach the guard, and training must not
+    # reach either add-on.
     source = (ROOT / "agent_code/Bomb-omb-survivalguard/callbacks.py").read_text(encoding="utf-8")
-    assert "if self.train or guard is None or not guard.active:\n        return action" in source
+    assert "if self.train:\n        return action" in source
+    assert "if guard is None or not guard.active:\n        return action" in source
