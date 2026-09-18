@@ -1,0 +1,37 @@
+{
+  "hostname": "Lenovo",
+  "python": "Python 3.13.15",
+  "torch": "2.13.0+cpu",
+  "git_commit": "776b0ab678f6d4da402a43216b7eb45386a9e3df",
+  "protocol": "experiments/2026-09-18-survival-guard-confirmation/config.json",
+  "cells": [
+    {
+      "name": "control",
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-confirmation/config.json --agent Bomb-omb-survivalguard --episodes 6000 8000 --jobs 2 --out monitoring/survival-guard-confirmation/confirmation-control",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "control"
+      },
+      "started": "2026-09-18T17:22:19+02:00",
+      "ended": "2026-09-18T18:41:43+02:00",
+      "games": 3250,
+      "cut_short": false
+    },
+    {
+      "name": "both",
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-confirmation/config.json --agent Bomb-omb-survivalguard --episodes 6000 8000 --jobs 2 --out monitoring/survival-guard-confirmation/confirmation-both",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "on",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on",
+        "BOMBERMAN_EVALUATION_VARIANT": "both"
+      },
+      "started": "2026-09-18T20:25:24+02:00",
+      "ended": "2026-09-18T22:10:11+02:00",
+      "games": 3250,
+      "cut_short": false
+    }
+  ],
+  "games_per_cell": 3250,
+  "anything_cut_short": false
+}

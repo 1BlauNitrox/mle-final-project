@@ -1,0 +1,81 @@
+candidate,metric,worlds,mean_difference_vs_reference,ci95_low,ci95_high
+control-r1@6000,score,250,0.272,-0.104,0.652
+control-r1@6000,kills,250,0.016,-0.044,0.076
+control-r1@6000,self_kills,250,-0.168,-0.252,-0.084
+control-r1@6000,survived,250,0.14,0.056,0.224
+control-r1@6000,collection_fraction,250,0.0213,-0.0027,0.0462
+control-r1@8000,score,250,0.408,0.024,0.82
+control-r1@8000,kills,250,0.012,-0.048,0.076
+control-r1@8000,self_kills,250,-0.104,-0.188,-0.02
+control-r1@8000,survived,250,0.072,-0.016,0.16
+control-r1@8000,collection_fraction,250,0.0387,0.0142,0.0636
+control-r2@6000,score,250,0.28,-0.108,0.66
+control-r2@6000,kills,250,-0.02,-0.076,0.036
+control-r2@6000,self_kills,250,-0.108,-0.192,-0.024
+control-r2@6000,survived,250,0.076,-0.004,0.156
+control-r2@6000,collection_fraction,250,0.0422,0.0178,0.0667
+control-r2@8000,score,250,0.32,-0.08,0.704
+control-r2@8000,kills,250,-0.008,-0.068,0.052
+control-r2@8000,self_kills,250,-0.116,-0.196,-0.036
+control-r2@8000,survived,250,0.108,0.028,0.188
+control-r2@8000,collection_fraction,250,0.04,0.0164,0.0631
+control-r3@6000,score,250,0.292,-0.104,0.692
+control-r3@6000,kills,250,-0.012,-0.072,0.048
+control-r3@6000,self_kills,250,-0.116,-0.204,-0.028
+control-r3@6000,survived,250,0.1,0.016,0.184
+control-r3@6000,collection_fraction,250,0.0391,0.0147,0.0636
+control-r3@8000,score,250,0.276,-0.12,0.664
+control-r3@8000,kills,250,-0.004,-0.064,0.052
+control-r3@8000,self_kills,250,-0.096,-0.18,-0.012
+control-r3@8000,survived,250,0.068,-0.016,0.152
+control-r3@8000,collection_fraction,250,0.0329,0.0084,0.0587
+control@6000 (pooled),score,250,0.2813,-0.0453,0.6093
+control@6000 (pooled),kills,250,-0.0053,-0.056,0.0427
+control@6000 (pooled),self_kills,250,-0.1307,-0.1987,-0.0627
+control@6000 (pooled),survived,250,0.1053,0.0373,0.172
+control@6000 (pooled),collection_fraction,250,0.0342,0.0148,0.0545
+control@8000 (pooled),score,250,0.3347,0.004,0.6493
+control@8000 (pooled),kills,250,-0.0,-0.0493,0.0467
+control@8000 (pooled),self_kills,250,-0.1053,-0.1733,-0.0373
+control@8000 (pooled),survived,250,0.0827,0.0147,0.1493
+control@8000 (pooled),collection_fraction,250,0.0372,0.017,0.0572
+halved-r1@6000,score,250,0.468,0.08,0.856
+halved-r1@6000,kills,250,0.04,-0.02,0.1
+halved-r1@6000,self_kills,250,-0.044,-0.132,0.048
+halved-r1@6000,survived,250,0.016,-0.072,0.104
+halved-r1@6000,collection_fraction,250,0.0298,0.0062,0.0538
+halved-r1@8000,score,250,0.5,0.1,0.9
+halved-r1@8000,kills,250,0.036,-0.024,0.096
+halved-r1@8000,self_kills,250,-0.132,-0.22,-0.044
+halved-r1@8000,survived,250,0.056,-0.032,0.14
+halved-r1@8000,collection_fraction,250,0.0356,0.0111,0.0609
+halved-r2@6000,score,250,0.116,-0.26,0.492
+halved-r2@6000,kills,250,-0.004,-0.064,0.056
+halved-r2@6000,self_kills,250,-0.06,-0.144,0.028
+halved-r2@6000,survived,250,0.028,-0.06,0.112
+halved-r2@6000,collection_fraction,250,0.0151,-0.0084,0.0387
+halved-r2@8000,score,250,0.26,-0.112,0.616
+halved-r2@8000,kills,250,-0.02,-0.076,0.036
+halved-r2@8000,self_kills,250,-0.068,-0.156,0.016
+halved-r2@8000,survived,250,0.048,-0.04,0.132
+halved-r2@8000,collection_fraction,250,0.04,0.0169,0.0627
+halved-r3@6000,score,250,0.204,-0.164,0.572
+halved-r3@6000,kills,250,-0.004,-0.06,0.056
+halved-r3@6000,self_kills,250,-0.112,-0.204,-0.02
+halved-r3@6000,survived,250,0.096,0.004,0.184
+halved-r3@6000,collection_fraction,250,0.0249,0.0009,0.0484
+halved-r3@8000,score,250,0.168,-0.228,0.568
+halved-r3@8000,kills,250,-0.004,-0.064,0.056
+halved-r3@8000,self_kills,250,-0.064,-0.156,0.028
+halved-r3@8000,survived,250,0.004,-0.084,0.092
+halved-r3@8000,collection_fraction,250,0.0209,-0.0049,0.0458
+halved@6000 (pooled),score,250,0.2627,-0.052,0.5627
+halved@6000 (pooled),kills,250,0.0107,-0.036,0.0587
+halved@6000 (pooled),self_kills,250,-0.072,-0.1453,0.0027
+halved@6000 (pooled),survived,250,0.0467,-0.0293,0.116
+halved@6000 (pooled),collection_fraction,250,0.0233,0.0036,0.0427
+halved@8000 (pooled),score,250,0.3093,-0.012,0.62
+halved@8000 (pooled),kills,250,0.004,-0.0453,0.0507
+halved@8000 (pooled),self_kills,250,-0.088,-0.16,-0.016
+halved@8000 (pooled),survived,250,0.036,-0.036,0.1067
+halved@8000 (pooled),collection_fraction,250,0.0321,0.0116,0.0529
