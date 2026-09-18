@@ -63,7 +63,8 @@ def test_the_analyzer_follows_the_registration_not_the_newest_rule(monkeypatch):
         assert pilot.registered_analyzer().__module__ == expected
 
     # The five screens ran before the rule was corrected and must keep the rule
-    # they executed under; only the final training run opts in.
+    # they executed under. The final training run opted in, and the warm-started
+    # continuation inherits that choice because it is the same programme.
     root = Path(pilot.ROOT)
     for profile in pilot.PROFILES:
         shipped = json.loads(
@@ -72,7 +73,7 @@ def test_the_analyzer_follows_the_registration_not_the_newest_rule(monkeypatch):
             )
         )
         opted_in = shipped.get("promotion_rule_version") == 2
-        assert opted_in == (profile == "final-training"), profile
+        assert opted_in == (profile in {"final-training", "warm-lineup"}), profile
 
     # Both analyzers are bound into the run's provenance, so neither can change
     # under a prepared campaign without the binding noticing.

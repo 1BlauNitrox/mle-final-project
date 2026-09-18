@@ -63,11 +63,15 @@ PROFILES = (
     "lineup-trajectory",
     "exploration-period",
     "final-training",
+    "warm-lineup",
 )
 # The five screens were all registered on 15 September and share that prefix.
 # Later registrations carry their own date, so the directory cannot be derived
 # from the profile name alone without silently repointing a completed campaign.
-PROFILE_DIRS = {"final-training": "2026-09-17-task4-final-training"}
+PROFILE_DIRS = {
+    "final-training": "2026-09-17-task4-final-training",
+    "warm-lineup": "2026-09-18-task4-warm-lineup",
+}
 
 
 def profile_dir(profile):
@@ -120,6 +124,7 @@ PROFILE_HASHES = {
     "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
     "final-training": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
+    "warm-lineup": "564c1b3c614d8d33423ddb59546e7279b221d28b0afceb0b3179a8a5b0e99a9a",
 }
 ARM_FACTORS = (
     "trainable_scope",
