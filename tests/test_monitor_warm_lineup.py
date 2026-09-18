@@ -40,21 +40,45 @@ def test_nothing_is_complete_before_the_first_milestone(tmp_path):
     assert monitor.complete_episodes(tmp_path) == []
 
 
-def test_evaluated_episodes_come_from_the_games_log(tmp_path):
+def games_for(episodes, worlds, jobs=monitor.JOBS):
+    rows = [{"artifact": "reference", "episode": 0, "world_seed": w} for w in range(worlds)]
+    for episode in episodes:
+        for job in jobs:
+            for world in range(worlds):
+                rows.append({"artifact": f"{job}@{episode}", "episode": episode, "world_seed": world})
+    return rows
+
+
+def test_a_fully_evaluated_level_counts_as_done(tmp_path):
     out = tmp_path / "out"
     out.mkdir()
-    rows = [
-        {"artifact": "reference", "episode": 0, "world_seed": 1},
-        {"artifact": "control-r1@1000", "episode": 1000, "world_seed": 1},
-        {"artifact": "hard-r3@1000", "episode": 1000, "world_seed": 1},
-        {"artifact": "control-r1@2000", "episode": 2000, "world_seed": 1},
-    ]
+    (out / "games.jsonl").write_text(
+        "".join(json.dumps(r) + "\n" for r in games_for([1000], worlds=5)), encoding="utf-8")
+    assert monitor.evaluated_episodes(out, worlds=5) == {1000}
+
+
+def test_a_half_finished_level_is_not_done(tmp_path):
+    # This is the bug that stranded episode 2,000: an interrupted pass left one
+    # checkpoint's games behind, and counting the level as evaluated meant no
+    # later pass would ever finish it.
+    out = tmp_path / "out"
+    out.mkdir()
+    rows = games_for([1000], worlds=5) + games_for([2000], worlds=5, jobs=monitor.JOBS[:1])[5:]
     (out / "games.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
-    assert monitor.evaluated_episodes(out) == {1000, 2000}
+    assert monitor.evaluated_episodes(out, worlds=5) == {1000}
+    assert monitor.episode_coverage(out)[2000] == 5
+
+
+def test_a_level_missing_only_some_worlds_is_not_done(tmp_path):
+    out = tmp_path / "out"
+    out.mkdir()
+    rows = [r for r in games_for([1000], worlds=5) if r["world_seed"] != 4]
+    (out / "games.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    assert monitor.evaluated_episodes(out, worlds=5) == set()
 
 
 def test_an_empty_output_folder_has_evaluated_nothing(tmp_path):
-    assert monitor.evaluated_episodes(tmp_path) == set()
+    assert monitor.evaluated_episodes(tmp_path, worlds=100) == set()
 
 
 def test_staging_copies_the_reference_and_only_the_named_episodes(tmp_path):
