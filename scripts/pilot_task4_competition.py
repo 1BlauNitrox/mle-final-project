@@ -134,7 +134,7 @@ PROFILE_HASHES = {
     "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
     "final-training": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
-    "warm-lineup": "516b34e9b7c449daad691ae962b08b7f350c31c86618bfa8534bcc44577f3ff1",
+    "warm-lineup": "aca33d30e9fe6f48def570d27a704b1a76cd1ce63cb55430300d94a1bc09d058",
 }
 ARM_FACTORS = (
     "trainable_scope",

@@ -2,7 +2,7 @@
   "profile": "warm-lineup",
   "scope": "opaque collision-only audit; no held-out values exposed or games run",
   "populations": {
-    "training_including_opponents": 90003,
+    "training_including_opponents": 72003,
     "development": 320,
     "smoke": 11
   },
@@ -61,7 +61,7 @@
         "smoke": 11
       },
       "warm-lineup": {
-        "training_including_opponents": 90003,
+        "training_including_opponents": 72003,
         "development": 320,
         "smoke": 11
       }
