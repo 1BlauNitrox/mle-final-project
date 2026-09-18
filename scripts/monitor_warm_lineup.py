@@ -53,17 +53,31 @@ def complete_episodes(root: Path) -> list[int]:
     return sorted(set.intersection(*per_job)) if per_job else []
 
 
-def evaluated_episodes(out: Path) -> set[int]:
+def episode_coverage(out: Path) -> dict[int, int]:
+    """How many distinct checkpoint-and-world games each episode level has."""
     log = out / "games.jsonl"
     if not log.is_file():
-        return set()
-    episodes = set()
+        return {}
+    seen = defaultdict(set)
     for line in log.read_text(encoding="utf-8-sig").splitlines():
-        if line.strip():
-            row = json.loads(line)
-            if row["artifact"] != "reference":
-                episodes.add(int(row["episode"]))
-    return episodes
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row["artifact"] != "reference":
+            seen[int(row["episode"])].add((row["artifact"], row["world_seed"]))
+    return {episode: len(pairs) for episode, pairs in seen.items()}
+
+
+def evaluated_episodes(out: Path, worlds: int) -> set[int]:
+    """Episode levels that are *fully* evaluated.
+
+    A level is only done when every job's checkpoint has played every world. An
+    interrupted pass leaves a partial level behind, and counting that as done
+    would silently strand it: later passes would skip it forever and the
+    trajectory would be drawn from one checkpoint instead of six.
+    """
+    needed = len(JOBS) * worlds
+    return {episode for episode, count in episode_coverage(out).items() if count >= needed}
 
 
 def stage(root: Path, staging: Path, episodes: list[int]) -> None:
@@ -91,7 +105,7 @@ def evaluate(staging: Path, out: Path, episodes: list[int], jobs: int, registrat
     return subprocess.run(command, cwd=REPO_ROOT, env=environment).returncode
 
 
-def summarise(out: Path) -> None:
+def summarise(out: Path, complete_only: set[int] | None = None) -> None:
     rows = [json.loads(line) for line in (out / "games.jsonl").read_text(encoding="utf-8-sig").splitlines()
             if line.strip()]
     by_artifact = defaultdict(dict)
@@ -99,6 +113,11 @@ def summarise(out: Path) -> None:
         by_artifact[row["artifact"]][row["world_seed"]] = row
     worlds = sorted(by_artifact["reference"])
     episodes = sorted({int(a.split("@")[1]) for a in by_artifact if a != "reference"})
+    if complete_only is not None:
+        skipped = [e for e in episodes if e not in complete_only]
+        episodes = [e for e in episodes if e in complete_only]
+        if skipped:
+            print(f"(skipping {skipped}: not every job's checkpoint has played every world yet)")
     rng = np.random.default_rng(20260919)
 
     print(f"\nagainst the episode-8,000 agent this run continues from, paired on {len(worlds)} worlds")
@@ -141,14 +160,18 @@ def main() -> int:
         print(f"ANOTHER PASS IS RUNNING (lock {lock}); doing nothing")
         return 0
 
+    worlds = len(json.loads(args.registration.read_text(encoding="utf-8"))["suite"]["world_seeds"])
     complete = complete_episodes(args.root)
-    done = evaluated_episodes(args.out)
+    done = evaluated_episodes(args.out, worlds)
+    coverage = episode_coverage(args.out)
+    partial = {e: coverage[e] for e in coverage if e not in done}
     pending = [e for e in complete if e not in done][: args.max_episodes]
-    print(f"complete milestones: {complete} | already evaluated: {sorted(done)} | to evaluate: {pending}")
+    print(f"complete milestones: {complete} | fully evaluated: {sorted(done)} | "
+          f"partly evaluated: {partial} | to evaluate: {pending}")
     if not pending:
         print("NO NEW MILESTONES")
         if (args.out / "games.jsonl").is_file():
-            summarise(args.out)
+            summarise(args.out, evaluated_episodes(args.out, worlds))
         return 0
 
     lock.write_text(str(os.getpid()), encoding="utf-8")
@@ -162,7 +185,7 @@ def main() -> int:
         lock.unlink(missing_ok=True)
 
     print(f"EVALUATED {pending}")
-    summarise(args.out)
+    summarise(args.out, evaluated_episodes(args.out, worlds))
     return 0
 
 
