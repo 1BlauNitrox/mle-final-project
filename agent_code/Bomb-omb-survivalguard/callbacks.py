@@ -20,6 +20,7 @@ from .persistence import (
 )
 from .attack_rule import AttackRule, attack_mode
 from .replay import ReplayBuffer
+from .seek_rule import SeekRule, seek_mode
 from .survival_guard import SurvivalGuard, guard_modes
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
@@ -42,11 +43,13 @@ def setup(self) -> None:
     veto_bomb, veto_move = guard_modes()
     self.survival_guard = SurvivalGuard(veto_bomb=veto_bomb, veto_move=veto_move)
     self.attack_rule = AttackRule(enabled=attack_mode())
+    self.seek_rule = SeekRule(enabled=seek_mode())
     self.logger.info(
-        "Survival guard: bomb veto %s, move veto %s | attack rule %s",
+        "Survival guard: bomb veto %s, move veto %s | attack rule %s | seek rule %s",
         "on" if veto_bomb else "off",
         "on" if veto_move else "off",
         "on" if self.attack_rule.active else "off",
+        "on" if self.seek_rule.active else "off",
     )
 
     torch.set_num_threads(self.config.torch_num_threads)
@@ -83,6 +86,12 @@ def act(self, game_state: dict | None) -> str:
     attack = getattr(self, "attack_rule", None)
     if attack is not None and attack.active:
         action = attack.choose(game_state, action)
+
+    # Seeking only matters when the attack rule found nothing to shoot at: it
+    # walks us to where the attack rule can fire next.
+    seek = getattr(self, "seek_rule", None)
+    if seek is not None and seek.active:
+        action = seek.choose(game_state, action)
 
     guard = getattr(self, "survival_guard", None)
     if guard is None or not guard.active:

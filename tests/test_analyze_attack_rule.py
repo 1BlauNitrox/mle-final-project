@@ -59,5 +59,14 @@ def test_every_cell_declares_all_three_switches():
             "BOMBERMAN_ATTACK_RULE",
             "BOMBERMAN_SURVIVAL_GUARD_BOMB",
             "BOMBERMAN_SURVIVAL_GUARD_MOVE",
+            "BOMBERMAN_SEEK_RULE",
         }, cell
         assert set(environment.values()) <= {"on", "off"}, cell
+
+
+def test_the_seek_rule_is_off_in_every_cell():
+    # It exists in the prototype but is not under test here: on a 25-world smoke
+    # run it took survival from 0.20 to 0.04.
+    cfg = json.loads(analyze.REGISTRATION.read_text(encoding="utf-8"))
+    for cell, environment in cfg["design"]["environment"].items():
+        assert environment["BOMBERMAN_SEEK_RULE"] == "off", cell
