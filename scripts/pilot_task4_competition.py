@@ -843,16 +843,24 @@ def train_job(root, output, arm, replica):
 
     total = len(cfg["training_world_seeds"][replica])
 
+    def durable_point(index):
+        episode = index + 1
+        return bool(resume_every) and (episode % resume_every == 0 or episode == total)
+
     def retain(index):
         episode = index + 1
         if episode in milestones:
             shutil.copyfile(checkpoint, retained / f"milestone-{episode:06d}.pt")
-        if resume_every and (episode % resume_every == 0 or episode == total):
+        if durable_point(index):
             # The trail is durable before the copy is taken, so the pair a
             # restart reads can never disagree in the dangerous direction.
             zip_json(retained / "episodes.json.gz", rows)
             shutil.copyfile(checkpoint, retained / "resume.pt.tmp")
             _durable_replace(retained / "resume.pt.tmp", retained / "resume.pt")
+            # The working copy carries the same rows and is never what a restart
+            # reads, so it rides along with the durable write instead of being
+            # rebuilt from scratch after every episode.
+            zip_json(output / "episodes.json.gz", rows)
 
     started, cpu = time.monotonic(), time.process_time()
     seed = cfg["replica_agent_seeds"][replica]
@@ -879,8 +887,9 @@ def train_job(root, output, arm, replica):
         if row["completed_episodes"] != index + 1:
             raise ValueError("Checkpoint episode counter mismatch")
         rows.append(row)
-        zip_json(output / "episodes.json.gz", rows)
         retain(index)
+    if not rows or not durable_point(len(rows) - 1):
+        zip_json(output / "episodes.json.gz", rows)
     write(
         output / "result.json",
         {
