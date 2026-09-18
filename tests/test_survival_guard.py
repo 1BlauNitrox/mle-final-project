@@ -170,13 +170,13 @@ def test_the_prototype_differs_from_the_shipped_agent_only_in_the_guard():
     # factorial measures the wrong difference.
     shipped = ROOT / "agent_code/Bomb-omb"
     prototype = ROOT / "agent_code/Bomb-omb-survivalguard"
-    allowed = {"callbacks.py", "survival_guard.py", "attack_rule.py"}
+    allowed = {"callbacks.py", "survival_guard.py", "attack_rule.py", "seek_rule.py"}
     for path in prototype.rglob("*"):
         # logs/ and __pycache__/ are written by playing, and are gitignored.
         if path.is_dir() or {"__pycache__", "logs"} & set(path.relative_to(prototype).parts):
             continue
         relative = path.relative_to(prototype).as_posix()
-        if relative in allowed or relative.startswith("eval-"):
+        if relative in allowed or relative.startswith(("eval-", "watch-", "stall-")):
             continue
         assert path.read_bytes() == (shipped / relative).read_bytes(), relative
 

@@ -29,21 +29,25 @@
       "control": {
         "BOMBERMAN_ATTACK_RULE": "off",
         "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
-        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off"
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_SEEK_RULE": "off"
       },
       "attack": {
         "BOMBERMAN_ATTACK_RULE": "on",
         "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
-        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off"
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_SEEK_RULE": "off"
       },
       "attack-guard": {
         "BOMBERMAN_ATTACK_RULE": "on",
         "BOMBERMAN_SURVIVAL_GUARD_BOMB": "on",
-        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on"
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on",
+        "BOMBERMAN_SEEK_RULE": "off"
       }
     },
     "agent": "Bomb-omb-survivalguard, which now carries both add-ons behind separate switches",
-    "order": "control, attack, attack-guard. The primary contrast is finished after two cells."
+    "order": "control, attack, attack-guard. The primary contrast is finished after two cells.",
+    "not_under_test": "The seek rule, which walks toward a firing position on a cleared board, is built and switched off in every cell here. On a 25-world smoke run it took survival from 0.20 to 0.04 while kills fell, so it is not a candidate tonight. Its switch is named explicitly in every cell so it cannot leak in from a previous shell."
   },
   "checkpoints": {
     "judged": "the 12 milestones at episodes 6,000 and 8,000: control-r1..r3 and halved-r1..r3",
