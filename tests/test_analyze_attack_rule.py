@@ -17,7 +17,7 @@ def test_the_registration_says_what_this_script_implements():
     assert rule["type"].startswith("decision under uncertainty")
     assert rule["interval"]["role"] == "reported, not a gate"
     assert rule["primary_contrast"] == "attack minus control"
-    assert [c["name"] for c in cfg["design"]["cells"]] == ["control", "attack", "attack-guard"]
+    assert [c["name"] for c in cfg["design"]["cells"]] == ["control", "attack", "attack-selective"]
     assert len(cfg["suite"]["world_seeds"]) == 150
 
 
@@ -46,7 +46,7 @@ def test_a_deep_score_floor_does_not_ship_even_with_kills_and_a_positive_estimat
 def test_the_cell_names_match_the_registration():
     cfg = json.loads(analyze.REGISTRATION.read_text(encoding="utf-8"))
     names = {c["name"] for c in cfg["design"]["cells"]}
-    assert {analyze.CONTROL, analyze.ATTACK, analyze.STACKED} == names
+    assert {analyze.CONTROL, analyze.ATTACK, analyze.SELECTIVE} == names
 
 
 def test_every_cell_declares_all_three_switches():
@@ -61,7 +61,8 @@ def test_every_cell_declares_all_three_switches():
             "BOMBERMAN_SURVIVAL_GUARD_MOVE",
             "BOMBERMAN_SEEK_RULE",
         }, cell
-        assert set(environment.values()) <= {"on", "off"}, cell
+        assert set(environment.values()) <= {"on", "off", "selective"}, cell
+        assert environment["BOMBERMAN_SURVIVAL_GUARD_BOMB"] == "off", cell
 
 
 def test_the_seek_rule_is_off_in_every_cell():

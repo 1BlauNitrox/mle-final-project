@@ -106,16 +106,65 @@ def test_a_crate_between_us_and_the_opponent_still_counts():
     assert rule.choose(game_state, "LEFT") == "BOMB"
 
 
-@pytest.mark.parametrize("value,expected", [({}, False), ({"BOMBERMAN_ATTACK_RULE": "on"}, True),
-                                            ({"BOMBERMAN_ATTACK_RULE": "off"}, False)])
+@pytest.mark.parametrize("value,expected", [({}, "off"), ({"BOMBERMAN_ATTACK_RULE": "on"}, "on"),
+                                            ({"BOMBERMAN_ATTACK_RULE": "off"}, "off"),
+                                            ({"BOMBERMAN_ATTACK_RULE": "selective"}, "selective")])
 def test_the_switch_maps_to_the_cells(value, expected):
-    assert attack_mode(value) is expected
+    assert attack_mode(value) == expected
 
 
-@pytest.mark.parametrize("value", ["ON", "true", "1", "yes", ""])
+@pytest.mark.parametrize("value", ["ON", "true", "1", "yes", "", "strict"])
 def test_a_misspelled_switch_is_rejected(value):
     with pytest.raises(ValueError):
         attack_mode({"BOMBERMAN_ATTACK_RULE": value})
+
+
+def trap():
+    """A corridor with one side exit, placed so only we can reach it in time.
+
+    Free tiles are the row (1..8, 2) plus the pocket (6, 1). A bomb at (4, 2)
+    fills x = 1..7 of the row. From (4, 2) the pocket is three steps away; from
+    (2, 2) it is five, which is more than the fuse allows.
+    """
+    field = np.full((10, 5), WALL, dtype=int)
+    for x in range(1, 9):
+        field[x, 2] = FREE
+    field[6, 1] = FREE
+    return field
+
+
+def test_selective_fires_when_the_opponent_cannot_escape():
+    rule = AttackRule(enabled="selective")
+    game_state = state(trap(), (4, 2), others=[(2, 2)])
+    assert rule.choose(game_state, "LEFT") == "BOMB"
+    assert rule.attacks == 1
+
+
+def test_permissive_and_selective_agree_when_the_opponent_is_trapped():
+    permissive = AttackRule(enabled="on")
+    assert permissive.choose(state(trap(), (4, 2), others=[(2, 2)]), "LEFT") == "BOMB"
+
+
+def test_selective_holds_fire_when_the_opponent_can_walk_out():
+    rule = AttackRule(enabled="selective")
+    game_state = state(arena(), (5, 5), others=[(5, 7)])
+    assert rule.choose(game_state, "LEFT") == "LEFT"
+    assert rule.attacks == 0
+    assert rule.declined_opponent_escapes == 1
+
+
+def test_permissive_fires_on_the_same_escapable_opponent():
+    # The difference between the two cells, on one board.
+    rule = AttackRule(enabled="on")
+    game_state = state(arena(), (5, 5), others=[(5, 7)])
+    assert rule.choose(game_state, "LEFT") == "BOMB"
+
+
+def test_selective_still_refuses_an_attack_it_could_not_escape_itself():
+    rule = AttackRule(enabled="selective")
+    game_state = state(dead_end(), (1, 2), others=[(3, 2)])
+    assert rule.choose(game_state, "RIGHT") == "RIGHT"
+    assert rule.declined_no_escape == 1
 
 
 def test_the_prototype_still_differs_from_the_shipped_agent_only_in_the_add_ons():
