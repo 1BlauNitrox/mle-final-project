@@ -35,6 +35,7 @@ EXPECTED_FACTOR = {
     "lineup-trajectory": "training_opponents",
     "exploration-period": "random_episode_period",
     "final-training": "learning_rate",
+    "warm-lineup": "training_opponents",
 }
 
 

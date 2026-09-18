@@ -54,7 +54,7 @@ from scripts.task3_pilot_resources import (  # noqa: E402 - support direct CLI e
     stop_owned,
 )
 
-INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
+DEFAULT_INPUT = "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113"
 SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
 PROFILES = (
     "trainable-scope",
@@ -63,11 +63,15 @@ PROFILES = (
     "lineup-trajectory",
     "exploration-period",
     "final-training",
+    "warm-lineup",
 )
 # The five screens were all registered on 15 September and share that prefix.
 # Later registrations carry their own date, so the directory cannot be derived
 # from the profile name alone without silently repointing a completed campaign.
-PROFILE_DIRS = {"final-training": "2026-09-17-task4-final-training"}
+PROFILE_DIRS = {
+    "final-training": "2026-09-17-task4-final-training",
+    "warm-lineup": "2026-09-18-task4-warm-lineup",
+}
 
 
 def profile_dir(profile):
@@ -113,6 +117,16 @@ def stage_limits(cfg, stage):
 
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
 CONFIG = ROOT / f"experiments/{profile_dir(PROFILE)}/config.json"
+# Every screen and the final run continue from the Task 3 incumbent, so the
+# pinned input is the same for all of them. The warm-lineup run continues from
+# our own agent instead, and its reference has to be the milestone it started
+# from: bind() requires the initialization's networks to match the reference,
+# and the analyzer measures every arm against that same artifact played
+# unchanged. Keyed by profile because the registration is hash-pinned.
+PROFILE_INPUTS = {
+    "warm-lineup": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+}
+INPUT = PROFILE_INPUTS.get(PROFILE, DEFAULT_INPUT)
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
@@ -120,6 +134,7 @@ PROFILE_HASHES = {
     "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
     "final-training": "3e8141f0848518ca3223975d8bd484bd8bb2e74be3565d8c1f316fbbc9907972",
+    "warm-lineup": "aca33d30e9fe6f48def570d27a704b1a76cd1ce63cb55430300d94a1bc09d058",
 }
 ARM_FACTORS = (
     "trainable_scope",
@@ -843,16 +858,24 @@ def train_job(root, output, arm, replica):
 
     total = len(cfg["training_world_seeds"][replica])
 
+    def durable_point(index):
+        episode = index + 1
+        return bool(resume_every) and (episode % resume_every == 0 or episode == total)
+
     def retain(index):
         episode = index + 1
         if episode in milestones:
             shutil.copyfile(checkpoint, retained / f"milestone-{episode:06d}.pt")
-        if resume_every and (episode % resume_every == 0 or episode == total):
+        if durable_point(index):
             # The trail is durable before the copy is taken, so the pair a
             # restart reads can never disagree in the dangerous direction.
             zip_json(retained / "episodes.json.gz", rows)
             shutil.copyfile(checkpoint, retained / "resume.pt.tmp")
             _durable_replace(retained / "resume.pt.tmp", retained / "resume.pt")
+            # The working copy carries the same rows and is never what a restart
+            # reads, so it rides along with the durable write instead of being
+            # rebuilt from scratch after every episode.
+            zip_json(output / "episodes.json.gz", rows)
 
     started, cpu = time.monotonic(), time.process_time()
     seed = cfg["replica_agent_seeds"][replica]
@@ -879,8 +902,9 @@ def train_job(root, output, arm, replica):
         if row["completed_episodes"] != index + 1:
             raise ValueError("Checkpoint episode counter mismatch")
         rows.append(row)
-        zip_json(output / "episodes.json.gz", rows)
         retain(index)
+    if not rows or not durable_point(len(rows) - 1):
+        zip_json(output / "episodes.json.gz", rows)
     write(
         output / "result.json",
         {
