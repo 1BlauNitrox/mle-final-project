@@ -42,13 +42,13 @@ def setup(self) -> None:
     # recording an unguarded cell under a guarded name.
     veto_bomb, veto_move = guard_modes()
     self.survival_guard = SurvivalGuard(veto_bomb=veto_bomb, veto_move=veto_move)
-    self.attack_rule = AttackRule(enabled=attack_mode())
+    self.attack_rule = AttackRule(enabled=attack_mode())  # off, on or selective
     self.seek_rule = SeekRule(enabled=seek_mode())
     self.logger.info(
         "Survival guard: bomb veto %s, move veto %s | attack rule %s | seek rule %s",
         "on" if veto_bomb else "off",
         "on" if veto_move else "off",
-        "on" if self.attack_rule.active else "off",
+        self.attack_rule.mode,
         "on" if self.seek_rule.active else "off",
     )
 

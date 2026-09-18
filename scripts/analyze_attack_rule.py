@@ -1,9 +1,10 @@
 """Apply the registered decision rule of the attack-rule test.
 
 Primary contrast is `attack` minus `control`: does taking the attack the policy
-declines produce kills, and does it pay for itself in score? A second contrast,
-`attack-guard` minus `attack`, decides whether the survival guard is stacked on
-top of it.
+declines produce kills, and does it pay for itself in score? The third cell,
+`attack-selective`, fires only when the opponent cannot walk out of the blast, so
+the second pair of contrasts asks which version of the rule to ship and what
+holding fire costs.
 
 Like the guard confirmation this is a decision rule, not a significance test. The
 registration says so and says why; the interval is reported and does not gate.
@@ -27,7 +28,7 @@ sys.path.insert(0, str(REPO_ROOT))  # so it runs as a script as well as a module
 from scripts.analyze_survival_guard_factorial import bootstrap, load, paired  # noqa: E402
 
 REGISTRATION = REPO_ROOT / "experiments/2026-09-18-attack-rule/config.json"
-CONTROL, ATTACK, STACKED = "control", "attack", "attack-guard"
+CONTROL, ATTACK, SELECTIVE = "control", "attack", "attack-selective"
 REFERENCE = "reference"
 METRICS = ("score", "kills", "self_kills", "survived", "coins", "collection_fraction", "invalid")
 
@@ -75,7 +76,7 @@ def main() -> int:
     worlds = list(cfg["suite"]["world_seeds"])
 
     cells = {}
-    for name in (CONTROL, ATTACK, STACKED):
+    for name in (CONTROL, ATTACK, SELECTIVE):
         folder = args.root / f"{args.folder_prefix}{name}"
         if folder.is_dir():
             cells[name] = load(folder, name)
@@ -113,12 +114,26 @@ def main() -> int:
     print("VERDICT: SHIP THE ATTACK RULE" if passed else "VERDICT: DO NOT SHIP")
     print(rule["what_we_will_not_claim"] if passed else rule["otherwise"])
 
-    if passed and STACKED in cells:
-        stacked = contrast(cells, STACKED, ATTACK, judged, worlds, resamples, seed,
-                           "does the survival guard belong on top?")
-        together = stacked["score"]["mean"] >= 0
-        print(f"\nSTACKING: {'ship both' if together else 'ship the attack rule alone'} "
-              f"(score {stacked['score']['mean']:+.4f})")
+    if SELECTIVE in cells:
+        selective = contrast(cells, SELECTIVE, CONTROL, judged, worlds, resamples, seed,
+                             "the variant that only fires on a trapped opponent")
+        contrast(cells, SELECTIVE, ATTACK, judged, worlds, resamples, seed,
+                 "what holding fire costs")
+        selective_passed, lines = decide(selective["score"], selective["kills"])
+        print("\n================ the selective variant ================")
+        print("\n".join(lines))
+        if passed and selective_passed:
+            better = "selective" if selective["score"]["mean"] > primary["score"]["mean"] else "permissive"
+            print(f"WHICH VARIANT: both pass; ship the {better} one on the larger score point "
+                  f"estimate ({selective['score']['mean']:+.4f} selective against "
+                  f"{primary['score']['mean']:+.4f} permissive). That choice rests on point "
+                  f"estimates, not on a demonstrated difference between them.")
+        elif selective_passed:
+            print("WHICH VARIANT: only the selective variant passes; it ships.")
+        elif passed:
+            print("WHICH VARIANT: only the permissive rule passes; it ships.")
+        else:
+            print("WHICH VARIANT: neither passes; Bomb-omb ships without an attack rule.")
     return 0
 
 

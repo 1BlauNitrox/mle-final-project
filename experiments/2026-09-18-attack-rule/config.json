@@ -19,10 +19,10 @@
         "note": "the rule alone; the primary contrast"
       },
       {
-        "name": "attack-guard",
-        "attack": "on",
-        "guard": "on",
-        "note": "the rule on top of the survival guard, to decide whether to stack them"
+        "name": "attack-selective",
+        "attack": "selective",
+        "guard": "off",
+        "note": "fires only when the opponent cannot walk out of the blast"
       }
     ],
     "environment": {
@@ -38,16 +38,17 @@
         "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
         "BOMBERMAN_SEEK_RULE": "off"
       },
-      "attack-guard": {
-        "BOMBERMAN_ATTACK_RULE": "on",
-        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "on",
-        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on",
+      "attack-selective": {
+        "BOMBERMAN_ATTACK_RULE": "selective",
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
         "BOMBERMAN_SEEK_RULE": "off"
       }
     },
     "agent": "Bomb-omb-survivalguard, which now carries both add-ons behind separate switches",
-    "order": "control, attack, attack-guard. The primary contrast is finished after two cells.",
-    "not_under_test": "The seek rule, which walks toward a firing position on a cleared board, is built and switched off in every cell here. On a 25-world smoke run it took survival from 0.20 to 0.04 while kills fell, so it is not a candidate tonight. Its switch is named explicitly in every cell so it cannot leak in from a previous shell."
+    "order": "control, attack, attack-selective. The primary contrast is finished after two cells.",
+    "not_under_test": "The seek rule, which walks toward a firing position on a cleared board, is built and switched off in every cell here. On a 25-world smoke run it took survival from 0.20 to 0.04 while kills fell, so it is not a candidate tonight. Its switch is named explicitly in every cell so it cannot leak in from a previous shell.",
+    "amended": "18 September, after cells one and two had started and before cell three ran. The third cell was 'the rule on top of the survival guard'. That question died the same evening: the guard's own confirmation came back score +0.018 [-0.157, +0.196] and self-kills +0.003 [-0.038, +0.043] over 6,500 games, so it does not ship and stacking it answers nothing. The machine time is better spent asking which version of the attack rule is better. Cells one and two are untouched by this amendment and keep running."
   },
   "checkpoints": {
     "judged": "the 12 milestones at episodes 6,000 and 8,000: control-r1..r3 and halved-r1..r3",
@@ -233,19 +234,21 @@
       "the lower bound of the score interval is above -0.15, so a real cost is ruled out"
     ],
     "otherwise": "Bomb-omb ships without the rule.",
-    "stacking": "If the rule ships, attack-guard minus attack decides whether the survival guard goes with it: we stack them only if that contrast's score point estimate is at least 0. The guard's own confirmation is a separate registration on separate worlds.",
+    "stacking": "Replaced by a choice between the two attack variants. If both pass the ship conditions against control, we ship the one with the larger score point estimate and say in the report that the choice between them was made on point estimates, not on a demonstrated difference. If only one passes, that one ships. The survival guard does not ship either way.",
     "what_we_will_not_claim": "We will not describe this as a significant improvement whatever it shows. With twelve checkpoints from six training seeds the interval is wide by construction. If it ships it ships as the better of two options on the evidence we could afford before Monday.",
     "reported_without_gating": [
       "the 95% interval for score, kills, self-kills, coins, survival and invalid actions",
       "the split by episode 6,000 versus 8,000",
-      "how many of the twelve checkpoints improved on score, and on kills"
+      "how many of the twelve checkpoints improved on score, and on kills",
+      "attack-selective minus attack, so the cost of holding fire is visible"
     ]
   },
   "known_limits": [
     "Opponents are not seeded, so the same world plays out differently each time; pairing removes the world, not the opponents.",
     "The rule is myopic. It fires on the opponent's current tile and the opponent usually moves during the four-step fuse, so most of its bombs will miss. It only has to pay for itself.",
     "It will place more bombs than the policy would, which risks self-kills. That is why the self-kill and score numbers are reported and why the escape check is part of the rule rather than an afterthought.",
-    "We judge on episodes 6,000 and 8,000 of the previous run. If the warm-lineup continuation produces the shipped checkpoint instead, this result carries over as evidence rather than as a direct test of that checkpoint."
+    "We judge on episodes 6,000 and 8,000 of the previous run. If the warm-lineup continuation produces the shipped checkpoint instead, this result carries over as evidence rather than as a direct test of that checkpoint.",
+    "The selective variant asks whether the opponent could walk out of the blast, using the same search we run on ourselves and the same approximation: opponents are not modelled forward in time. It will sometimes hold fire on an opponent who would in fact have died, and sometimes fire on one who escapes anyway."
   ],
   "expected_cost": "3 cells x 13 checkpoints x 150 worlds = 5,850 games, about four hours with two jobs.",
   "authorization": "Julius (1BlauNitrox) asked on 18 September for the agent to stop looping and to focus on escaping and hunting, after watching it play. This registration covers the hunting half; the survival guard covers the escaping half."
