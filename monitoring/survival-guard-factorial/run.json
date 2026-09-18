@@ -1,0 +1,66 @@
+{
+  "hostname": "LENOVO",
+  "python_version": "3.13.15",
+  "torch_version": "2.13.0+cpu",
+  "git_commit": "cc28307",
+  "jobs": 2,
+  "cells": [
+    {
+      "name": "control",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "control"
+      },
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-factorial/config.json --agent Bomb-omb-survivalguard --jobs 2 --out monitoring/survival-guard-factorial/survival-guard-control",
+      "start": "2026-09-18T00:14:45.8474268+02:00",
+      "end": "2026-09-18T06:46:27.8138625+02:00",
+      "games": 2280,
+      "cut_short": false
+    },
+    {
+      "name": "both",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "on",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on",
+        "BOMBERMAN_EVALUATION_VARIANT": "both"
+      },
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-factorial/config.json --agent Bomb-omb-survivalguard --jobs 2 --out monitoring/survival-guard-factorial/survival-guard-both",
+      "start": "2026-09-18T06:46:49.9219872+02:00",
+      "end": "2026-09-18T09:18:38.7621582+02:00",
+      "games": 2280,
+      "cut_short": false
+    },
+    {
+      "name": "bomb",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "on",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "bomb"
+      },
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-factorial/config.json --agent Bomb-omb-survivalguard --jobs 2 --out monitoring/survival-guard-factorial/survival-guard-bomb",
+      "start": "2026-09-18T09:18:53.1046351+02:00",
+      "end": "2026-09-18T10:16:44.8032929+02:00",
+      "games": 2280,
+      "cut_short": false
+    },
+    {
+      "name": "move",
+      "environment": {
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on",
+        "BOMBERMAN_EVALUATION_VARIANT": "move"
+      },
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-survival-guard-factorial/config.json --agent Bomb-omb-survivalguard --jobs 2 --out monitoring/survival-guard-factorial/survival-guard-move",
+      "start": "2026-09-18T10:17:02.1452291+02:00",
+      "end": "2026-09-18T11:22:40.5546199+02:00",
+      "games": 2280,
+      "cut_short": false
+    }
+  ],
+  "bundle_sha256": {
+    "final-training-ep2000.zip": "cd3ce3fbc2f64327319bacd0e1c8a87a98047270256e95642e7de2369cb5c9b1",
+    "final-training-ep4000.zip": "8574e14f3cf82a9f6a2b16a06fe783490e9d6e7c7ef2657943738c951a9d1c7e",
+    "final-training-ep006000.zip": "b5a961462927cbe01f9226d93a65f063696ff3780811f87d9c85824c779d491f"
+  }
+}
