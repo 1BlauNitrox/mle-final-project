@@ -32,16 +32,16 @@
     "total_episodes": 9000,
     "replica_world_seed_ranges_inclusive": [
       [
-        961000001,
-        961001000
+        1251000001,
+        1251001000
       ],
       [
-        961010001,
-        961011000
+        1251010001,
+        1251011000
       ],
       [
-        961020001,
-        961021000
+        1251020001,
+        1251021000
       ]
     ],
     "checkpoint_internal_rng_policy": "Fresh paired action/replay RNG per replica; zero-padded architecture for all arms; empty replay and optimizer for all arms",
@@ -65,18 +65,18 @@
     ],
     "decision_checkpoint": 1000,
     "learner_seeds": [
-      961090001,
-      961090002,
-      961090003
+      1251090001,
+      1251090002,
+      1251090003
     ],
     "feature_count": 56,
     "source_feature_count": 39
   },
   "smoke": {
     "world_seeds": [
-      961099991,
-      961099992,
-      961099993
+      1251099991,
+      1251099992,
+      1251099993
     ],
     "episodes_per_arm": 1,
     "scientific": false
@@ -90,8 +90,8 @@
         "rule_based_agent"
       ],
       "world_seed_range_inclusive": [
-        961100001,
-        961100120
+        1251100001,
+        1251100120
       ],
       "worlds": 120,
       "role": "primary efficacy and native-score non-regression",
@@ -103,8 +103,8 @@
         "peaceful_agent"
       ],
       "world_seed_range_inclusive": [
-        961102001,
-        961102040
+        1251102001,
+        1251102040
       ],
       "worlds": 40,
       "role": "escape and survival retention",
@@ -114,8 +114,8 @@
       "scenario": "coin-heaven",
       "opponents": [],
       "world_seed_range_inclusive": [
-        961103001,
-        961103040
+        1251103001,
+        1251103040
       ],
       "worlds": 40,
       "role": "collection retention",
@@ -125,8 +125,8 @@
       "scenario": "loot-crate",
       "opponents": [],
       "world_seed_range_inclusive": [
-        961104001,
-        961104040
+        1251104001,
+        1251104040
       ],
       "worlds": 40,
       "role": "bombing and collection retention",
@@ -140,8 +140,8 @@
         "peaceful_agent"
       ],
       "world_seed_range_inclusive": [
-        961101001,
-        961101080
+        1251101001,
+        1251101080
       ],
       "worlds": 80,
       "role": "secondary robustness",
@@ -150,8 +150,8 @@
   },
   "latency": {
     "world_seed_range_inclusive": [
-      961109001,
-      961109010
+      1251109001,
+      1251109010
     ],
     "worlds": 10,
     "p95_limit_ms": 50,
@@ -161,7 +161,7 @@
   "uncertainty": {
     "method": "hierarchical paired bootstrap over paired replicas and shared development worlds",
     "resamples": 10000,
-    "seed": 961190001,
+    "seed": 1251190001,
     "interval_percent": 95,
     "language": "decision rule, not a significance test"
   },

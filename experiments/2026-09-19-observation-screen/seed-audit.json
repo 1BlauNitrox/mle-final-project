@@ -25,8 +25,6 @@
   "unique_text_blobs": 906,
   "blob_set_sha256": "3e3391f1c7d065c541ba7cecee9ba6d5083dc999fe1b284ca1bac7ac657e7dad",
   "excluded_own_registration": "experiments/2026-09-19-observation-screen/",
-  "colliding_files": [
-    "experiments/2026-09-18-attack-rule/config.json"
-  ],
-  "passed": false
+  "colliding_files": [],
+  "passed": true
 }
