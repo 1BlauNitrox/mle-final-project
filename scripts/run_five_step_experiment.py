@@ -23,6 +23,8 @@ import numpy as np
 import psutil
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 CONFIG = ROOT / "experiments/2026-09-19-five-step-dqn/config.json"
 RUNTIME_COMMIT = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
 EXPERIMENTAL_AGENT = ROOT / "agent_code/Bomb-omb-nstep"
@@ -347,8 +349,8 @@ def episode_epsilon(replica_seed, episode):
 def smoke(root):
     cfg = config()
     output = root / "smoke"
-    require(not output.exists(), "Preserve existing smoke")
-    output.mkdir()
+    require(not (output / "report.json").exists(), "Preserve completed smoke")
+    output.mkdir(exist_ok=True)
     reports = []
     process = psutil.Process()
     for (arm, setting), world_seed in zip(
