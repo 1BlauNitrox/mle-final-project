@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "prospective",
+  "issue": 205,
+  "title": "Supplied hunting-agent screening benchmark",
+  "registered_at": "2026-09-19 before smoke or scientific games",
+  "scientific_scope": "screening benchmark, not proof of tournament superiority",
+  "source": {
+    "tools_commit": "09aac0043d887dd88a1e01f06566fd3b612dd653",
+    "trained_runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "handoff_archive_sha256": "38e7fdbce5d89560b7a3289d8fbc3145e79a3bc8180f9b7c1ae1ae39590bfccf",
+    "fallback_checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "fallback_provenance": "control-r1 milestone-008000",
+    "external_archive_sha256": "301bce97a9a79cf7ac64c9532dbc0eb7396ffade8290c7f171edeb99687116de"
+  },
+  "design": {
+    "scenario": "classic",
+    "world_seeds": [
+      954000001, 954000002, 954000003, 954000004, 954000005,
+      954000006, 954000007, 954000008, 954000009, 954000010,
+      954000011, 954000012, 954000013, 954000014, 954000015,
+      954000016, 954000017, 954000018, 954000019, 954000020
+    ],
+    "rotations": 4,
+    "games_per_lineup": 80,
+    "total_games": 240,
+    "lineups": {
+      "A": ["benchmark_fallback", "rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      "B": ["RUEHL_BASED_AGENT", "rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      "C": ["benchmark_fallback", "RUEHL_BASED_AGENT", "rule_based_agent", "rule_based_agent"]
+    },
+    "rotation_rule": "cyclic left rotation of each listed lineup by rotation index 0..3",
+    "independence": "one fresh process and one round for every seed-lineup-rotation game",
+    "smoke_seed": 954099999,
+    "serial_timing_seed": 954099998
+  },
+  "runtime": {
+    "python": "3.13",
+    "device": "cpu",
+    "torch_threads_per_agent": 1,
+    "initial_concurrent_games": 2,
+    "maximum_concurrent_games": 2,
+    "minimum_available_ram_gib": 3,
+    "wall_clock_limit_hours": 3,
+    "timing_measurement": "separate serial games without concurrent load",
+    "timing_limits_ms": {
+      "decision_time_p95": 50,
+      "decision_time_maximum": 100
+    }
+  },
+  "metrics": [
+    "native_score", "kills", "coins", "unique_win", "score_tie", "fractional_first_place_share",
+    "survived", "self_kills", "invalid_actions", "attempted_actions",
+    "decision_time_median_ms", "decision_time_p95_ms", "decision_time_max_ms"
+  ],
+  "uncertainty": {
+    "method": "paired cluster bootstrap over the 20 world seeds; each resampled world retains every rotation and relevant lineup",
+    "resamples": 10000,
+    "seed": 954090001,
+    "interval": 0.95
+  },
+  "decision_rule": {
+    "contrast": "external minus fallback, comparing lineup B with lineup A over matched world seeds and rotations",
+    "appears_stronger": {
+      "score_point_estimate": "> 0",
+      "kills_point_estimate": "> 0",
+      "score_interval_lower": "> -0.15",
+      "survival_difference": ">= -0.05"
+    },
+    "appears_weaker": {
+      "score_point_estimate": "< 0",
+      "kills_point_estimate": "< 0",
+      "score_interval_upper": "< 0.15",
+      "survival_difference": "<= 0.05"
+    },
+    "otherwise": "inconclusive",
+    "training_admission": "external agent may enter the later controlled experiment only if it appears stronger and passes loading, survival, and serial timing checks"
+  },
+  "randomness": {
+    "world": "controlled by the registered framework seed",
+    "learned_agents": "greedy evaluation; fallback action RNG explicitly seeded though epsilon is zero",
+    "rule_based_agents": "residual OS-entropy NumPy seed and Python random.shuffle in supplied framework agent; not exactly controlled"
+  },
+  "exclusions": [
+    "final held-out evaluation worlds",
+    "previously inspected monitoring worlds",
+    "default Bomb-omb/checkpoint.pt provisional fixture",
+    "smoke game from scientific analysis"
+  ]
+}

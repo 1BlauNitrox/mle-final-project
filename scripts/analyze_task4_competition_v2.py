@@ -20,6 +20,7 @@ from scripts.pilot_task4_competition import (
     artifacts,
     config,
     episode_epsilon,
+    evaluated_suites,
     read_json,
     sha,
     verify,
@@ -241,12 +242,12 @@ def analyze(root):
         "evaluation",
         models,
         cfg,
-        expected_jobs=len(models) * len(cfg["evaluation_suites"]),
+        expected_jobs=len(models) * len(evaluated_suites(cfg)),
     )
     expected = {
         (artifact, suite, seed, repeat)
         for artifact in models
-        for suite, setting in cfg["evaluation_suites"].items()
+        for suite, setting in evaluated_suites(cfg).items()
         for seed in setting["world_seeds"]
         for repeat in range(cfg["evaluation_repeats"])
     }
@@ -260,7 +261,7 @@ def analyze(root):
 
     hunting_suite = cfg["hunting_suite"]
     summary, paired, retention = {}, {}, {}
-    for suite, setting in cfg["evaluation_suites"].items():
+    for suite, setting in evaluated_suites(cfg).items():
         seeds = setting["world_seeds"]
         rows = {a: [metrics(data[(a, suite, w, 0)]) for w in seeds] for a in models}
         opponent_free = not setting["opponents"]
@@ -444,7 +445,7 @@ def analyze(root):
             == behavioral(data[("reference", s, w, 0)]["native"])
             and data[(f"{arm}-r{r + 1}", s, w, 0)]["greedy_actions_sha256"]
             == data[("reference", s, w, 0)]["greedy_actions_sha256"]
-            for s, setting in cfg["evaluation_suites"].items()
+            for s, setting in evaluated_suites(cfg).items()
             if not setting["opponents"]
             for w in setting["world_seeds"]
             for arm in arms
