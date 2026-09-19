@@ -82,6 +82,13 @@ def config():
     require(value["status"] == "prospective" and value["issue"] == 207, "Wrong protocol")
     require(value["source"]["trained_runtime_commit"] == RUNTIME_COMMIT, "Wrong runtime")
     require(value["shared_training"]["total_episodes"] == 6000, "Wrong budget")
+    require(value["arms"] == {"one-step": {"n_step": 1}, "five-step": {"n_step": 5}}, "Wrong arms")
+    require(
+        value["shared_training"]["opponents"]
+        == ["RUEHL_BASED_AGENT", "rule_based_agent", "peaceful_agent"],
+        "Wrong amended opponent lineup",
+    )
+    require(value["shared_training"]["decision_checkpoint"] == 1000, "Wrong decision checkpoint")
     return value
 
 
@@ -742,6 +749,68 @@ def status(root):
     print(json.dumps(report, indent=2))
 
 
+def launch(root, workers):
+    require(os.name == "nt", "Detached launcher is registered for Windows")
+    require((root / "smoke/report.json").exists(), "Run the registered smoke first")
+    pid_file = root / "supervisor.json"
+    if pid_file.exists():
+        previous = read_json(pid_file)
+        if psutil.pid_exists(previous["pid"]):
+            raise RuntimeError(f"Supervisor PID {previous['pid']} is already running")
+    stdout = (root / "supervisor.stdout.log").open("a", encoding="utf-8")
+    stderr = (root / "supervisor.stderr.log").open("a", encoding="utf-8")
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "train",
+        "--root",
+        str(root),
+        "--workers",
+        str(workers),
+    ]
+    clean_env = {key.upper(): value for key, value in os.environ.items()}
+    clean_env.update(
+        {
+            "CUDA_VISIBLE_DEVICES": "",
+            "OMP_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+        }
+    )
+    flags = (
+        subprocess.DETACHED_PROCESS
+        | subprocess.CREATE_NEW_PROCESS_GROUP
+        | subprocess.CREATE_NO_WINDOW
+    )
+    process = subprocess.Popen(
+        command,
+        cwd=ROOT,
+        env=clean_env,
+        stdin=subprocess.DEVNULL,
+        stdout=stdout,
+        stderr=stderr,
+        close_fds=True,
+        creationflags=flags,
+    )
+    stdout.close()
+    stderr.close()
+    write_json(
+        pid_file,
+        {
+            "pid": process.pid,
+            "started_at": datetime.now().astimezone().isoformat(),
+            "command": command,
+            "stdout": str(root / "supervisor.stdout.log"),
+            "stderr": str(root / "supervisor.stderr.log"),
+            "resume_command": (
+                f'"{sys.executable}" "{Path(__file__).resolve()}" launch '
+                f'--root "{root}" --workers {workers}'
+            ),
+        },
+    )
+    print(f"Detached supervisor PID {process.pid}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="mode", required=True)
@@ -749,10 +818,10 @@ def main():
     prepare_parser.add_argument("--root", type=Path, required=True)
     prepare_parser.add_argument("--reference", type=Path, required=True)
     prepare_parser.add_argument("--external", type=Path, required=True)
-    for mode in ("smoke", "train", "evaluate", "latency", "status"):
+    for mode in ("smoke", "train", "evaluate", "latency", "status", "launch"):
         child = sub.add_parser(mode)
         child.add_argument("--root", type=Path, required=True)
-        if mode in {"train", "evaluate"}:
+        if mode in {"train", "evaluate", "launch"}:
             child.add_argument("--workers", type=int, default=3)
     job = sub.add_parser("_train-job")
     job.add_argument("--root", type=Path, required=True)
@@ -787,6 +856,9 @@ def main():
         return 0
     if args.mode == "status":
         status(args.root)
+        return 0
+    if args.mode == "launch":
+        launch(args.root, args.workers)
         return 0
     if args.mode == "_eval-job":
         evaluation_job(args.root, args.artifact, args.suite)
