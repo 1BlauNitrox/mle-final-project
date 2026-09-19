@@ -11,7 +11,13 @@ from agent_code.DagobertDuckDQNObservation.config import DQNConfig
 from agent_code.DagobertDuckDQNObservation.features import normalize_features, state_to_features
 from agent_code.DagobertDuckDQNObservation.observations import ObservationHistory, hunting_geometry
 from agent_code.DagobertDuckDQNObservation.persistence import load_training_checkpoint
-from scripts.analyze_observation_screen import classify, interval, loops
+from scripts.analyze_observation_screen import (
+    LINE_ENDING_HASH_PAIRS,
+    classify,
+    equivalent_code_hashes,
+    interval,
+    loops,
+)
 from scripts.observation_migration import migrate
 from scripts.run_observation_screen import read, resume, save_generation
 
@@ -45,6 +51,22 @@ def test_geometry_distinguishes_the_aliased_example_and_preserves_prefix():
     )
     assert value.shape == (56,)
     assert np.all(value[51:] == 0)
+
+
+def test_code_hash_equivalence_accepts_only_registered_lf_crlf_pairs():
+    path, pair = next(iter(LINE_ENDING_HASH_PAIRS.items()))
+    first, second = sorted(pair)
+    bindings = [
+        {"code_hashes": {path: first, "same.py": "same"}},
+        {"code_hashes": {path: second, "same.py": "same"}},
+        {"code_hashes": {path: first, "same.py": "same"}},
+    ]
+    assert equivalent_code_hashes(bindings)
+    bindings[2]["code_hashes"][path] = "different-source"
+    assert not equivalent_code_hashes(bindings)
+    bindings[2]["code_hashes"][path] = first
+    bindings[2]["code_hashes"]["extra.py"] = "extra"
+    assert not equivalent_code_hashes(bindings)
 
 
 def test_route_geometry_respects_obstacles_and_no_opponents():

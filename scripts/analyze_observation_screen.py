@@ -10,6 +10,49 @@ from pathlib import Path
 
 import numpy as np
 
+# Replica 3 ran from the same commit on Windows. Git checked these six text files
+# out with CRLF, while the laptops used LF. Each pair below was verified by
+# normalizing the preserved Windows bytes to LF; no content difference remained.
+# Accept only those exact pairs so a real source change still blocks pooling.
+LINE_ENDING_HASH_PAIRS = {
+    "agent_code/DagobertDuckDQNObservation/callbacks.py": frozenset(
+        {
+            "7d9ed6f23883237897b0282484ed45813aa6c8617c1700ef73ebd27c19fa3f26",
+            "af652c666177c77375886fa2e1c343ce40afd9d7b8aa6bc1c0bb50637478f93b",
+        }
+    ),
+    "agent_code/DagobertDuckDQNObservation/config.py": frozenset(
+        {
+            "e6a457109970355f3c04cf9e0878f865ecb8df32706f397a5ea8ca27a767add7",
+            "5aadf05e16200e7335ff2ac398f17686f6ee5a2b8bd5348ef8d9bc89f415eeb1",
+        }
+    ),
+    "agent_code/DagobertDuckDQNObservation/features/assemble.py": frozenset(
+        {
+            "742ed3b6fffbf7b488c11dfa9f06a6088853a2317eb204b22a777a49ac205432",
+            "4cde8817c7d81c6052e89ad2dd2ad87ab9503d373feacdd609757d38d8aba7ec",
+        }
+    ),
+    "agent_code/DagobertDuckDQNObservation/train.py": frozenset(
+        {
+            "2547456e3fbbaa1788adaff641b4c6eec16f09d2e8b68d34d9c95d66b3990f7d",
+            "5dd0362b75cac2483ff33632e5b412fc079db53ed63f865da755e0514cf8c5e2",
+        }
+    ),
+    "scripts/audit_observation_seeds.py": frozenset(
+        {
+            "3b330c825ceec00fd26e0db584a33ec14cf4898d98ac5a43563b1c79ca7b0e0b",
+            "b23df545e9f83bd38382f14d625240afdcb937737fc9bf46be1e029ec0106250",
+        }
+    ),
+    "scripts/observation_episode.py": frozenset(
+        {
+            "17c3d52f9cfd9ab5b4402ba8b34cbd84f0519614ae2903066c20a8337d3514ba",
+            "d1c77e2ac6ec1fbdf85512491948e286c0bce58d6a84a0f7d5e4674d614ef3ef",
+        }
+    ),
+}
+
 
 def read(path):
     return json.loads(Path(path).read_text(encoding="utf-8-sig"))
@@ -86,15 +129,23 @@ def classify(gates, efficacy, clear_harm):
     return "inconclusive"
 
 
+def equivalent_code_hashes(bindings):
+    maps = [binding["code_hashes"] for binding in bindings]
+    if any(set(item) != set(maps[0]) for item in maps[1:]):
+        return False
+    for path in maps[0]:
+        values = frozenset(item[path] for item in maps)
+        if len(values) > 1 and values != LINE_ENDING_HASH_PAIRS.get(path):
+            return False
+    return True
+
+
 def analyze(roots):
     require(len(roots) == 3, "Three replica bundles required; no partial pooled conclusion")
     roots = sorted(roots, key=lambda p: read(p / "binding.json")["replica"])
     bindings = [read(root / "binding.json") for root in roots]
     require([b["replica"] for b in bindings] == [1, 2, 3], "Duplicate or missing replica")
-    require(
-        all(b["code_hashes"] == bindings[0]["code_hashes"] for b in bindings),
-        "Different execution sources",
-    )
+    require(equivalent_code_hashes(bindings), "Different execution sources")
     require(
         all(b["config_sha256"] == bindings[0]["config_sha256"] for b in bindings),
         "Different protocols",
@@ -170,6 +221,14 @@ def analyze(roots):
         "selected_submission_artifact": None,
         "arms": {},
         "config_sha256": bindings[0]["config_sha256"],
+        "source_equivalence": {
+            "status": "verified_exact_lf_crlf_pairs",
+            "files": sorted(
+                path
+                for path in bindings[0]["code_hashes"]
+                if len({binding["code_hashes"][path] for binding in bindings}) > 1
+            ),
+        },
     }
     loop_data = {
         arm: loops([row for r in (1, 2, 3) for row in data[r, arm, primary]])
