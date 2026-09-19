@@ -1,0 +1,60 @@
+{
+  "hostname": "Lenovo",
+  "python": "Python 3.13.15",
+  "torch": "2.13.0+cpu",
+  "analysis_commit": "48261a950bbf1de293b488dd42afb8693c3a7b41",
+  "protocol": "experiments/2026-09-18-attack-rule/config.json",
+  "cells": [
+    {
+      "name": "control",
+      "commit": "08c9f9c",
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-attack-rule/config.json --agent Bomb-omb-survivalguard --episodes 6000 8000 --jobs 2 --out monitoring/attack-rule/attack-control",
+      "environment": {
+        "BOMBERMAN_ATTACK_RULE": "off",
+        "BOMBERMAN_SEEK_RULE": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "control"
+      },
+      "started": "2026-09-18T23:02:40+02:00",
+      "ended": "2026-09-18T23:56:19+02:00",
+      "games": 1950,
+      "cut_short": false
+    },
+    {
+      "name": "attack",
+      "commit": "9e98dfd",
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-attack-rule/config.json --agent Bomb-omb-survivalguard --episodes 6000 8000 --jobs 2 --out monitoring/attack-rule/attack-attack",
+      "environment": {
+        "BOMBERMAN_ATTACK_RULE": "on",
+        "BOMBERMAN_SEEK_RULE": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "attack"
+      },
+      "started": "2026-09-19T00:00:04+02:00",
+      "ended": "2026-09-19T00:50:59+02:00",
+      "games": 1950,
+      "cut_short": false
+    },
+    {
+      "name": "attack-selective",
+      "commit": "9e98dfd",
+      "command": ".\\.venv\\Scripts\\python.exe scripts/evaluate_milestones.py --root C:\\milestones\\final-training --registration experiments/2026-09-18-attack-rule/config.json --agent Bomb-omb-survivalguard --episodes 6000 8000 --jobs 2 --out monitoring/attack-rule/attack-selective",
+      "environment": {
+        "BOMBERMAN_ATTACK_RULE": "selective",
+        "BOMBERMAN_SEEK_RULE": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_BOMB": "off",
+        "BOMBERMAN_SURVIVAL_GUARD_MOVE": "off",
+        "BOMBERMAN_EVALUATION_VARIANT": "attack-selective"
+      },
+      "started": "2026-09-19T06:56:02+02:00",
+      "ended": "2026-09-19T10:25:38+02:00",
+      "games": 1950,
+      "cut_short": false
+    }
+  ],
+  "games_per_cell": 1950,
+  "anything_cut_short": false,
+  "legacy_attack_attack_guard_present": false
+}
