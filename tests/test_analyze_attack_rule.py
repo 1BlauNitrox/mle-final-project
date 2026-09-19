@@ -71,3 +71,30 @@ def test_the_seek_rule_is_off_in_every_cell():
     cfg = json.loads(analyze.REGISTRATION.read_text(encoding="utf-8"))
     for cell, environment in cfg["design"]["environment"].items():
         assert environment["BOMBERMAN_SEEK_RULE"] == "off", cell
+
+
+def test_a_cell_folder_is_found_with_or_without_the_prefix(tmp_path, monkeypatch, capsys):
+    # The prompt told the laptop to write attack-selective; the analyzer's
+    # prefix asks for attack-attack-selective. Both must resolve, or a finished
+    # experiment cannot be read.
+    import json as _json
+
+    def cell(folder, name):
+        folder.mkdir(parents=True)
+        rows = [{"artifact": "control-r1@8000", "world_seed": 1, "variant": name,
+                 "score": 1.0, "kills": 0.0, "self_kills": 0.0, "survived": 1,
+                 "coins": 1.0, "collection_fraction": 0.1, "invalid": 0}]
+        (folder / "games.jsonl").write_text(
+            "".join(_json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+
+    root = tmp_path
+    cell(root / "attack-control", "control")
+    cell(root / "attack-attack", "attack")
+    cell(root / "attack-selective", "attack-selective")  # written without the prefix
+
+    for name, expected in (("control", "attack-control"),
+                           ("attack", "attack-attack"),
+                           ("attack-selective", "attack-selective")):
+        candidates = [root / f"attack-{name}", root / name]
+        assert any(c.is_dir() for c in candidates), name
+        assert next(c for c in candidates if c.is_dir()).name == expected

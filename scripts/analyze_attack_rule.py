@@ -77,11 +77,16 @@ def main() -> int:
 
     cells = {}
     for name in (CONTROL, ATTACK, SELECTIVE):
-        folder = args.root / f"{args.folder_prefix}{name}"
-        if folder.is_dir():
+        # A cell whose own name already starts with the prefix reads naturally
+        # either way: monitoring/attack-rule/attack-selective is what a person
+        # writes, attack-attack-selective is what the prefix produces. Accept
+        # both rather than make 5,850 games depend on a folder name.
+        candidates = [args.root / f"{args.folder_prefix}{name}", args.root / name]
+        folder = next((c for c in candidates if c.is_dir()), None)
+        if folder is not None:
             cells[name] = load(folder, name)
         else:
-            print(f"cell {name}: not run ({folder} missing)")
+            print(f"cell {name}: not run (looked for {', '.join(c.name for c in candidates)})")
     if CONTROL not in cells or ATTACK not in cells:
         raise SystemExit("the control and attack cells are both required")
 
