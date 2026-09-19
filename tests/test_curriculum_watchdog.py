@@ -1,5 +1,6 @@
 """Recovery must preserve the experiment, budget, evidence and user ownership."""
 
+import gzip
 import hashlib
 import json
 import subprocess
@@ -175,6 +176,7 @@ def test_result_commit_excludes_models_prose_and_unrelated_work(prepared, tmp_pa
     git("config", "user.email", "test@example.invalid")
     (repo / "README.md").write_text("human draft", encoding="utf-8")
     files = {"pairs/r1/decision.json": b'{"status":"stopped_safety"}',
+             "pairs/r1/large-state.json": json.dumps({"rows": ["example"] * 20000}).encode(),
              "pairs/r1/checkpoint.pt": b"MODEL MUST NOT BE COMMITTED"}
     archive = root / "result.zip"
     with zipfile.ZipFile(archive, "w") as stream:
@@ -193,3 +195,9 @@ def test_result_commit_excludes_models_prose_and_unrelated_work(prepared, tmp_pa
     assert "README" not in tracked
     assert "checkpoint" not in tracked
     assert "zip" not in tracked
+    assert "large-state.json.gz" in tracked
+    stored = repo / "experiments/2026-09-19-hunting-curriculum/evidence/pc"
+    assert gzip.decompress((stored / "pairs/r1/large-state.json.gz").read_bytes()) == (
+        files["pairs/r1/large-state.json"])
+    assert w.read(stored / "evidence-index.json")["pairs/r1/large-state.json"]["sha256"] == (
+        hashlib.sha256(files["pairs/r1/large-state.json"]).hexdigest())

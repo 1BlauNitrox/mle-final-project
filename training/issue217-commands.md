@@ -111,6 +111,12 @@ commit after verified pipeline completion. It verifies the export ZIP and each
 member, then commits only JSON observations/configuration/ledgers under
 `experiments/2026-09-19-hunting-curriculum/evidence/laptop/`. It refuses main,
 an index containing other work, changed existing evidence, or evidence over50MB.
+JSON files over100KB use deterministic lossless gzip; `evidence-index.json` maps
+stored names to original names and SHA-256 hashes. Copy the evidence directory
+to a fresh analysis directory and decompress `*.json.gz` there before invoking
+the existing analyzer. Verify each decompressed file against the index. This
+retains every observation and replay-origin label without committing replay
+transition buffers. Recovery/stall records are retained alongside the results.
 It never stages scientific prose, the AI log, weights, replay binaries or raw
 logs. The complete model ZIP remains outside Git; its local locator is not a
 durable publication claim. Return that ZIP separately for combined analysis.

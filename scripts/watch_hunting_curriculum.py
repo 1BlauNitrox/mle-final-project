@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import gzip
 import hashlib
 import json
 import os
@@ -225,9 +226,23 @@ def evidence(root, repo):
                 if not target.is_relative_to(destination.resolve()):
                     raise ValueError("Unsafe evidence path")
                 files[name] = content
-    for name in ("complete.json", "export.json", "resources.json", "watchdog.json"):
+    records = ["complete.json", "export.json", "resources.json", "watchdog.json"]
+    records += [p.name for p in root.glob("watchdog-recovery-*.json")]
+    records += [p.name for p in root.glob("watchdog-stall-*.json")]
+    for name in records:
         if (root / name).exists():
             files[name] = (root / name).read_bytes()
+    # Large per-episode observations remain lossless without bloating Git.
+    index, compact = {}, {}
+    for name, content in files.items():
+        stored = name + ".gz" if len(content) > 100_000 else name
+        packed = gzip.compress(content, mtime=0) if stored != name else content
+        compact[stored] = packed
+        index[name] = {"stored": stored, "bytes": len(content),
+                       "sha256": hashlib.sha256(content).hexdigest(),
+                       "stored_sha256": hashlib.sha256(packed).hexdigest()}
+    compact["evidence-index.json"] = json.dumps(index, indent=2).encode("utf-8")
+    files = compact
     if sum(map(len, files.values())) > 50_000_000:
         raise ValueError("Evidence needs compact review before commit (>50MB)")
     paths = []
