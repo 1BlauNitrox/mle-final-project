@@ -62,6 +62,8 @@ def test_geometry_describes_safe_escape_counts_without_action_override():
     observation = hunting_geometry(value)
     assert np.all(np.isfinite(observation))
     assert 0 <= observation[-1] <= observation[-2] <= 1
+    value["bombs"] = [(value["self"][3], 3)]
+    assert hunting_geometry(value)[5] == 1  # Leaving an occupied own-bomb tile is possible.
 
 
 def test_memory_is_causal_idempotent_bounded_and_resets():
@@ -346,3 +348,20 @@ def test_pc_queue_requires_training_evaluation_and_latency_completion(tmp_path):
     assert not previous_complete(tmp_path)
     write(tmp_path / "task4-competition-evidence.tar.gz.manifest.json", {})
     assert previous_complete(tmp_path)
+
+
+def test_latency_and_evaluation_share_one_compute_budget(tmp_path, monkeypatch):
+    from scripts import run_observation_screen as runner
+
+    cfg = runner.read(runner.CONFIG)
+    runner.write(
+        tmp_path / "evaluate-resources.json", {"cpu_seconds": 14400.0, "wall_seconds": 5.0}
+    )
+    monkeypatch.setattr(runner, "bound", lambda root: (cfg, {}))
+    monkeypatch.setattr(
+        runner.psutil, "virtual_memory", lambda: SimpleNamespace(available=100 * 1024**3)
+    )
+    monkeypatch.setattr(runner, "child_command", lambda *a, **kw: pytest.fail("Budget exhausted"))
+    args = SimpleNamespace(root=tmp_path, workers=3)
+    assert not runner.supervise(args, [("timing", "_evaluate", {})], "latency")
+    assert runner.read(tmp_path / "stop-request.json")["reason"] == "registered resource limit"

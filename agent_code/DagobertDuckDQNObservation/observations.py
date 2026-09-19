@@ -42,6 +42,16 @@ def hunting_geometry(state):
             if neighbour in free and neighbour not in distances:
                 distances[neighbour] = distances[x, y] + 1
                 queue.append(neighbour)
+    # The agent can leave its own bomb tile, although nobody may enter that tile.
+    # Add its outgoing distance only after BFS, so routes never cross the bomb.
+    if position not in free and any(tuple(p) == position for p, _timer in bombs):
+        outgoing = [
+            distances[(position[0] + dx, position[1] + dy)] + 1
+            for dx, dy in DIRECTIONS
+            if (position[0] + dx, position[1] + dy) in distances
+        ]
+        if outgoing:
+            distances[position] = min(outgoing)
     sites = [position, *((position[0] + dx, position[1] + dy) for dx, dy in DIRECTIONS)]
     route = [distances.get(p, field.size) / field.size for p in sites]
     reachable = [float(p in distances) for p in sites]

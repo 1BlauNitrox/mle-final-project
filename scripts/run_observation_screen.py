@@ -442,6 +442,12 @@ def supervise(args, jobs, stage):
     logs.mkdir(exist_ok=True)
     usage_path = args.root / f"{stage}-resources.json"
     usage = read(usage_path) if usage_path.exists() else {"cpu_seconds": 0.0, "wall_seconds": 0.0}
+    other_usage = {"cpu_seconds": 0.0, "wall_seconds": 0.0}
+    if stage in {"evaluate", "latency"}:
+        other = "evaluate" if stage == "latency" else "latency"
+        other_path = args.root / f"{other}-resources.json"
+        if other_path.exists():
+            other_usage = read(other_path)
     started, last_wall = time.monotonic(), time.monotonic()
     workers = 1 if stage == "latency" else args.workers
     require(1 <= workers <= 3, "Use 1..3 workers")
@@ -476,7 +482,8 @@ def supervise(args, jobs, stage):
                 pending=[j[0] for j in jobs],
             )
             write(usage_path, usage)
-            exceeded = usage["cpu_seconds"] >= cpu_limit or usage["wall_seconds"] >= wall_limit
+            exceeded = usage["cpu_seconds"] + other_usage["cpu_seconds"] >= cpu_limit
+            exceeded |= usage["wall_seconds"] + other_usage["wall_seconds"] >= wall_limit
             exceeded |= (
                 memory.available < limits["minimum_available_ram_bytes"]
                 or rss > limits["aggregate_workload_ram_bytes"]

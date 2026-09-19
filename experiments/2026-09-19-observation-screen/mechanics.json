@@ -106,5 +106,5 @@
       }
     ]
   },
-  "note": "Subsequent changes affect analyzer classification and authorized CPU ceiling only, not the agent or episode adapter."
+  "note": "Mechanics at the recorded producing commit. Subsequent changes add exploratory classification, shared evaluation accounting and correct departing an own-bomb tile; focused tests cover these changes and each device must run fresh smoke checks before launch."
 }
