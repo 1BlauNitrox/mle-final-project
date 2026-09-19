@@ -331,3 +331,18 @@ def test_detached_launcher_requires_authorization_and_returns_working_pid(tmp_pa
     assert sentinel.read_text() == "mechanics only"
     with contextlib.suppress(psutil.NoSuchProcess):
         psutil.Process(record["pid"]).wait(timeout=10)
+
+
+def test_pc_queue_requires_training_evaluation_and_latency_completion(tmp_path):
+    from scripts.queue_observation_pc import previous_complete
+    from scripts.run_observation_screen import write
+
+    assert not previous_complete(tmp_path)
+    write(tmp_path / "recovery-chain.json", {"status": "completed"})
+    write(tmp_path / "training-state.json", {"status": "completed"})
+    write(tmp_path / "evaluation-state.json", {"status": "completed"})
+    assert not previous_complete(tmp_path)
+    write(tmp_path / "latency-state.json", {"status": "completed"})
+    assert not previous_complete(tmp_path)
+    write(tmp_path / "task4-competition-evidence.tar.gz.manifest.json", {})
+    assert previous_complete(tmp_path)
