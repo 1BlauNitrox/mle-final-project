@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 204
-status: preregistered
+status: completed_failed
 agent: DerKleineKonkurrenzvernichter
 hypothesis: A shared crate-and-opponent target abstraction improves hunting without material Task 2 regression.
 independent_change: Replace separate crate and opponent navigation values with target direction, target kind, and shared bomb status; omit distance.
@@ -39,3 +39,9 @@ authorization:
 deviations_from_issue_draft:
   - Target distance was removed by owner decision before implementation.
   - Both arms use the corrected Task 2 prior after discovering the Issue 186 callback defect.
+execution:
+  completed_at: 2026-09-17
+  control_completed_jobs: 1005
+  candidate_completed_jobs: 1005
+  failed_jobs: 0
+decision: reject_candidate_keep_compact_opponent
