@@ -136,12 +136,44 @@ class QTable:
         if not terminal and next_state is None:
             raise ValueError("Next state must be provided for non-terminal updates.")
 
+        return self.update_n_step(
+            state=state,
+            action=action,
+            discounted_return=reward,
+            next_state=next_state,
+            terminal=terminal,
+            bootstrap_steps=1,
+            next_action_mask=next_action_mask,
+        )
+
+    def update_n_step(
+        self,
+        *,
+        state: StateFeatures,
+        action: str,
+        discounted_return: float,
+        next_state: StateFeatures | None,
+        terminal: bool,
+        bootstrap_steps: int,
+        next_action_mask: np.ndarray | None = None,
+    ) -> float:
+        """Apply a pre-accumulated n-step return and return its TD error."""
+
+        if action not in ACTIONS:
+            raise ValueError(f"Invalid action: {action}")
+
+        if type(bootstrap_steps) is not int or bootstrap_steps < 1:
+            raise ValueError("Bootstrap steps must be a positive integer.")
+
+        if not terminal and next_state is None:
+            raise ValueError("Next state must be provided for non-terminal updates.")
+
         current_values = self._get_or_create(state)
         action_index = ACTIONS.index(action)
         current_value = current_values[action_index]
 
         if terminal:
-            target = reward
+            target = discounted_return
         else:
             assert next_state is not None
 
@@ -150,7 +182,10 @@ class QTable:
             masked_next_values = np.where(legal, next_values, -np.inf)
             maximum_next_value = float(np.max(masked_next_values))
 
-            target = reward + self.discount_factor * maximum_next_value
+            target = (
+                discounted_return
+                + self.discount_factor**bootstrap_steps * maximum_next_value
+            )
 
         td_error = target - current_value
 
