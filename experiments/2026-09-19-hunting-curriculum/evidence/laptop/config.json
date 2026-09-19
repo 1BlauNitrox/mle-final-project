@@ -1,0 +1,354 @@
+{
+  "issue": 217,
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "reference_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "arms": [
+    "control",
+    "curriculum"
+  ],
+  "replicas": 3,
+  "learning_rate": 0.0001,
+  "update_every": 4,
+  "updates": 120000,
+  "episodes": 6000,
+  "train_ranges": [
+    [
+      1737000001,
+      1737006000
+    ],
+    [
+      1737010001,
+      1737016000
+    ],
+    [
+      1737020001,
+      1737026000
+    ]
+  ],
+  "learner_seeds": [
+    1737090001,
+    1737090002,
+    1737090003
+  ],
+  "evaluation_agent_seed": 1737090010,
+  "bootstrap_seed": 1737090011,
+  "smoke_seed": 1737099991,
+  "bootstrap_resamples": 10000,
+  "checks": [
+    {
+      "name": "u100-or-e10",
+      "updates": 100,
+      "episode_stop": 10
+    },
+    {
+      "name": "e10",
+      "episodes": 10
+    },
+    {
+      "name": "u500-or-e25",
+      "updates": 500,
+      "episode_stop": 25
+    },
+    {
+      "name": "e25",
+      "episodes": 25
+    },
+    {
+      "name": "e50",
+      "episodes": 50
+    },
+    {
+      "name": "u10000",
+      "updates": 10000
+    },
+    {
+      "name": "u40000",
+      "updates": 40000
+    },
+    {
+      "name": "u80000",
+      "updates": 80000
+    },
+    {
+      "name": "final",
+      "updates": 120000
+    }
+  ],
+  "pilot": {
+    "score_loss": 0.5,
+    "survival_loss": 0.1,
+    "self_kills_increase": 0.1,
+    "collection_loss": 0.1
+  },
+  "screen": {
+    "kills_gain": 0.05,
+    "score_gain": 0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.1,
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "replica_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": [
+        "latency"
+      ],
+      "baselines": [
+        "control",
+        "reference"
+      ]
+    }
+  },
+  "devices": {
+    "pc": {
+      "replicas": [
+        1,
+        2
+      ],
+      "workers": 2,
+      "cpu_seconds": 86400,
+      "rss_bytes": 8589934592
+    },
+    "laptop": {
+      "replicas": [
+        3
+      ],
+      "workers": 1,
+      "cpu_seconds": 43200,
+      "rss_bytes": 4294967296
+    }
+  },
+  "limits": {
+    "wall_seconds": 64800,
+    "minimum_available_bytes": 2147483648,
+    "stop_utc": "2026-09-20T18:00:00+00:00"
+  },
+  "evaluation": {
+    "pilot": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1737100001,
+          1737100040
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1737101001,
+          1737101020
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1737102001,
+          1737102020
+        ]
+      }
+    },
+    "final": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1737200001,
+          1737200120
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1737201001,
+          1737201040
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1737202001,
+          1737202040
+        ]
+      },
+      "peaceful": {
+        "scenario": "classic",
+        "opponents": [
+          "peaceful_agent",
+          "peaceful_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1737203001,
+          1737203040
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1737204001,
+          1737204080
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1737205001,
+          1737205010
+        ]
+      }
+    },
+    "confirmation": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1737300001,
+          1737300250
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1737301001,
+          1737301080
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1737302001,
+          1737302080
+        ]
+      },
+      "peaceful": {
+        "scenario": "classic",
+        "opponents": [
+          "peaceful_agent",
+          "peaceful_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1737303001,
+          1737303080
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1737304001,
+          1737304150
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1737305001,
+          1737305020
+        ]
+      }
+    }
+  },
+  "selection": "Only fixed-final curriculum-r1, conditional on complete three-replica screen; no automatic promotion; fresh confirmation required",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-19: Implement this training plan; run biggest part on PC; Use these limits and gates",
+    "scope": "PC r1/r2 and laptop r3 pilots plus conditional continuation within registered limits"
+  },
+  "protocol": {
+    "changed_factor": "Training distribution: alternating ordinary Classic and validated hunting starts with fixed opponent progression",
+    "hunting_opponents_by_episode": [
+      [
+        0,
+        99,
+        "peaceful_agent"
+      ],
+      [
+        100,
+        499,
+        "coin_collector_agent"
+      ],
+      [
+        500,
+        5999,
+        "rule_based_agent"
+      ]
+    ],
+    "ordinary_opponents": [
+      "rule_based_agent",
+      "rule_based_agent",
+      "rule_based_agent"
+    ],
+    "episode_mixture": "even index Classic; odd index hunting in curriculum only",
+    "hunting_coins": 0,
+    "hunting_layouts": "alternating open and crate-corridor; path distances2/3/5/7; official17x17walls",
+    "initialization": "preserve networks/replay/Adam/counters; new paired action/replay RNG; LR.0001",
+    "exploration": "one seeded fully random episode per five; otherwise greedy",
+    "endpoint": "exact120000newupdates; finish current episode without more updates;6000episodecap gives incomplete",
+    "pilot_rule": "per-pair both arms must pass all point-estimate retention gates; no kill-gain requirement; zero geometric exposure in first25huntingepisodes stops pair",
+    "final_rule": "three complete pairs required; both baseline contrasts pass pooled gates; >=2/3 paired kill differences strictly positive; all candidate latencies pass individually",
+    "confirmation": "fresh development worlds reserved; never read for tuning; only candidate-r1 versus fallback; positive Classic kill/score95%lowerbounds and screen retention gates",
+    "limitations": "point-estimate pilot/screen exploratory; repeated checks not confirmatory; current40classic/20coin/20cratepilot worlds reused for safety only"
+  },
+  "revision": 2,
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 1900.0,
+      "first_start": 1789854195.4983494,
+      "recorded_cpu_seconds": 1850.03125,
+      "note": "Stopped v1 technical amendment; conservative1900seconddebit includes termination/sampling margin; original elapsed start retained."
+    },
+    "laptop": {
+      "cpu_seconds": 0.0,
+      "note": "Only valid if v1 never launched here; otherwise import prior usage before restart."
+    }
+  },
+  "amendment": {
+    "reason": "Review: missing diagnostic aggregation and invalid-action eligibility gate; added native bomb attribution",
+    "previous_config_sha256": "c7e9ebca21938ac025906f0b3c41fd7e7b7666835f2a576046d8b49ab489b79f",
+    "previous_source_commit": "b2cdf6f75eda3674b23c8a2a7bea6b6e6fff7485",
+    "previous_stop_sha256": "5ac3217d7bd66ff7ebc6a0723ce8dc46ec366928e69bedda8ed3201f532a80fa",
+    "previous_resources_sha256": "fd9265c23a977342d1b30437ad63d247ccc9aeea893a4119ad0cda9c30da03ed",
+    "status": "v1interrupted; immutable evidence preserved; no outcome-based candidate selection; v2 starts from frozen parent with fresh audited seeds"
+  }
+}

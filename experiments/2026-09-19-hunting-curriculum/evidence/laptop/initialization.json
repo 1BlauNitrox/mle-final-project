@@ -1,0 +1,8 @@
+{
+  "r3": {
+    "episodes": 8000,
+    "updates": 1485852,
+    "replay_size": 10000,
+    "optimizer_entries": 6
+  }
+}
