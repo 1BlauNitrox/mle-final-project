@@ -25,6 +25,12 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def json_default(value):
+    if isinstance(value, np.generic):
+        return value.item()
+    raise TypeError(f"Unsupported JSON value: {type(value).__name__}")
+
+
 def native_metric(row, metric):
     native = row["native"]
     if metric == "collection_fraction":
@@ -293,7 +299,9 @@ def main():
         "language": "registered decision rule, not a significance test",
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    args.output.write_text(
+        json.dumps(result, indent=2, default=json_default) + "\n", encoding="utf-8"
+    )
     print(f"FIVE-STEP CLAIM: {'PASS' if claim_success else 'FAIL'}")
     print(f"PROMOTION: {'PASS' if promotable else 'FAIL'}; selected={selected}")
     for metric in ("kills", "score", "survived", "self_kills", "invalid"):
