@@ -293,7 +293,7 @@ def main() -> None:
                     output=args.output,
                     lineup_name=name,
                     lineup=lineups[name],
-                    seed=954099998,
+                    seed=config["design"]["serial_timing_seed"],
                     rotation=0,
                     timing=True,
                 )

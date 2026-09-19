@@ -31,7 +31,8 @@
     },
     "rotation_rule": "cyclic left rotation of each listed lineup by rotation index 0..3",
     "independence": "one fresh process and one round for every seed-lineup-rotation game",
-    "smoke_seed": 954099999
+    "smoke_seed": 954099999,
+    "serial_timing_seed": 954099998
   },
   "runtime": {
     "python": "3.13",

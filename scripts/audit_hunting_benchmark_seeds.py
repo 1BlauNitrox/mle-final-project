@@ -19,7 +19,10 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=ROOT / OWN / "seed-audit.json")
     args = parser.parse_args()
     config = json.loads(args.config.read_text(encoding="utf-8"))
-    candidates = set(config["design"]["world_seeds"]) | {config["design"]["smoke_seed"]}
+    candidates = set(config["design"]["world_seeds"]) | {
+        config["design"]["smoke_seed"],
+        config["design"]["serial_timing_seed"],
+    }
     refs = subprocess.check_output(
         ["git", "for-each-ref", "--format=%(refname)", "refs/remotes/origin"],
         cwd=ROOT,

@@ -39,6 +39,8 @@ def test_registered_config_has_exact_game_budget_and_distinct_seeds():
     seeds = config["design"]["world_seeds"]
     assert len(seeds) == len(set(seeds)) == 20
     assert config["design"]["smoke_seed"] not in seeds
+    assert config["design"]["serial_timing_seed"] not in seeds
+    assert config["design"]["serial_timing_seed"] != config["design"]["smoke_seed"]
     assert len(config["design"]["lineups"]) * len(seeds) * config["design"]["rotations"] == 240
     assert config["runtime"]["maximum_concurrent_games"] == 2
     assert config["runtime"]["minimum_available_ram_gib"] == 3
