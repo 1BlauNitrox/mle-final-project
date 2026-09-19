@@ -310,7 +310,13 @@ def recover(root: Path, profile: str) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--profile", default="final-training")
+    # The tool sets TASK4_PROFILE for every stage it launches, so this default
+    # silently overrides the caller's own environment. Honouring the variable
+    # first means `TASK4_PROFILE=warm-lineup resume_final_training.py ...` does
+    # what it looks like it does: on 19 September it did not, and the resumed
+    # stage died on "Prepared protocol copy changed" because it verified the
+    # warm-lineup run against the final-training registration.
+    parser.add_argument("--profile", default=os.environ.get("TASK4_PROFILE", "final-training"))
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--status", action="store_true")
     group.add_argument("--orchestrate", action="store_true")
