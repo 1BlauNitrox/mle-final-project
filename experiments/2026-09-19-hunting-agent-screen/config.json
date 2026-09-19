@@ -42,10 +42,14 @@
     "maximum_concurrent_games": 2,
     "minimum_available_ram_gib": 3,
     "wall_clock_limit_hours": 3,
-    "timing_measurement": "separate serial games without concurrent load"
+    "timing_measurement": "separate serial games without concurrent load",
+    "timing_limits_ms": {
+      "decision_time_p95": 50,
+      "decision_time_maximum": 100
+    }
   },
   "metrics": [
-    "native_score", "kills", "coins", "unique_win", "score_tie",
+    "native_score", "kills", "coins", "unique_win", "score_tie", "fractional_first_place_share",
     "survived", "self_kills", "invalid_actions", "attempted_actions",
     "decision_time_median_ms", "decision_time_p95_ms", "decision_time_max_ms"
   ],

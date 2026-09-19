@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 
 METRICS = ("score", "kills", "coins", "survived", "self_kills", "invalid")
+ANALYSIS_METRICS = (*METRICS, "first_place_share")
 LEARNED = {"A": "benchmark_fallback", "B": "RUEHL_BASED_AGENT"}
 
 
@@ -52,6 +53,7 @@ def game_observations(path: Path, lineup: str, seed: int, rotation: int) -> list
                 "attempted_actions": data["attempted_actions"],
                 "unique_win": int(data["score"] == top_score and leaders == 1),
                 "score_tie": int(data["score"] == top_score and leaders > 1),
+                "first_place_share": 1.0 / leaders if data["score"] == top_score else 0.0,
                 "survival_steps": data["survival_steps"],
                 "decision_time_median_ms": data["decision_time_median_ms"],
                 "decision_time_p95_ms": data["decision_time_p95_ms"],
@@ -92,24 +94,63 @@ def descriptive(rows: list[dict], identity: str, lineup: str) -> dict:
     selected = [row for row in rows if row["lineup"] == lineup and row["identity"] == identity]
     return {
         metric: float(np.mean([row[metric] for row in selected]))
-        for metric in (*METRICS, "unique_win", "score_tie")
+        for metric in (*METRICS, "unique_win", "score_tie", "first_place_share")
     }
 
 
-def relative_to_rules(rows: list[dict], lineup: str, identity: str) -> dict:
+def relative_to_rules(rows: list[dict], lineup: str, identity: str, config: dict) -> dict:
     games = defaultdict(list)
     for row in rows:
         if row["lineup"] == lineup:
             games[(row["world_seed"], row["rotation"])].append(row)
     output = {}
-    for metric in METRICS:
-        differences = []
-        for game in games.values():
+    uncertainty = config["uncertainty"]
+    for metric in ANALYSIS_METRICS:
+        by_world = defaultdict(list)
+        for (world, _rotation), game in games.items():
             learned = next(row for row in game if row["identity"] == identity)
             rules = [row for row in game if row["identity"] == "rule_based_agent"]
-            differences.append(float(learned[metric] - np.mean([row[metric] for row in rules])))
-        output[metric] = float(np.mean(differences))
+            by_world[world].append(float(learned[metric] - np.mean([row[metric] for row in rules])))
+        world_values = []
+        for world in config["design"]["world_seeds"]:
+            require(len(by_world[world]) == 4, f"Incomplete rotations for world {world}")
+            world_values.append(float(np.mean(by_world[world])))
+        output[metric] = interval(
+            np.asarray(world_values),
+            resamples=uncertainty["resamples"],
+            seed=uncertainty["seed"],
+        )
     return output
+
+
+def timing_report(input_root: Path, config: dict) -> dict:
+    limits = config["runtime"]["timing_limits_ms"]
+    cells = {
+        "fallback": ("A", "benchmark_fallback"),
+        "external": ("B", "RUEHL_BASED_AGENT"),
+    }
+    report = {}
+    timing_seed = config["design"]["serial_timing_seed"]
+    for label, (lineup, identity) in cells.items():
+        path = input_root / "timing" / f"{lineup}-s{timing_seed}-r0.json"
+        require(path.is_file(), f"Missing registered timing game: {path}")
+        agent = round_agents(path)[identity]
+        p95 = float(agent["decision_time_p95_ms"])
+        maximum = float(agent["decision_time_max_ms"])
+        report[label] = {
+            "decision_time_p95_ms": p95,
+            "decision_time_maximum_ms": maximum,
+            "p95_limit_ms": limits["decision_time_p95"],
+            "maximum_limit_ms": limits["decision_time_maximum"],
+            "passes": (
+                p95 <= limits["decision_time_p95"] and maximum <= limits["decision_time_maximum"]
+            ),
+        }
+    return report
+
+
+def external_training_admitted(verdict: str, timing: dict) -> bool:
+    return verdict == "appears stronger" and timing["external"]["passes"]
 
 
 def main() -> None:
@@ -128,7 +169,7 @@ def main() -> None:
                 rows.extend(game_observations(path, lineup, seed, rotation))
     require(len(rows) == 960, "Expected 240 games and 960 agent observations")
 
-    contrasts = {metric: clustered_difference(rows, metric, config) for metric in METRICS}
+    contrasts = {metric: clustered_difference(rows, metric, config) for metric in ANALYSIS_METRICS}
     score, kills, survival = contrasts["score"], contrasts["kills"], contrasts["survived"]
     if (
         score["estimate"] > 0
@@ -147,6 +188,7 @@ def main() -> None:
     else:
         verdict = "inconclusive"
 
+    timing = timing_report(args.input, config)
     result = {
         "protocol_issue": 205,
         "game_count": 240,
@@ -156,10 +198,12 @@ def main() -> None:
         "clustered_contrasts": contrasts,
         "lineup_A_fallback": descriptive(rows, "benchmark_fallback", "A"),
         "lineup_B_external": descriptive(rows, "RUEHL_BASED_AGENT", "B"),
-        "fallback_minus_rule_mean": relative_to_rules(rows, "A", "benchmark_fallback"),
-        "external_minus_rule_mean": relative_to_rules(rows, "B", "RUEHL_BASED_AGENT"),
+        "fallback_minus_rule_mean": relative_to_rules(rows, "A", "benchmark_fallback", config),
+        "external_minus_rule_mean": relative_to_rules(rows, "B", "RUEHL_BASED_AGENT", config),
         "lineup_C_fallback": descriptive(rows, "benchmark_fallback", "C"),
         "lineup_C_external": descriptive(rows, "RUEHL_BASED_AGENT", "C"),
+        "serial_timing": timing,
+        "external_training_admitted": external_training_admitted(verdict, timing),
         "observations": rows,
         "limitations": [
             "screening benchmark, not proof of tournament superiority",
@@ -170,9 +214,16 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(f"VERDICT: external agent {verdict}")
-    for metric in METRICS:
+    for metric in ANALYSIS_METRICS:
         item = contrasts[metric]
         print(f"{metric}: {item['estimate']:.4f} [{item['ci95'][0]:.4f}, {item['ci95'][1]:.4f}]")
+    for identity in ("fallback", "external"):
+        item = timing[identity]
+        print(
+            f"{identity} timing: p95={item['decision_time_p95_ms']:.3f} ms, "
+            f"max={item['decision_time_maximum_ms']:.3f} ms, passes={item['passes']}"
+        )
+    print(f"EXTERNAL TRAINING ADMITTED: {result['external_training_admitted']}")
 
 
 if __name__ == "__main__":
