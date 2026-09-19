@@ -26,7 +26,7 @@ $arguments = @(
     $script, 'train', '--root', $rootPath, '--workers', $Workers
 )
 $process = Start-Process -FilePath $Python -ArgumentList $arguments -WorkingDirectory (Split-Path $PSScriptRoot) `
-    -RedirectStandardOutput $stdout -RedirectStandardError $stderr -WindowStyle Hidden -PassThru
+    -RedirectStandardOutput $stdout -RedirectStandardError $stderr -WindowStyle Hidden -UseNewEnvironment -PassThru
 @{
     pid = $process.Id
     started_at = (Get-Date).ToString('o')
