@@ -8,7 +8,6 @@ import numpy as np
 
 from .config import ACTIONS, DEFAULT_SEED, INITIAL_EPSILON
 from .features import (
-    BASELINE_STATE_REPRESENTATION,
     VALID_STATE_REPRESENTATIONS,
     encode_state,
     get_state_representation,
@@ -18,6 +17,7 @@ from .migration import load_parent_prior
 from .model import (
     PARENT_PRIOR_INITIALIZATION,
     VALID_INITIALIZATIONS,
+    ZERO_INITIALIZATION,
     QTable,
 )
 from .persistence import MODEL_PATH, load_model
@@ -266,7 +266,7 @@ def _read_state_representation() -> str:
 
     representation = os.environ.get(
         STATE_REPRESENTATION_ENV,
-        BASELINE_STATE_REPRESENTATION,
+        "compact_decision",
     )
 
     if representation not in VALID_STATE_REPRESENTATIONS:
@@ -283,7 +283,7 @@ def _read_initialization() -> str:
 
     initialization = os.environ.get(
         INITIALIZATION_ENV,
-        PARENT_PRIOR_INITIALIZATION,
+        ZERO_INITIALIZATION,
     )
 
     if initialization not in VALID_INITIALIZATIONS:

@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "e07df56ed384275139f4bb16252343efc81805e197f1b31844a1fd708f4ac754",
+  "archive_size_bytes": 128602270,
+  "manifest_sha256": "f132bb97cc318cedb4a5d3d347836839de4f39c6f9b95046c8a009d76f7a5ab3",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-opponent-mixture-evidence-v1/task4-competition-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-opponent-mixture-evidence-v1/task4-competition-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; download both assets and verify the archive checksum before import.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task4-competition-evidence.tar.gz",
+  "reproduce_command": "$env:TASK4_PROFILE='opponent-mixture'; python -m scripts.pilot_task4_competition import --root <root> --archive task4-competition-evidence.tar.gz --sha256 e07df56ed384275139f4bb16252343efc81805e197f1b31844a1fd708f4ac754; python -m scripts.pilot_task4_competition analyze --root <root> --output <root>/analysis-reproduced.json"
+}

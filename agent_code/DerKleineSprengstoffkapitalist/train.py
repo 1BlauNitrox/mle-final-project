@@ -49,8 +49,11 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Initialize the Task 2 training state."""
-    _initialize_training_state(self)
+    """Reject training of the frozen Task 2 checkpoint."""
+    raise RuntimeError(
+        "DerKleineSprengstoffkapitalist is a frozen Task 2 agent. "
+        "Training is disabled; create a separately named Task 3 successor."
+    )
 
 
 def _initialize_training_state(self) -> None:

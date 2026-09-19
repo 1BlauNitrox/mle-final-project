@@ -27,6 +27,7 @@ FACTORS = (
 EXPECTED_FACTOR = {
     "trainable-scope": "trainable_scope",
     "opponent-mixture": "training_opponents",
+    "finetune-dose": "learning_rate",
     "lineup-trajectory": "training_opponents",
     "exploration-period": "random_episode_period",
 }
