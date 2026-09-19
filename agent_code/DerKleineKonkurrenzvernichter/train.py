@@ -297,6 +297,7 @@ def _apply_update(
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
+        rng=self.rng,
     )
 
     self.episode_reward += learning_reward

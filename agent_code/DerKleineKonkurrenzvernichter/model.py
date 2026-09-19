@@ -24,6 +24,10 @@ VALID_INITIALIZATIONS = (
     TASK2_PRIOR_INITIALIZATION,
 )
 
+Q_LEARNING = "q_learning"
+DOUBLE_Q_LEARNING = "double_q_learning"
+VALID_LEARNING_ALGORITHMS = (Q_LEARNING, DOUBLE_Q_LEARNING)
+
 Task1State = tuple[int, ...]
 
 
@@ -38,6 +42,7 @@ class QTable:
         parent_values: Mapping[Task1State, np.ndarray] | None = None,
         feature_count: int = FEATURE_COUNT,
         initialization: str = PARENT_PRIOR_INITIALIZATION,
+        learning_algorithm: str = Q_LEARNING,
     ) -> None:
         if not 0.0 < learning_rate <= 1.0:
             raise ValueError("Learning rate must be in (0, 1].")
@@ -51,6 +56,12 @@ class QTable:
         if initialization not in VALID_INITIALIZATIONS:
             raise ValueError(
                 f"Initialization must be one of {list(VALID_INITIALIZATIONS)}."
+            )
+
+        if learning_algorithm not in VALID_LEARNING_ALGORITHMS:
+            raise ValueError(
+                "Learning algorithm must be one of "
+                f"{list(VALID_LEARNING_ALGORITHMS)}."
             )
 
         if initialization in (PARENT_PRIOR_INITIALIZATION, TASK2_PRIOR_INITIALIZATION):
@@ -68,8 +79,10 @@ class QTable:
         self.discount_factor = discount_factor
         self.feature_count = feature_count
         self.initialization = initialization
+        self.learning_algorithm = learning_algorithm
         self.parent_values = self._copy_parent_values(parent_values or {})
         self.values: dict[StateFeatures, np.ndarray] = {}
+        self.secondary_values: dict[StateFeatures, np.ndarray] = {}
         self.visit_counts: dict[StateFeatures, int] = {}
 
     def q_values(self, state: StateFeatures) -> np.ndarray:
@@ -77,12 +90,17 @@ class QTable:
 
         self._validate_state(state)
 
-        values = self.values.get(state)
+        primary = self.values.get(state)
+        if primary is None:
+            primary = self._initial_values(state)
 
-        if values is None:
-            return self._initial_values(state)
+        if self.learning_algorithm == Q_LEARNING:
+            return primary.copy()
 
-        return values.copy()
+        secondary = self.secondary_values.get(state)
+        if secondary is None:
+            secondary = self._initial_values(state)
+        return primary + secondary
 
     def select_action(
         self,
@@ -127,6 +145,7 @@ class QTable:
         next_state: StateFeatures | None,
         terminal: bool,
         next_action_mask: np.ndarray | None = None,
+        rng: np.random.Generator | None = None,
     ) -> float:
         """Update one Q-value and return its temporal difference."""
 
@@ -136,7 +155,17 @@ class QTable:
         if not terminal and next_state is None:
             raise ValueError("Next state must be provided for non-terminal updates.")
 
-        current_values = self._get_or_create(state)
+        if self.learning_algorithm == DOUBLE_Q_LEARNING:
+            if rng is None:
+                raise ValueError("Double Q-learning updates require an RNG.")
+            update_secondary = bool(rng.integers(0, 2))
+            current_values = self._get_or_create_table(
+                state,
+                secondary=update_secondary,
+            )
+        else:
+            update_secondary = False
+            current_values = self._get_or_create(state)
         action_index = ACTIONS.index(action)
         current_value = current_values[action_index]
 
@@ -146,11 +175,24 @@ class QTable:
             assert next_state is not None
 
             legal = _validate_action_mask(next_action_mask)
-            next_values = self.q_values(next_state)
-            masked_next_values = np.where(legal, next_values, -np.inf)
-            maximum_next_value = float(np.max(masked_next_values))
+            if self.learning_algorithm == DOUBLE_Q_LEARNING:
+                selection_values = self._table_values(
+                    next_state,
+                    secondary=update_secondary,
+                )
+                masked_selection = np.where(legal, selection_values, -np.inf)
+                selected_index = int(np.argmax(masked_selection))
+                evaluation_values = self._table_values(
+                    next_state,
+                    secondary=not update_secondary,
+                )
+                bootstrap_value = float(evaluation_values[selected_index])
+            else:
+                next_values = self.q_values(next_state)
+                masked_next_values = np.where(legal, next_values, -np.inf)
+                bootstrap_value = float(np.max(masked_next_values))
 
-            target = reward + self.discount_factor * maximum_next_value
+            target = reward + self.discount_factor * bootstrap_value
 
         td_error = target - current_value
 
@@ -161,7 +203,7 @@ class QTable:
     def __len__(self) -> int:
         """Return the number of materialized Task 2 states."""
 
-        return len(self.values)
+        return len(set(self.values) | set(self.secondary_values))
 
     @property
     def total_state_visits(self) -> int:
@@ -195,7 +237,7 @@ class QTable:
         """Return whether training materialized the state."""
 
         self._validate_state(state)
-        return state in self.values
+        return state in self.values or state in self.secondary_values
 
     def _initial_values(
         self,
@@ -237,6 +279,34 @@ class QTable:
             self.values[state] = self._initial_values(state)
 
         return self.values[state]
+
+    def _get_or_create_table(
+        self,
+        state: StateFeatures,
+        *,
+        secondary: bool,
+    ) -> np.ndarray:
+        """Materialize one Double-Q estimator and count one observed update."""
+
+        self._validate_state(state)
+        self.visit_counts[state] = self.visit_counts.get(state, 0) + 1
+        table = self.secondary_values if secondary else self.values
+        if state not in table:
+            table[state] = self._initial_values(state)
+        return table[state]
+
+    def _table_values(
+        self,
+        state: StateFeatures,
+        *,
+        secondary: bool,
+    ) -> np.ndarray:
+        """Return one estimator without materializing an unseen state."""
+
+        self._validate_state(state)
+        table = self.secondary_values if secondary else self.values
+        values = table.get(state)
+        return self._initial_values(state) if values is None else values.copy()
 
     def _validate_state(self, state: StateFeatures) -> None:
         """Validate the minimum structural Task 2 state contract."""
