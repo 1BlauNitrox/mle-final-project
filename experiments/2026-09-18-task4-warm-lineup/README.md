@@ -49,6 +49,16 @@ This experiment does not show that stronger opponents are always harmful. It sho
 
 ## Evidence and reproduction
 
-We store the analysis as `analysis.json` in the run root. We produced it with `scripts/analyze_task4_competition_v2.py`. The run root currently contains `task4-competition-evidence.tar.gz`, its manifest, configuration, per-stage observations, bindings, and final checkpoints.
+We store the analysis as `analysis.json` in the run root. We produced it with `scripts/analyze_task4_competition_v2.py`. The run root contains `task4-competition-evidence.tar.gz`, its manifest, configuration, per-stage observations, bindings, and final checkpoints.
 
-The evidence currently remains machine-local. Before we treat this experiment as review-ready evidence, we need to publish the exact archive at a durable retrievable location together with its size, SHA-256, retrieval instruction, and verification command.
+The complete archive is published in the [Task 4 warm-lineup evidence v1 release](https://github.com/1BlauNitrox/mle-final-project/releases/tag/task4-warm-lineup-evidence-v1).
+
+| Asset | Size | SHA-256 |
+|---|---:|---|
+| `task4-competition-evidence.tar.gz` | 1,530,764,946 bytes | `1104cb28e56cdd0cb5193c0768d06fcbc5042a450216192a5cd37f5776b43e1b` |
+
+After downloading the asset, verify it with:
+
+```text
+Get-FileHash .\task4-competition-evidence.tar.gz -Algorithm SHA256
+```
