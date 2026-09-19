@@ -1,0 +1,29 @@
+schema_version: 1
+issue: 186
+status: completed_failed
+agent: DerKleineKonkurrenzvernichter
+hypothesis: Opponent-aware tabular training can learn non-zero peaceful-agent elimination while retaining earlier-task behavior.
+independent_change: Three public-opponent state values appended to the frozen five-value Task 2 state.
+parent_sha256: 93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e
+replicas: 5
+training_episodes_per_replica: 10000
+training_opponents: [peaceful_agent]
+evaluation_seed_pairs_per_suite: 20
+evaluation_suites: [peaceful, coincollector, classic, coin-heaven, loot-crate]
+success_gates:
+  mean_peaceful_eliminations_per_episode_min: 0.20
+  replicas_with_positive_peaceful_elimination_rate_min: 4
+  classic_collection_fraction_min: 0.15
+  coin_heaven_collection_fraction_min: 0.90
+  loot_crate_collection_fraction_min: 0.20
+  aggregate_self_kill_rate_max: 0.15
+  repeat_action_sequences_must_match: true
+  decision_time_p95_ms_max: 50
+  decision_time_max_ms_max: 100
+compute:
+  planned_jobs: 1005
+  planned_training_episodes: 50000
+  max_parallel_training: 2
+authorization:
+  owner_requested_direct_execution: true
+  intermediate_review_waived_by_owner: true

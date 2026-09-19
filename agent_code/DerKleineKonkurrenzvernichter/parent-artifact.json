@@ -1,0 +1,21 @@
+{
+  "manifest_schema_version": 1,
+  "status": "frozen_task2_interim",
+  "agent": "DerKleineSprengstoffkapitalist",
+  "artifact": {
+    "path": "parent-model.npz",
+    "sha256": "93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e",
+    "size_bytes": 41780
+  },
+  "origin": {
+    "issue": 153,
+    "treatment": "control",
+    "replica": "r2",
+    "freeze_issue": 183,
+    "freeze_merge_commit": "9f61966d9821fd635df1e41ad53836e343daead2"
+  },
+  "limitations": {
+    "task2_completion_claimed": false,
+    "confirmation_passed": false
+  }
+}

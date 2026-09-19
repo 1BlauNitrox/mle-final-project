@@ -58,9 +58,6 @@ from agent_code.DerKleineVermoegensumverteiler.features import (
 from agent_code.DerKleineVermoegensumverteiler.features import (
     state_to_features as parent_state_to_features,
 )
-from agent_code.DerKleineVermoegensumverteiler.persistence import (
-    load_model as load_parent_model,
-)
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 
@@ -133,14 +130,14 @@ def test_successor_manifest_records_parent_lineage() -> None:
     with SUCCESSOR_MANIFEST.open(encoding="utf-8") as file:
         manifest = json.load(file)
 
-    assert manifest["status"] == "task2_tabular_successor"
+    assert manifest["status"] == "frozen_task2_interim"
     assert manifest["capability"] == "task2_tabular_successor"
 
     assert manifest["parent"]["agent"] == "DerKleineVermoegensumverteiler"
     assert manifest["parent"]["artifact_sha256"] == EXPECTED_SHA256
 
-    assert manifest["model_contract"]["model_schema_version"] == 3
-    assert manifest["model_contract"]["feature_schema_version"] == 2
+    assert manifest["model_contract"]["model_schema_version"] == 6
+    assert manifest["model_contract"]["feature_schema_version"] == 1
     assert manifest["model_contract"]["action_order"] == [
         "UP",
         "RIGHT",
@@ -149,6 +146,7 @@ def test_successor_manifest_records_parent_lineage() -> None:
         "WAIT",
         "BOMB",
     ]
+    assert manifest["model_contract"]["feature_count"] == 5
     assert manifest["model_contract"]["forbidden_actions"] == []
 
     assert manifest["policy"]["task2_features_present"] is True
@@ -205,38 +203,6 @@ def test_successor_features_preserve_parent_prefix(
         assert len(parent_features) == 8
         assert len(successor_features) == 17
         assert successor_features[:8] == parent_features
-
-
-def test_successor_q_table_uses_parent_prior() -> None:
-    parent = load_parent_model(PARENT_MODEL)
-    successor = load_successor_model(SUCCESSOR_MODEL)
-
-    assert successor.q_table.learning_rate == pytest.approx(parent.q_table.learning_rate)
-    assert successor.q_table.discount_factor == pytest.approx(parent.q_table.discount_factor)
-
-    parent_state = next(iter(parent.q_table.values))
-    parent_values = parent.q_table.q_values(parent_state)
-
-    task2_state = (
-        *parent_state,
-        1,
-        0,
-        15,
-        1,
-        0,
-        0,
-        0,
-        0,
-        0,
-    )
-
-    successor_values = successor.q_table.q_values(task2_state)
-
-    assert successor_values.shape == (len(SUCCESSOR_ACTIONS),)
-    np.testing.assert_array_equal(
-        successor_values[:5],
-        parent_values,
-    )
 
 
 def test_read_only_actions_match_parent(

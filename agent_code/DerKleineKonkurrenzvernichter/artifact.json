@@ -1,0 +1,31 @@
+{
+  "manifest_schema_version": 1,
+  "status": "task3_baseline_initialization",
+  "agent": "DerKleineKonkurrenzvernichter",
+  "artifact": {
+    "path": "model.npz",
+    "sha256": "9ef02537efd75b70cbfdd5f973d391ed4924bec91735e07a51b866f3beeee031",
+    "size_bytes": 1493
+  },
+  "model_contract": {
+    "algorithm": "tabular_q_learning",
+    "model_schema_version": 7,
+    "feature_schema_version": 1,
+    "feature_count": 8,
+    "state_representation": "compact_opponent",
+    "initialization": "task2_prior",
+    "action_order": ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"]
+  },
+  "parent": {
+    "agent": "DerKleineSprengstoffkapitalist",
+    "artifact_sha256": "93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e",
+    "artifact_size_bytes": 41780,
+    "freeze_merge_commit": "9f61966d9821fd635df1e41ad53836e343daead2",
+    "task2_completion_claimed": false
+  },
+  "policy": {
+    "training_allowed": true,
+    "opponent_features_present": true,
+    "scientific_result_claimed": false
+  }
+}
