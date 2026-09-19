@@ -1,0 +1,473 @@
+﻿{
+    "schema_version":  1,
+    "issue":  207,
+    "run_root_name":  "issue207-five-step-82744b0",
+    "data_binding_commit":  "82744b044439dcf666124ede2cbaa7225290ad10",
+    "analyzer_fix_commit":  "6b17051",
+    "complete_per_episode_observations":  true,
+    "excluded":  [
+                     "all .pt checkpoints",
+                     "raw framework logs",
+                     "source archive",
+                     "replay snapshots",
+                     "intermediate checkpoints",
+                     "temporary files"
+                 ],
+    "files":  [
+                  {
+                      "path":  "analysis.csv",
+                      "bytes":  1001,
+                      "sha256":  "24f3ff0ed572ab17db9eff3beb59057061fafc2cda3461b36639611cbe01a438"
+                  },
+                  {
+                      "path":  "analysis.json",
+                      "bytes":  9832,
+                      "sha256":  "0655a7e70f9cf073aaba6f41eb5b33a6a040b036299ebb3eb5b948201c9b3f50"
+                  },
+                  {
+                      "path":  "binding.json",
+                      "bytes":  769,
+                      "sha256":  "4b82cd0b6b24996102f6a30a5ff91a75a0b1d46c1513d3e9a11888606dda990f"
+                  },
+                  {
+                      "path":  "config.json",
+                      "bytes":  5963,
+                      "sha256":  "a309fc023963d33be96b7c4186f32f866a226560ca00bab408319c69ad1c0668"
+                  },
+                  {
+                      "path":  "evaluation-summary.json",
+                      "bytes":  73,
+                      "sha256":  "81dd82cf571f5fdfa0d52bedbde86503dfa89a1ef10d79a4a0495ecb347a26f1"
+                  },
+                  {
+                      "path":  "latency-summary.json",
+                      "bytes":  73,
+                      "sha256":  "2768a29f716d6fd718555bd9951c9818926e67124816bc3583ab63e1fe13fa66"
+                  },
+                  {
+                      "path":  "source-manifest.json",
+                      "bytes":  80229,
+                      "sha256":  "819348778617c3d8174a7ec5dc8c513cc63ee46cffe5a588cdfeb0c2a9761194"
+                  },
+                  {
+                      "path":  "training-state.json",
+                      "bytes":  527,
+                      "sha256":  "8924bba69549430e187f8b4b7e9be906bce133b5a8f5d4f87cd996715d3be7de"
+                  },
+                  {
+                      "path":  "training-summary.json",
+                      "bytes":  2058,
+                      "sha256":  "e16ab5e963e5b4e55618e9d8c75a5cbf917576b640b15193b5f742d2becc7a39"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/classic-peaceful/episodes.json.gz",
+                      "bytes":  305387,
+                      "sha256":  "b2ecbda3028e611202ccf072b62c58848883a19f181e69cf319cd362c2f282bd"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/classic-peaceful/result.json",
+                      "bytes":  347,
+                      "sha256":  "d114e573a456354bd369c9d1ff5aaefe2585a00d423c410f6f60b1aaef45d951"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/coin-heaven/episodes.json.gz",
+                      "bytes":  207898,
+                      "sha256":  "29762db2b54940858fbc68002a0907b10c465739b2c2a54cbe0ec2e9e1431ea6"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/coin-heaven/result.json",
+                      "bytes":  342,
+                      "sha256":  "3e17fd72deb6dbfc73f7546db9bc3493660bddd00f5ac6a94c0800243bcbcd6d"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/loot-crate/episodes.json.gz",
+                      "bytes":  326801,
+                      "sha256":  "4b2aa5ee49bb2a694eb4feaf1e81864c48e561bf9c452330a353456a4cba3106"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/loot-crate/result.json",
+                      "bytes":  341,
+                      "sha256":  "c78d3a76ae61a59bb037a90a8a214082b2480e2574f1798e9e5f5247d63eb22d"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  289799,
+                      "sha256":  "79208157bf1d01e3c76d89994d9fa2012d4905eaf762abba7c02122bf1804ab6"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r1/primary-classic-rule-based/result.json",
+                      "bytes":  359,
+                      "sha256":  "bd81ef0ec0c2a89ae5b340efc558edb9d16a8e5f07ddc4c1cdc502b6d037d8a0"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/classic-peaceful/episodes.json.gz",
+                      "bytes":  333053,
+                      "sha256":  "3a54a00230308a64aa994bd15a086ac84dd978fe082b50c0f354af4f7bfc0db0"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/classic-peaceful/result.json",
+                      "bytes":  349,
+                      "sha256":  "23a53021742a6ca544c4bfb9bc0f4f7fdef4d12fcbca563b5bbdbff38fb8b361"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/coin-heaven/episodes.json.gz",
+                      "bytes":  234165,
+                      "sha256":  "6d4b57e0a2a6b875c8974b517bef870344ddd59b54552a3802aa280fa0d9f88e"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/coin-heaven/result.json",
+                      "bytes":  343,
+                      "sha256":  "321a3fcad27c2679dcf566b1161cdbbc5e1b97a2be50f4beb6177e5e1dd2342d"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/loot-crate/episodes.json.gz",
+                      "bytes":  265461,
+                      "sha256":  "552998b51ca540a544ede2cbf78ccabd63ce0398f1b3032d6cce8f3376dc399c"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/loot-crate/result.json",
+                      "bytes":  340,
+                      "sha256":  "5379548a2822d1b8f6cb81bbdea059b05d207e538b3f0c64fe0047105f434006"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  336683,
+                      "sha256":  "154889841c332233f6e7e64a585de983ada257df44e174b745814243bd46a4fa"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r2/primary-classic-rule-based/result.json",
+                      "bytes":  359,
+                      "sha256":  "62160dda626e222ddbe63b672d78336d28a10d75bf4d18c90c55ad0ec992da48"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/classic-peaceful/episodes.json.gz",
+                      "bytes":  315479,
+                      "sha256":  "0964621e08dfac85ce6f195eba4378ebdbefc19b67ef6be0d91f2ec02fa77c3e"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/classic-peaceful/result.json",
+                      "bytes":  347,
+                      "sha256":  "0b9ddb98cf5b81ea380c39fa41f9c02830e73e8738ad525b37bc5e6078724003"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/coin-heaven/episodes.json.gz",
+                      "bytes":  247476,
+                      "sha256":  "b4af6b4db6657d1a610989c02accb408e7acd1592204db83c6f1adfd9e745c2d"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/coin-heaven/result.json",
+                      "bytes":  343,
+                      "sha256":  "9e0270d84b24b436f4c6e0d25ff255371617b599ab039a787680471aa48ec91e"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/loot-crate/episodes.json.gz",
+                      "bytes":  225208,
+                      "sha256":  "5b343789fb427f043bd8086c297a900d85624676630ff95173f975d3029715b3"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/loot-crate/result.json",
+                      "bytes":  342,
+                      "sha256":  "c70f0d32ecc3a3315afe40340bdc10ac468529934055f3b3b315bb1fab8a6bc7"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  337626,
+                      "sha256":  "38e1e376cb78627f1f9a5c55145dacf97d5220f05f0dfd6d56f8b4468d0a7b79"
+                  },
+                  {
+                      "path":  "evaluation/five-step-r3/primary-classic-rule-based/result.json",
+                      "bytes":  358,
+                      "sha256":  "b412c03b8043688e1b41f360da866f4a6057ab182ed12c0b788891477fb90de5"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/classic-peaceful/episodes.json.gz",
+                      "bytes":  319580,
+                      "sha256":  "1a866d12e4647dee84320306845b7d195380913395f88fa1b1207570e5ad8b0e"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/classic-peaceful/result.json",
+                      "bytes":  348,
+                      "sha256":  "d25221392c182328311fff811eef97a9ed77c84a582520373fe78ad55159f679"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/coin-heaven/episodes.json.gz",
+                      "bytes":  229175,
+                      "sha256":  "21ed9684725c58d084b19f3eec2fedfbb2b717eea9cb6d398d53b6dc5f4498fd"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/coin-heaven/result.json",
+                      "bytes":  342,
+                      "sha256":  "c655071f30e59b535d4872ae8b20861fd9f81e2d3c968836cf580ff20e8a5a96"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/loot-crate/episodes.json.gz",
+                      "bytes":  281003,
+                      "sha256":  "aa96755b22e5edb589b9bab3b7e97f2636b156ab17c4123764c269b5da705ebb"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/loot-crate/result.json",
+                      "bytes":  338,
+                      "sha256":  "28de59708c21eb30782d4bbe047d1be919977477b0e6d5601012059326bdfaf9"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  308154,
+                      "sha256":  "4f34f2fa7d1318cbbb99ee33ee3c3ac7139cb0fa242fc46878454b99a82395ad"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r1/primary-classic-rule-based/result.json",
+                      "bytes":  356,
+                      "sha256":  "4bf463f8160a604c84cf67d10cf97e0f2b2e60e18769e506071b864bc9852131"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/classic-peaceful/episodes.json.gz",
+                      "bytes":  294240,
+                      "sha256":  "bcd3124f04d25c1aaff1dfea2a4b880de22016a2db12c1b728cd7ff0b923a250"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/classic-peaceful/result.json",
+                      "bytes":  344,
+                      "sha256":  "9038c419aab6ee3bb71883f2aa2d99847e33018b37b56c339c563818a644f7ec"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/coin-heaven/episodes.json.gz",
+                      "bytes":  245418,
+                      "sha256":  "a274bbb676a19aa2b51fcd1ea67d44b7c22438fda21d01a377d1c18b9c1cf4d4"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/coin-heaven/result.json",
+                      "bytes":  341,
+                      "sha256":  "e665861b41174cb46071ad4c39373d4c8f33f83ab82590677c4727d65c64044a"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/loot-crate/episodes.json.gz",
+                      "bytes":  243420,
+                      "sha256":  "4322bbe558c5b24b2af362782aa84c6c4fd1f2f0c29b6d8a2d5c3d3f740a4590"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/loot-crate/result.json",
+                      "bytes":  341,
+                      "sha256":  "045cf0bf746aea05373906050c723d1e5bebd989e10b1b13a8223b41fda6bb1f"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  273639,
+                      "sha256":  "100d299adb9e75f7b1f158de2912490f6ddf9d2a5c9bb4cac3382a7620be7b5f"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r2/primary-classic-rule-based/result.json",
+                      "bytes":  355,
+                      "sha256":  "3bf9947e36a7669bfe3c1a41115209a25c87061bb98bc1733db04860dccab42b"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/classic-peaceful/episodes.json.gz",
+                      "bytes":  308361,
+                      "sha256":  "c5b019f6850be4c3ede00c332a69957cc3547e488bfefadf1a2f2899e33f504e"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/classic-peaceful/result.json",
+                      "bytes":  347,
+                      "sha256":  "07e6d10403445f3ae98778c1ae254d588d6378d7ec8a85ae29698f12cae568a0"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/coin-heaven/episodes.json.gz",
+                      "bytes":  239339,
+                      "sha256":  "f59c41fc44e1df5d79c2454b776586d67f6053ce52377ada83cc3c7822ec17fd"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/coin-heaven/result.json",
+                      "bytes":  342,
+                      "sha256":  "da0b6631fa8cf93c2a24de8002119b6bf6e4e28823425bb8388d68b79df480a2"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/loot-crate/episodes.json.gz",
+                      "bytes":  322257,
+                      "sha256":  "3280b0aef5b32fe81a5968173fd2ea38c8c36af80a95b90994228cec5e3bbba9"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/loot-crate/result.json",
+                      "bytes":  342,
+                      "sha256":  "462ec6d8c71eed80d0b723bf97d09416c57e24a7e08d8fb339f5d7d4a1ce002f"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  279711,
+                      "sha256":  "22d9b65d1d5b934a5287322a092f6ac06ac9c6a034fb2e55f0512d1763009943"
+                  },
+                  {
+                      "path":  "evaluation/one-step-r3/primary-classic-rule-based/result.json",
+                      "bytes":  356,
+                      "sha256":  "41e92022f5590098582b52e7d079cdde5ca4b63f820e7449cf6b0feac980cec7"
+                  },
+                  {
+                      "path":  "evaluation/reference/classic-peaceful/episodes.json.gz",
+                      "bytes":  318202,
+                      "sha256":  "e9d637f820a4d48265a101069e5c05583139826fe12ae3ccec4a2a49c523e383"
+                  },
+                  {
+                      "path":  "evaluation/reference/classic-peaceful/result.json",
+                      "bytes":  344,
+                      "sha256":  "cead203c178cc15a122588f84684bc1c9938fe204038a5b96e2149e336b37845"
+                  },
+                  {
+                      "path":  "evaluation/reference/coin-heaven/episodes.json.gz",
+                      "bytes":  267484,
+                      "sha256":  "497bc0cc36a2aee96dc91a06142c200ba48022c32c50dac277ecf1f862c922d9"
+                  },
+                  {
+                      "path":  "evaluation/reference/coin-heaven/result.json",
+                      "bytes":  340,
+                      "sha256":  "c4169b627d51028751b2fa768589720c84150a6b64f4c532a09743615da2bcf6"
+                  },
+                  {
+                      "path":  "evaluation/reference/loot-crate/episodes.json.gz",
+                      "bytes":  319908,
+                      "sha256":  "80c77126075ab99dbdfed9b7505ab97888d8007d3322f37facb01f08ecc483a3"
+                  },
+                  {
+                      "path":  "evaluation/reference/loot-crate/result.json",
+                      "bytes":  337,
+                      "sha256":  "0463b561cecf3fb690bd524f00664a4be312bd310fc14e64341a6a8863ce02f4"
+                  },
+                  {
+                      "path":  "evaluation/reference/primary-classic-rule-based/episodes.json.gz",
+                      "bytes":  356590,
+                      "sha256":  "fe36aa88c546fb2057b51abee1fa50f97a9770807ae67009d479140d5719dd9e"
+                  },
+                  {
+                      "path":  "evaluation/reference/primary-classic-rule-based/result.json",
+                      "bytes":  357,
+                      "sha256":  "99f2ba9e3cc91af3ab4725a3830832f06dfe93e3de8dc301ff3eedcbb5989123"
+                  },
+                  {
+                      "path":  "latency/five-step-r1/episodes.json.gz",
+                      "bytes":  43092,
+                      "sha256":  "32b6f42978a791a1160263890a92675b4b1e0678c365b3b7032a97064cccca58"
+                  },
+                  {
+                      "path":  "latency/five-step-r1/result.json",
+                      "bytes":  356,
+                      "sha256":  "ccff4323a62cfbfb83c9c4fb49e4d28dba2b79fec27d3e8547b1b82abe5c571b"
+                  },
+                  {
+                      "path":  "latency/five-step-r2/episodes.json.gz",
+                      "bytes":  62061,
+                      "sha256":  "721fc6f706c063aa317347a8fa8eac3ee6ad00de4bf33b62f6823f8bac1c78b6"
+                  },
+                  {
+                      "path":  "latency/five-step-r2/result.json",
+                      "bytes":  356,
+                      "sha256":  "112ad82293247924ce89b85050a7d12354dfffc2a8186ff486eb49c4c846d727"
+                  },
+                  {
+                      "path":  "latency/five-step-r3/episodes.json.gz",
+                      "bytes":  54663,
+                      "sha256":  "b330077ebfc15ccfa3f3c561a116a122c3cc59f486c584a78b99718e6912be05"
+                  },
+                  {
+                      "path":  "latency/five-step-r3/result.json",
+                      "bytes":  356,
+                      "sha256":  "a4847ae996cf73673fa85881f72ac0be94b65f7616a1fc31fe129e77a6524eaa"
+                  },
+                  {
+                      "path":  "latency/one-step-r1/episodes.json.gz",
+                      "bytes":  52881,
+                      "sha256":  "9dea9c0866f2a65dd59291d12c0c07c58ca3de18f372861bf7b5b9216d3a4412"
+                  },
+                  {
+                      "path":  "latency/one-step-r1/result.json",
+                      "bytes":  352,
+                      "sha256":  "f4429987b3cd0ac7563b8bbae4527de3a60a23f40e882518111ddb61a1b89c99"
+                  },
+                  {
+                      "path":  "latency/one-step-r2/episodes.json.gz",
+                      "bytes":  58284,
+                      "sha256":  "9683bde5db4f1bdeddc6d89d07e965622179352cba18cbe813ec86c0f7918f8c"
+                  },
+                  {
+                      "path":  "latency/one-step-r2/result.json",
+                      "bytes":  355,
+                      "sha256":  "3b916839a67dbaca84e136bc4dbd7a799fd170c4ee4ccde8862bc35dd27eb80b"
+                  },
+                  {
+                      "path":  "latency/one-step-r3/episodes.json.gz",
+                      "bytes":  52311,
+                      "sha256":  "2ea5c10fb10779918c6cee4556039828f58e696d406bf8698527f98938734097"
+                  },
+                  {
+                      "path":  "latency/one-step-r3/result.json",
+                      "bytes":  354,
+                      "sha256":  "addadf6acb7ef4406cadf45a768d8f0bc676150c596e17bd36bd7ea66fa2ff65"
+                  },
+                  {
+                      "path":  "latency/reference/episodes.json.gz",
+                      "bytes":  70224,
+                      "sha256":  "3d36d868774b700df3b94dc74fd0afb1aa2a756c1df55403825b3163627f5179"
+                  },
+                  {
+                      "path":  "latency/reference/result.json",
+                      "bytes":  352,
+                      "sha256":  "615e7c833be98603923fe92cc536250795c7288fa9bb0dbf9858b66afb0c479d"
+                  },
+                  {
+                      "path":  "training/five-step-r1/episodes.json.gz",
+                      "bytes":  4804464,
+                      "sha256":  "2403910ad8499af0b88fc0439127b2f542da0b3bc62bb25c56446d9268a0b60e"
+                  },
+                  {
+                      "path":  "training/five-step-r1/result.json",
+                      "bytes":  288,
+                      "sha256":  "ed20f5d2650b626b60d9f450354acf8d7f398b62585ffb1df6ef5893a3589926"
+                  },
+                  {
+                      "path":  "training/five-step-r2/episodes.json.gz",
+                      "bytes":  4791613,
+                      "sha256":  "fd57366a963beee610e6f2a8643780f66998df042bebe96e28699b9463a9460d"
+                  },
+                  {
+                      "path":  "training/five-step-r2/result.json",
+                      "bytes":  289,
+                      "sha256":  "11d985cceb1e062328b19308650163cbea3aa7b0a5fc58b673865fe70ba975da"
+                  },
+                  {
+                      "path":  "training/five-step-r3/episodes.json.gz",
+                      "bytes":  4599645,
+                      "sha256":  "5f52db9faaf3b698fdf557e91e20b8034fbae646258d0d3fd2e6efde89105ef5"
+                  },
+                  {
+                      "path":  "training/five-step-r3/result.json",
+                      "bytes":  287,
+                      "sha256":  "1098ce2c98d60d1d5e8ec6b10480e92e1a9ec362a092ca226d08bcc2337ab57e"
+                  },
+                  {
+                      "path":  "training/one-step-r1/episodes.json.gz",
+                      "bytes":  4932999,
+                      "sha256":  "6b34bcdc931fde9c6baf999dfce7e9f37633414acd57673b0e0b8f76b362833d"
+                  },
+                  {
+                      "path":  "training/one-step-r1/result.json",
+                      "bytes":  288,
+                      "sha256":  "f4ee3464cc8780ae8730f0981ad0cf78888024567da2b841a4f21739eee9ec31"
+                  },
+                  {
+                      "path":  "training/one-step-r2/episodes.json.gz",
+                      "bytes":  4939733,
+                      "sha256":  "a5c968c23678a8c7842831caeb3ea93edcdef77bcaa14525180ece3952af9b0c"
+                  },
+                  {
+                      "path":  "training/one-step-r2/result.json",
+                      "bytes":  287,
+                      "sha256":  "0c5e3962993d295ec0fb914a025cb1a140eb8c20d6a36fd9b26d85764ff4b976"
+                  },
+                  {
+                      "path":  "training/one-step-r3/episodes.json.gz",
+                      "bytes":  4843330,
+                      "sha256":  "8da5d34fea04d34ea4c9411ba3828fa27060f78db2f1ee841695f48894339bf8"
+                  },
+                  {
+                      "path":  "training/one-step-r3/result.json",
+                      "bytes":  284,
+                      "sha256":  "b2bd0c4972e166bb0093b12baa1f02a6521bf090d4b0dc8f2858f9a26b97bcdf"
+                  }
+              ]
+}
