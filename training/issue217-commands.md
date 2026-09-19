@@ -4,6 +4,21 @@ These commands operate on private run directories. They do not install a
 submission checkpoint. The exact scientific settings are in
 `experiments/2026-09-19-hunting-curriculum/config.json`.
 
+Use revision 2 / release `issue217-curriculum-v2`. Version 1 is superseded;
+preserve any v1 attempt and never launch its bundle. The amended configuration
+uses fresh audited seeds and retains the interrupted PC attempt's CPU debit and
+original elapsed start. If v1 ran on this laptop, stop it, preserve its root and
+add `--prior-root <stopped-v1-root>` to the new preparation command. This imports
+its consumption; it does not grant a fresh budget.
+
+The final invalid-action gate allows at most +0.25/game pooled and +0.5/game for
+each replica against both baselines in every multiplayer performance suite.
+Solo coin/crate evaluations require zero candidate invalid actions. Latency-only
+worlds are excluded from this behavioral gate. The analyzer reports per-game and
+per-100-decision counts, loop denominators, attack exposure and native bomb
+credits, and replay origins for each retained snapshot, including stopped pairs.
+Old rows without bomb attribution report that metric as unavailable.
+
 ## Portable laptop setup
 
 Download the checksum-pinned `issue217-laptop.zip` and its JSON sidecar from the

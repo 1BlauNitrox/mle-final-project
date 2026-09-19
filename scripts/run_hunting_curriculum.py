@@ -117,6 +117,31 @@ def prepare(args):
     inputs += [
         p for p in (args.root / "source").rglob("*") if p.is_file() and "__pycache__" not in p.parts
     ]
+    if args.prior_root:
+        previous = args.prior_root.resolve()
+        require(read(previous / "binding.json")["device"] == args.device, "Prior device mismatch")
+        require(
+            (previous / "STOP.json").exists() or (previous / "complete.json").exists(),
+            "Prior attempt must be stopped",
+        )
+        owner = read(previous / "supervisor.json")
+        if psutil.pid_exists(owner["pid"]):
+            require(
+                abs(psutil.Process(owner["pid"]).create_time() - owner["created"]) > 0.01,
+                "Prior supervisor is still alive",
+            )
+        ledger = read(previous / "resources.json")
+        inherited = args.root / "inherited-resources.json"
+        write(
+            inherited,
+            {
+                "cpu_seconds": ledger["cpu_seconds"] + 60.0,
+                "first_start": ledger["first_start"],
+                "source_resources_sha256": sha(previous / "resources.json"),
+                "note": "Prior consumption plus60seconds conservative termination margin",
+            },
+        )
+        inputs.append(inherited)
     write(
         args.root / "binding.json",
         {
@@ -418,6 +443,22 @@ def stop_tree(process):
     process.wait(timeout=10)
 
 
+def initial_usage(root, cfg, device):
+    if (root / "resources.json").exists():
+        return read(root / "resources.json")
+    previous = cfg["prior_usage"][device]
+    value = {
+        "cpu_seconds": previous["cpu_seconds"],
+        "wall_seconds": 0.0,
+        "first_start": previous.get("first_start", time.time()),
+    }
+    if (root / "inherited-resources.json").exists():
+        inherited = read(root / "inherited-resources.json")
+        value["cpu_seconds"] = max(value["cpu_seconds"], inherited["cpu_seconds"])
+        value["first_start"] = min(value["first_start"], inherited["first_start"])
+    return value
+
+
 def supervise(root):
     cfg = bound(root)
     require(
@@ -437,11 +478,8 @@ def supervise(root):
     write(lock, {"pid": os.getpid(), "created": owner.create_time()})
     device = cfg["devices"][read(root / "binding.json")["device"]]
     usage_path = root / "resources.json"
-    usage = (
-        read(usage_path)
-        if usage_path.exists()
-        else {"cpu_seconds": 0.0, "wall_seconds": 0.0, "first_start": time.time()}
-    )
+    usage = initial_usage(root, cfg, read(root / "binding.json")["device"])
+    usage["wall_seconds"] = time.time() - usage["first_start"]
     base_cpu = usage["cpu_seconds"]
     self_start = sum(owner.cpu_times()[:2])
     measured, completed, running = {}, {}, {}
@@ -572,7 +610,15 @@ def supervise(root):
 
 
 def export(root):
-    names = ["config.json", "binding.json", "initialization.json", "resources.json", "smoke.json"]
+    names = [
+        "config.json",
+        "binding.json",
+        "initialization.json",
+        "resources.json",
+        "smoke.json",
+        "inherited-resources.json",
+        "STOP.json",
+    ]
     for pattern in (
         "pairs/*/decision.json",
         "pairs/*/gate-*.json",
@@ -664,6 +710,7 @@ def main():
     parser.add_argument("--device", choices=["pc", "laptop"], default="pc")
     parser.add_argument("--reference", type=Path)
     parser.add_argument("--runtime-archive", type=Path)
+    parser.add_argument("--prior-root", type=Path)
     parser.add_argument("--replica", type=int, default=0)
     parser.add_argument("--job-id")
     args = parser.parse_args()

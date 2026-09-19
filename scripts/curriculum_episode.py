@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import numpy as np
 
-from training.hunting_curriculum import attack_exposure, hunting_layout
+from training.hunting_curriculum import BombCredits, attack_exposure, hunting_layout
 
 
 def board_coin_signature(state):
@@ -106,7 +106,35 @@ def play_episode(
     actions = []
     selector = callbacks.select_action
     original_build = BombeRLeWorld.build_arena
+    original_action = BombeRLeWorld.perform_agent_action
+    original_bombs = BombeRLeWorld.update_bombs
+    original_hits = BombeRLeWorld.evaluate_explosions
+    credits = BombCredits()
+    observed = None
     layout_metadata = {}
+
+    def observe_action(world, agent, action):
+        before = set(world.bombs)
+        result = original_action(world, agent, action)
+        if agent is learner:
+            for bomb in world.bombs:
+                if bomb not in before:
+                    credits.placed(
+                        bomb, step=world.step, safe_attack=observed["safe_attack_position"]
+                    )
+        return result
+
+    def observe_bombs(world):
+        detonating = [bomb for bomb in world.bombs if bomb.timer <= 0]
+        before = len(world.explosions)
+        result = original_bombs(world)
+        for bomb, explosion in zip(detonating, world.explosions[before:], strict=True):
+            credits.detonated(bomb, explosion)
+        return result
+
+    def observe_hits(world):
+        credits.observe_hits(world.explosions, world.active_agents)
+        return original_hits(world)
 
     def build_arena(world):
         if hunting_index is None:
@@ -159,6 +187,9 @@ def play_episode(
         patch.object(callbacks, "_evaluation_checkpoint_path", lambda: checkpoint),
         patch.object(callbacks, "select_action", behavior),
         patch.object(BombeRLeWorld, "build_arena", build_arena),
+        patch.object(BombeRLeWorld, "perform_agent_action", observe_action),
+        patch.object(BombeRLeWorld, "update_bombs", observe_bombs),
+        patch.object(BombeRLeWorld, "evaluate_explosions", observe_hits),
         patch.object(
             train, "_record_transition", tracker.record if tracker else train._record_transition
         ),
@@ -210,12 +241,19 @@ def play_episode(
                 )
         world.end()
         native = world.round_statistics[world.round_id]["agents"][learner.name]
+        bomb_credits = credits.snapshot()
+        if (
+            sum(b["kill_credits"] for b in bomb_credits) != native["kills"]
+            or sum(b["self_kill_credits"] for b in bomb_credits) != native["self_kills"]
+        ):
+            raise ValueError("Bomb-credit instrumentation disagrees with native metrics")
         return {
             "world_seed": world_seed,
             "scenario": scenario,
             "hunting_layout": layout_metadata,
             "initial_exposure": initial_exposure,
             "attack_exposure": exposure,
+            "bomb_credits": bomb_credits,
             "slot": slot,
             "epsilon": epsilon,
             "opponents": list(opponents),

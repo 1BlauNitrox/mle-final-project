@@ -13,26 +13,26 @@
   "episodes": 6000,
   "train_ranges": [
     [
-      1727000001,
-      1727006000
+      1737000001,
+      1737006000
     ],
     [
-      1727010001,
-      1727016000
+      1737010001,
+      1737016000
     ],
     [
-      1727020001,
-      1727026000
+      1737020001,
+      1737026000
     ]
   ],
   "learner_seeds": [
-    1727090001,
-    1727090002,
-    1727090003
+    1737090001,
+    1737090002,
+    1737090003
   ],
-  "evaluation_agent_seed": 1727090010,
-  "bootstrap_seed": 1727090011,
-  "smoke_seed": 1727099991,
+  "evaluation_agent_seed": 1737090010,
+  "bootstrap_seed": 1737090011,
+  "smoke_seed": 1737099991,
   "bootstrap_resamples": 10000,
   "checks": [
     {
@@ -87,7 +87,19 @@
     "self_kills_increase": 0.05,
     "collection_loss": 0.1,
     "latency_p95_ms": 50,
-    "latency_max_ms": 100
+    "latency_max_ms": 100,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "replica_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": [
+        "latency"
+      ],
+      "baselines": [
+        "control",
+        "reference"
+      ]
+    }
   },
   "devices": {
     "pc": {
@@ -123,24 +135,24 @@
           "rule_based_agent"
         ],
         "seeds": [
-          1727100001,
-          1727100040
+          1737100001,
+          1737100040
         ]
       },
       "coins": {
         "scenario": "coin-heaven",
         "opponents": [],
         "seeds": [
-          1727101001,
-          1727101020
+          1737101001,
+          1737101020
         ]
       },
       "crates": {
         "scenario": "loot-crate",
         "opponents": [],
         "seeds": [
-          1727102001,
-          1727102020
+          1737102001,
+          1737102020
         ]
       }
     },
@@ -153,24 +165,24 @@
           "rule_based_agent"
         ],
         "seeds": [
-          1727200001,
-          1727200120
+          1737200001,
+          1737200120
         ]
       },
       "coins": {
         "scenario": "coin-heaven",
         "opponents": [],
         "seeds": [
-          1727201001,
-          1727201040
+          1737201001,
+          1737201040
         ]
       },
       "crates": {
         "scenario": "loot-crate",
         "opponents": [],
         "seeds": [
-          1727202001,
-          1727202040
+          1737202001,
+          1737202040
         ]
       },
       "peaceful": {
@@ -181,8 +193,8 @@
           "peaceful_agent"
         ],
         "seeds": [
-          1727203001,
-          1727203040
+          1737203001,
+          1737203040
         ]
       },
       "mixed": {
@@ -193,8 +205,8 @@
           "peaceful_agent"
         ],
         "seeds": [
-          1727204001,
-          1727204080
+          1737204001,
+          1737204080
         ]
       },
       "latency": {
@@ -205,8 +217,8 @@
           "rule_based_agent"
         ],
         "seeds": [
-          1727205001,
-          1727205010
+          1737205001,
+          1737205010
         ]
       }
     },
@@ -219,24 +231,24 @@
           "rule_based_agent"
         ],
         "seeds": [
-          1727300001,
-          1727300250
+          1737300001,
+          1737300250
         ]
       },
       "coins": {
         "scenario": "coin-heaven",
         "opponents": [],
         "seeds": [
-          1727301001,
-          1727301080
+          1737301001,
+          1737301080
         ]
       },
       "crates": {
         "scenario": "loot-crate",
         "opponents": [],
         "seeds": [
-          1727302001,
-          1727302080
+          1737302001,
+          1737302080
         ]
       },
       "peaceful": {
@@ -247,8 +259,8 @@
           "peaceful_agent"
         ],
         "seeds": [
-          1727303001,
-          1727303080
+          1737303001,
+          1737303080
         ]
       },
       "mixed": {
@@ -259,8 +271,8 @@
           "peaceful_agent"
         ],
         "seeds": [
-          1727304001,
-          1727304150
+          1737304001,
+          1737304150
         ]
       },
       "latency": {
@@ -271,8 +283,8 @@
           "rule_based_agent"
         ],
         "seeds": [
-          1727305001,
-          1727305020
+          1737305001,
+          1737305020
         ]
       }
     }
@@ -317,5 +329,26 @@
     "final_rule": "three complete pairs required; both baseline contrasts pass pooled gates; >=2/3 paired kill differences strictly positive; all candidate latencies pass individually",
     "confirmation": "fresh development worlds reserved; never read for tuning; only candidate-r1 versus fallback; positive Classic kill/score95%lowerbounds and screen retention gates",
     "limitations": "point-estimate pilot/screen exploratory; repeated checks not confirmatory; current40classic/20coin/20cratepilot worlds reused for safety only"
+  },
+  "revision": 2,
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 1900.0,
+      "first_start": 1789854195.4983494,
+      "recorded_cpu_seconds": 1850.03125,
+      "note": "Stopped v1 technical amendment; conservative1900seconddebit includes termination/sampling margin; original elapsed start retained."
+    },
+    "laptop": {
+      "cpu_seconds": 0.0,
+      "note": "Only valid if v1 never launched here; otherwise import prior usage before restart."
+    }
+  },
+  "amendment": {
+    "reason": "Review: missing diagnostic aggregation and invalid-action eligibility gate; added native bomb attribution",
+    "previous_config_sha256": "c7e9ebca21938ac025906f0b3c41fd7e7b7666835f2a576046d8b49ab489b79f",
+    "previous_source_commit": "b2cdf6f75eda3674b23c8a2a7bea6b6e6fff7485",
+    "previous_stop_sha256": "5ac3217d7bd66ff7ebc6a0723ce8dc46ec366928e69bedda8ed3201f532a80fa",
+    "previous_resources_sha256": "fd9265c23a977342d1b30437ad63d247ccc9aeea893a4119ad0cda9c30da03ed",
+    "status": "v1interrupted; immutable evidence preserved; no outcome-based candidate selection; v2 starts from frozen parent with fresh audited seeds"
   }
 }

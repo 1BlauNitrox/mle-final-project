@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -87,6 +88,170 @@ def latency_gate(directory, limits):
     }
 
 
+def ratio(numerator, denominator):
+    return numerator / denominator if denominator else None
+
+
+def diagnostic_summary(observations):
+    """Keep denominators and missing attribution explicit, including failed pilots."""
+    count = len(observations)
+    eligible = sum(r["loop_windows"]["eligible"] for r in observations)
+    looping = sum(r["loop_windows"]["looping"] for r in observations)
+    decisions = sum(len(r["native"]["decision_times_ms"]) for r in observations)
+    attack = [r["attack_exposure"] for r in observations]
+    used = [r for r in observations if r["attack_exposure"]["safe_attack_bombs"] > 0]
+    attributed = [r for r in observations if "bomb_credits" in r]
+    bomb_records = [b for r in attributed for b in r["bomb_credits"]]
+    safe_bombs = [b for b in bomb_records if b["safe_attack"]]
+    coverage = len(attributed) == count and count > 0
+    for row in attributed:
+        require(
+            sum(b["kill_credits"] for b in row["bomb_credits"]) == row["native"]["kills"],
+            "Bomb attribution disagrees with native kills",
+        )
+    reachable = sum(r["initial_exposure"]["reachable_attack_position"] for r in observations)
+    reached = sum(a["safe_attack_steps"] > 0 for a in attack)
+    safe_steps = sum(a["safe_attack_steps"] for a in attack)
+    invalid = sum(r["native"]["invalid"] for r in observations)
+    return {
+        "episodes": count,
+        "decisions": decisions,
+        "survival_rate": ratio(sum(r["native"]["survived"] for r in observations), count),
+        "loops": {
+            "eligible_windows": eligible,
+            "looping_windows": looping,
+            "window_rate": ratio(looping, eligible),
+            "episodes_with_eligible_windows": sum(
+                r["loop_windows"]["eligible"] > 0 for r in observations
+            ),
+            "episodes_with_loops": sum(r["loop_windows"]["looping"] > 0 for r in observations),
+            "note": "Overlapping windows are descriptive, not independent samples",
+        },
+        "attack": {
+            "reachable_at_start_episodes": reachable,
+            "reachable_at_start_fraction": ratio(reachable, count),
+            "reached_safe_attack_episodes": reached,
+            "reached_safe_attack_fraction": ratio(reached, count),
+            "safe_attack_steps": safe_steps,
+            "safe_attack_steps_per_decision": ratio(safe_steps, decisions),
+            "threatening_steps": sum(a["threatening_steps"] for a in attack),
+            "safe_attack_bombs": sum(a["safe_attack_bombs"] for a in attack),
+            "episodes_using_safe_attack": len(used),
+            "episode_kills_when_safe_attack_used": sum(r["native"]["kills"] for r in used),
+            "native_kills": sum(r["native"]["kills"] for r in observations),
+            "attribution_coverage_episodes": len(attributed),
+            "safe_bomb_kill_credits": sum(b["kill_credits"] for b in safe_bombs)
+            if coverage
+            else None,
+            "safe_bomb_self_kill_credits": sum(b["self_kill_credits"] for b in safe_bombs)
+            if coverage
+            else None,
+            "safe_bombs_with_kills": sum(b["kill_credits"] > 0 for b in safe_bombs)
+            if coverage
+            else None,
+            "note": "Reachability is initial-state geometry; episode-kill association "
+            "is separate from native credits attributable to a tagged bomb",
+        },
+        "invalid": {
+            "count": invalid,
+            "per_game": ratio(invalid, count),
+            "per_100_decisions": ratio(100 * invalid, decisions),
+        },
+    }
+
+
+def replay_summary(tracker):
+    counters = {
+        "generated": tracker["generated"],
+        "sampled": tracker["sampled"],
+        "resident": dict(Counter(tracker["origins"])),
+    }
+    require(
+        sum(counters["generated"].values()) == tracker["transitions"],
+        "Replay generated-count mismatch",
+    )
+    result = {}
+    for source, counts in counters.items():
+        require(set(counts) <= {"parent", "classic", "hunting"}, "Unknown replay origin")
+        require(
+            all(isinstance(n, int) and n >= 0 for n in counts.values()),
+            "Invalid replay origin counts",
+        )
+        total = sum(counts.values())
+        result[source] = {
+            "count": total,
+            "counts": dict(counts),
+            "fractions": {
+                k: ratio(counts.get(k, 0), total) for k in ("parent", "classic", "hunting")
+            },
+        }
+    return result
+
+
+def training_diagnostics(pairs):
+    result = {}
+    for replica, directory in pairs.items():
+        result[replica] = {}
+        for arm in ("control", "curriculum"):
+            snapshots = {}
+            for path in sorted((directory / arm / "snapshots").glob("*/state.json")):
+                state = read(path)
+                require(state["episodes"] == len(state["rows"]), "Training episode-count mismatch")
+                snapshots[path.parent.name] = {
+                    "episodes": state["episodes"],
+                    "updates": state["updates"],
+                    "all": diagnostic_summary(state["rows"]),
+                    "by_kind": {
+                        kind: diagnostic_summary([r for r in state["rows"] if r["kind"] == kind])
+                        for kind in ("classic", "hunting")
+                    },
+                    "replay": replay_summary(state["tracker"]),
+                }
+            result[replica][arm] = snapshots
+    return result
+
+
+def invalid_gates(data, cfg):
+    """Behavioral regression tolerance, separate from runtime-only latency worlds."""
+    limits = cfg["screen"]["invalid_actions"]
+    report = {}
+    for suite, setting in cfg["evaluation"]["final"].items():
+        if suite == "latency":
+            continue
+        report[suite] = {}
+        if not setting["opponents"]:
+            counts = {
+                f"r{r}": sum(
+                    row["native"]["invalid"] for row in rows(data[f"r{r}", "curriculum"], suite)
+                )
+                for r in range(1, 4)
+            }
+            report[suite]["solo"] = {
+                "counts": counts,
+                "passed": all(n <= limits["solo_maximum_total"] for n in counts.values()),
+            }
+        else:
+            for baseline in ("control", "reference"):
+                diffs = [
+                    float(
+                        difference(
+                            data[f"r{r}", "curriculum"], data[f"r{r}", baseline], suite, "invalid"
+                        ).mean()
+                    )
+                    for r in range(1, 4)
+                ]
+                report[suite][baseline] = {
+                    "pooled_increase": float(np.mean(diffs)),
+                    "replica_increases": diffs,
+                    "passed": np.mean(diffs) <= limits["pooled_increase_per_game"]
+                    and all(d <= limits["replica_increase_per_game"] for d in diffs),
+                }
+    return {
+        "passed": all(bool(c["passed"]) for s in report.values() for c in s.values()),
+        "suites": report,
+    }
+
+
 def analyze(roots):
     cfg = read(roots[0] / "config.json")
     require(
@@ -98,15 +263,24 @@ def analyze(roots):
         for pair in (root / "pairs").glob("r*"):
             require(pair.name not in pairs, "Duplicate replica")
             pairs[pair.name] = pair
-    require(set(pairs) == {"r1", "r2", "r3"}, "All three replicas required")
-    decisions = {name: read(path / "decision.json") for name, path in pairs.items()}
-    if any(d["status"] != "training_complete" for d in decisions.values()):
+    require(set(pairs) <= {"r1", "r2", "r3"}, "Unexpected replica")
+    decisions = {
+        name: read(path / "decision.json")
+        if (path / "decision.json").exists()
+        else {"status": "incomplete"}
+        for name, path in pairs.items()
+    }
+    training = training_diagnostics(pairs)
+    if set(pairs) != {"r1", "r2", "r3"} or any(
+        d["status"] != "training_complete" for d in decisions.values()
+    ):
         return {
             "complete": False,
             "eligible": False,
             "submission_promotion": False,
             "decisions": decisions,
-            "reason": "At least one registered pair stopped",
+            "training_diagnostics": training,
+            "reason": "All three complete pairs required; missing/stopped evidence retained",
         }
     data = {}
     for name, path in pairs.items():
@@ -185,9 +359,22 @@ def analyze(roots):
             "replicas": sum(x > 0 for x in effects["classic"]["kills"]["replica_differences"]) >= 2,
         }
     latency = {name: latency_gate(data[name, "curriculum"], limits) for name in pairs}
-    eligible = all(all(g.values()) for g in gates.values()) and all(
-        x["passed"] for x in latency.values()
+    invalid = invalid_gates(data, cfg)
+    eligible = (
+        all(all(g.values()) for g in gates.values())
+        and all(x["passed"] for x in latency.values())
+        and invalid["passed"]
     )
+    diagnostics = {
+        name: {
+            arm: {
+                suite: diagnostic_summary(rows(data[name, arm], suite))
+                for suite in cfg["evaluation"]["final"]
+            }
+            for arm in ("control", "curriculum", "reference")
+        }
+        for name in pairs
+    }
     return {
         "complete": True,
         "eligible": eligible,
@@ -196,6 +383,11 @@ def analyze(roots):
         "gates": gates,
         "contrasts": contrasts,
         "latency": latency,
+        "invalid_actions": invalid,
+        "training_diagnostics": training,
+        "evaluation_diagnostics": diagnostics,
+        "diagnostic_note": "Reference worlds repeat across replicas; do not treat them "
+        "as independent reference samples. Snapshot training summaries are cumulative.",
         "interpretation": "Exploratory screen; fresh confirmation and compatibility required",
     }
 

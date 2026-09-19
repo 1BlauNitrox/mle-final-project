@@ -181,3 +181,39 @@ class UpdateTracker:
 
     def snapshot(self):
         return {**deepcopy(self.state), "origins": list(self.origins)}
+
+
+class BombCredits:
+    """Observe native bomb/explosion ownership without changing game events."""
+
+    def __init__(self):
+        self.bombs = {}
+        self.explosions = {}
+
+    def placed(self, bomb, *, step, safe_attack):
+        self.bombs[bomb] = {
+            "step": int(step),
+            "safe_attack": bool(safe_attack),
+            "detonated": False,
+            "kill_credits": 0,
+            "self_kill_credits": 0,
+        }
+
+    def detonated(self, bomb, explosion):
+        if bomb in self.bombs:
+            self.bombs[bomb]["detonated"] = True
+            self.explosions[explosion] = self.bombs[bomb]
+
+    def observe_hits(self, explosions, active_agents):
+        # Mirrors native credit semantics, including simultaneous explosions.
+        # These are credits, not a counterfactual claim that the placement was optimal.
+        for explosion in explosions:
+            if explosion not in self.explosions or not explosion.is_dangerous():
+                continue
+            for agent in active_agents:
+                if not agent.dead and (agent.x, agent.y) in explosion.blast_coords:
+                    key = "self_kill_credits" if agent is explosion.owner else "kill_credits"
+                    self.explosions[explosion][key] += 1
+
+    def snapshot(self):
+        return [dict(record) for record in self.bombs.values()]
