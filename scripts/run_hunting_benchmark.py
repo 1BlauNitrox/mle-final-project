@@ -193,6 +193,7 @@ def run_game(
     stdout = output / "logs" / f"{tag}.txt"
     stats.parent.mkdir(parents=True, exist_ok=True)
     stdout.parent.mkdir(parents=True, exist_ok=True)
+    (output / "framework-logs").mkdir(parents=True, exist_ok=True)
     ordered = rotated(lineup, rotation)
     if stats.exists():
         validate_stats(stats, ordered)
