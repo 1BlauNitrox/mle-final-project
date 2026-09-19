@@ -97,3 +97,94 @@ def test_paired_interval_requires_three_replicas():
     assert interval([[2, 2], [2, 2], [2, 2]], seed=1, samples=50)["ci95"] == [2, 2]
     with pytest.raises(ValueError, match="Three paired"):
         interval([[1, 2]], seed=1, samples=10)
+
+
+def test_exported_analysis_and_corruption_rejection(tmp_path):
+    import gzip
+    import json
+
+    from scripts.analyze_stability_test import analyze
+    from scripts.run_stability_test import write
+
+    cfg = read(
+        Path(__file__).parents[1] / "experiments/2026-09-19-continuation-stability/config.json"
+    )
+    cfg["episodes"] = 1
+    cfg["bootstrap_resamples"] = 10
+    cfg["train_ranges"] = [[v[0], v[0]] for v in cfg["train_ranges"]]
+    for suite in cfg["evaluation"].values():
+        suite["seeds"][1] = suite["seeds"][0]
+    write(tmp_path / "config.json", cfg)
+    write(tmp_path / "binding.json", {"config_sha256": sha(tmp_path / "config.json")})
+    artifacts = [f"{arm}-r{r}" for arm in cfg["arms"] for r in range(1, 4)]
+    for artifact in artifacts:
+        d = tmp_path / "training" / artifact
+        d.mkdir(parents=True)
+        (d / "final.pt").write_bytes(artifact.encode())
+        r = int(artifact[-1]) - 1
+        rows = [
+            {
+                "world_seed": cfg["train_ranges"][r][0],
+                "opponents": cfg["training_opponents"],
+                "slot": 0,
+                "epsilon": epsilon(cfg["learner_seeds"][r], 0),
+                "optimizer_updates_this_episode": 1,
+            }
+        ]
+        with gzip.open(d / "episodes.json.gz", "wt") as stream:
+            json.dump(rows, stream)
+        write(
+            d / "result.json",
+            {
+                "complete": True,
+                "episodes": 1,
+                "checkpoint_sha256": sha(d / "final.pt"),
+                "rows_sha256": sha(d / "episodes.json.gz"),
+            },
+        )
+    for artifact in ["reference", *artifacts]:
+        checkpoint = (
+            cfg["reference_sha256"]
+            if artifact == "reference"
+            else sha(tmp_path / "training" / artifact / "final.pt")
+        )
+        for suite, setting in cfg["evaluation"].items():
+            d = tmp_path / "evaluation" / artifact / suite
+            d.mkdir(parents=True)
+            native = dict(
+                score=1,
+                kills=0,
+                self_kills=0,
+                survived=1,
+                coins=1,
+                invalid=0,
+                initially_available_coins=9,
+                decision_times_ms=[1.0, 2.0],
+            )
+            rows = [
+                {
+                    "world_seed": setting["seeds"][0],
+                    "opponents": setting["opponents"],
+                    "slot": 0,
+                    "epsilon": 0,
+                    "checkpoint_sha256": checkpoint,
+                    "native": native,
+                }
+            ]
+            with gzip.open(d / "episodes.json.gz", "wt") as stream:
+                json.dump(rows, stream)
+            write(
+                d / "result.json",
+                {
+                    "complete": True,
+                    "checkpoint_sha256": checkpoint,
+                    "rows_sha256": sha(d / "episodes.json.gz"),
+                },
+            )
+    result = analyze(tmp_path)
+    assert result["complete"] and not result["submission_promotion"]
+    assert not result["eligible_for_further_stability_testing"]
+    assert result["gates"]["score_reference"] and not result["gates"]["score_reset"]
+    (tmp_path / "evaluation/reference/classic/episodes.json.gz").write_bytes(b"corrupt")
+    with pytest.raises(ValueError, match="Corrupt evaluation"):
+        analyze(tmp_path)

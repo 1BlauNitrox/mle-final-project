@@ -5,7 +5,7 @@ import json
 
 import numpy as np
 
-from scripts.run_stability_test import bound, read, require, sha
+from scripts.run_stability_test import read, require, sha
 
 
 def metric(row, key):
@@ -32,7 +32,10 @@ def interval(matrix, seed, samples):
 
 
 def analyze(root):
-    cfg, binding = bound(root)
+    # Exported evidence can be analyzed without reconstructing an executable runtime.
+    cfg, binding = read(root / "config.json"), read(root / "binding.json")
+    require(sha(root / "config.json") == binding["config_sha256"], "Changed protocol")
+    require(cfg["issue"] == 213, "Wrong experiment")
     artifacts = [f"{arm}-r{r}" for arm in cfg["arms"] for r in range(1, 4)]
     model_hashes = {"reference": cfg["reference_sha256"]}
     training = {}

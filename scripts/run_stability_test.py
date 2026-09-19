@@ -393,6 +393,7 @@ def jobs(cfg):
 
 def monitor(root):
     cfg, _ = bound(root)
+    write(root / "supervisor.json", {"pid": os.getpid(), "created": psutil.Process().create_time()})
     require(read(root / "smoke/report.json")["passed"], "Passing smoke required")
     require((root / "authorization.json").exists(), "Explicit authorization required")
     require(not (root / "stop.json").exists(), "Inspect preserved stop record before any resume")
@@ -504,6 +505,7 @@ def main():
     parser.add_argument("--suite", default="classic")
     parser.add_argument("--authorize-compute", action="store_true")
     parser.add_argument("--authorized-by")
+    parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     args.root = args.root.resolve()
     if args.mode == "prepare":
@@ -519,19 +521,37 @@ def main():
             "Owner agreement and explicit compute authorization required",
         )
         require(read(args.root / "smoke/report.json")["passed"], "Smoke required")
-        require(
-            not (args.root / "supervisor.json").exists(),
-            "Existing launch: inspect it; do not launch twice",
-        )
-        write(
-            args.root / "authorization.json",
-            {
-                "authorized_by": args.authorized_by,
-                "limits": cfg["limits"],
-                "config_sha256": sha(CONFIG),
-                "time": time.time(),
-            },
-        )
+        require(not (args.root / "stop.json").exists(), "Inspect stop record; no automatic retry")
+        if (args.root / "supervisor.json").exists():
+            require(args.resume, "Existing launch requires --resume")
+            # Check command lines as well as PID identity: a crashed supervisor can
+            # leave its Windows Python child alive. Never launch over that worker.
+            for process in psutil.process_iter(["pid", "cmdline"]):
+                if process.pid in {os.getpid(), psutil.Process().ppid()}:
+                    continue
+                command = process.info["cmdline"] or []
+                require(
+                    not (
+                        str(args.root) in command
+                        and any(mode in command for mode in ("_monitor", "_train", "_evaluate"))
+                    ),
+                    "Existing stability process still alive",
+                )
+            require(
+                read(args.root / "authorization.json")["config_sha256"] == sha(CONFIG),
+                "Resume authorization does not match protocol",
+            )
+        else:
+            require(not args.resume, "No previous launch to resume")
+            write(
+                args.root / "authorization.json",
+                {
+                    "authorized_by": args.authorized_by,
+                    "limits": cfg["limits"],
+                    "config_sha256": sha(CONFIG),
+                    "time": time.time(),
+                },
+            )
         flags = (
             subprocess.DETACHED_PROCESS
             | subprocess.CREATE_NEW_PROCESS_GROUP
@@ -560,6 +580,10 @@ def main():
             {"pid": p.pid, "created": psutil.Process(p.pid).create_time()},
         )
         print("Detached supervisor", p.pid)
+    elif args.mode == "analyze":
+        from scripts.analyze_stability_test import analyze
+
+        write(args.root / "analysis.json", analyze(args.root))
     else:
         cfg, _ = bound(args.root)
         if args.mode == "smoke":
@@ -572,10 +596,6 @@ def main():
                 train(args.root, cfg, args.artifact)
             else:
                 evaluate(args.root, cfg, args.artifact, args.suite)
-        else:
-            from scripts.analyze_stability_test import analyze
-
-            write(args.root / "analysis.json", analyze(args.root))
 
 
 if __name__ == "__main__":
