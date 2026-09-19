@@ -6,6 +6,7 @@
     "refs/remotes/origin/chore/188-freeze-task3-incumbent": "ebaedd8f49cc3c59e96895f0bfc74b9d29aef414",
     "refs/remotes/origin/docs/task4-inside-task3-agent": "c4e65e08e871a3d7ca5e6601f3108d93c78e643d",
     "refs/remotes/origin/experiment/205-hunting-benchmark": "159c8d9ecaed5cef66656a47c4dea809d66ae674",
+    "refs/remotes/origin/experiment/207-five-step-dqn": "4c4f01ad5467d7beef43ec0b579d21caf98cb3bd",
     "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
     "refs/remotes/origin/experiment/task4-exploration-period-results": "16d4f2dd7fa3455aa33620da0302a29a134da133",
     "refs/remotes/origin/experiment/task4-final-training": "09aac0043d887dd88a1e01f06566fd3b612dd653",
@@ -20,8 +21,8 @@
     "refs/remotes/origin/monitoring/loop-guard-classic-ab": "81e1928bd99a805ba12669b96a8dac92988f118d",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 810,
-  "blob_set_sha256": "42d8a1e4c064da08607345549778abd9fa22ecbda61d4e626451e7149d7f148d",
+  "unique_text_blobs": 817,
+  "blob_set_sha256": "a54bc263d751aef418de82bb12a86efefd5e6f88672e044b59d4bd3d31203fc6",
   "excluded_own_registration": "experiments/2026-09-19-five-step-dqn/",
   "colliding_files": [],
   "passed": true

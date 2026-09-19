@@ -1,4 +1,6 @@
 import importlib
+import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -7,6 +9,7 @@ import torch
 from scripts.hunting_n_step import NStepAccumulator, RawTransition
 
 model = importlib.import_module("agent_code.Bomb-omb-nstep.model")
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def raw(index, reward, *, terminal=False):
@@ -69,3 +72,19 @@ def test_per_transition_discount_controls_bootstrap_and_terminal_death():
         bootstrap_discounts=torch.tensor([0.9**5, 0.0]),
     )
     assert targets.tolist() == pytest.approx([1 + 0.9**5 * 4, 2.0])
+
+
+def test_registered_comparison_changes_only_return_horizon():
+    config = json.loads(
+        (ROOT / "experiments/2026-09-19-five-step-dqn/config.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert config["arms"] == {"one-step": {"n_step": 1}, "five-step": {"n_step": 5}}
+    assert config["shared_training"]["opponents"] == [
+        "RUEHL_BASED_AGENT",
+        "rule_based_agent",
+        "peaceful_agent",
+    ]
+    assert config["shared_training"]["decision_checkpoint"] == 1000
+    assert config["shared_training"]["total_episodes"] == 6000
