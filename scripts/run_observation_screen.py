@@ -322,22 +322,43 @@ def smoke(args):
         checkpoint = output / f"{arm}.pt"
         shutil.copy2(args.root / "initial" / f"{arm}.pt", checkpoint)
         start = time.monotonic()
-        row = episode(
+        cpu = time.process_time()
+        training_rows = []
+        for step in range(cfg["smoke"]["maximum_episodes_per_arm"]):
+            row = episode(
+                args.root,
+                checkpoint,
+                cfg,
+                binding,
+                cfg["smoke"]["world_seeds"][index],
+                arm=arm,
+                index=4,
+            )
+            require(row["completed_episodes"] == step + 1, "Smoke resume counter mismatch")
+            training_rows.append(row)
+            if row["optimizer_updates"] > 0:
+                break
+        require(row["optimizer_updates"] > 0, "Smoke did not exercise gradient updates")
+        before = digest(checkpoint)
+        evaluation = episode(
             args.root,
             checkpoint,
             cfg,
             binding,
             cfg["smoke"]["world_seeds"][index],
-            arm=arm,
-            index=4,
+            suite="primary-classic-rule-based",
+            index=0,
         )
-        require(row["completed_episodes"] == 1, "Smoke training did not complete")
+        require(digest(checkpoint) == before, "Smoke evaluation changed checkpoint")
         reports.append(
             {
                 "arm": arm,
                 "seconds": time.monotonic() - start,
+                "cpu_seconds": time.process_time() - cpu,
                 "rss_bytes": psutil.Process().memory_info().rss,
                 "row": row,
+                "training_rows": training_rows,
+                "evaluation_row": evaluation,
             }
         )
     write(output / "report.json", {"passed": True, "runs": reports})

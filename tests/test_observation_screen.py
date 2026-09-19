@@ -181,3 +181,115 @@ def test_uncertainty_and_decisions_do_not_conflate_negative_with_invalid():
     assert classify({"score_ci": False}, False, False) == "inconclusive"
     assert classify({"safety": False}, True, True) == "reject_for_this_deadline"
     assert classify({"safety": True}, True, False) == "eligible_for_confirmation"
+
+
+def test_complete_analyzer_and_evidence_corruption(tmp_path):
+    import hashlib
+    import json
+    from pathlib import Path
+
+    from scripts.analyze_observation_screen import analyze
+    from scripts.run_observation_screen import CONFIG, rows_write, write
+
+    cfg = json.loads(Path(CONFIG).read_text())
+    cfg["uncertainty"]["resamples"] = 20
+    for setting in [*cfg["evaluation_suites"].values(), cfg["latency"]]:
+        setting["world_seed_range_inclusive"][1] = setting["world_seed_range_inclusive"][0] + 3
+    roots = []
+    for replica in (1, 2, 3):
+        root = tmp_path / f"r{replica}"
+        roots.append(root)
+        write(root / "config.json", cfg)
+        write(
+            root / "binding.json",
+            {
+                "replica": replica,
+                "code_hashes": {"source": "same"},
+                "config_sha256": hashlib.sha256((root / "config.json").read_bytes()).hexdigest(),
+                "initial_hashes": {"reference.pt": "reference-model"},
+            },
+        )
+        for stage in ("training", "evaluation", "latency"):
+            write(root / f"{stage}-summary.json", {"complete": True})
+        for arm in (*cfg["arms"], "reference"):
+            model_hash = f"{arm}-model"
+            if arm != "reference":
+                write(
+                    root / "training" / arm / "result.json",
+                    {
+                        "complete": True,
+                        "episodes": 1000,
+                        "checkpoint_sha256": model_hash,
+                    },
+                )
+            for suite, setting in {**cfg["evaluation_suites"], "latency": cfg["latency"]}.items():
+                opponents = (
+                    cfg["evaluation_suites"]["primary-classic-rule-based"]["opponents"]
+                    if suite == "latency"
+                    else setting["opponents"]
+                )
+                first, last = setting["world_seed_range_inclusive"]
+                rows = [
+                    {
+                        "world_seed": seed,
+                        "slot": i % (len(opponents) + 1),
+                        "opponents": opponents,
+                        "late_steps": [],
+                        "native": {
+                            "score": 0.5 if arm == "geometry" else 0.0,
+                            "kills": 0.1 if arm == "geometry" else 0.0,
+                            "survived": 1.0,
+                            "self_kills": 0.0,
+                            "invalid": 0.0,
+                            "coins": 1.0,
+                            "crates_destroyed": 0.0,
+                            "initially_available_coins": 2,
+                            "decision_times_ms": [1.0, 2.0],
+                        },
+                    }
+                    for i, seed in enumerate(range(first, last + 1))
+                ]
+                directory = root / ("latency" if suite == "latency" else "evaluation") / arm
+                if suite != "latency":
+                    directory /= suite
+                directory.mkdir(parents=True)
+                rows_write(directory / "episodes.json.gz", rows)
+                write(
+                    directory / "result.json",
+                    {
+                        "checkpoint_sha256": model_hash,
+                        "rows_sha256": hashlib.sha256(
+                            (directory / "episodes.json.gz").read_bytes()
+                        ).hexdigest(),
+                    },
+                )
+    result = analyze(roots)
+    assert result["valid_complete_screen"]
+    assert result["next_confirmation_arm"] == "geometry"
+    assert result["automatic_promotion"] is False
+    assert result["selected_submission_artifact"] is None
+    rowfile = roots[0] / "evaluation/geometry/primary-classic-rule-based/episodes.json.gz"
+    rowfile.write_bytes(b"corrupted")
+    with pytest.raises(ValueError, match="Corrupt rows"):
+        analyze(roots)
+
+
+def test_new_inputs_can_receive_learning_updates():
+    from agent_code.DagobertDuckDQNObservation.model import DQNLearner
+    from agent_code.DagobertDuckDQNObservation.replay import ReplayBuffer
+
+    config = DQNConfig(observation_mode="memory")
+    learner = DQNLearner(config=config, seed=2)
+    with torch.no_grad():
+        learner.online_network.layers[0].weight[:, 39:].zero_()
+    replay = ReplayBuffer(capacity=10000, seed=2)
+    for _ in range(64):
+        replay.add(
+            state=np.ones(56, dtype=np.float32),
+            action_index=0,
+            reward=5.0,
+            next_state=None,
+            terminal=True,
+        )
+    learner.train_batch(replay.sample(64))
+    assert torch.count_nonzero(learner.online_network.layers[0].weight[:, 51:]) > 0

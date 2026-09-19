@@ -78,7 +78,8 @@
       1251099992,
       1251099993
     ],
-    "episodes_per_arm": 1,
+    "maximum_episodes_per_arm": 4,
+    "evaluation_episodes_per_arm": 1,
     "scientific": false
   },
   "evaluation_suites": {

@@ -190,7 +190,7 @@ def analyze(roots):
                     "self_kills",
                     "invalid",
                     "coins",
-                    "crates",
+                    "crates_destroyed",
                 )
             }
             retention = {
