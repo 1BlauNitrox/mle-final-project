@@ -5,7 +5,7 @@
     "refs/remotes/origin/archive/130-before-scope-repair": "05cde8b5251e5c771610912707da8f5b31896211",
     "refs/remotes/origin/chore/188-freeze-task3-incumbent": "ebaedd8f49cc3c59e96895f0bfc74b9d29aef414",
     "refs/remotes/origin/docs/task4-inside-task3-agent": "c4e65e08e871a3d7ca5e6601f3108d93c78e643d",
-    "refs/remotes/origin/experiment/205-hunting-benchmark": "2f03ed527fa76b113a4ad215e28f872808a50eab",
+    "refs/remotes/origin/experiment/205-hunting-benchmark": "41ef031cdd0e09324217433c2ce47c6faddb3da5",
     "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
     "refs/remotes/origin/experiment/task4-exploration-period-results": "16d4f2dd7fa3455aa33620da0302a29a134da133",
     "refs/remotes/origin/experiment/task4-final-training": "09aac0043d887dd88a1e01f06566fd3b612dd653",
@@ -21,10 +21,8 @@
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
   "unique_text_blobs": 790,
-  "blob_set_sha256": "9a7b5d6cb83a2276d9dd76771e3919d5fb68bef67fa43e1115ffa3d228413342",
+  "blob_set_sha256": "db01958982f88cde62e5149f95d9e68dc0e9f22319af2d6013602b7ebe5342e8",
   "excluded_own_registration": "experiments/2026-09-19-hunting-agent-screen/",
-  "colliding_files": [
-    "scripts/run_hunting_benchmark.py"
-  ],
-  "passed": false
+  "colliding_files": [],
+  "passed": true
 }
