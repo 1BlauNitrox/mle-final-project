@@ -1,0 +1,10 @@
+{
+  "artifact": "five-step-r3",
+  "suite": "primary-classic-rule-based",
+  "stage": "evaluation",
+  "episodes": 60,
+  "checkpoint_sha256": "77cbe50a6ba1ac299e3b91631be0f32c08f07947ef0f7e71fc37349bb1122956",
+  "rows_sha256": "38e1e376cb78627f1f9a5c55145dacf97d5220f05f0dfd6d56f8b4468d0a7b79",
+  "wall_seconds": 118.57035120000364,
+  "cpu_seconds": 115.8125
+}
