@@ -1,0 +1,42 @@
+schema_version: 1
+issue: 220
+status: preregistered
+agent: DerKleineKonkurrenzvernichter
+hypothesis: Double Q-learning reduces maximization bias and improves peaceful-opponent elimination without material Task 2 regression.
+literature:
+  - van Hasselt, H. (2010). Double Q-learning. Advances in Neural Information Processing Systems 23.
+independent_change: Q-learning algorithm only (control single Q; candidate Double Q).
+state_representation: compact_opponent
+initialization: task2_prior
+replicas_per_arm: 5
+training_episodes_per_replica: 10000
+training_opponents: [peaceful_agent]
+evaluation_seed_pairs_per_suite: 20
+evaluation_suites: [peaceful, coincollector, classic, coin-heaven, loot-crate]
+bootstrap:
+  unit: matched_replica_mean
+  resamples: 10000
+  confidence_level: 0.95
+  seed: 220
+success_gates:
+  peaceful_elimination_mean_difference_min_exclusive: 0.0
+  peaceful_elimination_improving_replicas_min: 4
+  peaceful_elimination_difference_ci_lower_min: -0.02
+  classic_collection_difference_min: -0.05
+  coin_heaven_collection_difference_min: -0.05
+  loot_crate_collection_difference_min: -0.05
+  aggregate_self_kill_difference_max: 0.03
+  repeat_action_sequences_must_match: true
+  decision_time_p95_ms_max: 50
+  decision_time_max_ms_max: 100
+compute:
+  planned_jobs: 2010
+  planned_training_episodes: 100000
+  planned_total_episodes: 102000
+  max_parallel_training_per_arm: 2
+authorization:
+  owner_requested_direct_execution: true
+  intermediate_review_waived_by_owner: true
+execution:
+  status: pending
+decision: pending
