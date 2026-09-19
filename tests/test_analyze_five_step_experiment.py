@@ -1,6 +1,11 @@
+import json
+
+import numpy as np
+
 from scripts.analyze_five_step_experiment import (
     hierarchical_interval,
     is_loop_window,
+    json_default,
     loop_summary,
 )
 
@@ -43,3 +48,8 @@ def test_hierarchical_interval_keeps_replica_world_matrix():
     assert result["estimate"] == 2.0
     assert result["replica_means"] == [1.0, 2.0, 3.0]
     assert result["ci95"][0] <= 2.0 <= result["ci95"][1]
+
+
+def test_json_default_serializes_numpy_scalars_from_decision_gates():
+    encoded = json.dumps({"gate": np.bool_(True), "count": np.int64(3)}, default=json_default)
+    assert json.loads(encoded) == {"gate": True, "count": 3}
