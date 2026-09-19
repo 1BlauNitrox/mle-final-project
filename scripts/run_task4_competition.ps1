@@ -13,6 +13,7 @@ process only. Without it every stage refuses to start.
 #>
 [CmdletBinding()]
 param(
+    [ValidateSet('trainable-scope', 'opponent-mixture', 'finetune-dose', 'lineup-trajectory', 'exploration-period')]
     [string]$Profile = 'trainable-scope',
     [string]$Root = "training_outputs/task4-$Profile",
     [string]$Python = '.\.venv\Scripts\python.exe',
@@ -34,7 +35,7 @@ $env:OMP_NUM_THREADS = '1'
 $env:MKL_NUM_THREADS = '1'
 
 # psutil's available bytes are what the run's own gate reads; the CIM counter
-# reports a different quantity in different units and has misled us before.
+# reports something different in different units and has misled us before.
 $free = & $python -c "import psutil;print(round(psutil.virtual_memory().available/2**30,2))"
 Write-Host "Free RAM: $free GiB (psutil available, the figure the gate uses). Close other heavy applications before a long run." -ForegroundColor Yellow
 

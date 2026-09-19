@@ -1,0 +1,105 @@
+{
+  "manifest_schema_version": 1,
+  "status": "task3_candidate_unselected",
+  "agent": "DagobertDuckDQNTask3",
+  "capability": "task1_task2_behavior_plus_public_opponent_awareness",
+  "artifact": {
+    "path": "candidate-checkpoint.pt",
+    "sha256": "99144d1688f66dcc6369d3efc02b2b9d5755cc8d21e6f2c1e1ffef466d0a7113",
+    "size_bytes": 64301,
+    "note": "Untrained masked migration of the provisional issue 91 A/r3 Task 2 parent. Carried as the unchanged reference through every Task 3 comparison and measured best in all of them; installed on that descriptive basis, not by passing a registered gate."
+  },
+  "selection": {
+    "decision": "retained_as_unselected_candidate",
+    "rule": "descriptive_selection_no_gate_passed",
+    "registered_screens_passed": false,
+    "promoted_by_an_experiment": false,
+    "rationale": "Four registered comparisons (approach shaping, update cadence, compensated elimination reward, opponent-weight shrinkage) each failed their screens and none promoted a checkpoint. All four measured this artifact as the strongest available, and the shrinkage dose-response converged on it monotonically, which the protocol registered in advance as the signature of undirected drift in the trainable opponent columns.",
+    "measured_on_320_hunting_worlds": {
+      "suite": "classic with one peaceful_agent, four independent forty-world sets",
+      "score": 4.16,
+      "eliminations_per_game": 0.215,
+      "strict_win_rate": 0.785,
+      "collection_fraction": 0.343,
+      "self_kill_rate": 0.279
+    },
+    "evidence": [
+      "experiments/2026-09-14-task3-approach-shaping",
+      "experiments/2026-09-14-task3-update-cadence",
+      "experiments/2026-09-14-task3-compensated-kill-reward",
+      "experiments/2026-09-14-task3-opponent-shrinkage"
+    ],
+    "supersedes": {
+      "sha256": "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599",
+      "size_bytes": 64237,
+      "note": "Compatibility migration of the historical corrected issue 85 Task 2 checkpoint; never endorsed by any experiment."
+    }
+  },
+  "model_contract": {
+    "algorithm": "deep_q_network",
+    "checkpoint_schema_version": 1,
+    "model_schema_version": 1,
+    "feature_schema_version": 4,
+    "input_dim": 39,
+    "hidden_sizes": [
+      64,
+      64
+    ],
+    "action_order": [
+      "UP",
+      "RIGHT",
+      "DOWN",
+      "LEFT",
+      "WAIT",
+      "BOMB"
+    ],
+    "forbidden_actions": []
+  },
+  "runtime_modes": {
+    "action_masking": true,
+    "escape_continuation_features": true,
+    "note": "Both modes are recorded in the checkpoint and differ from the superseded fixture, which had them disabled. Missing environment selectors preserve the checkpoint's modes; explicit mismatches fail."
+  },
+  "training_state": {
+    "completed_episodes": 0,
+    "optimizer_updates": 0,
+    "replay_transitions": 0,
+    "note": "Untrained. Its thirteen opponent-input columns remain at their zero initialization, which is the setting the Task 3 comparisons found to be the best available for them."
+  },
+  "parent": {
+    "agent": "DagobertDuckDQNTask2",
+    "selection_status": "provisional_issue_91_a_r3_owner_authorized",
+    "artifact_sha256": "c0b6081acf5a733258005d46b9430f3ef50e403470a3bb5428661729f9aeedf7",
+    "artifact_size_bytes": 2382903,
+    "source_commit": "cbd52be8392f5003a91c5600fda4efd544b48ec5",
+    "task2_gate_status": "mixed_negative; no Task 2 completion claim follows from installing this artifact"
+  },
+  "migration": {
+    "script": "scripts/migrate_task3_dqn_successor.py",
+    "parent_output_dim": 6,
+    "parent_hidden_sizes": [
+      64,
+      64
+    ],
+    "successor_input_dim": 39,
+    "successor_output_dim": 6,
+    "rule": [
+      "copy all parent input columns, hidden layers and six outputs for online and target networks",
+      "zero all thirteen opponent columns",
+      "preserve parent mask and escape mode; reset optimizer, replay, epsilon, RNG and update count"
+    ]
+  },
+  "policy": {
+    "task1_task2_prefix_present": true,
+    "opponent_features_present": true,
+    "elimination_event": "KILLED_OPPONENT",
+    "task2_complete": false,
+    "task3_gates_passed": false,
+    "tournament_readiness_claimed": false
+  },
+  "retrieval": {
+    "public_release": "https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue175-evidence-v1",
+    "archive_member": "reference.pt",
+    "note": "The same bytes are a member of every Task 3 comparison's evidence archive."
+  }
+}
