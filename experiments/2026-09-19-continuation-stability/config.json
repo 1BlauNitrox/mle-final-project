@@ -1,0 +1,118 @@
+{
+  "issue": 213,
+  "status": "prospective_requires_owner_agreement",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "reference_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "external_sha256": "301bce97a9a79cf7ac64c9532dbc0eb7396ffade8290c7f171edeb99687116de",
+  "external_model_sha256": "075d1a8948339ef1c5fb932cda2e97b89dc0fa4a8cc9f6201c79d56a85581468",
+  "arms": [
+    "reset",
+    "preserve"
+  ],
+  "replicas": 3,
+  "episodes": 100,
+  "learning_rate": 0.0001,
+  "counter_policy": "Both arms retain parent episode/update counters and target-sync phase; paired fresh action/replay RNG per replica",
+  "changed_factor": "Replay plus Adam state reset versus retained; bundle effect, not separate attribution",
+  "training_opponents": [
+    "RUEHL_BASED_AGENT",
+    "rule_based_agent",
+    "peaceful_agent"
+  ],
+  "train_ranges": [
+    [
+      1453000001,
+      1453000100
+    ],
+    [
+      1453010001,
+      1453010100
+    ],
+    [
+      1453020001,
+      1453020100
+    ]
+  ],
+  "learner_seeds": [
+    1453090001,
+    1453090002,
+    1453090003
+  ],
+  "smoke_seed": 1453099991,
+  "bootstrap_seed": 1453190001,
+  "bootstrap_resamples": 10000,
+  "evaluation": {
+    "classic": {
+      "scenario": "classic",
+      "opponents": [
+        "rule_based_agent",
+        "rule_based_agent",
+        "rule_based_agent"
+      ],
+      "seeds": [
+        1453100001,
+        1453100080
+      ]
+    },
+    "peaceful": {
+      "scenario": "classic",
+      "opponents": [
+        "peaceful_agent",
+        "peaceful_agent",
+        "peaceful_agent"
+      ],
+      "seeds": [
+        1453101001,
+        1453101040
+      ]
+    },
+    "coins": {
+      "scenario": "coin-heaven",
+      "opponents": [],
+      "seeds": [
+        1453102001,
+        1453102040
+      ]
+    },
+    "crates": {
+      "scenario": "loot-crate",
+      "opponents": [],
+      "seeds": [
+        1453103001,
+        1453103040
+      ]
+    },
+    "latency": {
+      "scenario": "classic",
+      "opponents": [
+        "rule_based_agent",
+        "rule_based_agent",
+        "rule_based_agent"
+      ],
+      "seeds": [
+        1453109001,
+        1453109010
+      ]
+    }
+  },
+  "limits": {
+    "cpu_seconds": 7200,
+    "wall_seconds": 14400,
+    "rss_bytes": 4294967296,
+    "minimum_available_bytes": 2147483648
+  },
+  "gates": {
+    "score_vs_reference": -0.3,
+    "self_kills_increase": 0.05,
+    "survival_loss": 0.05,
+    "coin_fraction_loss": 0.05,
+    "crate_coins_loss": 1.0,
+    "crate_self_kills_increase": 0.05,
+    "score_vs_reset": 0.3,
+    "improving_replicas": 2,
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "fixed episode 100; no promotion, no holdout, no automatic longer run",
+  "budget_note": "Proposed 2 CPU hours and 4 wall hours total on laptop 1, including training and evaluation. Preparation does not authorize launch."
+}
