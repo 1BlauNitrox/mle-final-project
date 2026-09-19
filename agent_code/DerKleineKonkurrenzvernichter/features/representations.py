@@ -31,6 +31,13 @@ from .opponents import (
     opponent_state_to_features,
     validate_opponent_features,
 )
+from .shared_targets import (
+    SHARED_TARGET_FEATURE_COUNT,
+    SHARED_TARGET_FEATURE_SCHEMA_VERSION,
+    SHARED_TARGET_STATE_REPRESENTATION,
+    shared_target_state_to_features,
+    validate_shared_target_features,
+)
 
 BASELINE_STATE_REPRESENTATION = "baseline"
 COMPACT_STATE_REPRESENTATION = "compact_decision"
@@ -41,6 +48,7 @@ VALID_STATE_REPRESENTATIONS = (
     COMPACT_STATE_REPRESENTATION,
     COMPACT_ESCAPE_STATE_REPRESENTATION,
     OPPONENT_STATE_REPRESENTATION,
+    SHARED_TARGET_STATE_REPRESENTATION,
 )
 
 
@@ -83,6 +91,13 @@ REPRESENTATIONS = {
         feature_schema_version=OPPONENT_FEATURE_SCHEMA_VERSION,
         encode=opponent_state_to_features,
         validate=validate_opponent_features,
+    ),
+    SHARED_TARGET_STATE_REPRESENTATION: StateRepresentation(
+        name=SHARED_TARGET_STATE_REPRESENTATION,
+        feature_count=SHARED_TARGET_FEATURE_COUNT,
+        feature_schema_version=SHARED_TARGET_FEATURE_SCHEMA_VERSION,
+        encode=shared_target_state_to_features,
+        validate=validate_shared_target_features,
     ),
 }
 
