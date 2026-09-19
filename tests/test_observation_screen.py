@@ -236,7 +236,7 @@ def test_complete_analyzer_and_evidence_corruption(tmp_path):
                         "opponents": opponents,
                         "late_steps": [],
                         "native": {
-                            "score": 0.5 if arm == "geometry" else 0.0,
+                            "score": [-8.0, 3.5, 3.5, 3.5][i] if arm == "geometry" else 0.0,
                             "kills": 0.1 if arm == "geometry" else 0.0,
                             "survived": 1.0,
                             "self_kills": 0.0,
@@ -266,6 +266,9 @@ def test_complete_analyzer_and_evidence_corruption(tmp_path):
     result = analyze(roots)
     assert result["valid_complete_screen"]
     assert result["next_confirmation_arm"] == "geometry"
+    assert result["arms"]["geometry"]["warnings"]
+    assert not result["arms"]["geometry"]["diagnostic_gates"]["control:score_interval"]
+    assert "control:score_interval" not in result["arms"]["geometry"]["gates"]
     assert result["automatic_promotion"] is False
     assert result["selected_submission_artifact"] is None
     rowfile = roots[0] / "evaluation/geometry/primary-classic-rule-based/episodes.json.gz"
@@ -293,3 +296,38 @@ def test_new_inputs_can_receive_learning_updates():
         )
     learner.train_batch(replay.sample(64))
     assert torch.count_nonzero(learner.online_network.layers[0].weight[:, 51:]) > 0
+
+
+def test_detached_launcher_requires_authorization_and_returns_working_pid(tmp_path, monkeypatch):
+    import contextlib
+    import sys
+    import time
+
+    import psutil
+
+    from scripts import run_observation_screen as runner
+
+    runner.write(tmp_path / "smoke/report.json", {"passed": True})
+    monkeypatch.setattr(
+        runner, "bound", lambda root: ({}, {"replica": 1, "config_sha256": "mechanics"})
+    )
+    sentinel = tmp_path / "detached-ok.txt"
+    command = [
+        sys.executable,
+        "-c",
+        "import pathlib,time; time.sleep(1); "
+        f"pathlib.Path({str(sentinel)!r}).write_text('mechanics only'); time.sleep(1)",
+    ]
+    monkeypatch.setattr(runner, "child_command", lambda *args, **kwargs: command)
+    args = SimpleNamespace(root=tmp_path, workers=1, authorize_compute=False)
+    with pytest.raises(RuntimeError, match="authorize-compute"):
+        runner.launch(args)
+    args.authorize_compute = True
+    runner.launch(args)
+    record = runner.read(tmp_path / "supervisor.json")
+    deadline = time.monotonic() + 15
+    while not sentinel.exists() and time.monotonic() < deadline:
+        time.sleep(0.1)
+    assert sentinel.read_text() == "mechanics only"
+    with contextlib.suppress(psutil.NoSuchProcess):
+        psutil.Process(record["pid"]).wait(timeout=10)

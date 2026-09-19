@@ -176,6 +176,8 @@
     "requires_constant_board_coin_signature": true
   },
   "decision_rule": {
+    "score_interval_is_screen_gate": false,
+    "owner_decision": "2026-09-19 Julius: Use the exploratory screen rule; reserve confidence-bound requirements for confirmation.",
     "screen_only": true,
     "geometry_kills_minimum": 0.05,
     "memory_loop_ratio_maximum": 0.75,
@@ -201,7 +203,8 @@
     "minimum_available_ram_bytes": 3221225472,
     "training_wall_seconds": 28800,
     "absolute_stop": "2026-09-20T12:00:00+02:00",
-    "training_cpu_seconds_per_device": 14400,
+    "training_cpu_seconds_per_device": 28800,
+    "training_cpu_budget_authorization": "2026-09-19 Julius approved 24 CPU hours total for unchanged 9000 episodes; allocated 8 CPU hours per independent replica triplet.",
     "evaluation_cpu_seconds_per_device": 14400,
     "evaluation_wall_seconds": 14400
   },
@@ -219,5 +222,5 @@
     "laptop2": 2,
     "pc": 3
   },
-  "criteria_status": "Original numeric safeguards retained; promising/inconclusive/eligible separated. Any threshold amendment must precede scientific execution."
+  "criteria_status": "Owner agreed exploratory screen before scientific execution: score confidence interval is advisory; practical efficacy, point-estimate safety/retention, latency and evidence validity remain required. Clear interval evidence of harm rejects. Confirmation is a separately registered decision."
 }

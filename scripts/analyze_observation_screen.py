@@ -77,10 +77,10 @@ def loops(rows):
 
 
 def classify(gates, efficacy, clear_harm):
-    if all(gates.values()) and efficacy:
-        return "eligible_for_confirmation"
     if clear_harm:
         return "reject_for_this_deadline"
+    if all(gates.values()) and efficacy:
+        return "eligible_for_confirmation"
     if efficacy:
         return "promising_but_unresolved"
     return "inconclusive"
@@ -235,6 +235,14 @@ def analyze(roots):
                 estimates["score"]["ci95"][1] < -0.3 or estimates["self_kills"]["ci95"][0] > 0.05
             )
             clear_harm |= peaceful_survival["ci95"][1] < -0.05 or crate_self["ci95"][0] > 0.05
+            clear_harm |= estimates["survived"]["ci95"][1] < thresholds["survival_minimum"]
+            clear_harm |= estimates["invalid"]["ci95"][0] > thresholds["invalid_maximum"]
+            clear_harm |= (
+                retention["collection_fraction"]["ci95"][1]
+                < thresholds["collection_fraction_minimum"]
+            )
+            clear_harm |= retention["coins"]["ci95"][1] < thresholds["loot_crate_coins_minimum"]
+            clear_harm |= peaceful_self["ci95"][0] > thresholds["self_kills_maximum"]
         latency = {}
         for replica in (1, 2, 3):
             times = [
@@ -262,11 +270,20 @@ def analyze(roots):
                 and treatment_rate is not None
                 and treatment_rate <= thresholds["memory_loop_ratio_maximum"] * baseline_rate
             )
+        screen_gates = {
+            key: value
+            for key, value in gates.items()
+            if thresholds["score_interval_is_screen_gate"] or not key.endswith(":score_interval")
+        }
         output["arms"][arm] = {
             "comparisons": comparisons,
-            "gates": gates,
+            "gates": screen_gates,
+            "diagnostic_gates": gates,
+            "warnings": [
+                key for key, value in gates.items() if not value and key.endswith(":score_interval")
+            ],
             "efficacy_signal": bool(efficacy),
-            "classification": classify(gates, efficacy, clear_harm),
+            "classification": classify(screen_gates, efficacy, clear_harm),
             "latency": latency,
         }
     output["next_confirmation_arm"] = next(
