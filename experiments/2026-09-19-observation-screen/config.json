@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "status": "prospective",
+  "issue": 211,
+  "question": "Do hunting geometry or revisit observations improve fixed-budget continuation?",
+  "papers": [
+    "https://arxiv.org/abs/1507.06527"
+  ],
+  "source": {
+    "base_tools_commit": "159c8d9",
+    "trained_runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "reference_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "reference_provenance": "control-r1 milestone-008000",
+    "external_archive_sha256": "301bce97a9a79cf7ac64c9532dbc0eb7396ffade8290c7f171edeb99687116de",
+    "external_checkpoint_sha256": "075d1a8948339ef1c5fb932cda2e97b89dc0fa4a8cc9f6201c79d56a85581468",
+    "experimental_agent": "DagobertDuckDQNObservation"
+  },
+  "arms": {
+    "control": {
+      "observation_mode": "control"
+    },
+    "geometry": {
+      "observation_mode": "geometry"
+    },
+    "memory": {
+      "observation_mode": "memory"
+    }
+  },
+  "shared_training": {
+    "replicas": 3,
+    "episodes_per_arm_replica": 1000,
+    "total_episodes": 9000,
+    "replica_world_seed_ranges_inclusive": [
+      [
+        961000001,
+        961001000
+      ],
+      [
+        961010001,
+        961011000
+      ],
+      [
+        961020001,
+        961021000
+      ]
+    ],
+    "checkpoint_internal_rng_policy": "Fresh paired action/replay RNG per replica; zero-padded architecture for all arms; empty replay and optimizer for all arms",
+    "opponents": [
+      "RUEHL_BASED_AGENT",
+      "rule_based_agent",
+      "peaceful_agent"
+    ],
+    "external_admission_evidence": "Issue #205 appears-stronger rule and timing gates passed",
+    "discount_factor": 0.9,
+    "learning_rate": 0.0002,
+    "batch_size": 64,
+    "replay_capacity": 10000,
+    "target_update_interval": 500,
+    "random_episode_period": 5,
+    "trainable_scope": "all_weights",
+    "rewards": "unchanged inherited reward mapping",
+    "durable_checkpoint_every": 25,
+    "milestones": [
+      1000
+    ],
+    "decision_checkpoint": 1000,
+    "learner_seeds": [
+      961090001,
+      961090002,
+      961090003
+    ],
+    "feature_count": 56,
+    "source_feature_count": 39
+  },
+  "smoke": {
+    "world_seeds": [
+      961099991,
+      961099992,
+      961099993
+    ],
+    "episodes_per_arm": 1,
+    "scientific": false
+  },
+  "evaluation_suites": {
+    "primary-classic-rule-based": {
+      "scenario": "classic",
+      "opponents": [
+        "rule_based_agent",
+        "rule_based_agent",
+        "rule_based_agent"
+      ],
+      "world_seed_range_inclusive": [
+        961100001,
+        961100120
+      ],
+      "worlds": 120,
+      "role": "primary efficacy and native-score non-regression",
+      "slots": "world_index modulo (1 + number of opponents)"
+    },
+    "classic-peaceful": {
+      "scenario": "classic",
+      "opponents": [
+        "peaceful_agent"
+      ],
+      "world_seed_range_inclusive": [
+        961102001,
+        961102040
+      ],
+      "worlds": 40,
+      "role": "escape and survival retention",
+      "slots": "world_index modulo (1 + number of opponents)"
+    },
+    "coin-heaven": {
+      "scenario": "coin-heaven",
+      "opponents": [],
+      "world_seed_range_inclusive": [
+        961103001,
+        961103040
+      ],
+      "worlds": 40,
+      "role": "collection retention",
+      "slots": "world_index modulo (1 + number of opponents)"
+    },
+    "loot-crate": {
+      "scenario": "loot-crate",
+      "opponents": [],
+      "world_seed_range_inclusive": [
+        961104001,
+        961104040
+      ],
+      "worlds": 40,
+      "role": "bombing and collection retention",
+      "slots": "world_index modulo (1 + number of opponents)"
+    },
+    "mixed": {
+      "scenario": "classic",
+      "opponents": [
+        "RUEHL_BASED_AGENT",
+        "rule_based_agent",
+        "peaceful_agent"
+      ],
+      "world_seed_range_inclusive": [
+        961101001,
+        961101080
+      ],
+      "worlds": 80,
+      "role": "secondary robustness",
+      "slots": "world_index modulo (1 + number of opponents)"
+    }
+  },
+  "latency": {
+    "world_seed_range_inclusive": [
+      961109001,
+      961109010
+    ],
+    "worlds": 10,
+    "p95_limit_ms": 50,
+    "maximum_limit_ms": 100,
+    "serial_idle_only": true
+  },
+  "uncertainty": {
+    "method": "hierarchical paired bootstrap over paired replicas and shared development worlds",
+    "resamples": 10000,
+    "seed": 961190001,
+    "interval_percent": 95,
+    "language": "decision rule, not a significance test"
+  },
+  "late_loop_detector": {
+    "window_steps": 24,
+    "maximum_period": 4,
+    "requires_zero_crates": true,
+    "requires_zero_visible_coins": true,
+    "requires_no_hazards": true,
+    "requires_no_progress_events": true,
+    "requires_constant_board_coin_signature": true
+  },
+  "decision_rule": {
+    "screen_only": true,
+    "geometry_kills_minimum": 0.05,
+    "memory_loop_ratio_maximum": 0.75,
+    "score_minimum": 0.0,
+    "score_lower_bound_minimum": -0.3,
+    "survival_minimum": -0.05,
+    "self_kills_maximum": 0.05,
+    "invalid_maximum": 0.25,
+    "collection_fraction_minimum": -0.05,
+    "loot_crate_coins_minimum": -0.25,
+    "both_pass_priority": "geometry",
+    "representative_replica": 1,
+    "automatic_promotion": false,
+    "inconclusive_is_not_failure": true
+  },
+  "resources": {
+    "python": "3.13",
+    "device": "cpu",
+    "torch_threads_per_worker": 1,
+    "initial_workers": 1,
+    "maximum_workers": 3,
+    "aggregate_workload_ram_bytes": 8589934592,
+    "minimum_available_ram_bytes": 3221225472,
+    "training_wall_seconds": 28800,
+    "absolute_stop": "2026-09-20T12:00:00+02:00",
+    "training_cpu_seconds_per_device": 14400,
+    "evaluation_cpu_seconds_per_device": 14400,
+    "evaluation_wall_seconds": 14400
+  },
+  "incomplete_run_policy": "Preserve all attempts; restore immutable matched checkpoint/rows generation. No pooled conclusion without all three replicas. No automatic extension or promotion.",
+  "exclusions": [
+    "final held-out evaluation suite",
+    "all benchmark worlds",
+    "all training worlds from evaluation",
+    "attack, loop and survival guards",
+    "new reward shaping",
+    "checkpoint cherry-picking"
+  ],
+  "allocation": {
+    "laptop1": 1,
+    "laptop2": 2,
+    "pc": 3
+  },
+  "criteria_status": "Original numeric safeguards retained; promising/inconclusive/eligible separated. Any threshold amendment must precede scientific execution."
+}
