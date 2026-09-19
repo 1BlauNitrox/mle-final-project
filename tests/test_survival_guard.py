@@ -110,8 +110,12 @@ def test_a_move_into_a_certain_blast_is_refused():
     # and so is standing in its blast, but the left corridor is clear.
     guard = SurvivalGuard(veto_bomb=False, veto_move=True)
     game_state = state(field, (5, 5), bombs=[((7, 5), 0)])
-    chosen = guard.choose(game_state, "RIGHT", q_ranking(["RIGHT", "LEFT"]),
-                          legal("RIGHT", "LEFT", "UP", "DOWN", "WAIT"))
+    chosen = guard.choose(
+        game_state,
+        "RIGHT",
+        q_ranking(["RIGHT", "LEFT"]),
+        legal("RIGHT", "LEFT", "UP", "DOWN", "WAIT"),
+    )
     assert chosen != "RIGHT"
 
 
@@ -131,8 +135,9 @@ def test_the_policy_keeps_its_action_when_nothing_is_survivable():
 def test_the_replacement_follows_the_policys_own_ranking():
     guard = SurvivalGuard(veto_bomb=True, veto_move=True)
     game_state = state(dead_end(), (1, 2))
-    chosen = guard.choose(game_state, "BOMB", q_ranking(["BOMB", "RIGHT", "WAIT"]),
-                          legal("BOMB", "RIGHT", "WAIT"))
+    chosen = guard.choose(
+        game_state, "BOMB", q_ranking(["BOMB", "RIGHT", "WAIT"]), legal("BOMB", "RIGHT", "WAIT")
+    )
     assert chosen == "RIGHT"
     assert guard.vetoes == 1
 
@@ -140,8 +145,9 @@ def test_the_replacement_follows_the_policys_own_ranking():
 def test_an_illegal_action_is_never_chosen_as_the_replacement():
     guard = SurvivalGuard(veto_bomb=True, veto_move=True)
     game_state = state(dead_end(), (1, 2))
-    chosen = guard.choose(game_state, "BOMB", q_ranking(["BOMB", "RIGHT", "WAIT"]),
-                          legal("BOMB", "WAIT"))
+    chosen = guard.choose(
+        game_state, "BOMB", q_ranking(["BOMB", "RIGHT", "WAIT"]), legal("BOMB", "WAIT")
+    )
     assert chosen == "WAIT"
 
 
@@ -151,7 +157,10 @@ def test_an_illegal_action_is_never_chosen_as_the_replacement():
         ({}, (False, False)),
         ({"BOMBERMAN_SURVIVAL_GUARD_BOMB": "on"}, (True, False)),
         ({"BOMBERMAN_SURVIVAL_GUARD_MOVE": "on"}, (False, True)),
-        ({"BOMBERMAN_SURVIVAL_GUARD_BOMB": "on", "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on"}, (True, True)),
+        (
+            {"BOMBERMAN_SURVIVAL_GUARD_BOMB": "on", "BOMBERMAN_SURVIVAL_GUARD_MOVE": "on"},
+            (True, True),
+        ),
         ({"BOMBERMAN_SURVIVAL_GUARD_BOMB": "off"}, (False, False)),
     ],
 )

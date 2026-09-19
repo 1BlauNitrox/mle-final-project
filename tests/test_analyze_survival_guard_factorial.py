@@ -18,9 +18,16 @@ THRESHOLDS = {
 
 def game(artifact, world, variant, score=1.0, self_kills=0.0):
     return {
-        "artifact": artifact, "world_seed": world, "variant": variant,
-        "score": score, "self_kills": self_kills, "survived": 1, "kills": 0,
-        "coins": 1.0, "collection_fraction": 0.1, "invalid": 0,
+        "artifact": artifact,
+        "world_seed": world,
+        "variant": variant,
+        "score": score,
+        "self_kills": self_kills,
+        "survived": 1,
+        "kills": 0,
+        "coins": 1.0,
+        "collection_fraction": 0.1,
+        "invalid": 0,
     }
 
 
@@ -33,8 +40,10 @@ def test_registration_rule_matches_what_the_analysis_expects():
 
 
 def test_only_games_present_in_both_cells_are_paired():
-    control = [game("control-r1@2000", 1, "control", score=1.0),
-               game("control-r1@2000", 2, "control", score=1.0)]
+    control = [
+        game("control-r1@2000", 1, "control", score=1.0),
+        game("control-r1@2000", 2, "control", score=1.0),
+    ]
     cell = [game("control-r1@2000", 1, "both", score=3.0)]
     matrix = analyze.paired(cell, control, "score", ["control-r1@2000"], [1, 2])
     assert matrix.shape == (1, 1)
@@ -44,10 +53,15 @@ def test_only_games_present_in_both_cells_are_paired():
 def test_an_interrupted_cell_is_analysed_on_the_pairs_it_has():
     # World 3 was never reached and checkpoint r2 never started. Neither may
     # turn the whole interval into nothing.
-    control = [game(a, w, "control", score=1.0)
-               for a in ("control-r1@2000", "control-r2@2000") for w in (1, 2, 3)]
+    control = [
+        game(a, w, "control", score=1.0)
+        for a in ("control-r1@2000", "control-r2@2000")
+        for w in (1, 2, 3)
+    ]
     cell = [game("control-r1@2000", w, "both", score=2.0) for w in (1, 2)]
-    matrix = analyze.paired(cell, control, "score", ["control-r1@2000", "control-r2@2000"], [1, 2, 3])
+    matrix = analyze.paired(
+        cell, control, "score", ["control-r1@2000", "control-r2@2000"], [1, 2, 3]
+    )
     assert matrix.shape == (1, 2)
     stat = analyze.bootstrap(matrix, resamples=500, seed=980001)
     assert stat["pairs"] == 2
@@ -66,8 +80,9 @@ def test_the_reference_is_excluded_from_the_judged_checkpoints():
 def test_a_cell_labelled_as_another_is_refused(tmp_path):
     folder = tmp_path / "survival-guard-both"
     folder.mkdir()
-    (folder / "games.jsonl").write_text(json.dumps(game("control-r1@2000", 1, "control")) + "\n",
-                                        encoding="utf-8")
+    (folder / "games.jsonl").write_text(
+        json.dumps(game("control-r1@2000", 1, "control")) + "\n", encoding="utf-8"
+    )
     with pytest.raises(SystemExit):
         analyze.load(folder, "both")
 

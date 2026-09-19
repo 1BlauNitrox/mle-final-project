@@ -16,7 +16,6 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from statistics import mean
 
 import numpy as np
 
@@ -26,7 +25,9 @@ METRICS = ("score", "self_kills", "survived", "coins", "kills", "invalid")
 
 def load_games(directory: Path) -> list[dict]:
     path = directory / "games.jsonl"
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def matrix(games: list[dict], artifacts: list[str], seeds: list[int], metric: str) -> np.ndarray:
@@ -56,12 +57,20 @@ def hierarchical_interval(diff: np.ndarray, resamples: int, seed: int, percent: 
 def decide(score: dict, self_kills: dict, rule: dict) -> tuple[bool, list[str]]:
     t = rule["thresholds"]
     checks = [
-        (score["low"] > t["score_lower_bound_above"],
-         f"score lower bound {score['low']:+.3f} is above {t['score_lower_bound_above']:+.2f}"),
-        (score["mean_difference"] >= t["score_point_estimate_at_least"],
-         f"score point estimate {score['mean_difference']:+.3f} is at least {t['score_point_estimate_at_least']:+.2f}"),
-        (self_kills["high"] <= t["self_kills_upper_bound_at_most"],
-         f"self-kill upper bound {self_kills['high']:+.3f} is at most {t['self_kills_upper_bound_at_most']:+.2f}"),
+        (
+            score["low"] > t["score_lower_bound_above"],
+            f"score lower bound {score['low']:+.3f} is above {t['score_lower_bound_above']:+.2f}",
+        ),
+        (
+            score["mean_difference"] >= t["score_point_estimate_at_least"],
+            f"score point estimate {score['mean_difference']:+.3f} is at least "
+            f"{t['score_point_estimate_at_least']:+.2f}",
+        ),
+        (
+            self_kills["high"] <= t["self_kills_upper_bound_at_most"],
+            f"self-kill upper bound {self_kills['high']:+.3f} is at most "
+            f"{t['self_kills_upper_bound_at_most']:+.2f}",
+        ),
     ]
     return all(ok for ok, _ in checks), [("PASS " if ok else "FAIL ") + text for ok, text in checks]
 
@@ -71,7 +80,9 @@ def sha256(path: Path) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--registration", type=Path, required=True)
     parser.add_argument("--unguarded", type=Path, required=True)
     parser.add_argument("--guarded", type=Path, required=True)
@@ -100,22 +111,38 @@ def main() -> int:
         raise SystemExit(f"agent code differs from the registration: {code}")
 
     unguarded, guarded = load_games(args.unguarded), load_games(args.guarded)
-    for games, expected in ((unguarded, agents["unguarded"]["agent"]), (guarded, agents["guarded"]["agent"])):
-        wrong = {(g.get("agent"), g.get("suite")) for g in games} - {(expected, reg["suite"]["name"])}
+    for games, expected in (
+        (unguarded, agents["unguarded"]["agent"]),
+        (guarded, agents["guarded"]["agent"]),
+    ):
+        wrong = {(g.get("agent"), g.get("suite")) for g in games} - {
+            (expected, reg["suite"]["name"])
+        }
         if wrong:
             raise SystemExit(f"games from the wrong agent or world set: {sorted(map(str, wrong))}")
 
     results = {}
     for metric in METRICS:
-        diff = matrix(guarded, artifacts, seeds, metric) - matrix(unguarded, artifacts, seeds, metric)
-        results[metric] = hierarchical_interval(diff, interval["resamples"], interval["seed"], interval["percent"])
+        diff = matrix(guarded, artifacts, seeds, metric) - matrix(
+            unguarded, artifacts, seeds, metric
+        )
+        results[metric] = hierarchical_interval(
+            diff, interval["resamples"], interval["seed"], interval["percent"]
+        )
     ships, checks = decide(results["score"], results["self_kills"], rule)
 
     per_checkpoint = {}
     for artifact in artifacts:
-        rows = {m: (matrix(unguarded, [artifact], seeds, m).mean(), matrix(guarded, [artifact], seeds, m).mean())
-                for m in ("score", "self_kills", "coins")}
-        per_checkpoint[artifact] = {m: {"unguarded": round(u, 3), "guarded": round(g, 3)} for m, (u, g) in rows.items()}
+        rows = {
+            m: (
+                matrix(unguarded, [artifact], seeds, m).mean(),
+                matrix(guarded, [artifact], seeds, m).mean(),
+            )
+            for m in ("score", "self_kills", "coins")
+        }
+        per_checkpoint[artifact] = {
+            m: {"unguarded": round(u, 3), "guarded": round(g, 3)} for m, (u, g) in rows.items()
+        }
 
     secondary = None
     if args.coin_heaven_unguarded and args.coin_heaven_guarded:
@@ -125,7 +152,9 @@ def main() -> int:
             artifact: {
                 "coins_unguarded": round(matrix(cu, [artifact], worlds, "coins").mean(), 2),
                 "coins_guarded": round(matrix(cg, [artifact], worlds, "coins").mean(), 2),
-                "self_kills_unguarded": round(matrix(cu, [artifact], worlds, "self_kills").mean(), 3),
+                "self_kills_unguarded": round(
+                    matrix(cu, [artifact], worlds, "self_kills").mean(), 3
+                ),
                 "self_kills_guarded": round(matrix(cg, [artifact], worlds, "self_kills").mean(), 3),
             }
             for artifact in artifacts
@@ -135,7 +164,9 @@ def main() -> int:
         "registration": reg["name"],
         "decision": "SHIP the guard" if ships else "DO NOT SHIP the guard in this form",
         "checks": checks,
-        "guarded_minus_unguarded": {m: {k: round(v, 4) for k, v in r.items()} for m, r in results.items()},
+        "guarded_minus_unguarded": {
+            m: {k: round(v, 4) for k, v in r.items()} for m, r in results.items()
+        },
         "per_checkpoint": per_checkpoint,
         "coin_heaven_descriptive": secondary,
         "games_per_agent": len(artifacts) * len(seeds),

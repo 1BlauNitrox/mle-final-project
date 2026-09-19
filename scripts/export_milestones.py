@@ -47,7 +47,10 @@ def main() -> int:
         "run_root": str(root),
         "profile": binding["profile"],
         "config_sha256": binding["config_sha256"],
-        "use": "development-world monitoring only; the held-out suite is not evaluated from this bundle",
+        "use": (
+            "development-world monitoring only; the held-out suite is not evaluated "
+            "from this bundle"
+        ),
         "files": {},
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -58,7 +61,9 @@ def main() -> int:
             archive.write(path, name)
         archive.writestr("MANIFEST.json", json.dumps(manifest, indent=2) + "\n")
 
-    print(f"wrote {args.out} ({args.out.stat().st_size / 1024**2:.1f} MiB, {len(files)} checkpoints)")
+    print(
+        f"wrote {args.out} ({args.out.stat().st_size / 1024**2:.1f} MiB, {len(files)} checkpoints)"
+    )
     for name in manifest["files"]:
         print("  ", name)
     return 0

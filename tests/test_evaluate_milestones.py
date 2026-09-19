@@ -8,13 +8,22 @@ from scripts import evaluate_milestones as evaluate
 
 
 def stats(agent_entry, extra_rounds=0):
-    rounds = {f"Round {i:02d}": {"agents": {"Bomb-omb_0": agent_entry}} for i in range(1 + extra_rounds)}
+    rounds = {
+        f"Round {i:02d}": {"agents": {"Bomb-omb_0": agent_entry}} for i in range(1 + extra_rounds)
+    }
     return {"by_agent": {"Bomb-omb_0": {"score": 99}}, "by_round": rounds}
 
 
 ENTRY = {
-    "score": 7, "kills": 1, "self_kills": 0, "survived": True, "survival_steps": 400,
-    "coins": 2, "initially_available_coins": 8, "invalid": 3, "termination_reason": "step_limit",
+    "score": 7,
+    "kills": 1,
+    "self_kills": 0,
+    "survived": True,
+    "survival_steps": 400,
+    "coins": 2,
+    "initially_available_coins": 8,
+    "invalid": 3,
+    "termination_reason": "step_limit",
 }
 
 
@@ -40,11 +49,17 @@ def test_candidates_are_paired_with_the_reference_world_by_world():
         {"artifact": "control-r1@2000", "world_seed": 2, "score": 5},
         {"artifact": "control-r2@2000", "world_seed": 1, "score": 5},
         {"artifact": "control-r2@2000", "world_seed": 2, "score": 7},
-        {"artifact": "control-r2@2000", "world_seed": 3, "score": 100},  # no reference game: unpaired
+        {
+            "artifact": "control-r2@2000",
+            "world_seed": 3,
+            "score": 100,
+        },  # no reference game: unpaired
     ]
     single = evaluate.paired_difference(games, ["control-r1@2000"], "score", resamples=200)
     assert single["worlds"] == 2 and single["mean_difference"] == 1.0
-    pooled = evaluate.paired_difference(games, ["control-r1@2000", "control-r2@2000"], "score", resamples=200)
+    pooled = evaluate.paired_difference(
+        games, ["control-r1@2000", "control-r2@2000"], "score", resamples=200
+    )
     assert pooled["worlds"] == 2 and pooled["mean_difference"] == 2.0
     assert pooled["ci_low"] <= pooled["mean_difference"] <= pooled["ci_high"]
 
@@ -59,8 +74,10 @@ def test_each_game_is_played_in_its_suites_scenario(monkeypatch):
         path = command[command.index("--save-stats") + 1]
         with open(path, "w", encoding="utf-8") as handle:
             import json
+
             json.dump(stats(ENTRY), handle)
         from types import SimpleNamespace
+
         return SimpleNamespace(returncode=0, stdout="", stderr="")
 
     monkeypatch.setattr(evaluate.subprocess, "run", fake_run)

@@ -46,11 +46,18 @@ def games(folder: Path) -> list[dict]:
     log = folder / "games.jsonl"
     if not log.is_file():
         return []
-    return [json.loads(line) for line in log.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
+    return [
+        json.loads(line)
+        for line in log.read_text(encoding="utf-8-sig").splitlines()
+        if line.strip()
+    ]
 
 
 def evaluated(root: Path) -> dict[str, list[str]]:
-    return {name: sorted({g["artifact"] for g in games(root / folder)}) for name, (folder, _) in suites().items()}
+    return {
+        name: sorted({g["artifact"] for g in games(root / folder)})
+        for name, (folder, _) in suites().items()
+    }
 
 
 def check(root: Path) -> tuple[bool, list[str]]:
@@ -63,13 +70,16 @@ def check(root: Path) -> tuple[bool, list[str]]:
         missing, extra = expected - set(keys), set(keys) - expected
         duplicates = len(keys) - len(set(keys))
         wrong = sum(1 for g in rows if g.get("agent") != "Bomb-omb" or g.get("suite") != name)
-        files = all((root / folder / f).is_file() for f in ("games.jsonl", "summary.csv", "paired.csv"))
+        files = all(
+            (root / folder / f).is_file() for f in ("games.jsonl", "summary.csv", "paired.csv")
+        )
         passed = files and not missing and not extra and not duplicates and not wrong
         ok = ok and passed
         lines.append(
             f"{'PASS' if passed else 'FAIL'} {name}: {len(rows)} games, expected {len(expected)} "
-            f"({len(expected_artifacts)} checkpoints x {len(seeds)} worlds); missing {len(missing)}, "
-            f"extra {len(extra)}, duplicates {duplicates}, wrong agent or suite {wrong}, files present {files}"
+            f"({len(expected_artifacts)} checkpoints x {len(seeds)} worlds); "
+            f"missing {len(missing)}, extra {len(extra)}, duplicates {duplicates}, "
+            f"wrong agent or suite {wrong}, files present {files}"
         )
         if missing:
             lines.append(f"     missing examples: {sorted(missing)[:3]}")
@@ -77,7 +87,9 @@ def check(root: Path) -> tuple[bool, list[str]]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--snapshot", choices=("before", "after"), required=True)
     args = parser.parse_args()
@@ -88,8 +100,10 @@ def main() -> int:
         (root / SNAPSHOT).write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
         present = checkpoints(root)
         for name, done in inventory.items():
-            print(f"{name}: {len(done)} checkpoints already evaluated, "
-                  f"{len(set(present) - set(done))} to evaluate")
+            print(
+                f"{name}: {len(done)} checkpoints already evaluated, "
+                f"{len(set(present) - set(done))} to evaluate"
+            )
         return 0
 
     ok, lines = check(root)

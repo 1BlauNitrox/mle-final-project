@@ -10,7 +10,6 @@ already played.
 from __future__ import annotations
 
 import json
-import os
 from pathlib import Path
 
 import pytest
@@ -36,6 +35,7 @@ def test_the_pilot_accepts_the_registration(monkeypatch):
     import importlib
 
     from scripts import pilot_task4_competition as pilot
+
     importlib.reload(pilot)
     try:
         loaded = pilot.config()
@@ -58,12 +58,17 @@ def test_only_the_line_up_differs_between_the_arms(cfg):
     assert differing == {"training_opponents"}
     assert hard["training_opponents"] == ["rule_based_agent"] * 3
     assert control["training_opponents"] == [
-        "rule_based_agent", "coin_collector_agent", "peaceful_agent"]
+        "rule_based_agent",
+        "coin_collector_agent",
+        "peaceful_agent",
+    ]
 
 
 def test_the_control_arm_reproduces_what_the_previous_run_trained_against(cfg, final):
-    assert (cfg["arm_settings"]["control"]["training_opponents"]
-            == final["arm_settings"]["control"]["training_opponents"])
+    assert (
+        cfg["arm_settings"]["control"]["training_opponents"]
+        == final["arm_settings"]["control"]["training_opponents"]
+    )
 
 
 def test_both_arms_use_the_gentler_learning_rate(cfg):
@@ -85,7 +90,10 @@ def test_the_held_out_suite_is_not_carried_into_this_run(cfg):
 
 
 def test_the_declared_totals_match_the_seeds(cfg):
-    assert cfg["training_episodes"] == len(cfg["arms"]) * cfg["replicas"] * cfg["episodes_per_replica_arm"]
+    assert (
+        cfg["training_episodes"]
+        == len(cfg["arms"]) * cfg["replicas"] * cfg["episodes_per_replica_arm"]
+    )
     for replica in cfg["training_world_seeds"]:
         assert len(replica) == cfg["episodes_per_replica_arm"]
     assert len(cfg["training_world_seeds"]) == cfg["replicas"]
@@ -94,7 +102,7 @@ def test_the_declared_totals_match_the_seeds(cfg):
 def test_milestones_are_frequent_enough_to_stop_anywhere(cfg):
     milestones = cfg["checkpoint_milestones"]
     assert milestones[0] == 1000 and milestones[-1] == cfg["episodes_per_replica_arm"]
-    assert all(b - a == 1000 for a, b in zip(milestones, milestones[1:]))
+    assert all(b - a == 1000 for a, b in zip(milestones, milestones[1:], strict=False))
 
 
 def test_the_seed_audit_passed(cfg):

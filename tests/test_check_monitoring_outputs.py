@@ -23,10 +23,13 @@ def fill(root, artifacts, drop=None, agent="Bomb-omb"):
         out.mkdir(parents=True, exist_ok=True)
         rows = [
             {"artifact": a, "world_seed": s, "agent": agent, "suite": name}
-            for a in artifacts for s in seeds
+            for a in artifacts
+            for s in seeds
             if (a, s, name) != drop
         ]
-        (out / "games.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+        (out / "games.jsonl").write_text(
+            "".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8"
+        )
         (out / "summary.csv").write_text("x", encoding="utf-8")
         (out / "paired.csv").write_text("x", encoding="utf-8")
 

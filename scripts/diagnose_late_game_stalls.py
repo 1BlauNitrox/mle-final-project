@@ -40,7 +40,7 @@ def stalled(positions) -> bool:
 def play(args) -> int:
     sys.path.insert(0, str(REPO_ROOT))
     import main  # noqa: E402
-    from environment import BombeRLeWorld, GenericWorld  # noqa: E402
+    from environment import BombeRLeWorld  # noqa: E402
 
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
     suite = cfg["evaluation_suites"][args.suite]
@@ -50,6 +50,7 @@ def play(args) -> int:
     staged = agent_dir / f"stall-{uuid.uuid4().hex[:8]}.pt"
     shutil.copyfile(args.checkpoint, staged)
     import os
+
     os.environ["BOMBERMAN_EVALUATION_CHECKPOINT"] = staged.name
 
     steps: list[dict] = []
@@ -61,14 +62,16 @@ def play(args) -> int:
             if not agent.name.startswith(args.agent):
                 continue
             crates = int((self.arena == 1).sum())
-            steps.append({
-                "seed": current["seed"],
-                "step": int(self.step),
-                "position": (int(agent.x), int(agent.y)),
-                "crates_left": crates,
-                "coins_visible": sum(1 for coin in self.coins if coin.collectable),
-                "opponents_alive": len(self.active_agents) - 1,
-            })
+            steps.append(
+                {
+                    "seed": current["seed"],
+                    "step": int(self.step),
+                    "position": (int(agent.x), int(agent.y)),
+                    "crates_left": crates,
+                    "coins_visible": sum(1 for coin in self.coins if coin.collectable),
+                    "opponents_alive": len(self.active_agents) - 1,
+                }
+            )
         return original_poll(self)
 
     BombeRLeWorld.poll_and_run_agents = poll
@@ -76,10 +79,20 @@ def play(args) -> int:
     try:
         for seed in seeds:
             current["seed"] = seed
-            main.main([
-                "play", "--agents", *agents, "--scenario", suite["scenario"],
-                "--n-rounds", "1", "--seed", str(seed), "--no-gui",
-            ])
+            main.main(
+                [
+                    "play",
+                    "--agents",
+                    *agents,
+                    "--scenario",
+                    suite["scenario"],
+                    "--n-rounds",
+                    "1",
+                    "--seed",
+                    str(seed),
+                    "--no-gui",
+                ]
+            )
     finally:
         BombeRLeWorld.poll_and_run_agents = original_poll
         staged.unlink(missing_ok=True)
@@ -121,8 +134,11 @@ def report(args) -> int:
     if with_crates["steps"] and without["steps"]:
         a = with_crates["stalled"] / with_crates["steps"]
         b = without["stalled"] / without["steps"]
-        print(f"\nstalling is {b / a:.1f}x more likely once the crates are gone"
-              if a else "\nno stalling at all while crates remain")
+        print(
+            f"\nstalling is {b / a:.1f}x more likely once the crates are gone"
+            if a
+            else "\nno stalling at all while crates remain"
+        )
 
     # What is on the board when it stalls?
     stalls = defaultdict(int)
@@ -132,7 +148,11 @@ def report(args) -> int:
             positions.append(tuple(step["position"]))
             if not stalled(positions):
                 continue
-            key = (step["crates_left"] == 0, step["coins_visible"] == 0, step["opponents_alive"] > 0)
+            key = (
+                step["crates_left"] == 0,
+                step["coins_visible"] == 0,
+                step["opponents_alive"] > 0,
+            )
             stalls[key] += 1
     print("\nwhat the board looked like during stalled steps")
     print(f"{'crates gone':<13}{'no coins visible':<19}{'opponent alive':<16}{'steps':>8}")
@@ -142,7 +162,9 @@ def report(args) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     sub = parser.add_subparsers(dest="mode", required=True)
     p = sub.add_parser("play")
     p.add_argument("--checkpoint", type=Path, required=True)

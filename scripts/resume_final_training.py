@@ -29,7 +29,12 @@ from pathlib import Path
 import psutil
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-STAGES = (("train", "training"), ("evaluate", "evaluation"), ("latency", "latency"), ("results", None))
+STAGES = (
+    ("train", "training"),
+    ("evaluate", "evaluation"),
+    ("latency", "latency"),
+    ("results", None),
+)
 EVIDENCE = "task4-competition-evidence.tar.gz"
 RECOVERY_STATE = "recovery-chain.json"
 STALE_MINUTES = {"training": 12, "evaluation": 30, "latency": 30}
@@ -59,7 +64,11 @@ def stage_complete(root: Path, mode: str, stage: str | None) -> bool:
         return bool(state) and state.get("status") == "completed"
     manifest = read(root / f"{EVIDENCE}.manifest.json")
     archive = root / EVIDENCE
-    return bool(manifest) and archive.is_file() and archive.stat().st_size == manifest.get("size_bytes")
+    return (
+        bool(manifest)
+        and archive.is_file()
+        and archive.stat().st_size == manifest.get("size_bytes")
+    )
 
 
 def first_incomplete(root: Path):
@@ -84,16 +93,24 @@ def processes_on_run(root: Path) -> list[dict]:
             continue
         if target in normalized(command):
             found.append(
-                {"pid": process.info["pid"], "name": process.info["name"], "cmdline": command[-160:]}
+                {
+                    "pid": process.info["pid"],
+                    "name": process.info["name"],
+                    "cmdline": command[-160:],
+                }
             )
     return found
 
 
 def live_orchestrator(root: Path):
     chain = read(root / "chain-state.json")
-    if chain and chain.get("status") == "running" and chain.get("active_pid"):
-        if psutil.pid_exists(chain["active_pid"]):
-            return "chain, stage supervisor", chain["active_pid"]
+    if (
+        chain
+        and chain.get("status") == "running"
+        and chain.get("active_pid")
+        and psutil.pid_exists(chain["active_pid"])
+    ):
+        return "chain, stage supervisor", chain["active_pid"]
     recovery = read(root / RECOVERY_STATE)
     if recovery and recovery.get("status") == "running":
         try:
@@ -118,7 +135,9 @@ def progress_age_minutes(root: Path, stage: str | None):
         ]
         return max(ages) if ages else None
     if stage in ("evaluation", "latency"):
-        files = [p for p in (root / stage).rglob("*") if p.is_file()] if (root / stage).is_dir() else []
+        files = (
+            [p for p in (root / stage).rglob("*") if p.is_file()] if (root / stage).is_dir() else []
+        )
         newest = max((p.stat().st_mtime for p in files), default=None)
         if newest is None and (root / f"{stage}-state.json").is_file():
             newest = (root / f"{stage}-state.json").stat().st_mtime
@@ -130,7 +149,9 @@ def status(root: Path) -> tuple[str, dict]:
     report = {"root": str(root)}
     pending = first_incomplete(root)
     report["stage"] = pending[0] if pending else "all complete"
-    report["completed_stages"] = [mode for mode, stage in STAGES if stage_complete(root, mode, stage)]
+    report["completed_stages"] = [
+        mode for mode, stage in STAGES if stage_complete(root, mode, stage)
+    ]
     owner = live_orchestrator(root)
     report["orchestrator"] = f"{owner[0]} pid {owner[1]}" if owner else "none alive"
 
@@ -140,7 +161,9 @@ def status(root: Path) -> tuple[str, dict]:
         "holdout" in p.name for p in (root / "evaluation").iterdir()
     )
     if played_holdout:
-        report["warning"] = "a held-out suite appears under evaluation/ - it must never be played there"
+        report["warning"] = (
+            "a held-out suite appears under evaluation/ - it must never be played there"
+        )
     report["audits"] = len(list(root.glob("resume-audit-*.json")))
     report["ram_available_gib"] = round(psutil.virtual_memory().available / 1024**3, 2)
 
@@ -218,14 +241,27 @@ def launch_orchestrator(root: Path, profile: str) -> int:
     stamp = time.strftime("%Y%m%dT%H%M%S")
     log = (root / f"recovery-{stamp}.log").open("w", encoding="utf-8")
     command = [
-        sys.executable, str(Path(__file__).resolve()),
-        "--root", str(root), "--profile", profile, "--orchestrate",
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--root",
+        str(root),
+        "--profile",
+        profile,
+        "--orchestrate",
     ]
     flags = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
-    common = dict(cwd=REPO_ROOT, env=stage_environment(profile), stdin=subprocess.DEVNULL,
-                  stdout=log, stderr=subprocess.STDOUT, close_fds=True)
+    common = dict(
+        cwd=REPO_ROOT,
+        env=stage_environment(profile),
+        stdin=subprocess.DEVNULL,
+        stdout=log,
+        stderr=subprocess.STDOUT,
+        close_fds=True,
+    )
     try:
-        process = subprocess.Popen(command, creationflags=flags | subprocess.CREATE_BREAKAWAY_FROM_JOB, **common)
+        process = subprocess.Popen(
+            command, creationflags=flags | subprocess.CREATE_BREAKAWAY_FROM_JOB, **common
+        )
     except OSError:
         process = subprocess.Popen(command, creationflags=flags, **common)
     return process.pid
@@ -234,7 +270,10 @@ def launch_orchestrator(root: Path, profile: str) -> int:
 def wait_for_memory(root: Path, record: dict) -> None:
     minimum = read(root / "config.json")["minimum_free_memory_bytes"]
     started = time.monotonic()
-    while psutil.virtual_memory().available < minimum and time.monotonic() - started < MEMORY_WAIT_SECONDS:
+    while (
+        psutil.virtual_memory().available < minimum
+        and time.monotonic() - started < MEMORY_WAIT_SECONDS
+    ):
         time.sleep(30)
     record.setdefault("memory_waits_seconds", []).append(round(time.monotonic() - started))
 
@@ -265,7 +304,14 @@ def orchestrate(root: Path, profile: str, runner=subprocess.run) -> int:
             record["stage"] = mode
             durable_write(path, record)
             wait_for_memory(root, record)
-            command = [sys.executable, "-m", "scripts.pilot_task4_competition", mode, "--root", str(root)]
+            command = [
+                sys.executable,
+                "-m",
+                "scripts.pilot_task4_competition",
+                mode,
+                "--root",
+                str(root),
+            ]
             if stage is not None and (root / f"{stage}-state.json").is_file():
                 command.append("--resume")
             if mode == "results":
@@ -303,12 +349,16 @@ def recover(root: Path, profile: str) -> int:
     if audited:
         print(f"audit written: {audited.name}")
     pid = launch_orchestrator(root, profile)
-    print(f"resuming from stage '{mode}'; detached orchestrator pid {pid}; state in {RECOVERY_STATE}")
+    print(
+        f"resuming from stage '{mode}'; detached orchestrator pid {pid}; state in {RECOVERY_STATE}"
+    )
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--root", type=Path, required=True)
     # The tool sets TASK4_PROFILE for every stage it launches, so this default
     # silently overrides the caller's own environment. Honouring the variable

@@ -58,19 +58,39 @@ def test_the_registered_worlds_are_fresh_and_never_held_out():
     registration = json.loads(REGISTRATION.read_text(encoding="utf-8"))
     seeds = registration["suite"]["world_seeds"]
     assert len(seeds) == len(set(seeds)) == 100
-    final = json.loads((ROOT / "experiments/2026-09-17-task4-final-training/config.json").read_text(encoding="utf-8"))
+    final = json.loads(
+        (ROOT / "experiments/2026-09-17-task4-final-training/config.json").read_text(
+            encoding="utf-8"
+        )
+    )
     registered = {s for suite in final["evaluation_suites"].values() for s in suite["world_seeds"]}
     registered |= {s for replica in final["training_world_seeds"] for s in replica}
     assert not set(seeds) & registered
 
 
 def test_the_evaluator_refuses_a_registration_that_touches_held_out_worlds(tmp_path, monkeypatch):
-    final = json.loads((ROOT / "experiments/2026-09-17-task4-final-training/config.json").read_text(encoding="utf-8"))
+    final = json.loads(
+        (ROOT / "experiments/2026-09-17-task4-final-training/config.json").read_text(
+            encoding="utf-8"
+        )
+    )
     held = final["evaluation_suites"]["holdout-rule-based"]["world_seeds"][:2]
     bad = tmp_path / "bad.json"
-    bad.write_text(json.dumps({"suite": {"name": "sneaky", "scenario": "classic",
-                                         "opponents": [], "world_seeds": [960000001, *held]}}),
-                   encoding="utf-8")
-    monkeypatch.setattr(sys, "argv", ["evaluate_milestones.py", "--root", str(tmp_path), "--registration", str(bad)])
+    bad.write_text(
+        json.dumps(
+            {
+                "suite": {
+                    "name": "sneaky",
+                    "scenario": "classic",
+                    "opponents": [],
+                    "world_seeds": [960000001, *held],
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        sys, "argv", ["evaluate_milestones.py", "--root", str(tmp_path), "--registration", str(bad)]
+    )
     with pytest.raises(SystemExit, match="held-out"):
         evaluate_milestones.main()

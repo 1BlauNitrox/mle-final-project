@@ -36,14 +36,19 @@ DELTA = {"UP": (0, -1), "RIGHT": (1, 0), "DOWN": (0, 1), "LEFT": (-1, 0)}
 REVERSE = {"UP": "DOWN", "DOWN": "UP", "LEFT": "RIGHT", "RIGHT": "LEFT"}
 
 
-def classify_invalid(*, action, allowed, start, occupant_start, occupant_acted_first,
-                     bomb_on_target, arena_blocked):
+def classify_invalid(
+    *, action, allowed, start, occupant_start, occupant_acted_first, bomb_on_target, arena_blocked
+):
     """Name the reason the framework rejected one action."""
     if not allowed:
         return "mask_disallowed_it"
     if action not in DELTA:
         return "non_move"
-    if occupant_start is not None and occupant_acted_first and occupant_start != target_of(start, action):
+    if (
+        occupant_start is not None
+        and occupant_acted_first
+        and occupant_start != target_of(start, action)
+    ):
         return "contested_tile_opponent_moved_in_first"
     if bomb_on_target:
         return "bomb_on_target"
@@ -89,7 +94,10 @@ def play(args) -> int:
     original_perform = GenericWorld.perform_agent_action
 
     def poll(self):
-        self._diag = {"start": {a.name: (int(a.x), int(a.y)) for a in self.active_agents}, "order": []}
+        self._diag = {
+            "start": {a.name: (int(a.x), int(a.y)) for a in self.active_agents},
+            "order": [],
+        }
         return original_poll(self)
 
     def perform(self, agent, action):
@@ -107,9 +115,13 @@ def play(args) -> int:
         if invalid:
             mask = legality.framework_legal_action_mask(observed)
             target = target_of(start, action) if action in DELTA else None
-            occupant = next(
-                (a for a in self.active_agents if a is not agent and (a.x, a.y) == target), None
-            ) if target else None
+            occupant = (
+                next(
+                    (a for a in self.active_agents if a is not agent and (a.x, a.y) == target), None
+                )
+                if target
+                else None
+            )
             reason = classify_invalid(
                 action=action,
                 allowed=bool(mask[ACTIONS.index(action)]) if action in ACTIONS else False,
@@ -119,19 +131,21 @@ def play(args) -> int:
                 bomb_on_target=bool(target) and any((b.x, b.y) == target for b in self.bombs),
                 arena_blocked=bool(target) and self.arena[target] != 0,
             )
-        steps.append({
-            "seed": current["seed"],
-            "step": int(self.step),
-            "action": action,
-            "move": action in DELTA,
-            "invalid": invalid,
-            "reason": reason,
-            "nearest_opponent": min(
-                (abs(int(o[3][0]) - start[0]) + abs(int(o[3][1]) - start[1]) for o in others),
-                default=None,
-            ),
-            "opponents_alive": len(others),
-        })
+        steps.append(
+            {
+                "seed": current["seed"],
+                "step": int(self.step),
+                "action": action,
+                "move": action in DELTA,
+                "invalid": invalid,
+                "reason": reason,
+                "nearest_opponent": min(
+                    (abs(int(o[3][0]) - start[0]) + abs(int(o[3][1]) - start[1]) for o in others),
+                    default=None,
+                ),
+                "opponents_alive": len(others),
+            }
+        )
 
     BombeRLeWorld.poll_and_run_agents = poll
     GenericWorld.perform_agent_action = perform
@@ -139,14 +153,31 @@ def play(args) -> int:
     try:
         for seed in seeds:
             current["seed"] = seed
-            main.main(["play", "--agents", *agents, "--scenario", suite["scenario"],
-                       "--n-rounds", "1", "--seed", str(seed), "--no-gui"])
+            main.main(
+                [
+                    "play",
+                    "--agents",
+                    *agents,
+                    "--scenario",
+                    suite["scenario"],
+                    "--n-rounds",
+                    "1",
+                    "--seed",
+                    str(seed),
+                    "--no-gui",
+                ]
+            )
     finally:
         (agent_dir / staged).unlink(missing_ok=True)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    record = {"agent": args.agent, "checkpoint": str(args.checkpoint), "suite": args.suite,
-              "seeds": seeds, "steps": steps}
+    record = {
+        "agent": args.agent,
+        "checkpoint": str(args.checkpoint),
+        "suite": args.suite,
+        "seeds": seeds,
+        "steps": steps,
+    }
     args.out.write_text(json.dumps(record) + "\n", encoding="utf-8")
     print(f"{len(seeds)} worlds, {len(steps)} steps -> {args.out}")
     return 0
@@ -168,36 +199,48 @@ def report(args) -> int:
         for world in by_world.values():
             flags = reversals([s["action"] for s in world])
             last = world[-1]["step"]
-            for flag, s in zip(flags, world):
+            for flag, s in zip(flags, world, strict=True):
                 alone = s["opponents_alive"] == 0
                 pace[alone][0] += 1
                 pace[alone][1] += flag
                 if s["invalid"] and last < 400 and last - s["step"] <= 5:
                     fatal += 1
-        rows.append({
-            "recording": Path(path).stem,
-            "suite": rec["suite"],
-            "games": games,
-            "invalid_per_game": round(len(invalid) / games, 3),
-            "invalid_reasons": dict(collections.Counter(s["reason"] for s in invalid)),
-            "invalid_per_1000_moves": round(1000 * len(invalid) / max(moves, 1), 2),
-            "moves_per_game": round(moves / games, 1),
-            "share_steps_opponent_within_2": round(
-                sum(1 for s in steps if s["nearest_opponent"] is not None and s["nearest_opponent"] <= 2)
-                / max(len(steps), 1), 4),
-            "invalid_followed_by_death_within_5": fatal,
-            "reversal_share_opponents_alive": round(pace[False][1] / max(pace[False][0], 1), 4),
-            "reversal_share_alone": round(pace[True][1] / pace[True][0], 4) if pace[True][0] else None,
-            "mean_round_steps": round(mean(len(w) for w in by_world.values()), 1),
-            "rounds_hitting_400": sum(len(w) >= 400 for w in by_world.values()),
-        })
+        rows.append(
+            {
+                "recording": Path(path).stem,
+                "suite": rec["suite"],
+                "games": games,
+                "invalid_per_game": round(len(invalid) / games, 3),
+                "invalid_reasons": dict(collections.Counter(s["reason"] for s in invalid)),
+                "invalid_per_1000_moves": round(1000 * len(invalid) / max(moves, 1), 2),
+                "moves_per_game": round(moves / games, 1),
+                "share_steps_opponent_within_2": round(
+                    sum(
+                        1
+                        for s in steps
+                        if s["nearest_opponent"] is not None and s["nearest_opponent"] <= 2
+                    )
+                    / max(len(steps), 1),
+                    4,
+                ),
+                "invalid_followed_by_death_within_5": fatal,
+                "reversal_share_opponents_alive": round(pace[False][1] / max(pace[False][0], 1), 4),
+                "reversal_share_alone": round(pace[True][1] / pace[True][0], 4)
+                if pace[True][0]
+                else None,
+                "mean_round_steps": round(mean(len(w) for w in by_world.values()), 1),
+                "rounds_hitting_400": sum(len(w) >= 400 for w in by_world.values()),
+            }
+        )
     for row in rows:
         print(json.dumps(row))
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     sub = parser.add_subparsers(dest="mode", required=True)
     p = sub.add_parser("play")
     p.add_argument("--checkpoint", type=Path, required=True)

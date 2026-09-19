@@ -71,9 +71,7 @@ def build_directory(source: Path, target: Path, checkpoint: Path) -> None:
     shutil.copy2(checkpoint, target / "checkpoint.pt")
 
 
-def write_artifact(
-    target: Path, source: Path, checkpoint: Path, selection_basis: str
-) -> dict:
+def write_artifact(target: Path, source: Path, checkpoint: Path, selection_basis: str) -> dict:
     artifact = {
         "schema_version": 1,
         "agent_name": target.name,
@@ -104,7 +102,10 @@ def check_matches_trained_code(target: Path, source: Path, commit: str) -> list[
     behaviour was never the one measured.
     """
     mismatches = []
-    for name in (*CODE_FILES, *(f"{d}/{p.name}" for d in CODE_DIRS for p in (source / d).glob("*.py"))):
+    for name in (
+        *CODE_FILES,
+        *(f"{d}/{p.name}" for d in CODE_DIRS for p in (source / d).glob("*.py")),
+    ):
         if name == "requirements.txt":
             continue  # declares the grader's install, not the policy
         pinned = subprocess.run(
@@ -179,7 +180,11 @@ def fresh_framework_check(out_zip: Path, agent_name: str) -> tuple[bool, str]:
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         tmp = Path(tmp)
         archive = tmp / "framework.tar"
-        subprocess.run(["git", "archive", "--format=tar", f"--output={archive}", "HEAD"], cwd=REPO_ROOT, check=True)
+        subprocess.run(
+            ["git", "archive", "--format=tar", f"--output={archive}", "HEAD"],
+            cwd=REPO_ROOT,
+            check=True,
+        )
         root = tmp / "framework"
         root.mkdir()
         with tarfile.open(archive) as tar:
@@ -188,9 +193,22 @@ def fresh_framework_check(out_zip: Path, agent_name: str) -> tuple[bool, str]:
         with zipfile.ZipFile(out_zip) as zf:
             zf.extractall(root / "agent_code")
         proc = subprocess.run(
-            [sys.executable, "main.py", "play", "--agents", agent_name,
-             "random_agent", "random_agent", "random_agent", "--n-rounds", "1", "--no-gui"],
-            cwd=root, capture_output=True, text=True,
+            [
+                sys.executable,
+                "main.py",
+                "play",
+                "--agents",
+                agent_name,
+                "random_agent",
+                "random_agent",
+                "random_agent",
+                "--n-rounds",
+                "1",
+                "--no-gui",
+            ],
+            cwd=root,
+            capture_output=True,
+            text=True,
         )
         output = (proc.stdout + proc.stderr)[-2000:]
         return proc.returncode == 0 and "Traceback" not in output, output
@@ -283,7 +301,10 @@ def main() -> int:
         return 1
     expected = sorted(f"{args.name}/{n}" for n in shipped_names(target))
     if sorted(names) != expected:
-        print("FAIL: zip contents differ from the runtime file list:", sorted(set(names) ^ set(expected)))
+        print(
+            "FAIL: zip contents differ from the runtime file list:",
+            sorted(set(names) ^ set(expected)),
+        )
         return 1
     if not args.skip_smoke:
         ok, output = fresh_framework_check(out_zip, args.name)

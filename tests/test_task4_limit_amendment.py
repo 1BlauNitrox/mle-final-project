@@ -13,7 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def load(profile):
-    return json.loads((ROOT / f"experiments/{pilot.profile_dir(profile)}/config.json").read_text(encoding="utf-8"))
+    return json.loads(
+        (ROOT / f"experiments/{pilot.profile_dir(profile)}/config.json").read_text(encoding="utf-8")
+    )
 
 
 def test_the_final_run_may_train_until_monday_morning():
@@ -43,6 +45,8 @@ def test_completed_screens_keep_the_limits_they_ran_under(profile):
 
 
 def test_an_amendment_can_never_lower_a_limit(monkeypatch):
-    monkeypatch.setitem(pilot.LIMIT_AMENDMENTS, "final-training", {"training_limits": {"wall_seconds": 1}})
+    monkeypatch.setitem(
+        pilot.LIMIT_AMENDMENTS, "final-training", {"training_limits": {"wall_seconds": 1}}
+    )
     with pytest.raises(ValueError):
         pilot.stage_limits(load("final-training"), "training")

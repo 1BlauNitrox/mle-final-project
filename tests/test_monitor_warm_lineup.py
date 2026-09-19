@@ -45,7 +45,9 @@ def games_for(episodes, worlds, jobs=monitor.JOBS):
     for episode in episodes:
         for job in jobs:
             for world in range(worlds):
-                rows.append({"artifact": f"{job}@{episode}", "episode": episode, "world_seed": world})
+                rows.append(
+                    {"artifact": f"{job}@{episode}", "episode": episode, "world_seed": world}
+                )
     return rows
 
 
@@ -53,7 +55,8 @@ def test_a_fully_evaluated_level_counts_as_done(tmp_path):
     out = tmp_path / "out"
     out.mkdir()
     (out / "games.jsonl").write_text(
-        "".join(json.dumps(r) + "\n" for r in games_for([1000], worlds=5)), encoding="utf-8")
+        "".join(json.dumps(r) + "\n" for r in games_for([1000], worlds=5)), encoding="utf-8"
+    )
     assert monitor.evaluated_episodes(out, worlds=5) == {1000}
 
 

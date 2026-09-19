@@ -100,7 +100,9 @@ def test_an_existing_stage_is_resumed_and_a_failure_stops_the_orchestrator(root)
     complete(root, "training")
     write(root / "evaluation-state.json", {"status": "running", "active": []})
     calls = []
-    assert resume.orchestrate(root, "final-training", runner=fake_runner(root, calls, "evaluate")) == 1
+    assert (
+        resume.orchestrate(root, "final-training", runner=fake_runner(root, calls, "evaluate")) == 1
+    )
 
     assert [c["mode"] for c in calls] == ["evaluate"]
     assert "--resume" in calls[0]["command"]
@@ -142,4 +144,6 @@ def test_the_audit_records_an_abandoned_roster_before_clearing_it(root):
 
 
 def test_the_process_sweep_matches_every_spelling_of_the_run_root():
-    assert resume.normalized("C:/Task4-Final-Training/") == resume.normalized("c:\\task4-final-training")
+    assert resume.normalized("C:/Task4-Final-Training/") == resume.normalized(
+        "c:\\task4-final-training"
+    )

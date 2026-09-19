@@ -101,11 +101,21 @@ def play(agent: str, staged: str, seed: int, opponents: list[str], scenario: str
     try:
         proc = subprocess.run(
             [
-                sys.executable, "main.py", "play",
-                "--agents", agent, *opponents,
-                "--scenario", scenario,
-                "--n-rounds", "1", "--seed", str(seed),
-                "--no-gui", "--save-stats", stats_path,
+                sys.executable,
+                "main.py",
+                "play",
+                "--agents",
+                agent,
+                *opponents,
+                "--scenario",
+                scenario,
+                "--n-rounds",
+                "1",
+                "--seed",
+                str(seed),
+                "--no-gui",
+                "--save-stats",
+                stats_path,
             ],
             cwd=REPO_ROOT,
             env={**os.environ, "BOMBERMAN_EVALUATION_CHECKPOINT": staged},
@@ -119,8 +129,13 @@ def play(agent: str, staged: str, seed: int, opponents: list[str], scenario: str
         Path(stats_path).unlink(missing_ok=True)
 
 
-def paired_difference(games: list[dict], artifacts: list[str], metric: str,
-                      resamples: int = 5000, seed: int = 20260917) -> dict | None:
+def paired_difference(
+    games: list[dict],
+    artifacts: list[str],
+    metric: str,
+    resamples: int = 5000,
+    seed: int = 20260917,
+) -> dict | None:
     """Mean over worlds of (candidate - reference), pooling the given artifacts per world."""
     by_world = defaultdict(dict)
     for game in games:
@@ -135,9 +150,7 @@ def paired_difference(games: list[dict], artifacts: list[str], metric: str,
     if not diffs:
         return None
     rng = random.Random(seed)
-    boots = sorted(
-        mean(rng.choice(diffs) for _ in diffs) for _ in range(resamples)
-    )
+    boots = sorted(mean(rng.choice(diffs) for _ in diffs) for _ in range(resamples))
     return {
         "worlds": len(diffs),
         "mean_difference": mean(diffs),
@@ -173,32 +186,60 @@ def summarize(games: list[dict], out: Path) -> None:
 
     with (out / "paired.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["candidate", "metric", "worlds", "mean_difference_vs_reference", "ci95_low", "ci95_high"])
+        writer.writerow(
+            [
+                "candidate",
+                "metric",
+                "worlds",
+                "mean_difference_vs_reference",
+                "ci95_low",
+                "ci95_high",
+            ]
+        )
         for name in sorted(groups):
             for metric in ("score", "kills", "self_kills", "survived", "collection_fraction"):
                 result = paired_difference(games, groups[name], metric)
                 if result:
-                    writer.writerow([
-                        name, metric, result["worlds"], round(result["mean_difference"], 4),
-                        round(result["ci_low"], 4), round(result["ci_high"], 4),
-                    ])
+                    writer.writerow(
+                        [
+                            name,
+                            metric,
+                            result["worlds"],
+                            round(result["mean_difference"], 4),
+                            round(result["ci_low"], 4),
+                            round(result["ci_high"], 4),
+                        ]
+                    )
 
     print()
-    print(f"{'artifact':<24}{'games':>6}{'score':>8}{'kills':>7}{'selfkill':>9}{'survived':>9}{'coins':>7}")
+    print(
+        f"{'artifact':<24}{'games':>6}{'score':>8}{'kills':>7}{'selfkill':>9}{'survived':>9}{'coins':>7}"
+    )
     with (out / "summary.csv").open(encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
-            print(f"{row['artifact']:<24}{row['games']:>6}{row['score']:>8}{row['kills']:>7}"
-                  f"{row['self_kills']:>9}{row['survived']:>9}{row['coins']:>7}")
+            print(
+                f"{row['artifact']:<24}{row['games']:>6}{row['score']:>8}{row['kills']:>7}"
+                f"{row['self_kills']:>9}{row['survived']:>9}{row['coins']:>7}"
+            )
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--root", type=Path, required=True,
-                        help="Directory holding reference.pt and training-resume/*/milestone-*.pt")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        required=True,
+        help="Directory holding reference.pt and training-resume/*/milestone-*.pt",
+    )
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     parser.add_argument("--suite", default="classic-rule-based")
-    parser.add_argument("--registration", type=Path,
-                        help="Play the world set of a registered experiment instead of a config suite.")
+    parser.add_argument(
+        "--registration",
+        type=Path,
+        help="Play the world set of a registered experiment instead of a config suite.",
+    )
     parser.add_argument("--worlds", type=int, help="Only the first N worlds (default: all).")
     parser.add_argument("--agent", default="Bomb-omb")
     parser.add_argument("--jobs", type=int, default=2)
@@ -221,13 +262,19 @@ def main() -> int:
             raise SystemExit("refusing registration: it reuses held-out worlds")
     else:
         if args.suite not in cfg["evaluation_suites"] or "holdout" in args.suite:
-            raise SystemExit(f"refusing suite {args.suite!r}: monitoring reads development suites only")
+            raise SystemExit(
+                f"refusing suite {args.suite!r}: monitoring reads development suites only"
+            )
         suite_name, suite = args.suite, cfg["evaluation_suites"][args.suite]
     seeds = suite["world_seeds"][: args.worlds] if args.worlds else list(suite["world_seeds"])
     opponents = suite["opponents"]
 
     root = args.root.resolve()
-    default_out = "milestone-evaluation" if suite_name == "classic-rule-based" else f"milestone-evaluation-{suite_name}"
+    default_out = (
+        "milestone-evaluation"
+        if suite_name == "classic-rule-based"
+        else f"milestone-evaluation-{suite_name}"
+    )
     if args.agent != "Bomb-omb":
         default_out += f"-{args.agent}"
     out = (args.out or root / default_out).resolve()
@@ -239,13 +286,19 @@ def main() -> int:
         raise SystemExit(f"no milestone checkpoints under {root / 'training-resume'}")
 
     log = out / "games.jsonl"
-    games = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()] if log.is_file() else []
+    games = (
+        [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+        if log.is_file()
+        else []
+    )
     recorded = {g.get("suite", "classic-rule-based") for g in games}
     if recorded - {suite_name}:
         raise SystemExit(f"{log} already holds {sorted(recorded)}; use a separate --out per suite")
     agents = {g.get("agent", "Bomb-omb") for g in games}
     if agents - {args.agent}:
-        raise SystemExit(f"{log} already holds games of {sorted(agents)}; use a separate --out per agent")
+        raise SystemExit(
+            f"{log} already holds games of {sorted(agents)}; use a separate --out per agent"
+        )
     variant = os.environ.get(VARIANT_ENV, "")
     conflict = variant_conflict(games, variant)
     if conflict:
@@ -255,8 +308,10 @@ def main() -> int:
         )
     done = {(g["artifact"], g["world_seed"]) for g in games}
     pending = [(a, s) for a in artifacts for s in seeds if (a, s) not in done]
-    print(f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  "
-          f"pending: {len(pending)}  agent: {args.agent}  variant: {variant or '(none)'}")
+    print(
+        f"artifacts: {len(artifacts)}  worlds: {len(seeds)}  games done: {len(done)}  "
+        f"pending: {len(pending)}  agent: {args.agent}  variant: {variant or '(none)'}"
+    )
 
     agent_dir = REPO_ROOT / "agent_code" / args.agent
     staged = {}
@@ -276,8 +331,13 @@ def main() -> int:
                 artifact, seed = futures[future]
                 arm, episode = arm_and_episode(artifact)
                 row = {
-                    "artifact": artifact, "arm": arm, "episode": episode, "agent": args.agent,
-                    "variant": variant, "suite": suite_name, "world_seed": seed,
+                    "artifact": artifact,
+                    "arm": arm,
+                    "episode": episode,
+                    "agent": args.agent,
+                    "variant": variant,
+                    "suite": suite_name,
+                    "world_seed": seed,
                     **future.result(),
                 }
                 with lock, log.open("a", encoding="utf-8") as handle:

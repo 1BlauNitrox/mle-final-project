@@ -18,9 +18,17 @@ def test_the_zip_list_leaves_out_training_code_logs_and_metadata(tmp_path):
     (tmp_path / "logs").mkdir()
     (tmp_path / "logs" / "Bomb-omb.log").write_text("x", encoding="utf-8")
     names = package.shipped_names(tmp_path)
-    for unwanted in ("train.py", "rewards.py", "migration.py", "artifact.json", "logs/Bomb-omb.log"):
+    for unwanted in (
+        "train.py",
+        "rewards.py",
+        "migration.py",
+        "artifact.json",
+        "logs/Bomb-omb.log",
+    ):
         assert unwanted not in names
-    assert {"callbacks.py", "checkpoint.pt", "requirements.txt", "features/assemble.py"} <= set(names)
+    assert {"callbacks.py", "checkpoint.pt", "requirements.txt", "features/assemble.py"} <= set(
+        names
+    )
 
 
 def test_everything_the_shipped_agent_imports_is_shipped():

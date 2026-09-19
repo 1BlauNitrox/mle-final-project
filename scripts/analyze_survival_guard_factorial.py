@@ -29,7 +29,11 @@ def load(folder: Path, expected: str) -> list[dict]:
     log = folder / "games.jsonl"
     if not log.is_file():
         raise SystemExit(f"missing {log}")
-    games = [json.loads(line) for line in log.read_text(encoding="utf-8-sig").splitlines() if line.strip()]
+    games = [
+        json.loads(line)
+        for line in log.read_text(encoding="utf-8-sig").splitlines()
+        if line.strip()
+    ]
     labels = {game.get("variant", "") for game in games}
     if labels != {expected}:
         raise SystemExit(f"{log} holds variant {sorted(labels)}, expected [{expected!r}]")
@@ -45,8 +49,9 @@ def table(games: list[dict], metric: str) -> dict[tuple[str, int], float]:
     return values
 
 
-def paired(cell: list[dict], control: list[dict], metric: str, checkpoints: list[str],
-           worlds: list[int]) -> np.ndarray | None:
+def paired(
+    cell: list[dict], control: list[dict], metric: str, checkpoints: list[str], worlds: list[int]
+) -> np.ndarray | None:
     """(checkpoint, world) matrix of cell minus control, NaN where either is missing.
 
     Cells resume from games.jsonl, so an interrupted run leaves whole worlds
@@ -91,22 +96,36 @@ def bootstrap(matrix: np.ndarray, resamples: int, seed: int) -> dict:
 
 def verdict(score: dict, self_kills: dict, thresholds: dict) -> tuple[bool, list[str]]:
     checks = [
-        (self_kills["ci_high"] < thresholds["self_kills_upper_bound_below"],
-         f"self-kill interval upper bound {self_kills['ci_high']:+.3f} below "
-         f"{thresholds['self_kills_upper_bound_below']:+.2f}"),
-        (score["ci_low"] > thresholds["score_lower_bound_above"],
-         f"score interval lower bound {score['ci_low']:+.3f} above "
-         f"{thresholds['score_lower_bound_above']:+.2f}"),
-        (score["mean"] >= thresholds["score_point_estimate_at_least"],
-         f"score point estimate {score['mean']:+.3f} at least "
-         f"{thresholds['score_point_estimate_at_least']:+.2f}"),
+        (
+            self_kills["ci_high"] < thresholds["self_kills_upper_bound_below"],
+            f"self-kill interval upper bound {self_kills['ci_high']:+.3f} below "
+            f"{thresholds['self_kills_upper_bound_below']:+.2f}",
+        ),
+        (
+            score["ci_low"] > thresholds["score_lower_bound_above"],
+            f"score interval lower bound {score['ci_low']:+.3f} above "
+            f"{thresholds['score_lower_bound_above']:+.2f}",
+        ),
+        (
+            score["mean"] >= thresholds["score_point_estimate_at_least"],
+            f"score point estimate {score['mean']:+.3f} at least "
+            f"{thresholds['score_point_estimate_at_least']:+.2f}",
+        ),
     ]
     lines = [f"  {'PASS' if ok else 'FAIL'}  {text}" for ok, text in checks]
     return all(ok for ok, _ in checks), lines
 
 
-def report(name: str, cell: list[dict], control: list[dict], checkpoints: list[str],
-           worlds: list[int], resamples: int, seed: int, metrics=METRICS) -> dict:
+def report(
+    name: str,
+    cell: list[dict],
+    control: list[dict],
+    checkpoints: list[str],
+    worlds: list[int],
+    resamples: int,
+    seed: int,
+    metrics=METRICS,
+) -> dict:
     print(f"\n=== {name} minus control ===")
     results = {}
     for metric in metrics:
@@ -116,15 +135,20 @@ def report(name: str, cell: list[dict], control: list[dict], checkpoints: list[s
             continue
         stat = results[metric] = bootstrap(matrix, resamples, seed)
         star = "" if stat["ci_low"] <= 0 <= stat["ci_high"] else "  *"
-        print(f"  {metric:<22} {stat['mean']:+.4f}  [{stat['ci_low']:+.4f}, {stat['ci_high']:+.4f}]"
-              f"  ({stat['pairs']} pairs){star}")
+        print(
+            f"  {metric:<22} {stat['mean']:+.4f}  [{stat['ci_low']:+.4f}, {stat['ci_high']:+.4f}]"
+            f"  ({stat['pairs']} pairs){star}"
+        )
     return results
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--root", type=Path, required=True,
-                        help="Directory holding one folder per cell")
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "--root", type=Path, required=True, help="Directory holding one folder per cell"
+    )
     parser.add_argument("--registration", type=Path, default=REGISTRATION)
     parser.add_argument("--folder-prefix", default="survival-guard-")
     args = parser.parse_args()
@@ -148,11 +172,12 @@ def main() -> int:
 
     control = cells[CONTROL]
     judged = sorted({g["artifact"] for g in control if g["artifact"] != REFERENCE})
-    print(f"worlds: {len(worlds)}  judged checkpoints: {len(judged)}  "
-          f"cells: {sorted(cells)}  resamples: {resamples}")
+    print(
+        f"worlds: {len(worlds)}  judged checkpoints: {len(judged)}  "
+        f"cells: {sorted(cells)}  resamples: {resamples}"
+    )
     for name, games in cells.items():
-        print(f"  {name:<8} {len(games)} games, "
-              f"{len({g['artifact'] for g in games})} checkpoints")
+        print(f"  {name:<8} {len(games)} games, {len({g['artifact'] for g in games})} checkpoints")
 
     primary = rule["primary_contrast"].split()[0]
     summary = {}
@@ -161,8 +186,16 @@ def main() -> int:
             continue
         summary[name] = report(name, games, control, judged, worlds, resamples, seed)
         print(f"  --- {name}, the untrained reference for context only ---")
-        report(f"{name} (reference)", games, control, [REFERENCE], worlds, resamples, seed,
-               metrics=("score", "self_kills", "survived"))
+        report(
+            f"{name} (reference)",
+            games,
+            control,
+            [REFERENCE],
+            worlds,
+            resamples,
+            seed,
+            metrics=("score", "self_kills", "survived"),
+        )
         for episode in sorted({int(a.split("@")[1]) for a in judged}):
             subset = [a for a in judged if a.endswith(f"@{episode}")]
             stat = paired(games, control, "self_kills", subset, worlds)
@@ -170,15 +203,19 @@ def main() -> int:
             if stat is None or score is None:
                 continue
             s, k = bootstrap(score, resamples, seed), bootstrap(stat, resamples, seed)
-            print(f"  episode {episode}: score {s['mean']:+.3f} [{s['ci_low']:+.3f}, {s['ci_high']:+.3f}]"
-                  f"   self-kills {k['mean']:+.3f} [{k['ci_low']:+.3f}, {k['ci_high']:+.3f}]")
+            print(
+                f"  episode {episode}: score {s['mean']:+.3f} "
+                f"[{s['ci_low']:+.3f}, {s['ci_high']:+.3f}]"
+                f"   self-kills {k['mean']:+.3f} [{k['ci_low']:+.3f}, {k['ci_high']:+.3f}]"
+            )
 
     print(f"\n================ registered decision: {primary} minus control ================")
     if primary not in summary:
         print(f"the primary cell {primary!r} has no games yet, so the rule cannot be applied")
         return 1
-    passed, lines = verdict(summary[primary]["score"], summary[primary]["self_kills"],
-                            rule["thresholds"])
+    passed, lines = verdict(
+        summary[primary]["score"], summary[primary]["self_kills"], rule["thresholds"]
+    )
     print("\n".join(lines))
     print("VERDICT: SHIP THE GUARD" if passed else "VERDICT: DO NOT SHIP")
     if not passed:
@@ -186,10 +223,11 @@ def main() -> int:
         for name in summary:
             if name == primary:
                 continue
-            other, _ = verdict(summary[name]["score"], summary[name]["self_kills"], rule["thresholds"])
+            other, _ = verdict(
+                summary[name]["score"], summary[name]["self_kills"], rule["thresholds"]
+            )
             if other:
-                print(f"NOTE: cell {name!r} would pass the same thresholds. "
-                      f"{rule['multiplicity']}")
+                print(f"NOTE: cell {name!r} would pass the same thresholds. {rule['multiplicity']}")
     return 0
 
 

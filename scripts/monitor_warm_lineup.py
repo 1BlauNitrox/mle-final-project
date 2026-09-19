@@ -96,18 +96,31 @@ def stage(root: Path, staging: Path, episodes: list[int]) -> None:
 
 def evaluate(staging: Path, out: Path, episodes: list[int], jobs: int, registration: Path) -> int:
     command = [
-        sys.executable, str(REPO_ROOT / "scripts/evaluate_milestones.py"),
-        "--root", str(staging), "--registration", str(registration),
-        "--agent", "Bomb-omb", "--jobs", str(jobs), "--out", str(out),
-        "--episodes", *[str(e) for e in episodes],
+        sys.executable,
+        str(REPO_ROOT / "scripts/evaluate_milestones.py"),
+        "--root",
+        str(staging),
+        "--registration",
+        str(registration),
+        "--agent",
+        "Bomb-omb",
+        "--jobs",
+        str(jobs),
+        "--out",
+        str(out),
+        "--episodes",
+        *[str(e) for e in episodes],
     ]
     environment = {**os.environ, "BOMBERMAN_EVALUATION_VARIANT": "warm-lineup"}
     return subprocess.run(command, cwd=REPO_ROOT, env=environment).returncode
 
 
 def summarise(out: Path, complete_only: set[int] | None = None) -> None:
-    rows = [json.loads(line) for line in (out / "games.jsonl").read_text(encoding="utf-8-sig").splitlines()
-            if line.strip()]
+    rows = [
+        json.loads(line)
+        for line in (out / "games.jsonl").read_text(encoding="utf-8-sig").splitlines()
+        if line.strip()
+    ]
     by_artifact = defaultdict(dict)
     for row in rows:
         by_artifact[row["artifact"]][row["world_seed"]] = row
@@ -120,8 +133,13 @@ def summarise(out: Path, complete_only: set[int] | None = None) -> None:
             print(f"(skipping {skipped}: not every job's checkpoint has played every world yet)")
     rng = np.random.default_rng(20260919)
 
-    print(f"\nagainst the episode-8,000 agent this run continues from, paired on {len(worlds)} worlds")
-    print(f"{'episode':>8}{'arm':>9}" + "".join(f"{m:>22}" for m in ("score", "coins", "kills", "self_kills")))
+    print(
+        f"\nagainst the episode-8,000 agent this run continues from, paired on {len(worlds)} worlds"
+    )
+    print(
+        f"{'episode':>8}{'arm':>9}"
+        + "".join(f"{m:>22}" for m in ("score", "coins", "kills", "self_kills"))
+    )
     for episode in episodes:
         for arm in ("control", "hard"):
             candidates = [a for a in by_artifact if a.startswith(arm) and a.endswith(f"@{episode}")]
@@ -129,13 +147,19 @@ def summarise(out: Path, complete_only: set[int] | None = None) -> None:
                 continue
             cells = []
             for metric in ("score", "coins", "kills", "self_kills"):
-                diffs = np.array([
-                    np.mean([by_artifact[c][w][metric] for c in candidates if w in by_artifact[c]])
-                    - by_artifact["reference"][w][metric]
-                    for w in worlds
-                    if all(w in by_artifact[c] for c in candidates)
-                ])
-                draws = np.array([diffs[rng.integers(0, len(diffs), len(diffs))].mean() for _ in range(2000)])
+                diffs = np.array(
+                    [
+                        np.mean(
+                            [by_artifact[c][w][metric] for c in candidates if w in by_artifact[c]]
+                        )
+                        - by_artifact["reference"][w][metric]
+                        for w in worlds
+                        if all(w in by_artifact[c] for c in candidates)
+                    ]
+                )
+                draws = np.array(
+                    [diffs[rng.integers(0, len(diffs), len(diffs))].mean() for _ in range(2000)]
+                )
                 low, high = np.percentile(draws, [2.5, 97.5])
                 mark = "" if low <= 0 <= high else "*"
                 cells.append(f"{diffs.mean():+.3f} [{low:+.2f},{high:+.2f}]{mark}".rjust(22))
@@ -144,14 +168,20 @@ def summarise(out: Path, complete_only: set[int] | None = None) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--root", type=Path, default=RUN)
     parser.add_argument("--staging", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--registration", type=Path, default=REGISTRATION)
     parser.add_argument("--jobs", type=int, default=1)
-    parser.add_argument("--max-episodes", type=int, default=2,
-                        help="Evaluate at most this many new milestone levels per call.")
+    parser.add_argument(
+        "--max-episodes",
+        type=int,
+        default=2,
+        help="Evaluate at most this many new milestone levels per call.",
+    )
     args = parser.parse_args()
 
     lock = args.out.parent / f".{args.out.name}.lock"
@@ -166,8 +196,10 @@ def main() -> int:
     coverage = episode_coverage(args.out)
     partial = {e: coverage[e] for e in coverage if e not in done}
     pending = [e for e in complete if e not in done][: args.max_episodes]
-    print(f"complete milestones: {complete} | fully evaluated: {sorted(done)} | "
-          f"partly evaluated: {partial} | to evaluate: {pending}")
+    print(
+        f"complete milestones: {complete} | fully evaluated: {sorted(done)} | "
+        f"partly evaluated: {partial} | to evaluate: {pending}"
+    )
     if not pending:
         print("NO NEW MILESTONES")
         if (args.out / "games.jsonl").is_file():

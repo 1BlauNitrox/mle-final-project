@@ -84,9 +84,13 @@ def verify(zip_path: Path, root: Path) -> list[str]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--root", type=Path, default=Path("C:/task4-final-training"))
-    parser.add_argument("--bundles", type=Path, default=Path("D:/bomberman-archive/milestone-bundles"))
+    parser.add_argument(
+        "--bundles", type=Path, default=Path("D:/bomberman-archive/milestone-bundles")
+    )
     args = parser.parse_args()
 
     root = args.root.resolve()
@@ -94,8 +98,10 @@ def main() -> int:
     jobs = jobs_of(root)
     complete = complete_episodes(root, time.time())
     pending = [ep for ep in complete if ep not in exported_episodes(args.bundles, jobs)]
-    print(f"jobs: {len(jobs)} | complete episodes: {complete} | already bundled: "
-          f"{sorted(set(complete) - set(pending))} | to export: {pending}")
+    print(
+        f"jobs: {len(jobs)} | complete episodes: {complete} | already bundled: "
+        f"{sorted(set(complete) - set(pending))} | to export: {pending}"
+    )
 
     written = []
     for ep in pending:
@@ -106,9 +112,18 @@ def main() -> int:
             continue
         out = args.bundles / f"final-training-ep{ep:06d}.zip"
         subprocess.run(
-            [sys.executable, str(REPO_ROOT / "scripts/export_milestones.py"),
-             "--root", str(root), "--out", str(out), "--episodes", str(ep)],
-            check=True, capture_output=True,
+            [
+                sys.executable,
+                str(REPO_ROOT / "scripts/export_milestones.py"),
+                "--root",
+                str(root),
+                "--out",
+                str(out),
+                "--episodes",
+                str(ep),
+            ],
+            check=True,
+            capture_output=True,
         )
         problems = verify(out, root)
         if problems:
