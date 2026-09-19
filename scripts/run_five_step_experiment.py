@@ -96,6 +96,12 @@ def inclusive(pair):
     return list(range(pair[0], pair[1] + 1))
 
 
+def board_coin_signature(state):
+    coins = sorted([int(x), int(y)] for x, y in state["coins"])
+    payload = [state["field"].tolist(), coins]
+    return hashlib.sha256(json.dumps(payload, separators=(",", ":")).encode()).hexdigest()
+
+
 def environment():
     import torch
 
@@ -310,12 +316,7 @@ def play_episode(
                 continue
             state = learner.last_game_state
             if state is not None:
-                signature = hashlib.sha256(
-                    json.dumps(
-                        [state["field"].tolist(), sorted(state["coins"])],
-                        separators=(",", ":"),
-                    ).encode()
-                ).hexdigest()
+                signature = board_coin_signature(state)
                 rows.append(
                     {
                         "step": int(state["step"]),
@@ -504,7 +505,7 @@ def train_supervisor(root, workers):
     started = time.monotonic()
     while pending or active:
         now = datetime.now().astimezone()
-        rss = sum(process_rss(process) for process in active)
+        rss = sum(process_rss(process) for process, _, _ in active.values())
         memory = psutil.virtual_memory()
         limit_hit = (
             rss > cfg["resources"]["aggregate_workload_ram_bytes"]
