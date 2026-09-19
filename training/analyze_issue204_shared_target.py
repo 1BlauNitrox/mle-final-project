@@ -10,13 +10,13 @@ from pathlib import Path
 from statistics import fmean
 from typing import Any
 
+from training.aggregate import read_episodes_csv
 from training.analyze_issue135_escape_distance import (
     DETERMINISTIC_COLUMNS,
     _read_json,
-    _suite_rows,
-    _training_diagnostic,
     _write_summary,
 )
+from training.analyze_issue186_task3_baseline import _suite_rows
 from training.paired_bootstrap import paired_bootstrap
 from training.run_experiment import REPOSITORY_ROOT
 
@@ -55,7 +55,9 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
         if status.get("status") != "completed":
             raise ValueError(f"Run plan is not completed: {plan_id}")
         for replica in (item["replica_id"] for item in resolved["replicas"]):
-            diagnostics.append(_training_diagnostic(directory, status, replica, treatment))
+            diagnostics.append(
+                _training_diagnostic(directory, status, replica, treatment)
+            )
             for suite_id, scenario in SUITES.items():
                 primary = _suite_rows(directory, status, resolved, replica, suite_id)
                 repeat = _suite_rows(
@@ -158,6 +160,40 @@ def summarize(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         }
         for (treatment, replica, scenario), group in sorted(grouped.items())
     ]
+
+
+def _training_diagnostic(
+    plan_directory: Path,
+    status: dict[str, Any],
+    replica: str,
+    treatment: str,
+) -> dict[str, Any]:
+    """Read Issue #204's peaceful-hunting final-checkpoint diagnostics."""
+    job_id = f"train-{replica}-peaceful-hunting"
+    job = status["jobs"].get(job_id)
+    if not isinstance(job, dict):
+        raise ValueError(f"Missing final training job: {job_id}")
+    attempts = job.get("attempts", [])
+    if job.get("status") != "completed" or not attempts:
+        raise ValueError(f"Final training job is incomplete: {job_id}")
+    run_directory = plan_directory / attempts[-1]["output"]
+    rows = read_episodes_csv(run_directory / "episodes.csv")
+    if not rows:
+        raise ValueError(f"Final training job contains no episodes: {job_id}")
+    final = max(rows, key=lambda row: row["round"])
+    metrics = (
+        "q_table_size",
+        "total_state_visits",
+        "mean_visits_per_state",
+        "singleton_state_fraction",
+    )
+    if any(final.get(metric) is None for metric in metrics):
+        raise ValueError(f"Final training diagnostics are incomplete: {job_id}")
+    return {
+        "treatment": treatment,
+        "replica": replica,
+        **{metric: final[metric] for metric in metrics},
+    }
 
 
 def peaceful_elimination_comparison(rows: list[dict[str, Any]]) -> dict[str, Any]:
