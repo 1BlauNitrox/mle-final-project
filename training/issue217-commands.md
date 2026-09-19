@@ -74,6 +74,48 @@ inspect the saved stop reason and ensure no recorded worker is still alive.
 Budget or scientific-gate failures do not authorize another attempt. A technical
 failure needs a documented correction; preserve the failed root.
 
+## Automatic recovery
+
+The separate `scripts/watch_hunting_curriculum.py` attaches to an existing
+supervisor or starts the prepared run. Do not also start a second supervisor.
+It checks every 20 seconds, verifies PID creation times, and holds an exclusive
+watcher lock. Keep the verified v2 bundle unchanged; pass its runner path:
+
+```powershell
+python scripts/watch_hunting_curriculum.py --root C:/bomberman217-v2-run --runner C:/bomberman217-v2/scripts/run_hunting_curriculum.py --python C:/bomberman217-v2/.venv/Scripts/python.exe
+```
+
+Use hidden `Start-Process` with redirected logs for overnight operation. Read
+`watchdog.json`, `watchdog.err.log` and any `watchdog-error.json` for status.
+The watcher requests Windows wakefulness while alive; it does not install a
+startup task or survive a reboot. Re-run the same command after a reboot.
+
+Recovery is limited to unexpected process loss, Windows sharing errors 32/33,
+and a supervisor resource heartbeat missing for over five minutes. Long training
+episodes are not stalled heartbeats: the supervisor updates independently every
+half second. Recovery terminates only identified owned processes, verifies
+bound source/input and checkpoint/state hashes, archives a transient STOP record,
+and resumes the same root. Unknown errors, user stops, integrity failures,
+resource stops and failed scientific gates are never bypassed. At most three
+run recoveries or four launch attempts are allowed across watcher restarts.
+
+CPU and elapsed budgets never reset. Watcher CPU is recorded separately and
+included when checking the cap; recovery debits that overhead plus a conservative
+60-second margin and the full CPU of surviving orphans. This may overcount usage
+rather than grant extra compute. `watchdog-recovery-*` and `watchdog-stall-*`
+retain the technical interruption history. A persistent stop may leave a partial
+run; a completed pipeline may contain rejected pairs.
+
+On the laptop, `--results-repo <isolated-worktree>` enables an automatic local
+commit after verified pipeline completion. It verifies the export ZIP and each
+member, then commits only JSON observations/configuration/ledgers under
+`experiments/2026-09-19-hunting-curriculum/evidence/laptop/`. It refuses main,
+an index containing other work, changed existing evidence, or evidence over50MB.
+It never stages scientific prose, the AI log, weights, replay binaries or raw
+logs. The complete model ZIP remains outside Git; its local locator is not a
+durable publication claim. Return that ZIP separately for combined analysis.
+Unknown/technical stops do not produce a misleading completion commit.
+
 ## Return results
 
 Return the ZIP identified by `export.json`, plus `export.json`, `resources.json`,
