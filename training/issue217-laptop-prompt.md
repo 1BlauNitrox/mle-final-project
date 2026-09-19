@@ -5,7 +5,7 @@ authorization. Preserve existing work and prior resource consumption.
 
 Repository: https://github.com/1BlauNitrox/mle-final-project
 Branch: experiment/217-hunting-curriculum
-Watcher code commit: 521f1e41a71754d286e0d51448df996bddd37653
+Watcher code commit: 2dae1d5a2572a7bfbe281e7c926415a3c243f833
 Scientific bundle source: 6cba50a6ceb98d62103f6bf2a746de5f15f12d45
 Release: https://github.com/1BlauNitrox/mle-final-project/releases/tag/issue217-curriculum-v2
 Bundle: issue217-laptop.zip, 44937222 bytes
@@ -86,7 +86,11 @@ models, promote a candidate, or use reserved confirmation seeds.
 
 On verified pipeline completion the watcher commits lossless generated JSON
 evidence in the isolated worktree under
-experiments/2026-09-19-hunting-curriculum/evidence/laptop/. Ensure Git author
+experiments/2026-09-19-hunting-curriculum/evidence/laptop/. JSON
+over100KB is stored as deterministic lossless .json.gz with original/stored
+SHA-256 hashes in evidence-index.json. For analysis, copy evidence to a fresh
+directory, decompress these files there and verify their original hashes. Recovery
+and stalled-heartbeat records are included. Ensure Git author
 identity is already configured and the index is empty before launching. The
 watcher refuses main, unrelated staged changes, conflicting prior evidence or
 evidence over50MB. It deliberately excludes weights/replay binaries/raw logs,
