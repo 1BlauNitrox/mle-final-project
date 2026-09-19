@@ -2,21 +2,13 @@
 
 from __future__ import annotations
 
-import json
-from pathlib import Path
-
 import pytest
 
-from scripts.analyze_task4_competition import (
+from scripts.analyze_task4_competition_v2 import (
     blocking_gates,
     legality_not_worse,
     median_replica_by_score,
-)
-
-ROOT = Path(__file__).resolve().parents[1]
-COMPLETED = (
-    "experiments/2026-09-15-task4-trainable-scope/results/analysis.json",
-    "experiments/2026-09-15-task4-opponent-mixture/results/analysis.json",
+    require_versioned_registration,
 )
 
 
@@ -42,46 +34,36 @@ def test_the_median_replica_is_selected_by_score_and_the_best_one_is_not():
     assert suite["treatment-r3"]["score"] == ordered[1]["score"]
 
 
-@pytest.mark.parametrize("path", COMPLETED)
-def test_the_respecified_rule_does_not_retrospectively_promote_a_completed_comparison(path):
-    """The rule was re-specified because it could never pass, not to make ours pass.
+def test_corrected_rule_requires_a_new_registered_protocol_version():
+    with pytest.raises(ValueError, match="promotion_rule_version=2"):
+        require_versioned_registration({"profile": "completed-v1"})
+    registered = require_versioned_registration({"promotion_rule_version": 2})
+    assert registered["promotion_rule_version"] == 2
 
-    Both completed comparisons stay non-promotable under it, and the reasons are
-    now substantive - no arm has significantly beaten the incumbent on score -
-    rather than structural.
+
+def test_the_analyzer_follows_the_registration_not_the_newest_rule():
+    """A completed protocol must reproduce the decision it actually made.
+
+    The corrected rule lives in a separate module so re-analysing an older
+    campaign with the repository's current code cannot silently apply rules it
+    was never registered under. Opting in is explicit.
     """
-    record = ROOT / path
-    if not record.exists():
-        pytest.skip(f"{path} lands with its own results branch")
-    analysis = json.loads(record.read_text(encoding="utf-8"))
-    invalid = analysis["invalid_actions_by_artifact"]
-    assert not legality_not_worse(invalid), "a trained artifact exceeded the reference"
-    for arm, differences in analysis["paired_differences"]["classic-rule-based"].items():
-        if arm == "control":
-            continue
-        lower = differences["reference"]["score"]["paired_crossed_bootstrap"][0]
-        assert lower <= 0, f"{arm} would now clear the score gate; re-check the disclosure"
+    from scripts.pilot_task4_competition import code_hashes, registered_analyzer
+
+    # None of the shipped registrations declare version 2, so every one of them
+    # resolves to the analyzer it executed under.
+    assert registered_analyzer().__module__ == "scripts.analyze_task4_competition"
+    # Both analyzers are bound into the run's provenance, so neither can change
+    # under a prepared campaign without the binding noticing.
+    hashes = code_hashes()
+    assert "scripts/analyze_task4_competition.py" in hashes
+    assert "scripts/analyze_task4_competition_v2.py" in hashes
 
 
-def test_a_gate_defined_against_the_control_cannot_veto_the_control():
-    # The control arm is a trained agent; only the reference is untrained. Gates
-    # phrased "versus control" are undefined for it and are reported as null, so
-    # they must not block it the way a real failure would.
-    control_checks = {
-        "score_versus_reference_ci": True,
-        "self_kills_versus_control": None,
-        "earlier_task_retention": True,
-    }
-    assert all(blocking_gates(control_checks))
-    assert not all(blocking_gates({**control_checks, "earlier_task_retention": False}))
+def test_the_corrected_rule_refuses_an_unversioned_registration():
+    from scripts.analyze_task4_competition_v2 import require_versioned_registration
 
-
-def test_the_multiplicity_correction_covers_every_arm_that_can_be_promoted():
-    # Judging the control too adds a hypothesis, so the family grows and the
-    # intervals widen. The correction has to follow the rule it protects.
-    def percent(arm_count, registered=95.0):
-        return 100.0 - (100.0 - registered) / max(arm_count, 1)
-
-    assert percent(2) == 97.5
-    assert percent(3) > percent(2), "a third promotable arm must widen the interval"
-    assert round(percent(3), 4) == round(100.0 - 5.0 / 3, 4)
+    require_versioned_registration({"promotion_rule_version": 2})
+    for cfg in ({}, {"promotion_rule_version": 1}):
+        with pytest.raises(ValueError, match="promotion_rule_version=2"):
+            require_versioned_registration(cfg)

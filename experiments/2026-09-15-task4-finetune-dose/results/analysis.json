@@ -1,0 +1,3349 @@
+{
+  "profile": "finetune-dose",
+  "registered_screen_passed": false,
+  "integrity_gates": {
+    "resources": true,
+    "genuine_updates": true,
+    "behavioral_repeats": false,
+    "frozen_online_weights": false,
+    "opponent_free_invariance": true,
+    "invalid_actions": false,
+    "latency": true
+  },
+  "efficacy_gates": {
+    "reduced": {
+      "exposure_increase": false,
+      "exposure_increase_ci": false,
+      "hunting_improvement": false,
+      "hunting_improvement_ci": false,
+      "hunting_versus_reference": false,
+      "hunting_versus_reference_ci": true,
+      "score_versus_reference_ci": true,
+      "self_kills_versus_control": true,
+      "self_kills_versus_reference": true,
+      "nonworse_replicas": true,
+      "earlier_task_retention": true
+    },
+    "minimal": {
+      "exposure_increase": false,
+      "exposure_increase_ci": false,
+      "hunting_improvement": false,
+      "hunting_improvement_ci": false,
+      "hunting_versus_reference": true,
+      "hunting_versus_reference_ci": true,
+      "score_versus_reference_ci": false,
+      "self_kills_versus_control": false,
+      "self_kills_versus_reference": true,
+      "nonworse_replicas": true,
+      "earlier_task_retention": false
+    }
+  },
+  "retention_suites": {
+    "classic-peaceful": {
+      "control": {
+        "coins": false,
+        "self_kills": true
+      },
+      "reduced": {
+        "coins": true,
+        "self_kills": true
+      },
+      "minimal": {
+        "coins": false,
+        "self_kills": true
+      }
+    },
+    "coin-heaven": {
+      "control": {
+        "coins": true,
+        "self_kills": true
+      },
+      "reduced": {
+        "coins": true,
+        "self_kills": true
+      },
+      "minimal": {
+        "coins": false,
+        "self_kills": true
+      }
+    },
+    "loot-crate": {
+      "control": {
+        "coins": false,
+        "self_kills": true
+      },
+      "reduced": {
+        "coins": true,
+        "self_kills": true
+      },
+      "minimal": {
+        "coins": false,
+        "self_kills": true
+      }
+    }
+  },
+  "selection": {
+    "promotable_arms": [],
+    "selected_arm": null,
+    "selected_checkpoint": null
+  },
+  "interval_percent": 97.5,
+  "bonferroni_family_size": 2,
+  "summary": {
+    "classic-rule-based": {
+      "reference": {
+        "score": 1.375,
+        "strict_win": 0.075,
+        "collection_fraction": 0.15277777777777776,
+        "coins": 1.375,
+        "crates": 16.85,
+        "eliminations": 0,
+        "survived": 0.2,
+        "survival_steps": 129.2,
+        "self_kills": 0.75,
+        "invalid_actions": 0.5,
+        "bomb_actions": 12.65,
+        "attack_opportunities_per_100_steps": 4.9394498346896185,
+        "opponent_present_fraction": 0.999357001650804,
+        "mean_opponent_distance": 10.53444645924611
+      },
+      "minimal-r1": {
+        "score": 1.575,
+        "strict_win": 0.075,
+        "collection_fraction": 0.10555555555555556,
+        "coins": 0.95,
+        "crates": 17.275,
+        "eliminations": 0.125,
+        "survived": 0.175,
+        "survival_steps": 153.425,
+        "self_kills": 0.675,
+        "invalid_actions": 0.45,
+        "bomb_actions": 17.75,
+        "attack_opportunities_per_100_steps": 6.020487151962484,
+        "opponent_present_fraction": 0.9944375,
+        "mean_opponent_distance": 9.61341729930269
+      },
+      "reduced-r2": {
+        "score": 2.2,
+        "strict_win": 0.125,
+        "collection_fraction": 0.20277777777777778,
+        "coins": 1.825,
+        "crates": 23.425,
+        "eliminations": 0.075,
+        "survived": 0.2,
+        "survival_steps": 189.75,
+        "self_kills": 0.775,
+        "invalid_actions": 1.325,
+        "bomb_actions": 17.175,
+        "attack_opportunities_per_100_steps": 8.532147782310808,
+        "opponent_present_fraction": 0.9998125,
+        "mean_opponent_distance": 8.706683321615083
+      },
+      "reduced-r1": {
+        "score": 2.275,
+        "strict_win": 0.1,
+        "collection_fraction": 0.2111111111111111,
+        "coins": 1.9,
+        "crates": 27.05,
+        "eliminations": 0.075,
+        "survived": 0.3,
+        "survival_steps": 203.275,
+        "self_kills": 0.65,
+        "invalid_actions": 0.925,
+        "bomb_actions": 18.775,
+        "attack_opportunities_per_100_steps": 10.864979200221041,
+        "opponent_present_fraction": 0.9872232142857142,
+        "mean_opponent_distance": 8.518456891553353
+      },
+      "control-r2": {
+        "score": 2.4,
+        "strict_win": 0.175,
+        "collection_fraction": 0.2111111111111111,
+        "coins": 1.9,
+        "crates": 25.825,
+        "eliminations": 0.1,
+        "survived": 0.25,
+        "survival_steps": 195.375,
+        "self_kills": 0.725,
+        "invalid_actions": 1.125,
+        "bomb_actions": 16.575,
+        "attack_opportunities_per_100_steps": 11.714315895950701,
+        "opponent_present_fraction": 0.9780625000000001,
+        "mean_opponent_distance": 8.171376303563681
+      },
+      "control-r1": {
+        "score": 2.25,
+        "strict_win": 0.175,
+        "collection_fraction": 0.20833333333333331,
+        "coins": 1.875,
+        "crates": 26.725,
+        "eliminations": 0.075,
+        "survived": 0.35,
+        "survival_steps": 218.35,
+        "self_kills": 0.525,
+        "invalid_actions": 1.55,
+        "bomb_actions": 14.275,
+        "attack_opportunities_per_100_steps": 9.839537651147666,
+        "opponent_present_fraction": 0.9700606108312343,
+        "mean_opponent_distance": 8.688821504871449
+      },
+      "minimal-r2": {
+        "score": 2.075,
+        "strict_win": 0.15,
+        "collection_fraction": 0.1611111111111111,
+        "coins": 1.45,
+        "crates": 20.55,
+        "eliminations": 0.125,
+        "survived": 0.25,
+        "survival_steps": 174.375,
+        "self_kills": 0.675,
+        "invalid_actions": 0.525,
+        "bomb_actions": 14.8,
+        "attack_opportunities_per_100_steps": 4.9450601971494805,
+        "opponent_present_fraction": 0.92125,
+        "mean_opponent_distance": 10.019187810784773
+      },
+      "minimal-r3": {
+        "score": 1.725,
+        "strict_win": 0.05,
+        "collection_fraction": 0.15,
+        "coins": 1.35,
+        "crates": 20.025,
+        "eliminations": 0.075,
+        "survived": 0.125,
+        "survival_steps": 137.05,
+        "self_kills": 0.7,
+        "invalid_actions": 0.75,
+        "bomb_actions": 14.175,
+        "attack_opportunities_per_100_steps": 8.110703075341236,
+        "opponent_present_fraction": 0.9653491379310345,
+        "mean_opponent_distance": 9.003903624885885
+      },
+      "control-r3": {
+        "score": 2.8,
+        "strict_win": 0.225,
+        "collection_fraction": 0.22777777777777777,
+        "coins": 2.05,
+        "crates": 28.675,
+        "eliminations": 0.15,
+        "survived": 0.4,
+        "survival_steps": 224.45,
+        "self_kills": 0.45,
+        "invalid_actions": 1.125,
+        "bomb_actions": 17.45,
+        "attack_opportunities_per_100_steps": 9.734235710637892,
+        "opponent_present_fraction": 0.9696559491078944,
+        "mean_opponent_distance": 8.171325418734074
+      },
+      "reduced-r3": {
+        "score": 1.975,
+        "strict_win": 0.15,
+        "collection_fraction": 0.19166666666666665,
+        "coins": 1.725,
+        "crates": 23.125,
+        "eliminations": 0.05,
+        "survived": 0.375,
+        "survival_steps": 202.45,
+        "self_kills": 0.525,
+        "invalid_actions": 1.025,
+        "bomb_actions": 13.55,
+        "attack_opportunities_per_100_steps": 8.712708753200745,
+        "opponent_present_fraction": 0.9895755537782359,
+        "mean_opponent_distance": 9.450110834529
+      },
+      "control-r4": {
+        "score": 1.65,
+        "strict_win": 0.1,
+        "collection_fraction": 0.16944444444444443,
+        "coins": 1.525,
+        "crates": 22.125,
+        "eliminations": 0.025,
+        "survived": 0.25,
+        "survival_steps": 159.975,
+        "self_kills": 0.625,
+        "invalid_actions": 0.875,
+        "bomb_actions": 12.225,
+        "attack_opportunities_per_100_steps": 9.580145051157258,
+        "opponent_present_fraction": 0.9997118155619596,
+        "mean_opponent_distance": 9.400171316941805
+      },
+      "minimal-r4": {
+        "score": 1.875,
+        "strict_win": 0.15,
+        "collection_fraction": 0.1388888888888889,
+        "coins": 1.25,
+        "crates": 16.675,
+        "eliminations": 0.125,
+        "survived": 0.25,
+        "survival_steps": 147.75,
+        "self_kills": 0.625,
+        "invalid_actions": 0.375,
+        "bomb_actions": 13.3,
+        "attack_opportunities_per_100_steps": 5.047404903029086,
+        "opponent_present_fraction": 0.936625,
+        "mean_opponent_distance": 10.196299932309042
+      },
+      "reduced-r4": {
+        "score": 2.325,
+        "strict_win": 0.075,
+        "collection_fraction": 0.21666666666666665,
+        "coins": 1.95,
+        "crates": 26.3,
+        "eliminations": 0.075,
+        "survived": 0.275,
+        "survival_steps": 197.325,
+        "self_kills": 0.55,
+        "invalid_actions": 0.725,
+        "bomb_actions": 18.375,
+        "attack_opportunities_per_100_steps": 9.137443675277806,
+        "opponent_present_fraction": 0.9995065789473684,
+        "mean_opponent_distance": 8.188743637338261
+      },
+      "reduced-r5": {
+        "score": 1.775,
+        "strict_win": 0.05,
+        "collection_fraction": 0.18333333333333332,
+        "coins": 1.65,
+        "crates": 21.825,
+        "eliminations": 0.025,
+        "survived": 0.275,
+        "survival_steps": 162.125,
+        "self_kills": 0.65,
+        "invalid_actions": 0.775,
+        "bomb_actions": 12.675,
+        "attack_opportunities_per_100_steps": 5.766134594382641,
+        "opponent_present_fraction": 0.9787931701030927,
+        "mean_opponent_distance": 9.866243626078992
+      },
+      "control-r5": {
+        "score": 1.925,
+        "strict_win": 0.15,
+        "collection_fraction": 0.17222222222222222,
+        "coins": 1.55,
+        "crates": 22.45,
+        "eliminations": 0.075,
+        "survived": 0.325,
+        "survival_steps": 183.35,
+        "self_kills": 0.625,
+        "invalid_actions": 0.825,
+        "bomb_actions": 12.75,
+        "attack_opportunities_per_100_steps": 7.6340410441344675,
+        "opponent_present_fraction": 0.9672174226793898,
+        "mean_opponent_distance": 9.508285613485494
+      },
+      "minimal-r5": {
+        "score": 2.15,
+        "strict_win": 0.2,
+        "collection_fraction": 0.18333333333333332,
+        "coins": 1.65,
+        "crates": 19.675,
+        "eliminations": 0.1,
+        "survived": 0.075,
+        "survival_steps": 134.025,
+        "self_kills": 0.9,
+        "invalid_actions": 0.35,
+        "bomb_actions": 15.925,
+        "attack_opportunities_per_100_steps": 4.815662476496638,
+        "opponent_present_fraction": 0.9864375,
+        "mean_opponent_distance": 9.664717818992997
+      },
+      "reduced-r6": {
+        "score": 1.95,
+        "strict_win": 0.175,
+        "collection_fraction": 0.175,
+        "coins": 1.575,
+        "crates": 22.6,
+        "eliminations": 0.075,
+        "survived": 0.4,
+        "survival_steps": 213.5,
+        "self_kills": 0.575,
+        "invalid_actions": 0.925,
+        "bomb_actions": 14.225,
+        "attack_opportunities_per_100_steps": 7.790747001940167,
+        "opponent_present_fraction": 0.9304375,
+        "mean_opponent_distance": 9.987274546447008
+      },
+      "control-r6": {
+        "score": 1.7,
+        "strict_win": 0.05,
+        "collection_fraction": 0.1611111111111111,
+        "coins": 1.45,
+        "crates": 23.025,
+        "eliminations": 0.05,
+        "survived": 0.275,
+        "survival_steps": 175.4,
+        "self_kills": 0.55,
+        "invalid_actions": 1.275,
+        "bomb_actions": 12.85,
+        "attack_opportunities_per_100_steps": 7.588772443627871,
+        "opponent_present_fraction": 0.9859652777777778,
+        "mean_opponent_distance": 9.06117295887455
+      },
+      "minimal-r6": {
+        "score": 1.9,
+        "strict_win": 0.1,
+        "collection_fraction": 0.16944444444444443,
+        "coins": 1.525,
+        "crates": 20.2,
+        "eliminations": 0.075,
+        "survived": 0.125,
+        "survival_steps": 148.45,
+        "self_kills": 0.85,
+        "invalid_actions": 0.675,
+        "bomb_actions": 18.3,
+        "attack_opportunities_per_100_steps": 7.078253806520492,
+        "opponent_present_fraction": 0.9518125,
+        "mean_opponent_distance": 8.736739342506933
+      }
+    },
+    "classic-peaceful": {
+      "reference": {
+        "score": 4.225,
+        "strict_win": 0.8,
+        "collection_fraction": 0.33055555555555555,
+        "coins": 2.975,
+        "crates": 48.825,
+        "eliminations": 0.25,
+        "survived": 0.75,
+        "survival_steps": 315.95,
+        "self_kills": 0.25,
+        "invalid_actions": 0,
+        "bomb_actions": 31.775,
+        "attack_opportunities_per_100_steps": 0.23125,
+        "opponent_present_fraction": 0.868625,
+        "mean_opponent_distance": 15.160258481732473
+      },
+      "minimal-r1": {
+        "score": 1.4,
+        "strict_win": 0.475,
+        "collection_fraction": 0.15555555555555556,
+        "coins": 1.4,
+        "crates": 22.3,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 348.425,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 14.325,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 1.0,
+        "mean_opponent_distance": 16.699765967241714
+      },
+      "reduced-r2": {
+        "score": 2.975,
+        "strict_win": 0.725,
+        "collection_fraction": 0.2472222222222222,
+        "coins": 2.225,
+        "crates": 38.875,
+        "eliminations": 0.15,
+        "survived": 0.875,
+        "survival_steps": 362.05,
+        "self_kills": 0.125,
+        "invalid_actions": 0.025,
+        "bomb_actions": 19.575,
+        "attack_opportunities_per_100_steps": 0.08125,
+        "opponent_present_fraction": 0.913875,
+        "mean_opponent_distance": 15.634221739121498
+      },
+      "reduced-r1": {
+        "score": 2.7,
+        "strict_win": 0.8,
+        "collection_fraction": 0.2583333333333333,
+        "coins": 2.325,
+        "crates": 35.7,
+        "eliminations": 0.075,
+        "survived": 0.925,
+        "survival_steps": 374.7,
+        "self_kills": 0.075,
+        "invalid_actions": 0.025,
+        "bomb_actions": 16.775,
+        "attack_opportunities_per_100_steps": 0.2343112244897959,
+        "opponent_present_fraction": 0.9688125,
+        "mean_opponent_distance": 17.914040519883354
+      },
+      "control-r2": {
+        "score": 1.025,
+        "strict_win": 0.35,
+        "collection_fraction": 0.1,
+        "coins": 0.9,
+        "crates": 16.35,
+        "eliminations": 0.025,
+        "survived": 0.975,
+        "survival_steps": 391.575,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 7.675,
+        "attack_opportunities_per_100_steps": 0.05625,
+        "opponent_present_fraction": 0.996,
+        "mean_opponent_distance": 17.80995734126984
+      },
+      "control-r1": {
+        "score": 1.85,
+        "strict_win": 0.7,
+        "collection_fraction": 0.19166666666666665,
+        "coins": 1.725,
+        "crates": 30.9,
+        "eliminations": 0.025,
+        "survived": 0.85,
+        "survival_steps": 358.3,
+        "self_kills": 0.15,
+        "invalid_actions": 0.025,
+        "bomb_actions": 13.4,
+        "attack_opportunities_per_100_steps": 0.06901532301251156,
+        "opponent_present_fraction": 0.982375,
+        "mean_opponent_distance": 16.04893231214134
+      },
+      "minimal-r2": {
+        "score": 1.925,
+        "strict_win": 0.575,
+        "collection_fraction": 0.14444444444444443,
+        "coins": 1.3,
+        "crates": 25.5,
+        "eliminations": 0.125,
+        "survived": 0.8,
+        "survival_steps": 340.05,
+        "self_kills": 0.2,
+        "invalid_actions": 0,
+        "bomb_actions": 11.6,
+        "attack_opportunities_per_100_steps": 0.2285714285714286,
+        "opponent_present_fraction": 0.924125,
+        "mean_opponent_distance": 16.875791304711726
+      },
+      "minimal-r3": {
+        "score": 2.3,
+        "strict_win": 0.75,
+        "collection_fraction": 0.21388888888888888,
+        "coins": 1.925,
+        "crates": 35.2,
+        "eliminations": 0.075,
+        "survived": 0.825,
+        "survival_steps": 342.5,
+        "self_kills": 0.175,
+        "invalid_actions": 0.025,
+        "bomb_actions": 24.2,
+        "attack_opportunities_per_100_steps": 0.6822545924225029,
+        "opponent_present_fraction": 0.9889615384615384,
+        "mean_opponent_distance": 16.070340853290855
+      },
+      "control-r3": {
+        "score": 3.05,
+        "strict_win": 0.775,
+        "collection_fraction": 0.2972222222222222,
+        "coins": 2.675,
+        "crates": 40.7,
+        "eliminations": 0.075,
+        "survived": 0.85,
+        "survival_steps": 357.075,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 17.8,
+        "attack_opportunities_per_100_steps": 0.325,
+        "opponent_present_fraction": 0.95925,
+        "mean_opponent_distance": 15.531162855113237
+      },
+      "reduced-r3": {
+        "score": 3.475,
+        "strict_win": 0.875,
+        "collection_fraction": 0.28888888888888886,
+        "coins": 2.6,
+        "crates": 43.45,
+        "eliminations": 0.175,
+        "survived": 0.925,
+        "survival_steps": 377.6,
+        "self_kills": 0.075,
+        "invalid_actions": 0.025,
+        "bomb_actions": 18.525,
+        "attack_opportunities_per_100_steps": 0.30927033492822964,
+        "opponent_present_fraction": 0.899625,
+        "mean_opponent_distance": 15.834290774742104
+      },
+      "control-r4": {
+        "score": 1.375,
+        "strict_win": 0.475,
+        "collection_fraction": 0.15277777777777776,
+        "coins": 1.375,
+        "crates": 23.05,
+        "eliminations": 0,
+        "survived": 0.875,
+        "survival_steps": 359.5,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 12.975,
+        "attack_opportunities_per_100_steps": 0.0125,
+        "opponent_present_fraction": 1.0,
+        "mean_opponent_distance": 17.718016991855812
+      },
+      "minimal-r4": {
+        "score": 1.6,
+        "strict_win": 0.625,
+        "collection_fraction": 0.1638888888888889,
+        "coins": 1.475,
+        "crates": 26.15,
+        "eliminations": 0.025,
+        "survived": 0.85,
+        "survival_steps": 357.3,
+        "self_kills": 0.15,
+        "invalid_actions": 0.025,
+        "bomb_actions": 23.4,
+        "attack_opportunities_per_100_steps": 0.14516129032258066,
+        "opponent_present_fraction": 0.986875,
+        "mean_opponent_distance": 17.62598645197862
+      },
+      "reduced-r4": {
+        "score": 4.3,
+        "strict_win": 0.875,
+        "collection_fraction": 0.38055555555555554,
+        "coins": 3.425,
+        "crates": 51.95,
+        "eliminations": 0.175,
+        "survived": 0.925,
+        "survival_steps": 382.675,
+        "self_kills": 0.075,
+        "invalid_actions": 0,
+        "bomb_actions": 23.2,
+        "attack_opportunities_per_100_steps": 0.4842562773483826,
+        "opponent_present_fraction": 0.9275442813765182,
+        "mean_opponent_distance": 17.034018054755133
+      },
+      "reduced-r5": {
+        "score": 3.225,
+        "strict_win": 0.75,
+        "collection_fraction": 0.30277777777777776,
+        "coins": 2.725,
+        "crates": 44.775,
+        "eliminations": 0.1,
+        "survived": 0.95,
+        "survival_steps": 381.575,
+        "self_kills": 0.05,
+        "invalid_actions": 0,
+        "bomb_actions": 22.8,
+        "attack_opportunities_per_100_steps": 0.0875,
+        "opponent_present_fraction": 0.9450625,
+        "mean_opponent_distance": 15.652587298108148
+      },
+      "control-r5": {
+        "score": 1.8,
+        "strict_win": 0.525,
+        "collection_fraction": 0.17222222222222222,
+        "coins": 1.55,
+        "crates": 26.725,
+        "eliminations": 0.05,
+        "survived": 0.875,
+        "survival_steps": 364.8,
+        "self_kills": 0.125,
+        "invalid_actions": 0.05,
+        "bomb_actions": 10.8,
+        "attack_opportunities_per_100_steps": 0.16254351225910604,
+        "opponent_present_fraction": 0.9919375,
+        "mean_opponent_distance": 16.882457442956518
+      },
+      "minimal-r5": {
+        "score": 2.725,
+        "strict_win": 0.75,
+        "collection_fraction": 0.27499999999999997,
+        "coins": 2.475,
+        "crates": 37.175,
+        "eliminations": 0.05,
+        "survived": 0.975,
+        "survival_steps": 392.5,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 32.65,
+        "attack_opportunities_per_100_steps": 0.0875,
+        "opponent_present_fraction": 0.968875,
+        "mean_opponent_distance": 15.977361331569664
+      },
+      "reduced-r6": {
+        "score": 3.05,
+        "strict_win": 0.825,
+        "collection_fraction": 0.2833333333333333,
+        "coins": 2.55,
+        "crates": 42.1,
+        "eliminations": 0.1,
+        "survived": 0.925,
+        "survival_steps": 381.9,
+        "self_kills": 0.075,
+        "invalid_actions": 0,
+        "bomb_actions": 19.95,
+        "attack_opportunities_per_100_steps": 0.21410644709606722,
+        "opponent_present_fraction": 0.9490625,
+        "mean_opponent_distance": 17.33092352822611
+      },
+      "control-r6": {
+        "score": 1.6,
+        "strict_win": 0.625,
+        "collection_fraction": 0.1638888888888889,
+        "coins": 1.475,
+        "crates": 27.25,
+        "eliminations": 0.025,
+        "survived": 0.875,
+        "survival_steps": 357.625,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 13.05,
+        "attack_opportunities_per_100_steps": 0.1918269230769231,
+        "opponent_present_fraction": 0.9828125,
+        "mean_opponent_distance": 16.42474737394958
+      },
+      "minimal-r6": {
+        "score": 2.875,
+        "strict_win": 0.625,
+        "collection_fraction": 0.2638888888888889,
+        "coins": 2.375,
+        "crates": 36.425,
+        "eliminations": 0.1,
+        "survived": 0.875,
+        "survival_steps": 367.85,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 28.15,
+        "attack_opportunities_per_100_steps": 0.1013121546961326,
+        "opponent_present_fraction": 0.9671875,
+        "mean_opponent_distance": 16.803319904004578
+      }
+    },
+    "coin-heaven": {
+      "reference": {
+        "score": 24.375,
+        "strict_win": 0,
+        "collection_fraction": 0.4875,
+        "coins": 24.375,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.875,
+        "survival_steps": 293.1,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 3.475,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r1": {
+        "score": 12.45,
+        "strict_win": 0,
+        "collection_fraction": 0.249,
+        "coins": 12.45,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 390.475,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 0.4,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r2": {
+        "score": 34.875,
+        "strict_win": 0,
+        "collection_fraction": 0.6975,
+        "coins": 34.875,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.925,
+        "survival_steps": 273.125,
+        "self_kills": 0.075,
+        "invalid_actions": 0,
+        "bomb_actions": 3.7,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r1": {
+        "score": 30.775,
+        "strict_win": 0,
+        "collection_fraction": 0.6155,
+        "coins": 30.775,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 345.15,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 7.075,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r2": {
+        "score": 35.3,
+        "strict_win": 0,
+        "collection_fraction": 0.706,
+        "coins": 35.3,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.925,
+        "survival_steps": 318.525,
+        "self_kills": 0.075,
+        "invalid_actions": 0,
+        "bomb_actions": 3.475,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r1": {
+        "score": 18.925,
+        "strict_win": 0,
+        "collection_fraction": 0.3785,
+        "coins": 18.925,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 393.825,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 0.925,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r2": {
+        "score": 26.05,
+        "strict_win": 0,
+        "collection_fraction": 0.521,
+        "coins": 26.05,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 360.775,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 1.175,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r3": {
+        "score": 10.375,
+        "strict_win": 0,
+        "collection_fraction": 0.2075,
+        "coins": 10.375,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 393.55,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 0.35,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r3": {
+        "score": 35.275,
+        "strict_win": 0,
+        "collection_fraction": 0.7055,
+        "coins": 35.275,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 310.15,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 6.55,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r3": {
+        "score": 32.025,
+        "strict_win": 0,
+        "collection_fraction": 0.6405,
+        "coins": 32.025,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 297.225,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 1.8,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r4": {
+        "score": 35.15,
+        "strict_win": 0,
+        "collection_fraction": 0.703,
+        "coins": 35.15,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.825,
+        "survival_steps": 315.025,
+        "self_kills": 0.175,
+        "invalid_actions": 0,
+        "bomb_actions": 11.25,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r4": {
+        "score": 23.9,
+        "strict_win": 0,
+        "collection_fraction": 0.478,
+        "coins": 23.9,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 360.45,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 1.65,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r4": {
+        "score": 26.725,
+        "strict_win": 0,
+        "collection_fraction": 0.5345,
+        "coins": 26.725,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 346.8,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 2.4,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r5": {
+        "score": 46,
+        "strict_win": 0,
+        "collection_fraction": 0.92,
+        "coins": 46,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 220.725,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 18.25,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r5": {
+        "score": 23.625,
+        "strict_win": 0,
+        "collection_fraction": 0.4725,
+        "coins": 23.625,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 371.9,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 3.8,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r5": {
+        "score": 20.65,
+        "strict_win": 0,
+        "collection_fraction": 0.413,
+        "coins": 20.65,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 379.725,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 0.9,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r6": {
+        "score": 26.85,
+        "strict_win": 0,
+        "collection_fraction": 0.537,
+        "coins": 26.85,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.95,
+        "survival_steps": 378.45,
+        "self_kills": 0.05,
+        "invalid_actions": 0,
+        "bomb_actions": 1.95,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r6": {
+        "score": 36,
+        "strict_win": 0,
+        "collection_fraction": 0.72,
+        "coins": 36,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 327.875,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 4.625,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r6": {
+        "score": 28.2,
+        "strict_win": 0,
+        "collection_fraction": 0.5640000000000001,
+        "coins": 28.2,
+        "crates": 0,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 356.25,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 4.725,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      }
+    },
+    "loot-crate": {
+      "reference": {
+        "score": 8.875,
+        "strict_win": 0,
+        "collection_fraction": 0.1775,
+        "coins": 8.875,
+        "crates": 28.125,
+        "eliminations": 0,
+        "survived": 0.45,
+        "survival_steps": 224.325,
+        "self_kills": 0.55,
+        "invalid_actions": 0,
+        "bomb_actions": 10.325,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r1": {
+        "score": 4.25,
+        "strict_win": 0,
+        "collection_fraction": 0.085,
+        "coins": 4.25,
+        "crates": 13.825,
+        "eliminations": 0,
+        "survived": 0.875,
+        "survival_steps": 360.75,
+        "self_kills": 0.125,
+        "invalid_actions": 0,
+        "bomb_actions": 6.925,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r2": {
+        "score": 2.85,
+        "strict_win": 0,
+        "collection_fraction": 0.057,
+        "coins": 2.85,
+        "crates": 8.5,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 366.65,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 3.425,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r1": {
+        "score": 10.95,
+        "strict_win": 0,
+        "collection_fraction": 0.219,
+        "coins": 10.95,
+        "crates": 33.075,
+        "eliminations": 0,
+        "survived": 0.95,
+        "survival_steps": 384.45,
+        "self_kills": 0.05,
+        "invalid_actions": 0,
+        "bomb_actions": 14.925,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r2": {
+        "score": 4.85,
+        "strict_win": 0,
+        "collection_fraction": 0.097,
+        "coins": 4.85,
+        "crates": 15,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 400,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 5.125,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r1": {
+        "score": 7.175,
+        "strict_win": 0,
+        "collection_fraction": 0.14350000000000002,
+        "coins": 7.175,
+        "crates": 22.55,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 350.575,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 9.275,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r2": {
+        "score": 2.675,
+        "strict_win": 0,
+        "collection_fraction": 0.0535,
+        "coins": 2.675,
+        "crates": 9.225,
+        "eliminations": 0,
+        "survived": 0.8,
+        "survival_steps": 333.7,
+        "self_kills": 0.2,
+        "invalid_actions": 0,
+        "bomb_actions": 4.125,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r3": {
+        "score": 7.1,
+        "strict_win": 0,
+        "collection_fraction": 0.14200000000000002,
+        "coins": 7.1,
+        "crates": 21.65,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 364.2,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 8.125,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r3": {
+        "score": 4.025,
+        "strict_win": 0,
+        "collection_fraction": 0.0805,
+        "coins": 4.025,
+        "crates": 13.125,
+        "eliminations": 0,
+        "survived": 0.775,
+        "survival_steps": 322.6,
+        "self_kills": 0.225,
+        "invalid_actions": 0,
+        "bomb_actions": 4.675,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r3": {
+        "score": 3.175,
+        "strict_win": 0,
+        "collection_fraction": 0.0635,
+        "coins": 3.175,
+        "crates": 10.25,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 391.75,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 4.725,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r4": {
+        "score": 7.2,
+        "strict_win": 0,
+        "collection_fraction": 0.14400000000000002,
+        "coins": 7.2,
+        "crates": 22.9,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 351.425,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 11.65,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r4": {
+        "score": 7.85,
+        "strict_win": 0,
+        "collection_fraction": 0.157,
+        "coins": 7.85,
+        "crates": 24.85,
+        "eliminations": 0,
+        "survived": 0.7,
+        "survival_steps": 303.775,
+        "self_kills": 0.3,
+        "invalid_actions": 0,
+        "bomb_actions": 12.775,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r4": {
+        "score": 9.875,
+        "strict_win": 0,
+        "collection_fraction": 0.1975,
+        "coins": 9.875,
+        "crates": 28.325,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 352.875,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 10.925,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r5": {
+        "score": 5.025,
+        "strict_win": 0,
+        "collection_fraction": 0.1005,
+        "coins": 5.025,
+        "crates": 16.775,
+        "eliminations": 0,
+        "survived": 0.9,
+        "survival_steps": 365.05,
+        "self_kills": 0.1,
+        "invalid_actions": 0,
+        "bomb_actions": 7.325,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r5": {
+        "score": 2.075,
+        "strict_win": 0,
+        "collection_fraction": 0.0415,
+        "coins": 2.075,
+        "crates": 8.15,
+        "eliminations": 0,
+        "survived": 1,
+        "survival_steps": 400,
+        "self_kills": 0,
+        "invalid_actions": 0,
+        "bomb_actions": 3,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r5": {
+        "score": 4.1,
+        "strict_win": 0,
+        "collection_fraction": 0.082,
+        "coins": 4.1,
+        "crates": 13.8,
+        "eliminations": 0,
+        "survived": 0.85,
+        "survival_steps": 351.375,
+        "self_kills": 0.15,
+        "invalid_actions": 0,
+        "bomb_actions": 6.475,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "reduced-r6": {
+        "score": 9.25,
+        "strict_win": 0,
+        "collection_fraction": 0.185,
+        "coins": 9.25,
+        "crates": 26.925,
+        "eliminations": 0,
+        "survived": 0.725,
+        "survival_steps": 303.45,
+        "self_kills": 0.275,
+        "invalid_actions": 0,
+        "bomb_actions": 10.65,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "control-r6": {
+        "score": 3.875,
+        "strict_win": 0,
+        "collection_fraction": 0.0775,
+        "coins": 3.875,
+        "crates": 11.15,
+        "eliminations": 0,
+        "survived": 0.975,
+        "survival_steps": 392.25,
+        "self_kills": 0.025,
+        "invalid_actions": 0,
+        "bomb_actions": 4.675,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      },
+      "minimal-r6": {
+        "score": 7.8,
+        "strict_win": 0,
+        "collection_fraction": 0.156,
+        "coins": 7.8,
+        "crates": 24.1,
+        "eliminations": 0,
+        "survived": 0.8,
+        "survival_steps": 332.95,
+        "self_kills": 0.2,
+        "invalid_actions": 0,
+        "bomb_actions": 16.075,
+        "attack_opportunities_per_100_steps": 0.0,
+        "opponent_present_fraction": 0.0,
+        "mean_opponent_distance": null
+      }
+    }
+  },
+  "paired_differences": {
+    "classic-rule-based": {
+      "control": {
+        "reference": {
+          "score": {
+            "mean_difference": 0.7458333333333333,
+            "paired_crossed_bootstrap": [
+              0.1,
+              1.4625
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.07083333333333333,
+            "paired_crossed_bootstrap": [
+              -0.04583333333333333,
+              0.17916666666666667
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.03888888888888889,
+            "paired_crossed_bootstrap": [
+              -0.018055555555555557,
+              0.09537037037037037
+            ]
+          },
+          "coins": {
+            "mean_difference": 0.35,
+            "paired_crossed_bootstrap": [
+              -0.1625,
+              0.8583333333333333
+            ]
+          },
+          "crates": {
+            "mean_difference": 7.954166666666667,
+            "paired_crossed_bootstrap": [
+              3.3291145833333333,
+              12.6875
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.07916666666666666,
+            "paired_crossed_bootstrap": [
+              0.020833333333333332,
+              0.15416666666666667
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.10833333333333334,
+            "paired_crossed_bootstrap": [
+              -0.075,
+              0.2833333333333333
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 63.61666666666667,
+            "paired_crossed_bootstrap": [
+              2.0697916666666676,
+              119.72526041666667
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.16666666666666666,
+            "paired_crossed_bootstrap": [
+              -0.35833333333333334,
+              0.029166666666666667
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.6291666666666667,
+            "paired_crossed_bootstrap": [
+              0.17078125000000005,
+              1.1333854166666697
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 1.7041666666666666,
+            "paired_crossed_bootstrap": [
+              -3.0459895833333333,
+              6.354218750000003
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 4.40905813141969,
+            "paired_crossed_bootstrap": [
+              1.4677226074564986,
+              7.578497485168449
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.020911405657761346,
+            "paired_crossed_bootstrap": [
+              -0.04600364036097355,
+              -0.0031816654499290443
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": -1.7009209398342688,
+            "paired_crossed_bootstrap": [
+              -2.8046433489601514,
+              -0.6521579258204255
+            ]
+          }
+        }
+      },
+      "reduced": {
+        "control": {
+          "score": {
+            "mean_difference": -0.0375,
+            "paired_crossed_bootstrap": [
+              -0.7250520833333333,
+              0.5583333333333333
+            ]
+          },
+          "strict_win": {
+            "mean_difference": -0.03333333333333333,
+            "paired_crossed_bootstrap": [
+              -0.1375,
+              0.0875
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.005092592592592592,
+            "paired_crossed_bootstrap": [
+              -0.03703703703703704,
+              0.04351851851851852
+            ]
+          },
+          "coins": {
+            "mean_difference": 0.04583333333333333,
+            "paired_crossed_bootstrap": [
+              -0.3333333333333333,
+              0.39166666666666666
+            ]
+          },
+          "crates": {
+            "mean_difference": -0.75,
+            "paired_crossed_bootstrap": [
+              -4.6125,
+              3.0251041666666727
+            ]
+          },
+          "eliminations": {
+            "mean_difference": -0.016666666666666666,
+            "paired_crossed_bootstrap": [
+              -0.10833333333333334,
+              0.06666666666666667
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.004166666666666667,
+            "paired_crossed_bootstrap": [
+              -0.14166666666666666,
+              0.1375
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 1.9208333333333334,
+            "paired_crossed_bootstrap": [
+              -42.82244791666667,
+              48.74244791666671
+            ]
+          },
+          "self_kills": {
+            "mean_difference": 0.0375,
+            "paired_crossed_bootstrap": [
+              -0.10005208333333329,
+              0.17916666666666667
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": -0.17916666666666667,
+            "paired_crossed_bootstrap": [
+              -0.7125,
+              0.3
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 1.4416666666666667,
+            "paired_crossed_bootstrap": [
+              -2.4001562499999998,
+              5.304218750000002
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": -0.8811477982204406,
+            "paired_crossed_bootstrap": [
+              -3.8807741573043986,
+              1.8395958834610953
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": 0.0024458235260259166,
+            "paired_crossed_bootstrap": [
+              -0.04262227026472166,
+              0.03629388951290596
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": 0.2860599568484406,
+            "paired_crossed_bootstrap": [
+              -0.7343011199454146,
+              1.2434236353262431
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": 0.7083333333333334,
+            "paired_crossed_bootstrap": [
+              0.175,
+              1.2791666666666666
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.0375,
+            "paired_crossed_bootstrap": [
+              -0.06666666666666667,
+              0.1375
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.04398148148148148,
+            "paired_crossed_bootstrap": [
+              -0.00509837962962963,
+              0.09259259259259259
+            ]
+          },
+          "coins": {
+            "mean_difference": 0.3958333333333333,
+            "paired_crossed_bootstrap": [
+              -0.045885416666666616,
+              0.8333333333333334
+            ]
+          },
+          "crates": {
+            "mean_difference": 7.204166666666667,
+            "paired_crossed_bootstrap": [
+              3.1041666666666665,
+              11.216770833333339
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.0625,
+            "paired_crossed_bootstrap": [
+              0.016666666666666666,
+              0.12916666666666668
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.10416666666666667,
+            "paired_crossed_bootstrap": [
+              -0.0875,
+              0.2791666666666667
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 65.5375,
+            "paired_crossed_bootstrap": [
+              5.907447916666667,
+              119.74682291666673
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.12916666666666668,
+            "paired_crossed_bootstrap": [
+              -0.325,
+              0.08333333333333333
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.45,
+            "paired_crossed_bootstrap": [
+              -0.008333333333333333,
+              0.9458333333333333
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 3.1458333333333335,
+            "paired_crossed_bootstrap": [
+              -1.6917708333333332,
+              7.770937500000006
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 3.5279103331992494,
+            "paired_crossed_bootstrap": [
+              0.9226902397834564,
+              6.100130621871424
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.01846558213173543,
+            "paired_crossed_bootstrap": [
+              -0.05729458512888218,
+              0.0003233630334604308
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": -1.4148609829858283,
+            "paired_crossed_bootstrap": [
+              -2.415380193121734,
+              -0.41083486904889577
+            ]
+          }
+        }
+      },
+      "minimal": {
+        "control": {
+          "score": {
+            "mean_difference": -0.2375,
+            "paired_crossed_bootstrap": [
+              -1.0125520833333332,
+              0.5458333333333333
+            ]
+          },
+          "strict_win": {
+            "mean_difference": -0.025,
+            "paired_crossed_bootstrap": [
+              -0.15,
+              0.10416666666666667
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.04027777777777777,
+            "paired_crossed_bootstrap": [
+              -0.09722222222222224,
+              0.018987268518518865
+            ]
+          },
+          "coins": {
+            "mean_difference": -0.3625,
+            "paired_crossed_bootstrap": [
+              -0.875,
+              0.1708854166666697
+            ]
+          },
+          "crates": {
+            "mean_difference": -5.7375,
+            "paired_crossed_bootstrap": [
+              -9.67921875,
+              -1.870624999999988
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.025,
+            "paired_crossed_bootstrap": [
+              -0.075,
+              0.12083333333333333
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.14166666666666666,
+            "paired_crossed_bootstrap": [
+              -0.2916666666666667,
+              0.004166666666666667
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": -43.6375,
+            "paired_crossed_bootstrap": [
+              -88.03510416666666,
+              0.5086458333333514
+            ]
+          },
+          "self_kills": {
+            "mean_difference": 0.15416666666666667,
+            "paired_crossed_bootstrap": [
+              -0.029166666666666667,
+              0.32505208333333635
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": -0.6083333333333333,
+            "paired_crossed_bootstrap": [
+              -1.10421875,
+              -0.18744791666666363
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 1.3541666666666667,
+            "paired_crossed_bootstrap": [
+              -2.8875520833333335,
+              5.858385416666669
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": -3.3455793643594065,
+            "paired_crossed_bootstrap": [
+              -6.523617789678048,
+              -0.7612257306920895
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.01912698967120358,
+            "paired_crossed_bootstrap": [
+              -0.07233233052443531,
+              0.02584212886251212
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": 0.7055187853852113,
+            "paired_crossed_bootstrap": [
+              -0.19275827386880476,
+              1.6774538437240505
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": 0.5083333333333333,
+            "paired_crossed_bootstrap": [
+              -0.0125,
+              1.0583333333333333
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.04583333333333333,
+            "paired_crossed_bootstrap": [
+              -0.05,
+              0.15833333333333333
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.0013888888888888885,
+            "paired_crossed_bootstrap": [
+              -0.048148148148148155,
+              0.04537037037037037
+            ]
+          },
+          "coins": {
+            "mean_difference": -0.0125,
+            "paired_crossed_bootstrap": [
+              -0.43333333333333335,
+              0.4083333333333333
+            ]
+          },
+          "crates": {
+            "mean_difference": 2.216666666666667,
+            "paired_crossed_bootstrap": [
+              -1.2709374999999998,
+              5.77927083333334
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.10416666666666667,
+            "paired_crossed_bootstrap": [
+              0.0375,
+              0.17916666666666667
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.03333333333333333,
+            "paired_crossed_bootstrap": [
+              -0.20833333333333334,
+              0.125
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 19.979166666666668,
+            "paired_crossed_bootstrap": [
+              -28.625364583333333,
+              67.95994791666675
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.0125,
+            "paired_crossed_bootstrap": [
+              -0.19166666666666668,
+              0.17921875000000304
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.020833333333333332,
+            "paired_crossed_bootstrap": [
+              -0.32916666666666666,
+              0.3708854166666697
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 3.058333333333333,
+            "paired_crossed_bootstrap": [
+              -1.4958333333333333,
+              7.520937500000006
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 1.0634787670602839,
+            "paired_crossed_bootstrap": [
+              -1.1651111404359729,
+              3.3234596018780533
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.04003839532896492,
+            "paired_crossed_bootstrap": [
+              -0.084677581342327,
+              -0.007911754322639613
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": -0.9954021544490576,
+            "paired_crossed_bootstrap": [
+              -2.0027444009602484,
+              -0.05335509873528575
+            ]
+          }
+        }
+      }
+    },
+    "classic-peaceful": {
+      "control": {
+        "reference": {
+          "score": {
+            "mean_difference": -2.441666666666667,
+            "paired_crossed_bootstrap": [
+              -3.95421875,
+              -1.008281249999997
+            ]
+          },
+          "strict_win": {
+            "mean_difference": -0.225,
+            "paired_crossed_bootstrap": [
+              -0.4375,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.15092592592592594,
+            "paired_crossed_bootstrap": [
+              -0.2712962962962963,
+              -0.03287037037037037
+            ]
+          },
+          "coins": {
+            "mean_difference": -1.3583333333333334,
+            "paired_crossed_bootstrap": [
+              -2.441666666666667,
+              -0.29583333333333334
+            ]
+          },
+          "crates": {
+            "mean_difference": -21.329166666666666,
+            "paired_crossed_bootstrap": [
+              -34.550104166666664,
+              -8.708333333333334
+            ]
+          },
+          "eliminations": {
+            "mean_difference": -0.21666666666666667,
+            "paired_crossed_bootstrap": [
+              -0.375,
+              -0.075
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.13333333333333333,
+            "paired_crossed_bootstrap": [
+              -0.03333333333333333,
+              0.30833333333333335
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 48.8625,
+            "paired_crossed_bootstrap": [
+              -6.938802083333332,
+              107.49588541666667
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.13333333333333333,
+            "paired_crossed_bootstrap": [
+              -0.30833333333333335,
+              0.03333333333333333
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.0125,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.05
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -19.158333333333335,
+            "paired_crossed_bootstrap": [
+              -27.141979166666665,
+              -11.208124999999988
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": -0.09506070694190988,
+            "paired_crossed_bootstrap": [
+              -0.33022135416666665,
+              0.17581782228823753
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": 0.11677083333333334,
+            "paired_crossed_bootstrap": [
+              0.037872786458333335,
+              0.2085639322916667
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": 1.5756205711485811,
+            "paired_crossed_bootstrap": [
+              0.1717486430455178,
+              3.081448921419528
+            ]
+          }
+        }
+      },
+      "reduced": {
+        "control": {
+          "score": {
+            "mean_difference": 1.5041666666666667,
+            "paired_crossed_bootstrap": [
+              0.5416666666666666,
+              2.5708854166666697
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.23333333333333334,
+            "paired_crossed_bootstrap": [
+              0.09161458333333337,
+              0.4041666666666667
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.11388888888888889,
+            "paired_crossed_bootstrap": [
+              0.0282349537037037,
+              0.20138888888888887
+            ]
+          },
+          "coins": {
+            "mean_difference": 1.025,
+            "paired_crossed_bootstrap": [
+              0.25411458333333337,
+              1.8125
+            ]
+          },
+          "crates": {
+            "mean_difference": 15.3125,
+            "paired_crossed_bootstrap": [
+              4.91234375,
+              25.704166666666666
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.09583333333333334,
+            "paired_crossed_bootstrap": [
+              0.008333333333333333,
+              0.1875
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.0375,
+            "paired_crossed_bootstrap": [
+              -0.06666666666666667,
+              0.13333333333333333
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 11.9375,
+            "paired_crossed_bootstrap": [
+              -19.584166666666665,
+              41.39630208333336
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.0375,
+            "paired_crossed_bootstrap": [
+              -0.13333333333333333,
+              0.06666666666666667
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              -0.04583333333333333,
+              0.0375
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 7.520833333333333,
+            "paired_crossed_bootstrap": [
+              2.5791145833333333,
+              12.420833333333333
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 0.09892642091898911,
+            "paired_crossed_bootstrap": [
+              -0.16793730640112406,
+              0.4481666130497463
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.051398869770580294,
+            "paired_crossed_bootstrap": [
+              -0.10389780121879218,
+              -0.002334519968792139
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": -0.16919873374166428,
+            "paired_crossed_bootstrap": [
+              -1.6616788750284937,
+              1.4540121791296623
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": -0.9375,
+            "paired_crossed_bootstrap": [
+              -2.44171875,
+              0.5458854166666697
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.008333333333333333,
+            "paired_crossed_bootstrap": [
+              -0.14588541666666663,
+              0.18333333333333332
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.03703703703703704,
+            "paired_crossed_bootstrap": [
+              -0.15138888888888893,
+              0.07407986111111146
+            ]
+          },
+          "coins": {
+            "mean_difference": -0.3333333333333333,
+            "paired_crossed_bootstrap": [
+              -1.3625,
+              0.666718750000003
+            ]
+          },
+          "crates": {
+            "mean_difference": -6.016666666666667,
+            "paired_crossed_bootstrap": [
+              -18.083645833333332,
+              5.9
+            ]
+          },
+          "eliminations": {
+            "mean_difference": -0.12083333333333333,
+            "paired_crossed_bootstrap": [
+              -0.29583333333333334,
+              0.041666666666666664
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.17083333333333334,
+            "paired_crossed_bootstrap": [
+              0.008333333333333333,
+              0.3458333333333333
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 60.8,
+            "paired_crossed_bootstrap": [
+              7.1081770833333335,
+              118.73822916666671
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.17083333333333334,
+            "paired_crossed_bootstrap": [
+              -0.3458333333333333,
+              -0.008333333333333333
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.0125,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.041666666666666664
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -11.6375,
+            "paired_crossed_bootstrap": [
+              -19.733489583333334,
+              -3.408281249999997
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 0.0038657139770792294,
+            "paired_crossed_bootstrap": [
+              -0.22806295180131592,
+              0.3123847342350634
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": 0.06537196356275304,
+            "paired_crossed_bootstrap": [
+              -0.024263713520580297,
+              0.1638110313343455
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": 1.4064218374069168,
+            "paired_crossed_bootstrap": [
+              -0.08674357196756788,
+              2.9655896735288945
+            ]
+          }
+        }
+      },
+      "minimal": {
+        "control": {
+          "score": {
+            "mean_difference": 0.3541666666666667,
+            "paired_crossed_bootstrap": [
+              -0.5791666666666667,
+              1.266718750000003
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0.058333333333333334,
+            "paired_crossed_bootstrap": [
+              -0.14166666666666666,
+              0.2625
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.023148148148148147,
+            "paired_crossed_bootstrap": [
+              -0.06296296296296297,
+              0.10416666666666667
+            ]
+          },
+          "coins": {
+            "mean_difference": 0.20833333333333334,
+            "paired_crossed_bootstrap": [
+              -0.5666666666666667,
+              0.9375
+            ]
+          },
+          "crates": {
+            "mean_difference": 2.9625,
+            "paired_crossed_bootstrap": [
+              -7.037760416666666,
+              12.346197916666688
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0.029166666666666667,
+            "paired_crossed_bootstrap": [
+              -0.041666666666666664,
+              0.1125
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.020833333333333332,
+            "paired_crossed_bootstrap": [
+              -0.14583333333333334,
+              0.09166666666666666
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": -6.708333333333333,
+            "paired_crossed_bootstrap": [
+              -45.176249999999996,
+              27.212552083333335
+            ]
+          },
+          "self_kills": {
+            "mean_difference": 0.020833333333333332,
+            "paired_crossed_bootstrap": [
+              -0.09166666666666666,
+              0.14583333333333334
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": -0.004166666666666667,
+            "paired_crossed_bootstrap": [
+              -0.04583333333333333,
+              0.03333333333333333
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 9.770833333333334,
+            "paired_crossed_bootstrap": [
+              2.4248958333333333,
+              18.32114583333335
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": 0.071277284610684,
+            "paired_crossed_bootstrap": [
+              -0.20242546798739575,
+              0.4411498010288942
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": -0.012725160256410255,
+            "paired_crossed_bootstrap": [
+              -0.06466799879807691,
+              0.029595753205128326
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": -0.06045141741486272,
+            "paired_crossed_bootstrap": [
+              -1.2530777908501967,
+              1.0380917655225983
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": -2.0875,
+            "paired_crossed_bootstrap": [
+              -3.57921875,
+              -0.7124479166666636
+            ]
+          },
+          "strict_win": {
+            "mean_difference": -0.16666666666666666,
+            "paired_crossed_bootstrap": [
+              -0.3416666666666667,
+              0.020833333333333332
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.12777777777777777,
+            "paired_crossed_bootstrap": [
+              -0.24259259259259255,
+              -0.014814814814814828
+            ]
+          },
+          "coins": {
+            "mean_difference": -1.15,
+            "paired_crossed_bootstrap": [
+              -2.183333333333333,
+              -0.13333333333333333
+            ]
+          },
+          "crates": {
+            "mean_difference": -18.366666666666667,
+            "paired_crossed_bootstrap": [
+              -30.56265625,
+              -6.845468749999979
+            ]
+          },
+          "eliminations": {
+            "mean_difference": -0.1875,
+            "paired_crossed_bootstrap": [
+              -0.35,
+              -0.03333333333333333
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.1125,
+            "paired_crossed_bootstrap": [
+              -0.07083333333333333,
+              0.3
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 42.15416666666667,
+            "paired_crossed_bootstrap": [
+              -16.846458333333334,
+              104.47505208333332
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.1125,
+            "paired_crossed_bootstrap": [
+              -0.3,
+              0.07083333333333333
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0.008333333333333333,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0375
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -9.3875,
+            "paired_crossed_bootstrap": [
+              -20.091822916666665,
+              0.875
+            ]
+          },
+          "attack_opportunities_per_100_steps": {
+            "mean_difference": -0.023783422331225882,
+            "paired_crossed_bootstrap": [
+              -0.2977697172619048,
+              0.4247521722216867
+            ]
+          },
+          "opponent_present_fraction": {
+            "mean_difference": 0.10404567307692308,
+            "paired_crossed_bootstrap": [
+              0.020903515625000004,
+              0.19913807091346167
+            ]
+          },
+          "mean_opponent_distance": {
+            "mean_difference": 1.5151691537337184,
+            "paired_crossed_bootstrap": [
+              0.19350021111837598,
+              2.851931226504068
+            ]
+          }
+        }
+      }
+    },
+    "coin-heaven": {
+      "control": {
+        "reference": {
+          "score": {
+            "mean_difference": 6.3375,
+            "paired_crossed_bootstrap": [
+              -2.479270833333333,
+              14.61265625000001
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.12675,
+            "paired_crossed_bootstrap": [
+              -0.04958541666666667,
+              0.29225312500000017
+            ]
+          },
+          "coins": {
+            "mean_difference": 6.3375,
+            "paired_crossed_bootstrap": [
+              -2.479270833333333,
+              14.61265625000001
+            ]
+          },
+          "crates": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.075,
+            "paired_crossed_bootstrap": [
+              -0.05,
+              0.21666666666666667
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 46.45,
+            "paired_crossed_bootstrap": [
+              -14.080989583333333,
+              109.57484375000024
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.075,
+            "paired_crossed_bootstrap": [
+              -0.21666666666666667,
+              0.05
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 1.6291666666666667,
+            "paired_crossed_bootstrap": [
+              -1.5208854166666665,
+              5.879218750000002
+            ]
+          }
+        }
+      },
+      "reduced": {
+        "control": {
+          "score": {
+            "mean_difference": 2.1625,
+            "paired_crossed_bootstrap": [
+              -8.5,
+              14.012968750000027
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.04325,
+            "paired_crossed_bootstrap": [
+              -0.16999999999999998,
+              0.28025937500000053
+            ]
+          },
+          "coins": {
+            "mean_difference": 2.1625,
+            "paired_crossed_bootstrap": [
+              -8.5,
+              14.012968750000027
+            ]
+          },
+          "crates": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.004166666666666667,
+            "paired_crossed_bootstrap": [
+              -0.07916666666666666,
+              0.1125
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": -29.304166666666667,
+            "paired_crossed_bootstrap": [
+              -100.68546875,
+              33.43385416666669
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.004166666666666667,
+            "paired_crossed_bootstrap": [
+              -0.1125,
+              0.07916666666666666
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 0.7583333333333333,
+            "paired_crossed_bootstrap": [
+              -6.1,
+              8.866770833333339
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": 8.5,
+            "paired_crossed_bootstrap": [
+              0.50828125,
+              17.1625
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.17,
+            "paired_crossed_bootstrap": [
+              0.010165625,
+              0.34325
+            ]
+          },
+          "coins": {
+            "mean_difference": 8.5,
+            "paired_crossed_bootstrap": [
+              0.50828125,
+              17.1625
+            ]
+          },
+          "crates": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.07916666666666666,
+            "paired_crossed_bootstrap": [
+              -0.0375,
+              0.21666666666666667
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 17.145833333333332,
+            "paired_crossed_bootstrap": [
+              -50.01286458333333,
+              83.11031250000012
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.07916666666666666,
+            "paired_crossed_bootstrap": [
+              -0.21666666666666667,
+              0.0375
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 2.3875,
+            "paired_crossed_bootstrap": [
+              -1.92921875,
+              9.421093750000015
+            ]
+          }
+        }
+      },
+      "minimal": {
+        "control": {
+          "score": {
+            "mean_difference": -10.441666666666666,
+            "paired_crossed_bootstrap": [
+              -18.67515625,
+              -2.8244791666666367
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.20883333333333334,
+            "paired_crossed_bootstrap": [
+              -0.373503125,
+              -0.05648958333333272
+            ]
+          },
+          "coins": {
+            "mean_difference": -10.441666666666666,
+            "paired_crossed_bootstrap": [
+              -18.67515625,
+              -2.8244791666666367
+            ]
+          },
+          "crates": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.04583333333333333,
+            "paired_crossed_bootstrap": [
+              -0.0125,
+              0.1375
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 33.9875,
+            "paired_crossed_bootstrap": [
+              -1.1084895833333333,
+              73.6255729166667
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.04583333333333333,
+            "paired_crossed_bootstrap": [
+              -0.1375,
+              0.0125
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -3.5708333333333333,
+            "paired_crossed_bootstrap": [
+              -7.645833333333333,
+              -0.24166666666666667
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": -4.104166666666667,
+            "paired_crossed_bootstrap": [
+              -12.087760416666667,
+              4.125104166666673
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.08208333333333333,
+            "paired_crossed_bootstrap": [
+              -0.24175520833333336,
+              0.08250208333333348
+            ]
+          },
+          "coins": {
+            "mean_difference": -4.104166666666667,
+            "paired_crossed_bootstrap": [
+              -12.087760416666667,
+              4.125104166666673
+            ]
+          },
+          "crates": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.12083333333333333,
+            "paired_crossed_bootstrap": [
+              0.025,
+              0.25
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 80.4375,
+            "paired_crossed_bootstrap": [
+              28.543645833333336,
+              135.6393750000001
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.12083333333333333,
+            "paired_crossed_bootstrap": [
+              -0.25,
+              -0.025
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -1.9416666666666667,
+            "paired_crossed_bootstrap": [
+              -3.6458854166666668,
+              0.3875
+            ]
+          }
+        }
+      }
+    },
+    "loot-crate": {
+      "control": {
+        "reference": {
+          "score": {
+            "mean_difference": -4.008333333333334,
+            "paired_crossed_bootstrap": [
+              -7.4125,
+              -0.5998958333333273
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.08016666666666666,
+            "paired_crossed_bootstrap": [
+              -0.14825,
+              -0.01199791666666654
+            ]
+          },
+          "coins": {
+            "mean_difference": -4.008333333333334,
+            "paired_crossed_bootstrap": [
+              -7.4125,
+              -0.5998958333333273
+            ]
+          },
+          "crates": {
+            "mean_difference": -12.645833333333334,
+            "paired_crossed_bootstrap": [
+              -21.350104166666668,
+              -3.57911458333333
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.4583333333333333,
+            "paired_crossed_bootstrap": [
+              0.26666666666666666,
+              0.6458333333333334
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 145.15,
+            "paired_crossed_bootstrap": [
+              81.649375,
+              207.45156250000008
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.4583333333333333,
+            "paired_crossed_bootstrap": [
+              -0.6458333333333334,
+              -0.26666666666666666
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -3.925,
+            "paired_crossed_bootstrap": [
+              -7.66671875,
+              0.37505208333333634
+            ]
+          }
+        }
+      },
+      "reduced": {
+        "control": {
+          "score": {
+            "mean_difference": 1.9875,
+            "paired_crossed_bootstrap": [
+              -1.0834895833333331,
+              5.075052083333336
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.03975,
+            "paired_crossed_bootstrap": [
+              -0.02166979166666666,
+              0.10150104166666674
+            ]
+          },
+          "coins": {
+            "mean_difference": 1.9875,
+            "paired_crossed_bootstrap": [
+              -1.0834895833333331,
+              5.075052083333336
+            ]
+          },
+          "crates": {
+            "mean_difference": 5.1625,
+            "paired_crossed_bootstrap": [
+              -3.6250520833333333,
+              13.754218750000003
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.025,
+            "paired_crossed_bootstrap": [
+              -0.1833854166666666,
+              0.1375
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": -8.770833333333334,
+            "paired_crossed_bootstrap": [
+              -64.63151041666666,
+              46.516822916666676
+            ]
+          },
+          "self_kills": {
+            "mean_difference": 0.025,
+            "paired_crossed_bootstrap": [
+              -0.1375,
+              0.1833854166666697
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 2.2625,
+            "paired_crossed_bootstrap": [
+              -1.5334375,
+              6.1833854166666695
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": -2.0208333333333335,
+            "paired_crossed_bootstrap": [
+              -6.3584375,
+              2.3792708333333397
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.04041666666666667,
+            "paired_crossed_bootstrap": [
+              -0.12716875,
+              0.04758541666666679
+            ]
+          },
+          "coins": {
+            "mean_difference": -2.0208333333333335,
+            "paired_crossed_bootstrap": [
+              -6.3584375,
+              2.3792708333333397
+            ]
+          },
+          "crates": {
+            "mean_difference": -7.483333333333333,
+            "paired_crossed_bootstrap": [
+              -19.033333333333335,
+              4.146093750000015
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.43333333333333335,
+            "paired_crossed_bootstrap": [
+              0.23333333333333334,
+              0.6166666666666667
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 136.37916666666666,
+            "paired_crossed_bootstrap": [
+              70.16177083333334,
+              198.60869791666667
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.43333333333333335,
+            "paired_crossed_bootstrap": [
+              -0.6166666666666667,
+              -0.23333333333333334
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -1.6625,
+            "paired_crossed_bootstrap": [
+              -6.325,
+              3.2417708333333395
+            ]
+          }
+        }
+      },
+      "minimal": {
+        "control": {
+          "score": {
+            "mean_difference": 0.7625,
+            "paired_crossed_bootstrap": [
+              -2.2000520833333335,
+              3.6917187500000033
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": 0.01525,
+            "paired_crossed_bootstrap": [
+              -0.04400104166666668,
+              0.07383437500000008
+            ]
+          },
+          "coins": {
+            "mean_difference": 0.7625,
+            "paired_crossed_bootstrap": [
+              -2.2000520833333335,
+              3.6917187500000033
+            ]
+          },
+          "crates": {
+            "mean_difference": 2.4291666666666667,
+            "paired_crossed_bootstrap": [
+              -6.304427083333333,
+              11.083437500000006
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": -0.0875,
+            "paired_crossed_bootstrap": [
+              -0.23333333333333334,
+              0.07916666666666666
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": -28.35,
+            "paired_crossed_bootstrap": [
+              -78.21734375,
+              27.771614583333378
+            ]
+          },
+          "self_kills": {
+            "mean_difference": 0.0875,
+            "paired_crossed_bootstrap": [
+              -0.07916666666666666,
+              0.23333333333333334
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": 2.683333333333333,
+            "paired_crossed_bootstrap": [
+              -1.9125,
+              8.325156250000008
+            ]
+          }
+        },
+        "reference": {
+          "score": {
+            "mean_difference": -3.245833333333333,
+            "paired_crossed_bootstrap": [
+              -7.03359375,
+              0.2375
+            ]
+          },
+          "strict_win": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "collection_fraction": {
+            "mean_difference": -0.06491666666666666,
+            "paired_crossed_bootstrap": [
+              -0.14067187500000003,
+              0.004749999999999995
+            ]
+          },
+          "coins": {
+            "mean_difference": -3.245833333333333,
+            "paired_crossed_bootstrap": [
+              -7.03359375,
+              0.2375
+            ]
+          },
+          "crates": {
+            "mean_difference": -10.216666666666667,
+            "paired_crossed_bootstrap": [
+              -20.275624999999998,
+              -0.5
+            ]
+          },
+          "eliminations": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "survived": {
+            "mean_difference": 0.37083333333333335,
+            "paired_crossed_bootstrap": [
+              0.17916666666666667,
+              0.55
+            ]
+          },
+          "survival_steps": {
+            "mean_difference": 116.8,
+            "paired_crossed_bootstrap": [
+              52.78328125,
+              176.02369791666683
+            ]
+          },
+          "self_kills": {
+            "mean_difference": -0.37083333333333335,
+            "paired_crossed_bootstrap": [
+              -0.55,
+              -0.17916666666666667
+            ]
+          },
+          "invalid_actions": {
+            "mean_difference": 0,
+            "paired_crossed_bootstrap": [
+              0.0,
+              0.0
+            ]
+          },
+          "bomb_actions": {
+            "mean_difference": -1.2416666666666667,
+            "paired_crossed_bootstrap": [
+              -6.129322916666666,
+              3.975
+            ]
+          }
+        }
+      }
+    }
+  },
+  "training_summary": {
+    "minimal-r1": {
+      "optimizer_updates": 45754,
+      "mean_survival_steps": 115.6325,
+      "attack_episodes": 226,
+      "attack_opportunities_per_100_steps": 10.392839383391347,
+      "eliminations": 28,
+      "gated_out_transitions": 0
+    },
+    "reduced-r2": {
+      "optimizer_updates": 47865,
+      "mean_survival_steps": 120.91,
+      "attack_episodes": 235,
+      "attack_opportunities_per_100_steps": 9.165908527003557,
+      "eliminations": 20,
+      "gated_out_transitions": 0
+    },
+    "reduced-r1": {
+      "optimizer_updates": 51784,
+      "mean_survival_steps": 130.7075,
+      "attack_episodes": 250,
+      "attack_opportunities_per_100_steps": 10.661209188455139,
+      "eliminations": 42,
+      "gated_out_transitions": 0
+    },
+    "control-r2": {
+      "optimizer_updates": 55336,
+      "mean_survival_steps": 139.5875,
+      "attack_episodes": 253,
+      "attack_opportunities_per_100_steps": 11.29220023282887,
+      "eliminations": 32,
+      "gated_out_transitions": 0
+    },
+    "control-r1": {
+      "optimizer_updates": 62242,
+      "mean_survival_steps": 156.8525,
+      "attack_episodes": 255,
+      "attack_opportunities_per_100_steps": 9.641223442406082,
+      "eliminations": 22,
+      "gated_out_transitions": 0
+    },
+    "minimal-r2": {
+      "optimizer_updates": 44696,
+      "mean_survival_steps": 112.9875,
+      "attack_episodes": 200,
+      "attack_opportunities_per_100_steps": 9.01205885606815,
+      "eliminations": 23,
+      "gated_out_transitions": 0
+    },
+    "minimal-r3": {
+      "optimizer_updates": 36685,
+      "mean_survival_steps": 92.96,
+      "attack_episodes": 205,
+      "attack_opportunities_per_100_steps": 9.44223321858864,
+      "eliminations": 15,
+      "gated_out_transitions": 0
+    },
+    "control-r3": {
+      "optimizer_updates": 57376,
+      "mean_survival_steps": 144.6875,
+      "attack_episodes": 261,
+      "attack_opportunities_per_100_steps": 11.219006479481642,
+      "eliminations": 41,
+      "gated_out_transitions": 0
+    },
+    "reduced-r3": {
+      "optimizer_updates": 53652,
+      "mean_survival_steps": 135.3775,
+      "attack_episodes": 218,
+      "attack_opportunities_per_100_steps": 10.06629609794833,
+      "eliminations": 26,
+      "gated_out_transitions": 0
+    },
+    "control-r4": {
+      "optimizer_updates": 58772,
+      "mean_survival_steps": 148.1775,
+      "attack_episodes": 261,
+      "attack_opportunities_per_100_steps": 11.45416814293668,
+      "eliminations": 17,
+      "gated_out_transitions": 0
+    },
+    "minimal-r4": {
+      "optimizer_updates": 46737,
+      "mean_survival_steps": 118.09,
+      "attack_episodes": 216,
+      "attack_opportunities_per_100_steps": 8.04259463121348,
+      "eliminations": 21,
+      "gated_out_transitions": 0
+    },
+    "reduced-r4": {
+      "optimizer_updates": 49626,
+      "mean_survival_steps": 125.3125,
+      "attack_episodes": 236,
+      "attack_opportunities_per_100_steps": 10.350124688279301,
+      "eliminations": 23,
+      "gated_out_transitions": 0
+    },
+    "reduced-r5": {
+      "optimizer_updates": 51361,
+      "mean_survival_steps": 129.65,
+      "attack_episodes": 225,
+      "attack_opportunities_per_100_steps": 7.8846895487851905,
+      "eliminations": 21,
+      "gated_out_transitions": 0
+    },
+    "control-r5": {
+      "optimizer_updates": 58477,
+      "mean_survival_steps": 147.44,
+      "attack_episodes": 271,
+      "attack_opportunities_per_100_steps": 9.895550732501356,
+      "eliminations": 22,
+      "gated_out_transitions": 0
+    },
+    "minimal-r5": {
+      "optimizer_updates": 43214,
+      "mean_survival_steps": 109.2825,
+      "attack_episodes": 211,
+      "attack_opportunities_per_100_steps": 8.42312355592158,
+      "eliminations": 27,
+      "gated_out_transitions": 0
+    },
+    "reduced-r6": {
+      "optimizer_updates": 51950,
+      "mean_survival_steps": 131.1225,
+      "attack_episodes": 243,
+      "attack_opportunities_per_100_steps": 9.613148010448246,
+      "eliminations": 29,
+      "gated_out_transitions": 0
+    },
+    "control-r6": {
+      "optimizer_updates": 54580,
+      "mean_survival_steps": 137.6975,
+      "attack_episodes": 263,
+      "attack_opportunities_per_100_steps": 11.271083353002052,
+      "eliminations": 25,
+      "gated_out_transitions": 0
+    },
+    "minimal-r6": {
+      "optimizer_updates": 46978,
+      "mean_survival_steps": 118.6925,
+      "attack_episodes": 230,
+      "attack_opportunities_per_100_steps": 9.345577858752659,
+      "eliminations": 29,
+      "gated_out_transitions": 0
+    }
+  },
+  "latency_serial_stage": {
+    "median_ms": 5.9452056884765625,
+    "p95_ms": 16.162300109863278,
+    "max_ms": 32.0582389831543,
+    "decisions": 29758
+  },
+  "latency_contended_evaluation_stage_not_gated": {
+    "median_ms": 6.022214889526367,
+    "p95_ms": 17.995119094848633,
+    "max_ms": 1436.0506534576416,
+    "decisions": 1867901
+  },
+  "resources": {
+    "training": {
+      "cpu_seconds": 33949.28125,
+      "wall_seconds": 7715.528904400002,
+      "peak_memory_bytes": 1724014592,
+      "passed": true
+    },
+    "evaluation": {
+      "cpu_seconds": 30622.390625,
+      "wall_seconds": 6522.0537030999985,
+      "peak_memory_bytes": 1181663232,
+      "passed": true
+    },
+    "latency": {
+      "cpu_seconds": 792.484375,
+      "wall_seconds": 845.2771610000054,
+      "peak_memory_bytes": 234053632,
+      "passed": true
+    }
+  },
+  "invalid_actions_by_artifact": {
+    "reference": 40,
+    "control-r1": 126,
+    "control-r2": 90,
+    "control-r3": 90,
+    "control-r4": 70,
+    "control-r5": 70,
+    "control-r6": 102,
+    "reduced-r1": 76,
+    "reduced-r2": 108,
+    "reduced-r3": 84,
+    "reduced-r4": 58,
+    "reduced-r5": 62,
+    "reduced-r6": 74,
+    "minimal-r1": 36,
+    "minimal-r2": 42,
+    "minimal-r3": 62,
+    "minimal-r4": 32,
+    "minimal-r5": 28,
+    "minimal-r6": 54
+  },
+  "nonworse_replicas": {
+    "control": 6,
+    "reduced": 6,
+    "minimal": 6
+  },
+  "task2_complete": false,
+  "original_cumulative_gates": "not_established_by_this_exploratory_pilot",
+  "next_long_experiment_authorized": false
+}

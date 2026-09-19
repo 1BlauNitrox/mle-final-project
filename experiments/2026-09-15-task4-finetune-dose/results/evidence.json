@@ -1,0 +1,13 @@
+{
+  "analysis": "results/analysis.json",
+  "summary": "results/summary.csv",
+  "verification": "results/verification.json",
+  "archive_sha256": "0a2dc0bde30bca4e191ba1b7a2d1c3afb0afff617233a416894c814f3465c052",
+  "archive_size_bytes": 167655627,
+  "manifest_sha256": "d2e44e78c4ae23f7973cb8daeff760e9832eefaee0376694c5f601b3a23f0f07",
+  "archive_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-finetune-dose-evidence-v1/task4-competition-evidence.tar.gz",
+  "manifest_public_url": "https://github.com/1BlauNitrox/mle-final-project/releases/download/task4-finetune-dose-evidence-v1/task4-competition-evidence.tar.gz.manifest.json",
+  "archive_retrieval": "Published release; download both assets and verify the archive checksum before import.",
+  "verify_command": "Get-FileHash -Algorithm SHA256 task4-competition-evidence.tar.gz",
+  "reproduce_command": "$env:TASK4_PROFILE='finetune-dose'; python -m scripts.pilot_task4_competition import --root <root> --archive task4-competition-evidence.tar.gz --sha256 0a2dc0bde30bca4e191ba1b7a2d1c3afb0afff617233a416894c814f3465c052; python -m scripts.pilot_task4_competition analyze --root <root> --output <root>/analysis-reproduced.json"
+}

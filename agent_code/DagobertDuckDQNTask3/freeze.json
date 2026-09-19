@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "task3_checkpoint_not_frozen",
+  "issue": 188,
+  "selection": {
+    "decision": "no_checkpoint_selected",
+    "selected_by": null,
+    "gate_status": "not_passed",
+    "claim": "No registered Task 3 comparison selected a checkpoint; the installed artifact remains the provisional compatibility fixture."
+  },
+  "artifact": {
+    "path": "checkpoint.pt",
+    "sha256": "3dd853903fd75bc55efead9a3c9939d75b0b74543c4bf9799a0b9f5e41140599",
+    "size_bytes": 64237,
+    "source": "provisional Task 3 migration fixture",
+    "archive_sha256": null,
+    "archive_url": null,
+    "runtime_source_commit": "933a8fe11440e0f7645254390928da6af5dad46d",
+    "initial_sha256": null,
+    "previous_fixture_sha256": null
+  },
+  "training": {
+    "scientific_training_authorized": false,
+    "frozen_for_task4_handoff": false,
+    "future_training": "A future Task 3 or Task 4 protocol must bind a selected parent prospectively; do not treat the candidate-checkpoint.pt file as selected."
+  },
+  "evidence": {
+    "experiments": [168, 171, 173, 175, 178, 179, 180, 181, 182, 187],
+    "selected_checkpoint_in_registered_records": false,
+    "original_cumulative_gates": "not_passed"
+  }
+}

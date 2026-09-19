@@ -59,23 +59,18 @@ SOURCE = "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113"
 PROFILES = (
     "trainable-scope",
     "opponent-mixture",
+    "finetune-dose",
     "lineup-trajectory",
     "exploration-period",
-    "replay-capacity",
-    "kill-reward-alignment",
 )
 PROFILE = os.environ.get("TASK4_PROFILE", "trainable-scope")
-PROFILE_DATE = {"replay-capacity": "2026-09-16", "kill-reward-alignment": "2026-09-16"}
-CONFIG = ROOT / (
-    f"experiments/{PROFILE_DATE.get(PROFILE, '2026-09-15')}-task4-{PROFILE}/config.json"
-)
+CONFIG = ROOT / f"experiments/2026-09-15-task4-{PROFILE}/config.json"
 PROFILE_HASHES = {
     "trainable-scope": "509ed331f231a54ce3e50e394f3b473ee611bbd3cd2df1535b45c51a7b5a2a47",
     "opponent-mixture": "37491d6d2603265b292f73ca37279ea6d5ffa6cdbf71d9911a3ebffb294041a0",
-    "lineup-trajectory": "93d6f937a3711aa07fb93848423278a863132dbf320d7c6bcefacb01de485589",
+    "finetune-dose": "75403e404fe3c150ae075415d20a7a287bce3bdeca9848d58864f8c6218e321d",
+    "lineup-trajectory": "9960da40287ae52cefb4b6c04a6ccd839db133681695347931c00d34640f6305",
     "exploration-period": "f2108d212d1dcc21aa8b2edf198f7d27e5d186587101ede3b8bdb32a182c3e86",
-    "replay-capacity": "b70fb6062180f4da414890ecf2a69547d32fb4370a4eca901af6a314256c2b61",
-    "kill-reward-alignment": "0e16dca57bea5ad1f7198a15927f2783dfda446069ac3696eef25c2b0ed23877",
 }
 ARM_FACTORS = (
     "trainable_scope",
@@ -85,7 +80,6 @@ ARM_FACTORS = (
     "kill_reward",
     "learning_rate",
     "random_episode_period",
-    "replay_capacity",
 )
 # Everything the agent may be trained against, so an unregistered opponent
 # cannot reach a training game through a configuration edit alone.
@@ -303,11 +297,29 @@ def environment():
     }
 
 
+def registered_analyzer():
+    """Return the analyze function the profile's registration asks for.
+
+    The promotion rule was corrected after several protocols had already run, so
+    the corrected rule lives in a separate versioned analyzer rather than
+    replacing the original. A protocol opts in by registering
+    `promotion_rule_version: 2`; anything without it keeps the rule it was
+    registered and executed under, and re-analysing a completed campaign
+    reproduces the decision it actually made.
+    """
+    if config().get("promotion_rule_version") == 2:
+        from scripts.analyze_task4_competition_v2 import analyze
+    else:
+        from scripts.analyze_task4_competition import analyze
+    return analyze
+
+
 def code_hashes():
     names = [
         "scripts/pilot_task4_competition.py",
         "scripts/task4_interventions.py",
         "scripts/analyze_task4_competition.py",
+        "scripts/analyze_task4_competition_v2.py",
         "scripts/audit_task4_seeds.py",
         "scripts/fetch_task4_inputs.py",
         "scripts/task3_pilot_resources.py",
@@ -499,7 +511,6 @@ def payload_difference_paths(a, b, prefix=""):
 ARM_PAYLOAD_PATHS = {
     "rewards.KILLED_OPPONENT",
     "config.learning_rate",
-    "config.replay_capacity",
     "learner_state.optimizer.param_groups[0].lr",
 }
 
@@ -512,11 +523,6 @@ def arm_payload(initial, arm):
     result["rewards"]["KILLED_OPPONENT"] = setting["kill_reward"]
     rate = setting["learning_rate"]
     result["config"]["learning_rate"] = rate
-    # The agent rebuilds its buffer at config.replay_capacity when it restores a
-    # checkpoint, and asserts the two agree, so the capacity travels with the
-    # initialization like any other registered arm setting.
-    if "replay_capacity" in setting:
-        result["config"]["replay_capacity"] = setting["replay_capacity"]
     for group in result["learner_state"]["optimizer"]["param_groups"]:
         group["lr"] = rate
     return result
@@ -1185,9 +1191,7 @@ def bundle(root, output, results=False):
         ):
             paths.append((path, path.relative_to(root).as_posix()))
     if results:
-        from scripts.analyze_task4_competition import analyze
-
-        write(root / "analysis.json", analyze(root))
+        write(root / "analysis.json", registered_analyzer()(root))
         paths.extend(
             (root / name, name)
             for name in ("evaluation-state.json", "latency-state.json", "analysis.json")
@@ -1528,9 +1532,7 @@ def main():
     elif args.mode in {"bundle", "results"}:
         bundle(root, args.output.resolve(), args.mode == "results")
     elif args.mode == "analyze":
-        from scripts.analyze_task4_competition import analyze
-
-        write(args.output, analyze(root))
+        write(args.output, registered_analyzer()(root))
     elif args.mode == "import":
         import_bundle(root, args.archive, args.sha256)
     elif args.mode == "smoke":
