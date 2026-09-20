@@ -286,6 +286,9 @@ def play_episode(
                 "rejected_contested": 0,
                 "rejected_no_candidate": 0,
             },
+            "safe_attack_guard": getattr(policy, "safe_attack_guard", None).snapshot()
+            if hasattr(policy, "safe_attack_guard")
+            else {"eligible": 0, "overrides": 0, "rejected_rank": 0},
             "completed_episodes": policy.completed_episodes,
             "loop_penalties": getattr(policy, "loop_penalty_count", 0),
             "optimizer_updates": policy.learner.update_steps if training else None,

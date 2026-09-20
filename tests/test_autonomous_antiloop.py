@@ -131,3 +131,37 @@ def test_three_arm_screen_requires_registered_invalid_improvement(tmp_path):
         row["native"]["invalid"] = 1
     write(path, changed)
     assert not analyze(tmp_path)["eligible"]
+
+
+def test_zero_loop_baseline_requires_zero_candidate_loops(tmp_path):
+    cfg = fixture(tmp_path)
+    for stage in ("pilot_r1", "pilot_r2"):
+        for arm in cfg["arms"]:
+            for suite in ("classic", "mixed"):
+                path = tmp_path / "results" / stage / arm / f"{suite}.json"
+                data = read(path)
+                for row in data["rows"]:
+                    row["loop_windows"] = {"eligible": 100, "looping": 0}
+                write(path, data)
+    assert analyze(tmp_path)["eligible"]
+
+    path = tmp_path / "results/pilot_r1/narrow_guard/classic.json"
+    data = read(path)
+    data["rows"][0]["loop_windows"]["looping"] = 1
+    write(path, data)
+    assert not analyze(tmp_path)["eligible"]
+
+
+def test_registered_attack_override_exposure_is_a_hard_gate(tmp_path):
+    cfg = fixture(tmp_path)
+    cfg["screen"]["minimum_attack_overrides"] = 1
+    write(tmp_path / "config.json", cfg)
+    assert not analyze(tmp_path)["eligible"]
+
+    path = tmp_path / "results/pilot_r1/narrow_guard/classic.json"
+    data = read(path)
+    data["rows"][0]["safe_attack_guard"] = {"overrides": 1}
+    write(path, data)
+    result = analyze(tmp_path)
+    assert result["eligible"]
+    assert result["pilot"]["effects"]["attack_overrides"] == 1

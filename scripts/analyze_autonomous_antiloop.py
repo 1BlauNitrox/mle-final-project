@@ -152,8 +152,13 @@ def gate_stage(root, cfg, stages, *, latency=False):
         gates[f"{stage}.loops"] = bool(
             candidate["eligible"]
             and control["eligible"]
-            and control["rate"]
-            and candidate["rate"] <= limits["loop_ratio"] * control["rate"]
+            and control["rate"] is not None
+            and candidate["rate"] is not None
+            and (
+                candidate["rate"] <= limits["loop_ratio"] * control["rate"]
+                if control["rate"] > 0
+                else candidate["rate"] <= limits.get("loop_absolute_rate", 0.0)
+            )
         )
         guarded_games += sum(
             row["narrow_loop_guard"]["overrides"] > 0
@@ -162,6 +167,14 @@ def gate_stage(root, cfg, stages, *, latency=False):
     gates["guard_exposure"] = guarded_games >= limits["minimum_guarded_games"]
     effects["invalid_block_differences"] = invalid_blocks
     effects["guarded_games"] = guarded_games
+    if "minimum_attack_overrides" in limits:
+        attack_overrides = sum(
+            row.get("safe_attack_guard", {}).get("overrides", 0)
+            for stage in stages
+            for row in all_stage_rows(stage, candidate_arm, multi)
+        )
+        effects["attack_overrides"] = attack_overrides
+        gates["attack_exposure"] = attack_overrides >= limits["minimum_attack_overrides"]
     for suite in ("coins", "crates"):
         values = np.concatenate(
             [

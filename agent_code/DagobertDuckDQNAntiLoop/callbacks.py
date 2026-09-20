@@ -20,6 +20,7 @@ from .persistence import (
     load_training_checkpoint,
 )
 from .replay import ReplayBuffer
+from .safe_attack_guard import SafeAttackGuard
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
@@ -69,6 +70,7 @@ def act(self, game_state: dict | None) -> str:
         "persistent",
         "early_persistent",
         "mid_persistent",
+        "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
     guard = getattr(self, "narrow_loop_guard", None)
@@ -89,7 +91,18 @@ def act(self, game_state: dict | None) -> str:
         return cached_q_values
 
     legal = action_mask if action_mask is not None else np.ones(len(ACTIONS), dtype=bool)
-    if guard_mode in {"cooldown", "persistent", "early_persistent", "mid_persistent"}:
+    if guard_mode == "mid_attack_second":
+        attack_guard = getattr(self, "safe_attack_guard", None)
+        if attack_guard is None:
+            attack_guard = self.safe_attack_guard = SafeAttackGuard()
+        action = attack_guard.choose(game_state, action, q_values, legal)
+    if guard_mode in {
+        "cooldown",
+        "persistent",
+        "early_persistent",
+        "mid_persistent",
+        "mid_attack_second",
+    }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
     return guard.choose(
         game_state,
@@ -102,12 +115,17 @@ def act(self, game_state: dict | None) -> str:
             "persistent": 400,
             "early_persistent": 400,
             "mid_persistent": 400,
+            "mid_attack_second": 400,
         }[guard_mode],
     )
 
 
 def _loop_guard_window(mode: str) -> int:
-    return {"early_persistent": 12, "mid_persistent": 16}.get(mode, 24)
+    return {
+        "early_persistent": 12,
+        "mid_persistent": 16,
+        "mid_attack_second": 16,
+    }.get(mode, 24)
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:
