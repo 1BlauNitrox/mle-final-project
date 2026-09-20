@@ -132,7 +132,8 @@ def setup(self) -> None:
     self.q_table = QTable(
         parent_values=(
             parent_prior.values
-            if self.initialization == PARENT_PRIOR_INITIALIZATION
+            if self.initialization
+            in (PARENT_PRIOR_INITIALIZATION, TASK2_PRIOR_INITIALIZATION)
             else None
         ),
         feature_count=representation.feature_count,
