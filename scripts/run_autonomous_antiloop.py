@@ -6,6 +6,7 @@ import argparse
 import atexit
 import contextlib
 import hashlib
+import importlib
 import importlib.metadata
 import json
 import os
@@ -169,7 +170,9 @@ def evaluate(root, cfg, stage, arm):
                 agent_seed=cfg["evaluation_agent_seed"],
                 slot=index % (len(specification["opponents"]) + 1),
                 scenario=specification["scenario"],
-                guard_mode="on" if arm == "narrow_guard" else "off",
+                guard_mode=cfg.get("arm_modes", {}).get(
+                    arm, "on" if arm == "narrow_guard" else "off"
+                ),
             )
             rows.append(compact(row))
         require(sha(root / "reference.pt") == digest, "Evaluation changed checkpoint")
@@ -192,7 +195,7 @@ def smoke(root):
             training=False,
             epsilon=0,
             agent_seed=cfg["evaluation_agent_seed"],
-            guard_mode="on" if arm == "narrow_guard" else "off",
+            guard_mode=cfg.get("arm_modes", {}).get(arm, "on" if arm == "narrow_guard" else "off"),
         )
         records.append({"arm": arm, "row": compact(row)})
     require(sha(root / "reference.pt") == digest, "Smoke changed checkpoint")
@@ -277,9 +280,10 @@ def export(root):
 
 
 def supervise(root):
-    from scripts.analyze_autonomous_antiloop import analyze
-
     cfg = bound(root)
+    analyze = importlib.import_module(
+        cfg.get("analyzer", "scripts.analyze_autonomous_antiloop")
+    ).analyze
     require(read(root / "smoke.json")["passed"], "Passing smoke required")
     require(not (root / "STOP.json").exists(), "Persistent stop exists")
     owner = psutil.Process()

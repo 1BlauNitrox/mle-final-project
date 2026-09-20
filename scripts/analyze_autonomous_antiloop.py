@@ -42,7 +42,7 @@ def validate_stage(root, cfg, stage):
             )
     for suite in setting:
         left = stage_rows(root, stage, "control", suite)
-        right = stage_rows(root, stage, "narrow_guard", suite)
+        right = stage_rows(root, stage, cfg.get("candidate_arm", "narrow_guard"), suite)
         require(
             [(r["world_seed"], r["slot"], r["opponents"]) for r in left]
             == [(r["world_seed"], r["slot"], r["opponents"]) for r in right],
@@ -60,13 +60,14 @@ def loop_rate(observations):
     }
 
 
-def contrast(root, stage, suites, name):
+def contrast(root, stage, suites, name, candidate="narrow_guard", baseline="control"):
     values = []
     for suite in suites:
-        candidate = stage_rows(root, stage, "narrow_guard", suite)
-        control = stage_rows(root, stage, "control", suite)
+        candidate_rows = stage_rows(root, stage, candidate, suite)
+        baseline_rows = stage_rows(root, stage, baseline, suite)
         values.extend(
-            metric(a, name) - metric(b, name) for a, b in zip(candidate, control, strict=True)
+            metric(a, name) - metric(b, name)
+            for a, b in zip(candidate_rows, baseline_rows, strict=True)
         )
     return np.asarray(values, dtype=float)
 
@@ -109,12 +110,17 @@ def diagnostics(root, cfg, stage, arm):
 def gate_stage(root, cfg, stages, *, latency=False):
     limits = cfg["screen"]
     multi = limits["multiplayer_suites"]
+    candidate_arm = cfg.get("candidate_arm", "narrow_guard")
+
     def all_stage_rows(stage, arm, suites):
         return [row for suite in suites for row in stage_rows(root, stage, arm, suite)]
+
     gates, effects, loop_reports = {}, {}, {}
     offsets = 0
     for name in ("score", "kills", "survived", "self_kills", "invalid"):
-        values = np.concatenate([contrast(root, stage, multi, name) for stage in stages])
+        values = np.concatenate(
+            [contrast(root, stage, multi, name, candidate_arm) for stage in stages]
+        )
         effects[name] = interval(values, cfg, offsets)
         offsets += 1
     gates["score"] = effects["score"]["difference"] >= limits["score_gain"] - 1e-12
@@ -129,12 +135,12 @@ def gate_stage(root, cfg, stages, *, latency=False):
     invalid_blocks = []
     guarded_games = 0
     for stage in stages:
-        invalid = float(contrast(root, stage, multi, "invalid").mean())
+        invalid = float(contrast(root, stage, multi, "invalid", candidate_arm).mean())
         invalid_blocks.append(invalid)
         gates[f"{stage}.invalid"] = invalid <= (
             limits["invalid_actions"]["block_increase_per_game"] + 1e-12
         )
-        candidate = loop_rate(all_stage_rows(stage, "narrow_guard", limits["loop_suites"]))
+        candidate = loop_rate(all_stage_rows(stage, candidate_arm, limits["loop_suites"]))
         control = loop_rate(all_stage_rows(stage, "control", limits["loop_suites"]))
         loop_reports[stage] = {"candidate": candidate, "control": control}
         gates[f"{stage}.loops"] = bool(
@@ -145,20 +151,23 @@ def gate_stage(root, cfg, stages, *, latency=False):
         )
         guarded_games += sum(
             row["narrow_loop_guard"]["overrides"] > 0
-            for row in all_stage_rows(stage, "narrow_guard", limits["loop_suites"])
+            for row in all_stage_rows(stage, candidate_arm, limits["loop_suites"])
         )
     gates["guard_exposure"] = guarded_games >= limits["minimum_guarded_games"]
     effects["invalid_block_differences"] = invalid_blocks
     effects["guarded_games"] = guarded_games
     for suite in ("coins", "crates"):
         values = np.concatenate(
-            [contrast(root, stage, [suite], "collection_fraction") for stage in stages]
+            [
+                contrast(root, stage, [suite], "collection_fraction", candidate_arm)
+                for stage in stages
+            ]
         )
         effects[f"{suite}.collection_fraction"] = interval(values, cfg, offsets)
         offsets += 1
         gates[f"{suite}.retention"] = values.mean() >= -limits["collection_loss"] - 1e-12
         self_kills = np.concatenate(
-            [contrast(root, stage, [suite], "self_kills") for stage in stages]
+            [contrast(root, stage, [suite], "self_kills", candidate_arm) for stage in stages]
         )
         effects[f"{suite}.self_kills"] = interval(self_kills, cfg, offsets)
         offsets += 1
@@ -166,20 +175,39 @@ def gate_stage(root, cfg, stages, *, latency=False):
         candidate_invalid = sum(
             metric(row, "invalid")
             for stage in stages
-            for row in stage_rows(root, stage, "narrow_guard", suite)
+            for row in stage_rows(root, stage, candidate_arm, suite)
         )
         effects[f"{suite}.candidate_invalid_total"] = candidate_invalid
         gates[f"{suite}.zero_invalid"] = (
             candidate_invalid <= limits["invalid_actions"]["solo_maximum_total"]
         )
     if latency:
-        observations = stage_rows(root, stages[0], "narrow_guard", "latency")
+        observations = stage_rows(root, stages[0], candidate_arm, "latency")
         times = [value for row in observations for value in row["native"]["decision_times_ms"]]
         require(times, "No latency observations")
         effects["latency"] = {"p95_ms": float(np.quantile(times, 0.95)), "max_ms": max(times)}
         gates["latency"] = (
             effects["latency"]["p95_ms"] < limits["latency_p95_ms"]
             and effects["latency"]["max_ms"] < limits["latency_max_ms"]
+        )
+    comparison = cfg.get("invalid_improvement_vs")
+    if comparison:
+        values = np.concatenate(
+            [
+                contrast(
+                    root,
+                    stage,
+                    multi,
+                    "invalid",
+                    candidate_arm,
+                    comparison["arm"],
+                )
+                for stage in stages
+            ]
+        )
+        effects[f"invalid_vs_{comparison['arm']}"] = interval(values, cfg, offsets)
+        gates[f"invalid_vs_{comparison['arm']}"] = (
+            values.mean() <= -comparison["minimum_reduction_per_game"] + 1e-12
         )
     return {
         "passed": all(bool(value) for value in gates.values()),

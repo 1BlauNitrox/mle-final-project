@@ -85,3 +85,21 @@ def test_progress_change_breaks_the_window():
         score = 1 if index == 24 else 0
         guard.observe(state(index, (4, 4) if index % 2 else (4, 5), score=score))
     assert not guard.stuck(state(24, (4, 5), score=1))
+
+
+def test_cooldown_only_redirects_a_contested_policy_move_after_override():
+    opponent = ("them", 0, True, (6, 6))
+    guard = pacing(others=(opponent,))
+    current = state(24, (4, 5), others=(opponent,))
+    assert guard.choose(current, "UP", q(UP=9, DOWN=8), LEGAL, followup_steps=4) == "DOWN"
+    followup = state(25, (4, 6), others=(opponent,))
+    assert guard.redirect_contested(followup, "RIGHT", q(RIGHT=9, LEFT=8), LEGAL) == "LEFT"
+    assert guard.snapshot()["followup_redirects"] == 1
+    assert guard.snapshot()["followup_steps_remaining"] == 3
+
+
+def test_no_cooldown_leaves_a_contested_policy_move_unchanged():
+    opponent = ("them", 0, True, (6, 6))
+    guard = NarrowLoopGuard()
+    current = state(25, (4, 6), others=(opponent,))
+    assert guard.redirect_contested(current, "RIGHT", q(LEFT=9), LEGAL) == "RIGHT"

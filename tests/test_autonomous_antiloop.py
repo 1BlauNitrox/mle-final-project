@@ -100,3 +100,34 @@ def test_campaign_binds_guard_and_enforces_budget_deadline():
         )
         == "Pipeline absolute stop reached"
     )
+
+
+def test_three_arm_screen_requires_registered_invalid_improvement(tmp_path):
+    cfg = fixture(tmp_path)
+    cfg["arms"].append("cooldown_guard")
+    cfg["candidate_arm"] = "cooldown_guard"
+    cfg["invalid_improvement_vs"] = {
+        "arm": "narrow_guard",
+        "minimum_reduction_per_game": 0.2,
+    }
+    for stage in ("pilot_r1", "pilot_r2"):
+        for suite in cfg["evaluation"][stage]:
+            source_path = tmp_path / "results" / stage / "narrow_guard" / f"{suite}.json"
+            source = read(source_path)
+            candidate = deepcopy(source)
+            if suite in ("classic", "mixed"):
+                for row in source["rows"]:
+                    row["native"]["invalid"] = 1
+            write(source_path, source)
+            write(tmp_path / "results" / stage / "cooldown_guard" / f"{suite}.json", candidate)
+    write(tmp_path / "config.json", cfg)
+    result = analyze(tmp_path)
+    assert result["eligible"]
+    assert result["pilot"]["gates"]["invalid_vs_narrow_guard"]
+
+    path = tmp_path / "results/pilot_r1/cooldown_guard/classic.json"
+    changed = read(path)
+    for row in changed["rows"]:
+        row["native"]["invalid"] = 1
+    write(path, changed)
+    assert not analyze(tmp_path)["eligible"]

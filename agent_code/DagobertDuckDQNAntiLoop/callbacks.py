@@ -59,8 +59,11 @@ def act(self, game_state: dict | None) -> str:
         rng=self.action_rng,
         action_mask=action_mask,
     )
-    if self.train or os.environ.get(NARROW_LOOP_GUARD_ENV, "on") != "on":
+    guard_mode = os.environ.get(NARROW_LOOP_GUARD_ENV, "on")
+    if self.train or guard_mode == "off":
         return action
+    if guard_mode not in {"on", "cooldown"}:
+        raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
     guard = getattr(self, "narrow_loop_guard", None)
     if guard is None:
         guard = self.narrow_loop_guard = NarrowLoopGuard()
@@ -78,7 +81,15 @@ def act(self, game_state: dict | None) -> str:
         return cached_q_values
 
     legal = action_mask if action_mask is not None else np.ones(len(ACTIONS), dtype=bool)
-    return guard.choose(game_state, action, q_values, legal)
+    if guard_mode == "cooldown":
+        action = guard.redirect_contested(game_state, action, q_values, legal)
+    return guard.choose(
+        game_state,
+        action,
+        q_values,
+        legal,
+        followup_steps=4 if guard_mode == "cooldown" else 0,
+    )
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:

@@ -59,10 +59,13 @@ class NarrowLoopGuard:
     eligible: int = 0
     rejected_contested: int = 0
     rejected_no_candidate: int = 0
+    followup_steps_remaining: int = 0
+    followup_redirects: int = 0
 
     def observe(self, game_state: dict) -> None:
         if int(game_state["step"]) == 1:
             self.observations.clear()
+            self.followup_steps_remaining = 0
         self.observations.append(
             (
                 int(game_state["step"]),
@@ -95,6 +98,7 @@ class NarrowLoopGuard:
         chosen: str,
         q_values: Callable[[], Sequence[float]],
         legal_mask: np.ndarray,
+        followup_steps: int = 0,
     ) -> str:
         if chosen not in MOVES or not self.stuck(game_state):
             return chosen
@@ -128,7 +132,35 @@ class NarrowLoopGuard:
             self.rejected_no_candidate += 1
             return chosen
         self.overrides += 1
+        self.followup_steps_remaining = followup_steps
         return max(candidates)[1]
+
+    def redirect_contested(
+        self,
+        game_state: dict,
+        chosen: str,
+        q_values: Callable[[], Sequence[float]],
+        legal_mask: np.ndarray,
+    ) -> str:
+        """Avoid a simultaneous-move collision briefly after an override."""
+        if self.followup_steps_remaining <= 0:
+            return chosen
+        self.followup_steps_remaining -= 1
+        if chosen not in MOVES:
+            return chosen
+        here = tuple(int(v) for v in game_state["self"][3])
+        contested = _contested_targets(game_state)
+        if step(here, chosen) not in contested:
+            return chosen
+        candidates = []
+        for index, action in enumerate(ACTIONS):
+            if not legal_mask[index] or action == chosen:
+                continue
+            if action in MOVES and step(here, action) in contested:
+                continue
+            candidates.append((float(q_values()[index]), action))
+        self.followup_redirects += 1
+        return max(candidates)[1] if candidates else "WAIT"
 
     def snapshot(self) -> dict[str, int]:
         return {
@@ -136,4 +168,6 @@ class NarrowLoopGuard:
             "overrides": self.overrides,
             "rejected_contested": self.rejected_contested,
             "rejected_no_candidate": self.rejected_no_candidate,
+            "followup_redirects": self.followup_redirects,
+            "followup_steps_remaining": self.followup_steps_remaining,
         }
