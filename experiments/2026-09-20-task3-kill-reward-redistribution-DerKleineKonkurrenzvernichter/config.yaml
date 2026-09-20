@@ -2,6 +2,7 @@ schema_version: 1
 issue: 224
 status: registered_authorized
 agent: DerKleineKonkurrenzvernichter
+experiment_commit: 2d34bdd0ead761282f25c5da345b03d64a696a9e
 hypothesis: Discounted redistribution of the native opponent-kill reward to the causal bomb transition improves peaceful-opponent elimination without degrading retained Task 2 capabilities.
 literature:
   title: "RUDDER: Return Decomposition for Delayed Rewards"
