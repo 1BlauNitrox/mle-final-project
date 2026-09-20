@@ -2,6 +2,7 @@ schema_version: 1
 issue: 228
 status: registered_authorized
 agent: DerKleineKonkurrenzvernichter
+experiment_commit: 7e914884ba124dac13035f1976e4f4f31818f8bc
 hypothesis: Training the current tabular Task 3 agent against three rule-based opponents produces measurable competitive behavior while retaining Task 2 and Task 3 capabilities.
 experiment_type: single_arm_baseline
 state_representation: compact_opponent
