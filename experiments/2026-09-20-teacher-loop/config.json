@@ -1,0 +1,292 @@
+{
+  "issue": 225,
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "reference_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "arms": [
+    "control",
+    "memory"
+  ],
+  "replicas": 2,
+  "learning_rate": 0.0001,
+  "update_every": 4,
+  "updates": 10000,
+  "episodes": 1000,
+  "train_ranges": [
+    [
+      1810000001,
+      1810001000
+    ],
+    [
+      1810010001,
+      1810011000
+    ]
+  ],
+  "learner_seeds": [
+    1810090001,
+    1810090002
+  ],
+  "evaluation_agent_seed": 1810090010,
+  "bootstrap_seed": 1810090011,
+  "smoke_seed": 1810099991,
+  "bootstrap_resamples": 10000,
+  "checks": [
+    {
+      "updates": 100,
+      "name": "u100"
+    },
+    {
+      "updates": 500,
+      "name": "u500"
+    },
+    {
+      "updates": 10000,
+      "name": "final"
+    }
+  ],
+  "pilot": {
+    "score_loss": 0.5,
+    "survival_loss": 0.1,
+    "self_kills_increase": 0.1,
+    "collection_loss": 0.1,
+    "invalid_increase": 0.5
+  },
+  "screen": {
+    "kills_gain": 0,
+    "score_gain": 0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.1,
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "replica_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": [
+        "latency"
+      ],
+      "baselines": [
+        "control",
+        "reference"
+      ]
+    },
+    "loop_ratio": 0.75
+  },
+  "devices": {
+    "pc": {
+      "replicas": [
+        1,
+        2
+      ],
+      "cpu_seconds": 57600,
+      "rss_bytes": 8589934592
+    }
+  },
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 2147483648,
+    "stop_utc": "2026-09-21T12:00:00+00:00",
+    "training_stop_utc": "2026-09-21T08:00:00+00:00"
+  },
+  "evaluation": {
+    "pilot": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1810100001,
+          1810100040
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1810101001,
+          1810101020
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1810102001,
+          1810102020
+        ]
+      }
+    },
+    "final": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1810200001,
+          1810200160
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1810201001,
+          1810201040
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1810202001,
+          1810202040
+        ]
+      },
+      "peaceful": {
+        "scenario": "classic",
+        "opponents": [
+          "peaceful_agent",
+          "peaceful_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1810203001,
+          1810203040
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1810204001,
+          1810204080
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1810205001,
+          1810205010
+        ]
+      }
+    },
+    "confirmation": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1810300001,
+          1810300160
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1810301001,
+          1810301040
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1810302001,
+          1810302040
+        ]
+      },
+      "peaceful": {
+        "scenario": "classic",
+        "opponents": [
+          "peaceful_agent",
+          "peaceful_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1810303001,
+          1810303040
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1810304001,
+          1810304080
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1810305001,
+          1810305010
+        ]
+      }
+    }
+  },
+  "selection": "Both replicas complete and pooled final screen passes, then independently confirm fixed-final memory-r1 on fresh registered worlds. Never select intermediate checkpoints.",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-20: good plan. Start it now; approved16CPU-hour total, two one-thread workers. Subsequent owner instruction extends hard training stop to Monday10:00Berlin.",
+    "scope": "Preparation/mechanics,pilot,training,evaluation,confirmation,watcher,recovery; no automatic promotion"
+  },
+  "protocol": {
+    "changed_factor": "Teacher legal-action KL weight0 versus1,temperature1,only fresh non-loop replay rows. Both arms have identical memory and -0.1 conditional loop reward.",
+    "training": "Classic three rule_based_agent; paired seeds and rotating slots",
+    "initialization": "Both arms memory mode; initial teacher has zero history columns. Preserve parent networks,Adam,replay,target phase. Collect5000newtransitions before updating.",
+    "architecture": "56-64-64-6;12inactive geometry inputs;5previous16visit-count inputs",
+    "loop_penalty": "24consecutive hazard-free observations with unchanged field,coins,score,opponent count and<=3positions; successful directional return to window position; no penalty forBOMB/WAIT,invalid,progress,death or hazard escape",
+    "exploration": "one seeded fully random episode per five, greedy otherwise",
+    "checks": "100,500,10000newupdates,1000episodeceiling; teacher-arm safety and sampled-exposure gates control escalation; all results retained",
+    "metrics": "native score,kills,survival,selfkills,coins,crates,invalid,latency;24step late-loop windows with explicit denominators;attack exposure,bomb kill credits,replay origins,penalty counts",
+    "limitations": "Two paired replicas; fixed-final memory-r1 only; independent confirmation; no automatic promotion"
+  },
+  "revision": 1,
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 900,
+      "note": "Conservative15CPU-minute debit for local implementation tests and preparation before the campaign ledger; measured mechanics added separately."
+    }
+  },
+  "teacher": {
+    "weights": {
+      "control": 0.0,
+      "memory": 1.0
+    },
+    "temperature": 1.0,
+    "fresh_warmup": 5000,
+    "exposure_minimum": {
+      "generated_loop": 1,
+      "sampled_loop": 1,
+      "sampled_retention": 1
+    }
+  }
+}
