@@ -40,3 +40,11 @@ a Task 3 candidate. Earlier-task collection gates passed (`0.207` Classic,
 decision-time observation exceeded the registered limit; both remain explicit
 limitations. The Task 2 parent itself failed its full Issue #183 confirmation,
 and that limitation also remains part of this successor's provenance.
+
+Issue #224 tested a RUDDER-inspired deterministic redistribution of the native
+opponent-kill reward to its causal bomb-placement transition. The candidate
+reduced mean peaceful-opponent eliminations from 0.15 to 0.13 and failed the
+registered primary, replica-consistency, confidence-bound, and repeatability
+gates. The current configuration therefore retains the native delayed
+`KILLED_OPPONENT: +5.0` reward; `causal_bomb` remains an experimental,
+checkpoint-protected training mode rather than the promoted policy.
