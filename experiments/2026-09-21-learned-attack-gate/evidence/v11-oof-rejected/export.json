@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-learned-attack-v11\\issue225-learned-attack-1789947781798662600.zip",
+  "sha256": "d0ac5cd5133ea50db65e9c638bf7f3c075294ff16cb839b9322c93cf0220bdeb",
+  "bytes": 66820,
+  "final_pipeline_resources": {
+    "cpu_seconds": 44075.671875,
+    "first_start": 1789947705.9568439,
+    "wall_seconds": 75.9453125,
+    "stage": "complete",
+    "peak_rss_bytes": 283258880.0
+  }
+}
