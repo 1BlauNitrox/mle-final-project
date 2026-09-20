@@ -103,3 +103,15 @@ def test_no_cooldown_leaves_a_contested_policy_move_unchanged():
     guard = NarrowLoopGuard()
     current = state(25, (4, 6), others=(opponent,))
     assert guard.redirect_contested(current, "RIGHT", q(LEFT=9), LEGAL) == "RIGHT"
+
+
+def test_persistent_followup_remains_active_after_four_decisions():
+    opponent = ("them", 0, True, (6, 6))
+    guard = pacing(others=(opponent,))
+    current = state(24, (4, 5), others=(opponent,))
+    guard.choose(current, "UP", q(DOWN=8), LEGAL, followup_steps=400)
+    for step_number in range(25, 29):
+        guard.redirect_contested(state(step_number, (4, 6), others=(opponent,)), "WAIT", q(), LEGAL)
+    followup = state(29, (4, 6), others=(opponent,))
+    assert guard.redirect_contested(followup, "RIGHT", q(LEFT=8), LEGAL) == "LEFT"
+    assert guard.snapshot()["followup_steps_remaining"] == 395

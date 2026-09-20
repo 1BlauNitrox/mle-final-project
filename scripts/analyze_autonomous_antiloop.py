@@ -99,8 +99,14 @@ def diagnostics(root, cfg, stage, arm):
             "invalid_mean": float(np.mean([metric(row, "invalid") for row in observations])),
             "loops": loop_rate(observations),
             "guard": {
-                key: sum(row["narrow_loop_guard"][key] for row in observations)
-                for key in ("eligible", "overrides", "rejected_contested", "rejected_no_candidate")
+                key: sum(row["narrow_loop_guard"].get(key, 0) for row in observations)
+                for key in (
+                    "eligible",
+                    "overrides",
+                    "rejected_contested",
+                    "rejected_no_candidate",
+                    "followup_redirects",
+                )
             },
             "guarded_games": sum(row["narrow_loop_guard"]["overrides"] > 0 for row in observations),
         }

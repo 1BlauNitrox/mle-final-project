@@ -1,0 +1,77 @@
+{
+  "issue": 225,
+  "campaign": "autonomous-antiloop",
+  "iteration": "03-persistent-contested-filter",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "analyzer": "scripts.analyze_autonomous_antiloop",
+  "arms": ["control", "cooldown_guard", "persistent_guard"],
+  "arm_modes": {"control": "off", "cooldown_guard": "cooldown", "persistent_guard": "persistent"},
+  "candidate_arm": "persistent_guard",
+  "invalid_improvement_vs": {"arm": "cooldown_guard", "minimum_reduction_per_game": 0.12},
+  "evaluation_agent_seed": 1820490010,
+  "bootstrap_seed": 1820490011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1820499991,
+  "devices": {"pc": {"workers": 2, "cpu_seconds": 144000, "rss_bytes": 8589934592}},
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 1073741824,
+    "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
+    "stop_utc": "2026-09-21T14:00:00+00:00",
+    "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
+  },
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 14013.0,
+      "note": "Final v2 campaign ledger plus a conservative 60-second transition margin; shared 40 CPU-hour cap is not reset."
+    }
+  },
+  "protocol": {
+    "hypothesis": "The v2 filter was correctly targeted but expired too soon: 37 post-override contested moves were redirected, yet invalid actions fell by only 0.075/game. Retaining the same filter after the first escape should reduce invalid actions by at least 0.12/game versus v2 while preserving its loop reduction.",
+    "changed_factor": "The contested-destination filter horizon changes from four decisions after each escape to the remainder of that episode. The filter still changes only a chosen directional move into a tile occupied by or one step from an opponent.",
+    "controls": "All arms use the identical frozen checkpoint, guard trigger, escape choice, features, action mask, scenarios, opponents, seeds, slots, and evaluator. No training, reward, architecture, bomb-rule, or non-contested action change.",
+    "baselines": ["control", "cooldown_guard"],
+    "expected_additional_cpu_seconds": 14400,
+    "decision": "Confirm only persistent_guard if it passes every original safety and primary gate and reduces pooled invalid actions by at least 0.12/game versus cooldown_guard."
+  },
+  "evaluation": {
+    "pilot_r1": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820500001, 1820500060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820501001, 1820501020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820502001, 1820502010]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820503001, 1820503010]}
+    },
+    "pilot_r2": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820510001, 1820510060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820511001, 1820511020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820512001, 1820512010]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820513001, 1820513010]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820600001, 1820600120]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820601001, 1820601040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820602001, 1820602020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820603001, 1820603020]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820604001, 1820604010]}
+    }
+  },
+  "screen": {
+    "multiplayer_suites": ["classic", "mixed"],
+    "loop_suites": ["classic", "mixed"],
+    "loop_ratio": 0.75,
+    "minimum_guarded_games": 20,
+    "score_gain": 0.0,
+    "kills_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.10,
+    "invalid_actions": {"pooled_increase_per_game": 0.25, "block_increase_per_game": 0.5, "solo_maximum_total": 0, "exclude_suites": ["latency"]},
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Both fresh pilot blocks must pass before the fixed fresh confirmation. Never promote automatically.",
+  "fallback_if_failed": "Retain every row and continue only with a prospectively registered anti-loop iteration inside the same shared budget and deadline.",
+  "authorization": {"owner": "Julius", "record": "2026-09-20 autonomous anti-loop authorization through Monday 15:00-16:00 Berlin.", "scope": "Shared 40 CPU-hour cap, at most two one-thread workers; looping primary, killing only after loop success."}
+}
