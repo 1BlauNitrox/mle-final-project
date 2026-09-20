@@ -189,14 +189,18 @@ def prepare(args):
     )
     write(
         args.root / "resources.json",
-        {
-            "cpu_seconds": sum(psutil.Process().cpu_times()[:2])
-            + cfg["prior_usage"][args.device]["cpu_seconds"],
-            "first_start": started,
-            "wall_seconds": time.time() - started,
-            "stage": "prepared",
-        },
+        prepared_usage(args.root, cfg, args.device, started),
     )
+
+
+def prepared_usage(root, cfg, device, started):
+    """Charge preparation on top of all inherited consumption, including retries."""
+    usage = initial_usage(root, cfg, device)
+    usage["cpu_seconds"] += sum(psutil.Process().cpu_times()[:2])
+    usage["first_start"] = min(started, usage["first_start"])
+    usage["wall_seconds"] = time.time() - usage["first_start"]
+    usage["stage"] = "prepared"
+    return usage
 
 
 def epsilon(seed, index):

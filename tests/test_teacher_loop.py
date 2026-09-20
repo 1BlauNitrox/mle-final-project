@@ -15,8 +15,33 @@ from agent_code.DagobertDuckDQNAntiLoop.model import DQNLearner
 from agent_code.DagobertDuckDQNAntiLoop.replay import ReplayBuffer
 from scripts.confirm_teacher_loop import confirmation
 from scripts.curriculum_io import read, write
-from scripts.run_teacher_loop import CONFIG, sources, training_deadline_breach
+from scripts.run_teacher_loop import CONFIG, prepared_usage, sources, training_deadline_breach
 from training.teacher_loop import TeacherTracker, distillation_loss, exposure_gate
+
+
+@pytest.mark.parametrize("inherited_cpu", [None, 1060.4375, 800.0])
+def test_preparation_retains_prior_cpu_and_original_start(tmp_path, monkeypatch, inherited_cpu):
+    from scripts import run_teacher_loop as runner
+
+    monkeypatch.setattr(runner.time, "time", lambda: 2000.0)
+    monkeypatch.setattr(
+        runner.psutil, "Process", lambda: SimpleNamespace(cpu_times=lambda: (12.0, 3.0))
+    )
+    cfg = {"prior_usage": {"pc": {"cpu_seconds": 900.0}}}
+    if inherited_cpu is not None:
+        write(
+            tmp_path / "inherited-resources.json",
+            {
+                "cpu_seconds": inherited_cpu,
+                "first_start": 1000.0,
+            },
+        )
+    usage = prepared_usage(tmp_path, cfg, "pc", 1900.0)
+    assert usage["cpu_seconds"] == max(900.0, inherited_cpu or 0) + 15.0
+    assert usage["first_start"] == (1000.0 if inherited_cpu is not None else 1900.0)
+    assert usage["wall_seconds"] == 2000.0 - usage["first_start"]
+    write(tmp_path / "resources.json", usage)
+    assert runner.initial_usage(tmp_path, cfg, "pc") == usage
 
 
 def world(step, position=(3, 3)):
