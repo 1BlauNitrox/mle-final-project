@@ -10,6 +10,7 @@ import numpy as np
 import torch
 
 from .config import ACTIONS, DEFAULT_CONFIG, DQNConfig
+from .learned_attack_guard import LearnedAttackGuard
 from .legality import framework_legal_action_mask
 from .model import CPU_DEVICE, DQNLearner, select_action
 from .narrow_loop_guard import NarrowLoopGuard
@@ -27,6 +28,7 @@ EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
 NARROW_LOOP_GUARD_ENV = "BOMBERMAN_NARROW_LOOP_GUARD"
+ATTACK_HEAD_ENV = "BOMBERMAN_ATTACK_HEAD"
 DEFAULT_NARROW_LOOP_GUARD_MODE = "broad_persistent"
 
 
@@ -73,6 +75,7 @@ def act(self, game_state: dict | None) -> str:
         "mid_persistent",
         "broad_persistent",
         "broad_trapped_attack",
+        "broad_learned_attack",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -81,7 +84,8 @@ def act(self, game_state: dict | None) -> str:
         window = _loop_guard_window(guard_mode)
         guard = self.narrow_loop_guard = NarrowLoopGuard(
             window=window,
-            require_no_crates=guard_mode not in {"broad_persistent", "broad_trapped_attack"},
+            require_no_crates=guard_mode
+            not in {"broad_persistent", "broad_trapped_attack", "broad_learned_attack"},
         )
     guard.observe(game_state)
 
@@ -107,6 +111,17 @@ def act(self, game_state: dict | None) -> str:
         if attack_guard is None:
             attack_guard = self.safe_attack_guard = TrappedAttackGuard()
         action = attack_guard.choose(game_state, action, q_values, legal)
+    if guard_mode == "broad_learned_attack":
+        attack_guard = getattr(self, "learned_attack_guard", None)
+        if attack_guard is None:
+            file_name = os.environ.get(ATTACK_HEAD_ENV, "attack_head.pt")
+            if not file_name or file_name != os.path.basename(file_name):
+                raise ValueError(f"{ATTACK_HEAD_ENV} must contain one file name.")
+            attack_guard = self.learned_attack_guard = LearnedAttackGuard.load(
+                Path(__file__).resolve().parent / file_name,
+                self.policy_network,
+            )
+        action = attack_guard.choose(game_state, action, q_values, legal, state)
     if guard_mode in {
         "cooldown",
         "persistent",
@@ -114,6 +129,7 @@ def act(self, game_state: dict | None) -> str:
         "mid_persistent",
         "broad_persistent",
         "broad_trapped_attack",
+        "broad_learned_attack",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -130,6 +146,7 @@ def act(self, game_state: dict | None) -> str:
             "mid_persistent": 400,
             "broad_persistent": 400,
             "broad_trapped_attack": 400,
+            "broad_learned_attack": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -141,6 +158,7 @@ def _loop_guard_window(mode: str) -> int:
         "mid_persistent": 16,
         "broad_persistent": 16,
         "broad_trapped_attack": 16,
+        "broad_learned_attack": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 

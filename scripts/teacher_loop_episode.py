@@ -96,6 +96,7 @@ def play_episode(
     guard_mode=None,
     collect_head_training_trace=False,
     trace_stride=20,
+    attack_head_name=None,
 ):
 
     source = (root / "source").resolve()
@@ -244,6 +245,8 @@ def play_episode(
     }
     if guard_mode is not None:
         env["BOMBERMAN_NARROW_LOOP_GUARD"] = guard_mode
+    if attack_head_name is not None:
+        env["BOMBERMAN_ATTACK_HEAD"] = attack_head_name
     with (
         release_agent_logs(),
         patch.dict(os.environ, env),
@@ -344,6 +347,14 @@ def play_episode(
             "safe_attack_guard": getattr(policy, "safe_attack_guard", None).snapshot()
             if hasattr(policy, "safe_attack_guard")
             else {"eligible": 0, "overrides": 0, "rejected_rank": 0},
+            "learned_attack_guard": getattr(policy, "learned_attack_guard", None).snapshot()
+            if hasattr(policy, "learned_attack_guard")
+            else {
+                "eligible": 0,
+                "overrides": 0,
+                "rejected_rank": 0,
+                "rejected_confidence": 0,
+            },
             "completed_episodes": policy.completed_episodes,
             "loop_penalties": getattr(policy, "loop_penalty_count", 0),
             "optimizer_updates": policy.learner.update_steps if training else None,

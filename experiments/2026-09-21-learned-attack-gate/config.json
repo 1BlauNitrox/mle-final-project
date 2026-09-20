@@ -1,0 +1,80 @@
+{
+  "issue": 225,
+  "revision": 1,
+  "runtime_commit": "8b221f5e426827e53edf7efdf55015935ff8bdf2",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "training_data_sha256": "f37ad4dece6fdcb1ed54b0adeb6c8a3fee0a69e43a8c288091e31e242be1c47f",
+  "hypothesis": "A high-precision classifier trained on causal safe-bomb outcomes can identify rare attack opportunities where a bomb improves eliminations, while an exact geometric and Q-rank gate preserves the anti-loop fallback everywhere else.",
+  "changed_factor": "The candidate adds one frozen linear kill-success classifier and permits at most one safe BOMB override per round when the parent ranks BOMB second or third; the baseline uses broad_persistent unchanged.",
+  "controls": "Same checkpoint, DQN features and weights, broad persistent loop guard, action mask, scenarios, opponents, slots, and paired evaluation seeds. The learned artifact cannot alter Q-values or non-attack actions.",
+  "dataset": {
+    "records": 302,
+    "positive_clean_kills": 32,
+    "self_kill_records": 27,
+    "source_run": "issue225-bomb-head-v10",
+    "selection": "All safe_attack=true placed-bomb records; labels are owner-attributed kill without self-kill."
+  },
+  "training": {
+    "folds": 5,
+    "epochs": 800,
+    "learning_rate": 0.02,
+    "l2_weight": 0.01,
+    "positive_weight": 4.0,
+    "thresholds": [0.5, 0.6, 0.7, 0.8, 0.9, 0.95],
+    "minimum_oof_precision": 0.5,
+    "minimum_oof_true_positives": 5,
+    "candidate_max_better_actions": [1, 2]
+  },
+  "evaluation_agent_seed": 1832090010,
+  "smoke_seed": 1832099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1832100001, 1832100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1832101001, 1832101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1832102001, 1832102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1832103001, 1832103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1832104001, 1832104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1832200001, 1832200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1832201001, 1832201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1832202001, 1832202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1832203001, 1832203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1832204001, 1832204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1832205001, 1832205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "minimum_attack_overrides": 3,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Reject training if grouped OOF precision exposure fails. Among pilot-eligible rank gates, choose the largest paired kill gain, then score gain, then the narrower rank gate. Confirm once on fresh worlds; never promote automatically.",
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 44068.65625, "note": "Cumulative issue #225 debit through completed V10; shared cap is not reset."}},
+  "limits": {
+    "wall_seconds": 48600,
+    "minimum_available_bytes": 1073741824,
+    "training_stop_utc": "2026-09-21T10:00:00+00:00",
+    "stop_utc": "2026-09-21T13:00:00+00:00"
+  },
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Classifier training, paired evaluation, confirmation, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}
