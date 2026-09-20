@@ -1,0 +1,45 @@
+{
+  "restarts": 0,
+  "cpu_seconds": 1.390625,
+  "pid": 488576,
+  "created": 1789942197.0520492,
+  "runner_sha256": "5ea20d23d439b94f67dd36f9640402e2eccb6990681391abebeefae2035f32f1",
+  "time": 1789942438.663313,
+  "launching": {
+    "pid": 501768,
+    "created": 1789942197.7247643
+  },
+  "launches": 1,
+  "status": "stopped",
+  "family": [
+    {
+      "pid": 501808,
+      "created": 1789942197.7869983
+    },
+    {
+      "pid": 501976,
+      "created": 1789942198.406901
+    },
+    {
+      "pid": 501992,
+      "created": 1789942198.4205132
+    },
+    {
+      "pid": 502040,
+      "created": 1789942198.4702888
+    },
+    {
+      "pid": 502116,
+      "created": 1789942198.5166976
+    },
+    {
+      "pid": 502000,
+      "created": 1789942198.4407704
+    },
+    {
+      "pid": 502084,
+      "created": 1789942198.4947462
+    }
+  ],
+  "reason": "Persistent stop or retry limit"
+}
