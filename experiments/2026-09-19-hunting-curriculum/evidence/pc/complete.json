@@ -1,0 +1,16 @@
+{
+  "pipeline_complete": true,
+  "submission_promotion": false,
+  "decisions": [
+    {
+      "status": "stopped_safety",
+      "check": "u500-or-e25",
+      "submission_promotion": false
+    },
+    {
+      "status": "stopped_safety",
+      "check": "e10",
+      "submission_promotion": false
+    }
+  ]
+}

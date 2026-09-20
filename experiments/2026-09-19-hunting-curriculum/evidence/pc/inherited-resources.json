@@ -1,0 +1,6 @@
+{
+  "cpu_seconds": 1910.03125,
+  "first_start": 1789854195.4983494,
+  "source_resources_sha256": "fd9265c23a977342d1b30437ad63d247ccc9aeea893a4119ad0cda9c30da03ed",
+  "note": "Prior consumption plus60seconds conservative termination margin"
+}

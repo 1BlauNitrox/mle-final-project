@@ -1,0 +1,49 @@
+{
+  "passed": false,
+  "arms": {
+    "control": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.325,
+        "classic.survived": -0.075,
+        "classic.self_kills": 0.15,
+        "coins.collection_fraction": 0.126,
+        "crates.collection_fraction": -0.06000000000000001,
+        "crates.self_kills": 0.0
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "curriculum": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.275,
+        "classic.survived": -0.05,
+        "classic.self_kills": 0.075,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.037000000000000005,
+        "crates.self_kills": 0.0
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    }
+  },
+  "checkpoint": {
+    "name": "e10",
+    "episodes": 10
+  }
+}
