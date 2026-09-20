@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 224
-status: registered_authorized
+status: completed_failed
 agent: DerKleineKonkurrenzvernichter
 experiment_commit: 2d34bdd0ead761282f25c5da345b03d64a696a9e
 hypothesis: Discounted redistribution of the native opponent-kill reward to the causal bomb transition improves peaceful-opponent elimination without degrading retained Task 2 capabilities.
@@ -47,4 +47,9 @@ compute:
 authorization:
   owner_requested_direct_execution: true
   intermediate_review_waived_by_owner: true
-decision: pending
+execution:
+  completed_at: 2026-09-20
+  control_completed_jobs: 1005
+  candidate_completed_jobs: 1005
+  failed_jobs: 0
+decision: reject_candidate_keep_native_kill_reward
