@@ -1,0 +1,226 @@
+{
+  "issue": 225,
+  "campaign": "autonomous-antiloop",
+  "iteration": "05b-mid-trigger-serial-fresh-seeds",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "analyzer": "scripts.analyze_autonomous_antiloop",
+  "arms": [
+    "control",
+    "mid_persistent"
+  ],
+  "arm_modes": {
+    "control": "persistent",
+    "mid_persistent": "mid_persistent"
+  },
+  "candidate_arm": "mid_persistent",
+  "evaluation_agent_seed": 1821090010,
+  "bootstrap_seed": 1821090011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1821099991,
+  "devices": {
+    "pc": {
+      "workers": 1,
+      "cpu_seconds": 144000,
+      "rss_bytes": 8589934592
+    }
+  },
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 1073741824,
+    "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
+    "stop_utc": "2026-09-21T14:00:00+00:00",
+    "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
+  },
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 24355.0,
+      "note": "Interrupted v5 ledger plus a conservative 60-second transition margin; shared 40 CPU-hour cap is not reset."
+    }
+  },
+  "protocol": {
+    "hypothesis": "The 12-step trigger removed measured loops but intervened early enough to lose one kill in 160 pilot games. A 16-step trigger should still reduce eligible loop frequency by at least 25% versus the confirmed 24-step guard while preserving score and kills.",
+    "changed_factor": "Only the loop-history window changes from 24 decisions to 16. The frozen learned checkpoint, loop definition, safe escape choice, and episode-persistent contested-destination filter are unchanged.",
+    "controls": "Both arms use the identical frozen checkpoint, features, action mask, scenarios, opponents, paired seeds, slots, evaluator, escape choice, and collision filter. The run uses one game worker after the two-worker attempt reached the registered free-memory reserve. No training, reward, architecture, bomb-rule, or other action-selection change.",
+    "baselines": [
+      "confirmed persistent 24-step guard"
+    ],
+    "expected_additional_cpu_seconds": 10800,
+    "decision": "Keep mid_persistent only if both pilot blocks and confirmation pass every registered primary, safety, correctness, collection, and latency gate versus the confirmed 24-step guard."
+  },
+  "evaluation": {
+    "pilot_r1": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821100001,
+          1821100060
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821101001,
+          1821101020
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821102001,
+          1821102010
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821103001,
+          1821103010
+        ]
+      }
+    },
+    "pilot_r2": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821110001,
+          1821110060
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821111001,
+          1821111020
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821112001,
+          1821112010
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821113001,
+          1821113010
+        ]
+      }
+    },
+    "confirmation": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821200001,
+          1821200120
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821201001,
+          1821201040
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821202001,
+          1821202020
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821203001,
+          1821203020
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821204001,
+          1821204010
+        ]
+      }
+    }
+  },
+  "screen": {
+    "multiplayer_suites": [
+      "classic",
+      "mixed"
+    ],
+    "loop_suites": [
+      "classic",
+      "mixed"
+    ],
+    "loop_ratio": 0.75,
+    "minimum_guarded_games": 20,
+    "score_gain": 0.0,
+    "kills_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.1,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": [
+        "latency"
+      ]
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Both fresh pilot blocks must pass before the fixed fresh confirmation. Never promote automatically.",
+  "fallback_if_failed": "Retain the confirmed 24-step persistent guard and all interrupted and serial iteration-5 rows.",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-20 autonomous anti-loop authorization through Monday 15:00-16:00 Berlin.",
+    "scope": "Shared 40 CPU-hour cap, at most two one-thread workers; looping primary, killing only after loop success."
+  }
+}
