@@ -94,6 +94,8 @@ def play_episode(
     tracker=None,
     hunting_index=None,
     guard_mode=None,
+    collect_head_training_trace=False,
+    trace_stride=20,
 ):
 
     source = (root / "source").resolve()
@@ -115,6 +117,9 @@ def play_episode(
     credits = BombCredits()
     observed = None
     layout_metadata = {}
+    decision_record = None
+    anchor_records = []
+    placed_bomb_records = []
 
     def observe_action(world, agent, action):
         if agent is learner:
@@ -127,6 +132,10 @@ def play_episode(
                     credits.placed(
                         bomb, step=world.step, safe_attack=observed["safe_attack_position"]
                     )
+                    if collect_head_training_trace:
+                        if decision_record is None:
+                            raise ValueError("Missing causal decision record for placed bomb")
+                        placed_bomb_records.append(dict(decision_record))
         return result
 
     def observe_bombs(world):
@@ -157,9 +166,53 @@ def play_episode(
         return action
 
     def observed_act(policy, state):
+        nonlocal decision_record
         if training and tracker is not None and hasattr(tracker, "observe"):
             tracker.observe(state)
-        return original_act(policy, state)
+        action = original_act(policy, state)
+        if collect_head_training_trace:
+            import torch
+
+            from agent_code.DagobertDuckDQNAntiLoop.legality import (
+                framework_legal_action_mask,
+            )
+            from agent_code.DagobertDuckDQNAntiLoop.model import CPU_DEVICE
+            from agent_code.DagobertDuckDQNAntiLoop.observations import observe
+            from agent_code.DagobertDuckDQNAntiLoop.trapped_attack_guard import (
+                TrappedAttackGuard,
+            )
+
+            features = observe(policy, state)
+            if features is None:
+                raise ValueError("Live game state produced no features")
+            legal = framework_legal_action_mask(state)
+            with torch.no_grad():
+                q_values = (
+                    policy.policy_network(torch.from_numpy(features).to(CPU_DEVICE)).cpu().numpy()
+                )
+            trapped = (
+                TrappedAttackGuard().choose(
+                    state,
+                    "WAIT",
+                    lambda: q_values,
+                    legal,
+                )
+                == "BOMB"
+            )
+            decision_record = {
+                "step": int(state["step"]),
+                "features": features.tolist(),
+                "q_values": q_values.tolist(),
+                "legal": legal.tolist(),
+                "safe_attack": bool(observed and observed["safe_attack_position"]),
+                "trapped_attack": bool(trapped),
+                "selected_action": action,
+            }
+            if trace_stride <= 0:
+                raise ValueError("trace_stride must be positive")
+            if int(state["step"]) % trace_stride == 0 or trapped:
+                anchor_records.append(dict(decision_record))
+        return action
 
     log_dir = root / "framework-logs" / str(os.getpid())
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -257,12 +310,14 @@ def play_episode(
         world.end()
         native = world.round_statistics[world.round_id]["agents"][learner.name]
         bomb_credits = credits.snapshot()
+        if collect_head_training_trace and len(placed_bomb_records) != len(bomb_credits):
+            raise ValueError("Bomb training records and native credits are misaligned")
         if (
             sum(b["kill_credits"] for b in bomb_credits) != native["kills"]
             or sum(b["self_kill_credits"] for b in bomb_credits) != native["self_kills"]
         ):
             raise ValueError("Bomb-credit instrumentation disagrees with native metrics")
-        return {
+        result = {
             "world_seed": world_seed,
             "scenario": scenario,
             "hunting_layout": layout_metadata,
@@ -296,3 +351,16 @@ def play_episode(
                 policy.learner.update_steps - before_updates if training else None
             ),
         }
+        if collect_head_training_trace:
+            result["head_training_trace"] = {
+                "anchors": anchor_records,
+                "bombs": [
+                    {**record, **credit}
+                    for record, credit in zip(
+                        placed_bomb_records,
+                        bomb_credits,
+                        strict=True,
+                    )
+                ],
+            }
+        return result

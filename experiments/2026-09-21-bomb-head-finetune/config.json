@@ -1,0 +1,89 @@
+{
+  "issue": 225,
+  "revision": 1,
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "hypothesis": "Owner-attributed successful bombs plus a trapped-opponent teacher can improve eliminations when only the BOMB output row is updated and ordinary-state anchoring preserves the parent policy.",
+  "changed_factor": "The candidate checkpoints contain 25, 100, or 300 restricted optimizer updates to the BOMB output row; the baseline has zero updates.",
+  "controls": "Same parent checkpoint, feature extractor, non-BOMB output rows, broad persistent loop guard, action mask, scenarios, opponents, slots, and paired evaluation seeds.",
+  "collection": {
+    "seed_range": [1831000001, 1831000600],
+    "minimum_episodes": 200,
+    "block_episodes": 100,
+    "maximum_episodes": 600,
+    "minimum_empirical_positive_bombs": 12,
+    "trace_stride": 20,
+    "lineups": [
+      ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      ["rule_based_agent", "coin_collector_agent", "peaceful_agent"],
+      ["peaceful_agent", "peaceful_agent", "peaceful_agent"]
+    ],
+    "exploration": "One deterministic fully random legal-action episode per five; all others greedy; broad_persistent loop guard remains active."
+  },
+  "training": {
+    "snapshot_steps": [25, 100, 300],
+    "learning_rate": 0.0002,
+    "margin": 0.05,
+    "anchor_weight": 5.0,
+    "negative_weight": 1.0,
+    "l2_weight": 0.1,
+    "batch_size": 32,
+    "optimizer_seed": 1831090001,
+    "scope": "Only layers.4 BOMB row and bias may change; hidden layers and UP/RIGHT/DOWN/LEFT/WAIT output rows must remain bit-exact."
+  },
+  "evaluation_agent_seed": 1831090010,
+  "bootstrap_seed": 1831090011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1831099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1831100001, 1831100040]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1831101001, 1831101040]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1831102001, 1831102020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1831103001, 1831103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1831104001, 1831104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1831200001, 1831200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1831201001, 1831201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1831202001, 1831202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1831203001, 1831203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1831204001, 1831204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1831205001, 1831205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Among pilot-eligible fixed checkpoints, choose the largest paired kill gain, then score gain, then the earlier update count. Confirm once on fresh worlds; never promote automatically.",
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 41200, "note": "Conservative cumulative debit through stopped V9; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {
+    "wall_seconds": 54000,
+    "minimum_available_bytes": 1073741824,
+    "training_stop_utc": "2026-09-21T10:00:00+00:00",
+    "stop_utc": "2026-09-21T13:00:00+00:00"
+  },
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through the final submission preparation window.",
+    "scope": "Collection, restricted BOMB-head training, paired evaluation, confirmation, watcher recovery, evidence export; no automatic submission promotion."
+  }
+}
