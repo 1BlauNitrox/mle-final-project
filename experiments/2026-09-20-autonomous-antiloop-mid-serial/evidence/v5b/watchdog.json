@@ -1,0 +1,20 @@
+{
+  "restarts": 0,
+  "cpu_seconds": 9.859375,
+  "pid": 385512,
+  "created": 1789928997.1461732,
+  "runner_sha256": "c07e27b4e0fcf4158754cfda2a6a5b9a3599f2d941e785598040835114d17894",
+  "time": 1789931868.522758,
+  "launching": {
+    "pid": 235660,
+    "created": 1789928997.7705047
+  },
+  "launches": 1,
+  "status": "pipeline_complete",
+  "family": [
+    {
+      "pid": 374240,
+      "created": 1789928997.843249
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-autonomous-antiloop-v5b\\issue225-autonomous-antiloop-1789931854048413000.zip",
+  "sha256": "7d01d5d52eae49e4edf0b20f94c17570070d7e8455423cdee0a1021a220ec1cb",
+  "bytes": 2287845,
+  "final_pipeline_resources": {
+    "cpu_seconds": 28699.765625,
+    "first_start": 1789928957.3242526,
+    "wall_seconds": 2897.0876500606537,
+    "stage": "complete",
+    "peak_rss_bytes": 521289728
+  }
+}
