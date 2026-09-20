@@ -36,6 +36,7 @@ VALID_STATE_REPRESENTATIONS = (
     "compact_decision",
     "compact_post_bomb_escape",
     "compact_opponent",
+    "compact_shared_target",
 )
 VALID_POTENTIAL_SHAPING_MODES = (
     "none",
@@ -230,11 +231,12 @@ def load_plan(path: Path) -> ResolvedPlan:
             "compact state representations require tabular_initialization=zeros"
         )
     if (
-        state_representation == "compact_opponent"
+        state_representation in {"compact_opponent", "compact_shared_target"}
         and tabular_initialization != "task2_prior"
     ):
         raise ValueError(
-            "compact_opponent requires tabular_initialization=task2_prior"
+            "Task 3 compact representations require "
+            "tabular_initialization=task2_prior"
         )
     if (
         isinstance(useful_bomb_reward, bool)

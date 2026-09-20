@@ -11,6 +11,7 @@ from .features import FEATURE_COUNT, StateFeatures
 
 PARENT_FEATURE_COUNT = 5
 PARENT_ACTION_COUNT = 6
+SHARED_TARGET_FEATURE_COUNT = 6
 
 BOMB_PRIOR_MARGIN = 1.0
 
@@ -241,7 +242,7 @@ class QTable:
         if self.initialization == ZERO_INITIALIZATION:
             return np.zeros(len(ACTIONS), dtype=float)
 
-        parent_state = tuple(state[:PARENT_FEATURE_COUNT])
+        parent_state = _task2_parent_state(state)
 
         parent_q_values = self.parent_values.get(parent_state)
 
@@ -327,3 +328,10 @@ def _validate_action_mask(
         raise ValueError("action_mask must retain at least one legal action.")
 
     return mask.copy()
+
+
+def _task2_parent_state(state: StateFeatures) -> Task1State:
+    """Project a successor state onto the frozen compact Task 2 schema."""
+    if len(state) == SHARED_TARGET_FEATURE_COUNT:
+        return (state[0], state[1], state[2], state[3], state[5])
+    return tuple(state[:PARENT_FEATURE_COUNT])
