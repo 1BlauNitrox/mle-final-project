@@ -90,6 +90,7 @@ def test_campaign_binds_guard_and_enforces_budget_deadline():
     cfg = read(CONFIG)
     assert "agent_code/DagobertDuckDQNAntiLoop/narrow_loop_guard.py" in sources()
     assert cfg["devices"]["pc"]["cpu_seconds"] == 144000
+    assert cfg["devices"]["pc"]["workers"] in {1, 2}
     assert (
         resource_breach(
             {"cpu_seconds": 0, "wall_seconds": 0},

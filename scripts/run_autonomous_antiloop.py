@@ -318,7 +318,11 @@ def supervise(root):
         measured[label] = {}
 
     try:
-        for stage in ("pilot_r1", "pilot_r2"):
+        pilot_queue = ["pilot_r1", "pilot_r2"]
+        worker_count = int(device.get("workers", 1))
+        require(worker_count in {1, 2}, "Unsupported evaluator worker count")
+        while pilot_queue and len(running) < worker_count:
+            stage = pilot_queue.pop(0)
             launch("_evaluate", stage, stage)
         phase = "pilot"
         while running:
@@ -336,6 +340,9 @@ def supervise(root):
                         )
                     del running[label]
                     require(code == 0, f"Worker failed: {label}; inspect its log")
+            while phase == "pilot" and pilot_queue and len(running) < worker_count:
+                stage = pilot_queue.pop(0)
+                launch("_evaluate", stage, stage)
             usage.update(
                 cpu_seconds=base_cpu
                 + sum(sum(group.values()) for group in measured.values())
@@ -351,7 +358,7 @@ def supervise(root):
             )
             require(not reason, reason or "")
             require(not (root / "STOP.request").exists(), "User stop requested")
-            if not running and phase == "pilot":
+            if not running and not pilot_queue and phase == "pilot":
                 analysis = analyze(root)
                 write(root / "analysis.json", analysis)
                 if (

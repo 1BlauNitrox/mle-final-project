@@ -1,6 +1,6 @@
 {
     "issue":  225,
-    "revision":  2,
+    "revision":  3,
     "campaign":  "autonomous-antiloop",
     "iteration":  "09-trapped-opponent-attack",
     "runtime_commit":  "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
@@ -22,22 +22,22 @@
     "smoke_seed":  1822099991,
     "devices":  {
                     "pc":  {
-                               "workers":  2,
+                               "workers":  1,
                                "cpu_seconds":  144000,
                                "rss_bytes":  8589934592
                            }
                 },
     "limits":  {
                    "wall_seconds":  86400,
-                   "minimum_available_bytes":  1073741824,
+                   "minimum_available_bytes":  536870912,
                    "experiment_stop_utc":  "2026-09-21T13:00:00+00:00",
                    "stop_utc":  "2026-09-21T14:00:00+00:00",
                    "pipeline_stop_utc":  "2026-09-21T14:00:00+00:00"
                },
     "prior_usage":  {
                         "pc":  {
-                        "cpu_seconds":  44075.671875,
-                        "note":  "Cumulative issue #225 debit through rejected V11; the shared 40 CPU-hour cap is not reset."
+                        "cpu_seconds":  44078.671875,
+                        "note":  "Cumulative issue #225 debit through the resource-stopped V9b retry; the shared 40 CPU-hour cap is not reset."
                                }
                     },
     "protocol":  {
