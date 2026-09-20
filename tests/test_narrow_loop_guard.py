@@ -1,6 +1,7 @@
 """Contracts for the conservative 24-step late-game loop guard."""
 
 import numpy as np
+import pytest
 
 from agent_code.DagobertDuckDQNAntiLoop.config import ACTIONS
 from agent_code.DagobertDuckDQNAntiLoop.narrow_loop_guard import NarrowLoopGuard
@@ -117,14 +118,16 @@ def test_persistent_followup_remains_active_after_four_decisions():
     assert guard.snapshot()["followup_steps_remaining"] == 395
 
 
-def test_configurable_window_triggers_only_after_its_full_history():
-    guard = NarrowLoopGuard(window=12)
-    for index in range(1, 12):
+@pytest.mark.parametrize("window", [12, 16])
+def test_configurable_window_triggers_only_after_its_full_history(window):
+    guard = NarrowLoopGuard(window=window)
+    for index in range(1, window):
         guard.observe(state(index, (4, 4) if index % 2 else (4, 5)))
-    assert not guard.stuck(state(11, (4, 4)))
+    assert not guard.stuck(state(window - 1, (4, 4) if (window - 1) % 2 else (4, 5)))
 
-    guard.observe(state(12, (4, 5)))
-    assert guard.stuck(state(12, (4, 5)))
+    current = state(window, (4, 4) if window % 2 else (4, 5))
+    guard.observe(current)
+    assert guard.stuck(current)
     assert guard.choose(
-        state(12, (4, 5)), "UP", q(UP=9, DOWN=8), LEGAL, followup_steps=400
+        current, "UP", q(UP=9, DOWN=8), LEGAL, followup_steps=400
     ) == "DOWN"
