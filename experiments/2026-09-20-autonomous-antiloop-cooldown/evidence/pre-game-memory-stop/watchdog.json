@@ -1,0 +1,15 @@
+{
+  "restarts": 0,
+  "cpu_seconds": 0.53125,
+  "pid": 267004,
+  "created": 1789919870.293832,
+  "runner_sha256": "0f3fdedb1219c27d6429aab36ad5912880b9b7aeadecdcd71f86f16021e846f9",
+  "time": 1789919890.8731813,
+  "launching": {
+    "pid": 131052,
+    "created": 1789919870.8593743
+  },
+  "launches": 1,
+  "status": "stopped",
+  "reason": "Persistent stop or retry limit"
+}
