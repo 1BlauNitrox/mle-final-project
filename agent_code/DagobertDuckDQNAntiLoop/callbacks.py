@@ -9,9 +9,10 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from .config import DEFAULT_CONFIG, DQNConfig
+from .config import ACTIONS, DEFAULT_CONFIG, DQNConfig
 from .legality import framework_legal_action_mask
-from .model import DQNLearner, select_action
+from .model import CPU_DEVICE, DQNLearner, select_action
+from .narrow_loop_guard import NarrowLoopGuard
 from .observations import observe
 from .persistence import (
     CHECKPOINT_PATH,
@@ -23,6 +24,7 @@ from .replay import ReplayBuffer
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
+NARROW_LOOP_GUARD_ENV = "BOMBERMAN_NARROW_LOOP_GUARD"
 
 
 def setup(self) -> None:
@@ -49,15 +51,34 @@ def act(self, game_state: dict | None) -> str:
 
     epsilon = self.epsilon if self.train else 0.0
 
-    return select_action(
+    action_mask = framework_legal_action_mask(game_state) if self.config.action_masking else None
+    action = select_action(
         network=self.policy_network,
         state=state,
         epsilon=epsilon,
         rng=self.action_rng,
-        action_mask=(
-            framework_legal_action_mask(game_state) if self.config.action_masking else None
-        ),
+        action_mask=action_mask,
     )
+    if self.train or os.environ.get(NARROW_LOOP_GUARD_ENV, "on") != "on":
+        return action
+    guard = getattr(self, "narrow_loop_guard", None)
+    if guard is None:
+        guard = self.narrow_loop_guard = NarrowLoopGuard()
+    guard.observe(game_state)
+
+    cached_q_values = None
+
+    def q_values():
+        nonlocal cached_q_values
+        if cached_q_values is None:
+            with torch.no_grad():
+                cached_q_values = (
+                    self.policy_network(torch.from_numpy(state).to(CPU_DEVICE)).cpu().numpy()
+                )
+        return cached_q_values
+
+    legal = action_mask if action_mask is not None else np.ones(len(ACTIONS), dtype=bool)
+    return guard.choose(game_state, action, q_values, legal)
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:

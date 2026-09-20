@@ -1,0 +1,87 @@
+"""Contracts for the conservative 24-step late-game loop guard."""
+
+import numpy as np
+
+from agent_code.DagobertDuckDQNAntiLoop.config import ACTIONS
+from agent_code.DagobertDuckDQNAntiLoop.narrow_loop_guard import NarrowLoopGuard
+
+
+def state(step, position, *, crates=False, coins=((7, 7),), others=(), bombs=(), score=0):
+    field = np.zeros((9, 9), dtype=int)
+    field[[0, -1], :] = -1
+    field[:, [0, -1]] = -1
+    if crates:
+        field[2, 2] = 1
+    return {
+        "round": 1,
+        "step": step,
+        "field": field,
+        "self": ("me", score, True, position),
+        "others": list(others),
+        "coins": list(coins),
+        "bombs": list(bombs),
+        "explosion_map": np.zeros_like(field),
+    }
+
+
+def q(**values):
+    return lambda: np.asarray([values.get(action, 0.0) for action in ACTIONS])
+
+
+def pacing(**kwargs):
+    guard = NarrowLoopGuard()
+    for index in range(1, 25):
+        position = (4, 4) if index % 2 else (4, 5)
+        guard.observe(state(index, position, **kwargs))
+    return guard
+
+
+LEGAL = np.ones(6, dtype=bool)
+
+
+def test_guard_requires_a_full_unchanged_hazard_free_late_game_window():
+    guard = NarrowLoopGuard()
+    for index in range(1, 24):
+        guard.observe(state(index, (4, 4) if index % 2 else (4, 5)))
+    current = state(23, (4, 4))
+    assert not guard.stuck(current)
+    assert not pacing(crates=True).stuck(state(24, (4, 5), crates=True))
+    assert not pacing(bombs=[((2, 2), 3)]).stuck(state(24, (4, 5), bombs=[((2, 2), 3)]))
+
+
+def test_guard_requires_a_remaining_objective():
+    guard = pacing(coins=(), others=())
+    assert not guard.stuck(state(24, (4, 5), coins=(), others=()))
+
+
+def test_guard_uses_highest_q_safe_novel_uncontested_move():
+    guard = pacing()
+    current = state(24, (4, 5))
+    chosen = guard.choose(current, "UP", q(UP=9, RIGHT=2, DOWN=5, LEFT=3), LEGAL)
+    assert chosen == "DOWN"
+    assert guard.snapshot()["overrides"] == 1
+
+
+def test_guard_rejects_a_tile_an_opponent_can_take_next():
+    opponent = ("them", 0, True, (5, 6))
+    guard = pacing(others=(opponent,))
+    current = state(24, (4, 5), others=(opponent,))
+    chosen = guard.choose(current, "UP", q(UP=9, RIGHT=8, DOWN=7, LEFT=6), LEGAL)
+    assert chosen == "LEFT"
+    assert guard.snapshot()["rejected_contested"] == 2
+
+
+def test_guard_leaves_wait_bomb_and_non_looping_move_unchanged():
+    current = state(24, (4, 5))
+    for chosen in ("WAIT", "BOMB", "DOWN"):
+        guard = pacing()
+        assert guard.choose(current, chosen, q(LEFT=9), LEGAL) == chosen
+        assert guard.snapshot()["overrides"] == 0
+
+
+def test_progress_change_breaks_the_window():
+    guard = NarrowLoopGuard()
+    for index in range(1, 25):
+        score = 1 if index == 24 else 0
+        guard.observe(state(index, (4, 4) if index % 2 else (4, 5), score=score))
+    assert not guard.stuck(state(24, (4, 5), score=1))

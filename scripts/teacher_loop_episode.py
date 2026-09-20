@@ -93,6 +93,7 @@ def play_episode(
     scenario="classic",
     tracker=None,
     hunting_index=None,
+    guard_mode=None,
 ):
 
     source = (root / "source").resolve()
@@ -104,6 +105,7 @@ def play_episode(
     from environment import BombeRLeWorld, WorldArgs
 
     actions = []
+    executed_actions = []
     selector = callbacks.select_action
     original_act = callbacks.act
     original_build = BombeRLeWorld.build_arena
@@ -115,6 +117,8 @@ def play_episode(
     layout_metadata = {}
 
     def observe_action(world, agent, action):
+        if agent is learner:
+            executed_actions.append(action)
         before = set(world.bombs)
         result = original_action(world, agent, action)
         if agent is learner:
@@ -185,6 +189,8 @@ def play_episode(
         "MKL_NUM_THREADS": "1",
         "BOMBERMAN_COMPACT_LOGS": "1",
     }
+    if guard_mode is not None:
+        env["BOMBERMAN_NARROW_LOOP_GUARD"] = guard_mode
     with (
         release_agent_logs(),
         patch.dict(os.environ, env),
@@ -238,6 +244,8 @@ def play_episode(
                         "position": [int(value) for value in state["self"][3]],
                         "crates_left": int((state["field"] == 1).sum()),
                         "coins_visible": len(state["coins"]),
+                        "score": int(state["self"][1]),
+                        "opponents_left": len(state["others"]),
                         "hazards": bool(state["bombs"] or np.any(state["explosion_map"])),
                         "progress": bool(
                             {"COIN_COLLECTED", "CRATE_DESTROYED", "KILLED_OPPONENT"}
@@ -267,6 +275,17 @@ def play_episode(
             "native": native,
             "late_steps": rows,
             "actions_sha256": hashlib.sha256(json.dumps(actions).encode()).hexdigest(),
+            "executed_actions_sha256": hashlib.sha256(
+                json.dumps(executed_actions).encode()
+            ).hexdigest(),
+            "narrow_loop_guard": getattr(policy, "narrow_loop_guard", None).snapshot()
+            if hasattr(policy, "narrow_loop_guard")
+            else {
+                "eligible": 0,
+                "overrides": 0,
+                "rejected_contested": 0,
+                "rejected_no_candidate": 0,
+            },
             "completed_episodes": policy.completed_episodes,
             "loop_penalties": getattr(policy, "loop_penalty_count", 0),
             "optimizer_updates": policy.learner.update_steps if training else None,
