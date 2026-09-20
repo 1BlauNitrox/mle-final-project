@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-bomb-head-v10\\issue225-bomb-head-1789946850095994200.zip",
+  "sha256": "dc3c2b463cb21f16cf8f4dd1eaa185c2b23f193759e3a149520134a85d0ccaa3",
+  "bytes": 2522063,
+  "final_pipeline_resources": {
+    "cpu_seconds": 44068.65625,
+    "first_start": 1789943702.0477006,
+    "wall_seconds": 3148.733310699463,
+    "stage": "complete",
+    "peak_rss_bytes": 306507776
+  }
+}
