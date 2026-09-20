@@ -333,6 +333,7 @@ def test_execution_preserves_failures_and_resumes_exactly(
             "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
             "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
             "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
+            "BOMBERMAN_TABULAR_KILL_REWARD_MODE": "native",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",
