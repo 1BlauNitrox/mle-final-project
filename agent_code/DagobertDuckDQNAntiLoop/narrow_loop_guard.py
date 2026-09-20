@@ -54,6 +54,7 @@ def _contested_targets(game_state: dict) -> set[Position]:
 class NarrowLoopGuard:
     """Redirect only a confirmed late-game loop to the policy's safest novel move."""
 
+    window: int = WINDOW
     observations: list[tuple[int, Position, tuple, bool]] = field(default_factory=list)
     overrides: int = 0
     eligible: int = 0
@@ -74,17 +75,17 @@ class NarrowLoopGuard:
                 _hazard_free(game_state),
             )
         )
-        del self.observations[:-WINDOW]
+        del self.observations[: -self.window]
 
     def stuck(self, game_state: dict) -> bool:
-        recent = self.observations[-WINDOW:]
-        if len(recent) != WINDOW:
+        recent = self.observations[-self.window :]
+        if len(recent) != self.window:
             return False
         steps = [entry[0] for entry in recent]
         positions = [entry[1] for entry in recent]
         signatures = [entry[2] for entry in recent]
         return bool(
-            steps == list(range(steps[0], steps[0] + WINDOW))
+            steps == list(range(steps[0], steps[0] + self.window))
             and len(set(positions)) <= MAX_DISTINCT
             and len(set(signatures)) == 1
             and all(entry[3] for entry in recent)
@@ -102,7 +103,7 @@ class NarrowLoopGuard:
     ) -> str:
         if chosen not in MOVES or not self.stuck(game_state):
             return chosen
-        recent = {entry[1] for entry in self.observations[-WINDOW:]}
+        recent = {entry[1] for entry in self.observations[-self.window :]}
         here = self.observations[-1][1]
         if step(here, chosen) not in recent:
             return chosen

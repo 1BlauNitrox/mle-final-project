@@ -62,11 +62,12 @@ def act(self, game_state: dict | None) -> str:
     guard_mode = os.environ.get(NARROW_LOOP_GUARD_ENV, "on")
     if self.train or guard_mode == "off":
         return action
-    if guard_mode not in {"on", "cooldown", "persistent"}:
+    if guard_mode not in {"on", "cooldown", "persistent", "early_persistent"}:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
     guard = getattr(self, "narrow_loop_guard", None)
     if guard is None:
-        guard = self.narrow_loop_guard = NarrowLoopGuard()
+        window = 12 if guard_mode == "early_persistent" else 24
+        guard = self.narrow_loop_guard = NarrowLoopGuard(window=window)
     guard.observe(game_state)
 
     cached_q_values = None
@@ -81,14 +82,16 @@ def act(self, game_state: dict | None) -> str:
         return cached_q_values
 
     legal = action_mask if action_mask is not None else np.ones(len(ACTIONS), dtype=bool)
-    if guard_mode in {"cooldown", "persistent"}:
+    if guard_mode in {"cooldown", "persistent", "early_persistent"}:
         action = guard.redirect_contested(game_state, action, q_values, legal)
     return guard.choose(
         game_state,
         action,
         q_values,
         legal,
-        followup_steps={"on": 0, "cooldown": 4, "persistent": 400}[guard_mode],
+        followup_steps={"on": 0, "cooldown": 4, "persistent": 400, "early_persistent": 400}[
+            guard_mode
+        ],
     )
 
 

@@ -115,3 +115,16 @@ def test_persistent_followup_remains_active_after_four_decisions():
     followup = state(29, (4, 6), others=(opponent,))
     assert guard.redirect_contested(followup, "RIGHT", q(LEFT=8), LEGAL) == "LEFT"
     assert guard.snapshot()["followup_steps_remaining"] == 395
+
+
+def test_configurable_window_triggers_only_after_its_full_history():
+    guard = NarrowLoopGuard(window=12)
+    for index in range(1, 12):
+        guard.observe(state(index, (4, 4) if index % 2 else (4, 5)))
+    assert not guard.stuck(state(11, (4, 4)))
+
+    guard.observe(state(12, (4, 5)))
+    assert guard.stuck(state(12, (4, 5)))
+    assert guard.choose(
+        state(12, (4, 5)), "UP", q(UP=9, DOWN=8), LEGAL, followup_steps=400
+    ) == "DOWN"
