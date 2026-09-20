@@ -70,13 +70,17 @@ def act(self, game_state: dict | None) -> str:
         "persistent",
         "early_persistent",
         "mid_persistent",
+        "broad_persistent",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
     guard = getattr(self, "narrow_loop_guard", None)
     if guard is None:
         window = _loop_guard_window(guard_mode)
-        guard = self.narrow_loop_guard = NarrowLoopGuard(window=window)
+        guard = self.narrow_loop_guard = NarrowLoopGuard(
+            window=window,
+            require_no_crates=guard_mode != "broad_persistent",
+        )
     guard.observe(game_state)
 
     cached_q_values = None
@@ -101,6 +105,7 @@ def act(self, game_state: dict | None) -> str:
         "persistent",
         "early_persistent",
         "mid_persistent",
+        "broad_persistent",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -115,6 +120,7 @@ def act(self, game_state: dict | None) -> str:
             "persistent": 400,
             "early_persistent": 400,
             "mid_persistent": 400,
+            "broad_persistent": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -124,6 +130,7 @@ def _loop_guard_window(mode: str) -> int:
     return {
         "early_persistent": 12,
         "mid_persistent": 16,
+        "broad_persistent": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 

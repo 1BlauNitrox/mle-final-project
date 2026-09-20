@@ -59,6 +59,19 @@ def test_guard_requires_a_full_unchanged_hazard_free_late_game_window():
     assert not pacing(bombs=[((2, 2), 3)]).stuck(state(24, (4, 5), bombs=[((2, 2), 3)]))
 
 
+def test_broad_guard_accepts_an_unchanged_hazard_free_loop_with_crates_remaining():
+    guard = NarrowLoopGuard(require_no_crates=False)
+    for index in range(1, 25):
+        guard.observe(
+            state(index, (4, 4) if index % 2 else (4, 5), crates=True, coins=())
+        )
+    current = state(24, (4, 5), crates=True, coins=())
+    assert guard.stuck(current)
+    assert guard.choose(
+        current, "UP", q(UP=9, DOWN=8), LEGAL, followup_steps=400
+    ) == "DOWN"
+
+
 def test_guard_requires_a_remaining_objective():
     guard = pacing(coins=(), others=())
     assert not guard.stuck(state(24, (4, 5), coins=(), others=()))

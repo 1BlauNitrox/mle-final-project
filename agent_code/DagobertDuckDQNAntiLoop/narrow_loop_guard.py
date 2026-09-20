@@ -55,6 +55,7 @@ class NarrowLoopGuard:
     """Redirect only a confirmed late-game loop to the policy's safest novel move."""
 
     window: int = WINDOW
+    require_no_crates: bool = True
     observations: list[tuple[int, Position, tuple, bool]] = field(default_factory=list)
     overrides: int = 0
     eligible: int = 0
@@ -89,8 +90,18 @@ class NarrowLoopGuard:
             and len(set(positions)) <= MAX_DISTINCT
             and len(set(signatures)) == 1
             and all(entry[3] for entry in recent)
-            and not np.any(np.asarray(game_state["field"]) == 1)
-            and (game_state.get("coins") or game_state.get("others"))
+            and (
+                not self.require_no_crates
+                or not np.any(np.asarray(game_state["field"]) == 1)
+            )
+            and (
+                game_state.get("coins")
+                or game_state.get("others")
+                or (
+                    not self.require_no_crates
+                    and np.any(np.asarray(game_state["field"]) == 1)
+                )
+            )
         )
 
     def choose(

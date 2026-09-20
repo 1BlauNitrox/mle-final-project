@@ -50,9 +50,9 @@ def validate_stage(root, cfg, stage):
         )
 
 
-def loop_rate(observations):
-    eligible = sum(row["loop_windows"]["eligible"] for row in observations)
-    looping = sum(row["loop_windows"]["looping"] for row in observations)
+def loop_rate(observations, key="loop_windows"):
+    eligible = sum(row[key]["eligible"] for row in observations)
+    looping = sum(row[key]["looping"] for row in observations)
     return {
         "eligible": eligible,
         "looping": looping,
@@ -88,6 +88,7 @@ def interval(values, cfg, offset):
 
 def diagnostics(root, cfg, stage, arm):
     result = {}
+    loop_key = cfg["screen"].get("loop_metric", "loop_windows")
     for suite in cfg["evaluation"][stage]:
         observations = stage_rows(root, stage, arm, suite)
         result[suite] = {
@@ -97,7 +98,7 @@ def diagnostics(root, cfg, stage, arm):
             "survival_rate": float(np.mean([metric(row, "survived") for row in observations])),
             "self_kills_mean": float(np.mean([metric(row, "self_kills") for row in observations])),
             "invalid_mean": float(np.mean([metric(row, "invalid") for row in observations])),
-            "loops": loop_rate(observations),
+            "loops": loop_rate(observations, loop_key),
             "guard": {
                 key: sum(row["narrow_loop_guard"].get(key, 0) for row in observations)
                 for key in (
@@ -115,6 +116,7 @@ def diagnostics(root, cfg, stage, arm):
 
 def gate_stage(root, cfg, stages, *, latency=False):
     limits = cfg["screen"]
+    loop_key = limits.get("loop_metric", "loop_windows")
     multi = limits["multiplayer_suites"]
     candidate_arm = cfg.get("candidate_arm", "narrow_guard")
 
@@ -146,8 +148,10 @@ def gate_stage(root, cfg, stages, *, latency=False):
         gates[f"{stage}.invalid"] = invalid <= (
             limits["invalid_actions"]["block_increase_per_game"] + 1e-12
         )
-        candidate = loop_rate(all_stage_rows(stage, candidate_arm, limits["loop_suites"]))
-        control = loop_rate(all_stage_rows(stage, "control", limits["loop_suites"]))
+        candidate = loop_rate(
+            all_stage_rows(stage, candidate_arm, limits["loop_suites"]), loop_key
+        )
+        control = loop_rate(all_stage_rows(stage, "control", limits["loop_suites"]), loop_key)
         loop_reports[stage] = {"candidate": candidate, "control": control}
         gates[f"{stage}.loops"] = bool(
             candidate["eligible"]

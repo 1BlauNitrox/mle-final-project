@@ -126,23 +126,29 @@ def prepare(args):
 
 def compact(row):
     steps = row.pop("late_steps")
-    eligible = looping = 0
+    late_eligible = late_looping = broad_eligible = broad_looping = 0
     for index in range(23, len(steps)):
         window = steps[index - 23 : index + 1]
         signatures = {item["board_coins_sha256"] for item in window}
         scores = {item["score"] for item in window}
         opponents = {item["opponents_left"] for item in window}
-        if (
-            all(
-                item["crates_left"] == 0 and not item["hazards"] and not item["progress"]
-                for item in window
-            )
+        common = (
+            all(not item["hazards"] and not item["progress"] for item in window)
             and len(signatures) == len(scores) == len(opponents) == 1
-            and (window[-1]["coins_visible"] or window[-1]["opponents_left"])
-        ):
-            eligible += 1
-            looping += len({tuple(item["position"]) for item in window}) <= 3
-    row["loop_windows"] = {"eligible": eligible, "looping": looping}
+            and (
+                window[-1]["crates_left"]
+                or window[-1]["coins_visible"]
+                or window[-1]["opponents_left"]
+            )
+        )
+        if common:
+            broad_eligible += 1
+            broad_looping += len({tuple(item["position"]) for item in window}) <= 3
+            if all(item["crates_left"] == 0 for item in window):
+                late_eligible += 1
+                late_looping += len({tuple(item["position"]) for item in window}) <= 3
+    row["loop_windows"] = {"eligible": late_eligible, "looping": late_looping}
+    row["broad_loop_windows"] = {"eligible": broad_eligible, "looping": broad_looping}
     return row
 
 

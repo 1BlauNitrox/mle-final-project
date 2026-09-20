@@ -25,6 +25,7 @@ def observation(seed, slot, setting, *, guarded, loops):
             "decision_times_ms": [1.0, 2.0],
         },
         "loop_windows": {"eligible": 100, "looping": loops},
+        "broad_loop_windows": {"eligible": 100, "looping": loops},
         "narrow_loop_guard": {
             "eligible": int(guarded),
             "overrides": int(guarded),
@@ -149,6 +150,25 @@ def test_zero_loop_baseline_requires_zero_candidate_loops(tmp_path):
     data = read(path)
     data["rows"][0]["loop_windows"]["looping"] = 1
     write(path, data)
+    assert not analyze(tmp_path)["eligible"]
+
+
+def test_registered_broad_loop_metric_is_used_for_selection(tmp_path):
+    cfg = fixture(tmp_path)
+    cfg["screen"]["loop_metric"] = "broad_loop_windows"
+    for stage in ("pilot_r1", "pilot_r2"):
+        for arm in cfg["arms"]:
+            for suite in ("classic", "mixed"):
+                path = tmp_path / "results" / stage / arm / f"{suite}.json"
+                data = read(path)
+                for row in data["rows"]:
+                    row["loop_windows"] = {"eligible": 100, "looping": 0}
+                    row["broad_loop_windows"] = {
+                        "eligible": 100,
+                        "looping": 80 if arm == "narrow_guard" else 100,
+                    }
+                write(path, data)
+    write(tmp_path / "config.json", cfg)
     assert not analyze(tmp_path)["eligible"]
 
 
