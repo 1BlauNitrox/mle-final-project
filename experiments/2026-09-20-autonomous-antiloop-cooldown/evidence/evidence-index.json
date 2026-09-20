@@ -1,0 +1,52 @@
+[
+  {
+    "name": "pre-game-memory-stop/STOP.json",
+    "bytes": 251,
+    "sha256": "5d1773e94e256142ec9f785e4652924822bf68e936ff3f1e96649531303e0c7d"
+  },
+  {
+    "name": "pre-game-memory-stop/resources.json",
+    "bytes": 159,
+    "sha256": "1a48481ae57202129d0cfee1a607ca5607160c17253598fc0fddf45c38f3f209"
+  },
+  {
+    "name": "pre-game-memory-stop/watchdog.json",
+    "bytes": 372,
+    "sha256": "dfc3dc632c6655690f6550f7595f8d7880767fb1cd92879c88d9870d2c157ada"
+  },
+  {
+    "name": "v2/analysis.json",
+    "bytes": 16198,
+    "sha256": "e9d77b9f7fcfc9f33288e53e700409d616d223cfd39c3c2a344feb9bb0017b39"
+  },
+  {
+    "name": "v2/binding.json",
+    "bytes": 92257,
+    "sha256": "49697ab505598f0708181b63ba28bd319644d144cb1df69fa6f2bfc7cef52742"
+  },
+  {
+    "name": "v2/complete.json",
+    "bytes": 103,
+    "sha256": "064419cf2d1f4a7f1fbfe566082191f4185faf9627df8558cb1f6bbc93855d70"
+  },
+  {
+    "name": "v2/export.json",
+    "bytes": 520,
+    "sha256": "e836bcab17fb5519e922789de6ca8ff73cacb41f93ed0a9fabf0cd008a529813"
+  },
+  {
+    "name": "v2/raw-results.zip",
+    "bytes": 1670021,
+    "sha256": "e5a42ac0db64f6b60cd6c950629f27afdfa0e7a2a35aa2657fd8ea444c2037e2"
+  },
+  {
+    "name": "v2/resources.json",
+    "bytes": 156,
+    "sha256": "45c3a0d210e28c0afd1db4790707f00d5bec1e9265a71987a35ed71efe401fdb"
+  },
+  {
+    "name": "v2/watchdog.json",
+    "bytes": 629,
+    "sha256": "b29b67e53f9cb0044a627f8b6ffc58ea1ceb15a23b23bb557ebee369a9f5a40f"
+  }
+]
