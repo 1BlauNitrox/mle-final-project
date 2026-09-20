@@ -1,0 +1,224 @@
+﻿{
+    "issue":  221,
+    "runtime_commit":  "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "reference_sha256":  "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "arms":  [
+                 "control",
+                 "memory"
+             ],
+    "replicas":  2,
+    "learning_rate":  0.0001,
+    "update_every":  4,
+    "updates":  1000,
+    "episodes":  200,
+    "train_ranges":  [
+                         [
+                             1800000001,
+                             1800000200
+                         ],
+                         [
+                             1800010001,
+                             1800010200
+                         ]
+                     ],
+    "learner_seeds":  [
+                          1800090001,
+                          1800090002
+                      ],
+    "evaluation_agent_seed":  1800090010,
+    "bootstrap_seed":  1800090011,
+    "smoke_seed":  1800099991,
+    "bootstrap_resamples":  10000,
+    "checks":  [
+                   {
+                       "updates":  25,
+                       "name":  "u25"
+                   },
+                   {
+                       "updates":  100,
+                       "name":  "u100"
+                   },
+                   {
+                       "updates":  250,
+                       "name":  "u250"
+                   },
+                   {
+                       "updates":  1000,
+                       "name":  "final"
+                   }
+               ],
+    "pilot":  {
+                  "score_loss":  0.5,
+                  "survival_loss":  0.1,
+                  "self_kills_increase":  0.1,
+                  "collection_loss":  0.1,
+                  "invalid_increase":  0.5
+              },
+    "screen":  {
+                   "kills_gain":  0,
+                   "score_gain":  0,
+                   "survival_loss":  0.05,
+                   "self_kills_increase":  0.05,
+                   "collection_loss":  0.1,
+                   "latency_p95_ms":  50,
+                   "latency_max_ms":  100,
+                   "invalid_actions":  {
+                                           "pooled_increase_per_game":  0.25,
+                                           "replica_increase_per_game":  0.5,
+                                           "solo_maximum_total":  0,
+                                           "exclude_suites":  [
+                                                                  "latency"
+                                                              ],
+                                           "baselines":  [
+                                                             "control",
+                                                             "reference"
+                                                         ]
+                                       },
+                   "loop_ratio":  0.75
+               },
+    "devices":  {
+                    "pc":  {
+                               "workers":  2,
+                               "replicas":  [
+                                                1,
+                                                2
+                                            ],
+                               "rss_bytes":  8589934592,
+                               "cpu_seconds":  7200
+                           }
+                },
+    "limits":  {
+                   "wall_seconds":  10800,
+                   "minimum_available_bytes":  2147483648,
+                   "stop_utc":  "2026-09-20T12:00:00+00:00"
+               },
+    "evaluation":  {
+                       "pilot":  {
+                                     "classic":  {
+                                                     "scenario":  "classic",
+                                                     "opponents":  [
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent"
+                                                                   ],
+                                                     "seeds":  [
+                                                                   1800100001,
+                                                                   1800100040
+                                                               ]
+                                                 },
+                                     "coins":  {
+                                                   "scenario":  "coin-heaven",
+                                                   "opponents":  [
+
+                                                                 ],
+                                                   "seeds":  [
+                                                                 1800101001,
+                                                                 1800101020
+                                                             ]
+                                               },
+                                     "crates":  {
+                                                    "scenario":  "loot-crate",
+                                                    "opponents":  [
+
+                                                                  ],
+                                                    "seeds":  [
+                                                                  1800102001,
+                                                                  1800102020
+                                                              ]
+                                                }
+                                 },
+                       "final":  {
+                                     "classic":  {
+                                                     "scenario":  "classic",
+                                                     "opponents":  [
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent"
+                                                                   ],
+                                                     "seeds":  [
+                                                                   1800200001,
+                                                                   1800200080
+                                                               ]
+                                                 },
+                                     "coins":  {
+                                                   "scenario":  "coin-heaven",
+                                                   "opponents":  [
+
+                                                                 ],
+                                                   "seeds":  [
+                                                                 1800201001,
+                                                                 1800201020
+                                                             ]
+                                               },
+                                     "crates":  {
+                                                    "scenario":  "loot-crate",
+                                                    "opponents":  [
+
+                                                                  ],
+                                                    "seeds":  [
+                                                                  1800202001,
+                                                                  1800202020
+                                                              ]
+                                                },
+                                     "peaceful":  {
+                                                      "scenario":  "classic",
+                                                      "opponents":  [
+                                                                        "peaceful_agent",
+                                                                        "peaceful_agent",
+                                                                        "peaceful_agent"
+                                                                    ],
+                                                      "seeds":  [
+                                                                    1800203001,
+                                                                    1800203020
+                                                                ]
+                                                  },
+                                     "mixed":  {
+                                                   "scenario":  "classic",
+                                                   "opponents":  [
+                                                                     "rule_based_agent",
+                                                                     "coin_collector_agent",
+                                                                     "peaceful_agent"
+                                                                 ],
+                                                   "seeds":  [
+                                                                 1800204001,
+                                                                 1800204040
+                                                             ]
+                                               },
+                                     "latency":  {
+                                                     "scenario":  "classic",
+                                                     "opponents":  [
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent",
+                                                                       "rule_based_agent"
+                                                                   ],
+                                                     "seeds":  [
+                                                                   1800205001,
+                                                                   1800205010
+                                                               ]
+                                                 }
+                                 }
+                   },
+    "selection":  "Fixed-final memory-r1 only if both replicas complete and pooled screen passes; independent confirmation required; no automatic promotion",
+    "authorization":  {
+                          "owner":  "Julius",
+                          "record":  "2026-09-20: approved history-aware anti-loop pilot on PC until14:00; explicitly accepted -0.1 conditional penalty,25% loop reduction, previous safety/action gates and2CPU-hour cap",
+                          "scope":  "Two paired replicas; all training/evaluation/recovery under shared budget"
+                      },
+    "protocol":  {
+                     "changed_factor":  "Bundled16-position revisit features plus-0.1 conditional movement-loop shaping; no attribution to either component separately",
+                     "training":  "Classic three rule_based_agent; paired seeds and rotating slots",
+                     "initialization":  "Preserve39-input online/target weights, Adam and replay; pad17columns with zero; historical replay memory unknown/zero",
+                     "architecture":  "56-64-64-6;12inactive geometry inputs;5previous16visit-count inputs",
+                     "loop_penalty":  "24consecutive hazard-free observations with unchanged field,coins,score,opponent count and\u003c=3positions; successful directional return to window position; no penalty forBOMB/WAIT,invalid,progress,death or hazard escape",
+                     "exploration":  "one seeded fully random episode per five, greedy otherwise",
+                     "checks":  "25,100,250,1000new updates, cap200episodes; all retention gates at every check including final",
+                     "metrics":  "native score,kills,survival,selfkills,coins,crates,invalid,latency;24step late-loop windows with explicit denominators;attack exposure,bomb kill credits,replay origins,penalty counts",
+                     "limitations":  "Exploratory two-replica pilot; no scientific promotion; incomplete endpoints fail; no intermediate selection"
+                 },
+    "revision":  1,
+    "prior_usage":  {
+                        "pc":  {
+                                   "cpu_seconds":  0
+                               }
+                    }
+}
