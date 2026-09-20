@@ -1,0 +1,483 @@
+{
+  "complete": true,
+  "eligible": false,
+  "submission_promotion": false,
+  "pilot": {
+    "passed": false,
+    "gates": {
+      "score": false,
+      "kills": false,
+      "survival": true,
+      "self_kills": true,
+      "invalid_pooled": true,
+      "pilot_r1.invalid": true,
+      "pilot_r1.loops": true,
+      "pilot_r2.invalid": true,
+      "pilot_r2.loops": true,
+      "guard_exposure": true,
+      "coins.retention": true,
+      "coins.self_kills": true,
+      "coins.zero_invalid": true,
+      "crates.retention": true,
+      "crates.self_kills": true,
+      "crates.zero_invalid": true
+    },
+    "effects": {
+      "score": {
+        "difference": -0.03125,
+        "ci95": [
+          -0.09375,
+          0.0
+        ],
+        "games": 160
+      },
+      "kills": {
+        "difference": -0.00625,
+        "ci95": [
+          -0.01875,
+          0.0
+        ],
+        "games": 160
+      },
+      "survived": {
+        "difference": 0.00625,
+        "ci95": [
+          -0.0125,
+          0.03125
+        ],
+        "games": 160
+      },
+      "self_kills": {
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "games": 160
+      },
+      "invalid": {
+        "difference": -0.05,
+        "ci95": [
+          -0.15,
+          0.0
+        ],
+        "games": 160
+      },
+      "invalid_block_differences": [
+        0.0,
+        -0.1
+      ],
+      "guarded_games": 52,
+      "coins.collection_fraction": {
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "games": 20
+      },
+      "coins.self_kills": {
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "games": 20
+      },
+      "coins.candidate_invalid_total": 0.0,
+      "crates.collection_fraction": {
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "games": 20
+      },
+      "crates.self_kills": {
+        "difference": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "games": 20
+      },
+      "crates.candidate_invalid_total": 0.0
+    },
+    "loops": {
+      "pilot_r1": {
+        "candidate": {
+          "eligible": 2464,
+          "looping": 0,
+          "rate": 0.0
+        },
+        "control": {
+          "eligible": 2398,
+          "looping": 212,
+          "rate": 0.0884070058381985
+        }
+      },
+      "pilot_r2": {
+        "candidate": {
+          "eligible": 2641,
+          "looping": 0,
+          "rate": 0.0
+        },
+        "control": {
+          "eligible": 2351,
+          "looping": 208,
+          "rate": 0.08847299021692896
+        }
+      }
+    }
+  },
+  "diagnostics": {
+    "pilot_r1": {
+      "control": {
+        "classic": {
+          "games": 60,
+          "score_mean": 3.433333333333333,
+          "kills_mean": 0.18333333333333332,
+          "survival_rate": 0.36666666666666664,
+          "self_kills_mean": 0.55,
+          "invalid_mean": 1.7833333333333334,
+          "loops": {
+            "eligible": 1332,
+            "looping": 114,
+            "rate": 0.08558558558558559
+          },
+          "guard": {
+            "eligible": 79,
+            "overrides": 62,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 17,
+            "followup_redirects": 330
+          },
+          "guarded_games": 17
+        },
+        "mixed": {
+          "games": 20,
+          "score_mean": 4.55,
+          "kills_mean": 0.3,
+          "survival_rate": 0.55,
+          "self_kills_mean": 0.45,
+          "invalid_mean": 1.45,
+          "loops": {
+            "eligible": 1066,
+            "looping": 98,
+            "rate": 0.09193245778611632
+          },
+          "guard": {
+            "eligible": 80,
+            "overrides": 56,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 24,
+            "followup_redirects": 161
+          },
+          "guarded_games": 9
+        },
+        "coins": {
+          "games": 10,
+          "score_mean": 19.2,
+          "kills_mean": 0.0,
+          "survival_rate": 1.0,
+          "self_kills_mean": 0.0,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 3139,
+            "looping": 3108,
+            "rate": 0.9901242433896146
+          },
+          "guard": {
+            "eligible": 11,
+            "overrides": 10,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 1,
+            "followup_redirects": 0
+          },
+          "guarded_games": 2
+        },
+        "crates": {
+          "games": 10,
+          "score_mean": 19.1,
+          "kills_mean": 0.0,
+          "survival_rate": 0.8,
+          "self_kills_mean": 0.2,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 0,
+            "looping": 0,
+            "rate": null
+          },
+          "guard": {
+            "eligible": 0,
+            "overrides": 0,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 0
+        }
+      },
+      "early_persistent": {
+        "classic": {
+          "games": 60,
+          "score_mean": 3.35,
+          "kills_mean": 0.16666666666666666,
+          "survival_rate": 0.38333333333333336,
+          "self_kills_mean": 0.55,
+          "invalid_mean": 1.7833333333333334,
+          "loops": {
+            "eligible": 1433,
+            "looping": 0,
+            "rate": 0.0
+          },
+          "guard": {
+            "eligible": 143,
+            "overrides": 119,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 24,
+            "followup_redirects": 512
+          },
+          "guarded_games": 17
+        },
+        "mixed": {
+          "games": 20,
+          "score_mean": 4.55,
+          "kills_mean": 0.3,
+          "survival_rate": 0.55,
+          "self_kills_mean": 0.45,
+          "invalid_mean": 1.45,
+          "loops": {
+            "eligible": 1031,
+            "looping": 0,
+            "rate": 0.0
+          },
+          "guard": {
+            "eligible": 151,
+            "overrides": 113,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 38,
+            "followup_redirects": 177
+          },
+          "guarded_games": 9
+        },
+        "coins": {
+          "games": 10,
+          "score_mean": 19.2,
+          "kills_mean": 0.0,
+          "survival_rate": 1.0,
+          "self_kills_mean": 0.0,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 3184,
+            "looping": 3177,
+            "rate": 0.9978015075376885
+          },
+          "guard": {
+            "eligible": 11,
+            "overrides": 10,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 1,
+            "followup_redirects": 0
+          },
+          "guarded_games": 2
+        },
+        "crates": {
+          "games": 10,
+          "score_mean": 19.1,
+          "kills_mean": 0.0,
+          "survival_rate": 0.8,
+          "self_kills_mean": 0.2,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 0,
+            "looping": 0,
+            "rate": null
+          },
+          "guard": {
+            "eligible": 0,
+            "overrides": 0,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 0
+        }
+      }
+    },
+    "pilot_r2": {
+      "control": {
+        "classic": {
+          "games": 60,
+          "score_mean": 3.183333333333333,
+          "kills_mean": 0.15,
+          "survival_rate": 0.43333333333333335,
+          "self_kills_mean": 0.5333333333333333,
+          "invalid_mean": 1.6166666666666667,
+          "loops": {
+            "eligible": 2174,
+            "looping": 193,
+            "rate": 0.08877644894204231
+          },
+          "guard": {
+            "eligible": 138,
+            "overrides": 106,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 32,
+            "followup_redirects": 449
+          },
+          "guarded_games": 21
+        },
+        "mixed": {
+          "games": 20,
+          "score_mean": 3.2,
+          "kills_mean": 0.1,
+          "survival_rate": 0.45,
+          "self_kills_mean": 0.5,
+          "invalid_mean": 1.95,
+          "loops": {
+            "eligible": 177,
+            "looping": 15,
+            "rate": 0.0847457627118644
+          },
+          "guard": {
+            "eligible": 14,
+            "overrides": 11,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 3,
+            "followup_redirects": 107
+          },
+          "guarded_games": 4
+        },
+        "coins": {
+          "games": 10,
+          "score_mean": 33.7,
+          "kills_mean": 0.0,
+          "survival_rate": 1.0,
+          "self_kills_mean": 0.0,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 2498,
+            "looping": 2468,
+            "rate": 0.9879903923138511
+          },
+          "guard": {
+            "eligible": 8,
+            "overrides": 8,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 4
+        },
+        "crates": {
+          "games": 10,
+          "score_mean": 18.9,
+          "kills_mean": 0.0,
+          "survival_rate": 0.8,
+          "self_kills_mean": 0.2,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 0,
+            "looping": 0,
+            "rate": null
+          },
+          "guard": {
+            "eligible": 0,
+            "overrides": 0,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 0
+        }
+      },
+      "early_persistent": {
+        "classic": {
+          "games": 60,
+          "score_mean": 3.183333333333333,
+          "kills_mean": 0.15,
+          "survival_rate": 0.43333333333333335,
+          "self_kills_mean": 0.5333333333333333,
+          "invalid_mean": 1.4833333333333334,
+          "loops": {
+            "eligible": 2456,
+            "looping": 0,
+            "rate": 0.0
+          },
+          "guard": {
+            "eligible": 224,
+            "overrides": 189,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 35,
+            "followup_redirects": 719
+          },
+          "guarded_games": 22
+        },
+        "mixed": {
+          "games": 20,
+          "score_mean": 3.2,
+          "kills_mean": 0.1,
+          "survival_rate": 0.45,
+          "self_kills_mean": 0.5,
+          "invalid_mean": 1.95,
+          "loops": {
+            "eligible": 185,
+            "looping": 0,
+            "rate": 0.0
+          },
+          "guard": {
+            "eligible": 19,
+            "overrides": 15,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 4,
+            "followup_redirects": 119
+          },
+          "guarded_games": 4
+        },
+        "coins": {
+          "games": 10,
+          "score_mean": 33.7,
+          "kills_mean": 0.0,
+          "survival_rate": 1.0,
+          "self_kills_mean": 0.0,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 2540,
+            "looping": 2537,
+            "rate": 0.9988188976377953
+          },
+          "guard": {
+            "eligible": 8,
+            "overrides": 8,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 4
+        },
+        "crates": {
+          "games": 10,
+          "score_mean": 18.9,
+          "kills_mean": 0.0,
+          "survival_rate": 0.8,
+          "self_kills_mean": 0.2,
+          "invalid_mean": 0.0,
+          "loops": {
+            "eligible": 0,
+            "looping": 0,
+            "rate": null
+          },
+          "guard": {
+            "eligible": 0,
+            "overrides": 0,
+            "rejected_contested": 0,
+            "rejected_no_candidate": 0,
+            "followup_redirects": 0
+          },
+          "guarded_games": 0
+        }
+      }
+    }
+  }
+}
