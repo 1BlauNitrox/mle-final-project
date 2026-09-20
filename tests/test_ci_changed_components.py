@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+import yaml
 
 from scripts.ci_changed_components import (
     ALL_COMPONENTS,
@@ -17,6 +18,20 @@ from scripts.ci_changed_components import (
     revision_for_event,
     write_github_output,
 )
+
+
+def test_ci_lint_is_one_shell_command_with_all_agent_paths():
+    workflow = yaml.safe_load(
+        (Path(__file__).resolve().parents[1] / ".github/workflows/ci.yml").read_text()
+    )
+    steps = workflow["jobs"]["quality"]["steps"]
+    command = next(step["run"] for step in steps if step.get("name") == "Lint team-owned Python")
+    lines = [line for line in command.splitlines() if line.strip()]
+    assert len(lines) == 1, "YAML indentation must not turn lint arguments into shell commands"
+    arguments = lines[0].split()
+    assert arguments[:2] == ["ruff", "check"]
+    assert "agent_code/DagobertDuckDQNTask3" in arguments
+    assert "agent_code/DagobertDuckDQNAntiLoop" in arguments
 
 
 @pytest.mark.parametrize(
