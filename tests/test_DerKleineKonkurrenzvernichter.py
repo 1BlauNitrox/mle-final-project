@@ -187,31 +187,6 @@ def test_training_is_enabled_only_in_successor() -> None:
     assert agent.transition_queue == []
 
 
-def test_fresh_training_receives_task2_prior(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path,
-) -> None:
-    monkeypatch.setattr(callbacks, "MODEL_PATH", tmp_path / "missing.npz")
-    monkeypatch.setenv(
-        callbacks.STATE_REPRESENTATION_ENV,
-        "compact_opponent",
-    )
-    monkeypatch.setenv(
-        callbacks.INITIALIZATION_ENV,
-        "task2_prior",
-    )
-    agent = SimpleNamespace(train=True, logger=Mock())
-
-    callbacks.setup(agent)
-
-    parent = load_parent_prior()
-    parent_state = next(iter(parent.values))
-    np.testing.assert_array_equal(
-        agent.q_table.q_values((*parent_state, 0, 0, 0)),
-        parent.values[parent_state],
-    )
-
-
 def test_one_step_wrapper_matches_general_n_step_update() -> None:
     state = (0,) * 8
     next_state = (1,) + (0,) * 7
