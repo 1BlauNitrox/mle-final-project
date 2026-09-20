@@ -1,6 +1,6 @@
 # DRAFT — Issue #210: one-step vs five-step Q-learning
 
-> status: completed failed
+> status: completed with a blocking protocol deviation
 ## Question
 
 Does a five-step Q-learning target propagate the delayed reward for eliminating
@@ -26,6 +26,17 @@ discounted bootstrap value. A terminal state truncates the return.
 
 The complete gates and seeds are fixed in `config.yaml` and the two run plans.
 
+## Protocol deviation
+
+Both run plans requested `task2_prior`, but the executed callback supplied no
+parent values for that initialization mode. Both treatments therefore used
+zero-valued unseen states instead of the frozen Task 2 prior.
+
+The retained results describe an internally matched one-step versus five-step
+comparison under unintended zero initialization. They do not answer the
+preregistered question about five-step learning while retaining the frozen
+Task 2 prior.
+
 ## Results
 
 All 1,005 jobs per arm completed without a failed job. The five-step candidate
@@ -42,12 +53,12 @@ did not improve peaceful-opponent hunting:
 
 ## Interpretation
 
-The five-step treatment is rejected and the current one-step update is retained.
-Longer returns did not make the sparse elimination reward easier to exploit in
-this setting. Instead, they changed the learned policy enough to reduce hunting,
-coin collection, and overall safety. The candidate visited fewer distinct table
-states but accumulated many more visits per state, so its failure is not
-explained by insufficient state reuse.
+The registered experiment is inconclusive because the frozen Task 2 prior was
+not actually supplied to either treatment. Under the unintended zero
+initialization, the five-step candidate performed worse than the one-step
+control in hunting, collection, and safety. No checkpoint is promoted.
 
-The experiment doesn't show that n-step leasrning is worse, but that n=5 doesn't
-improve the agent.
+These outcomes cannot establish that five-step learning is worse for the
+registered prior-initialized agent. Issue #210 remains open pending a correctly
+initialized rerun. The callback defect is fixed and covered by a regression
+test, but that correction cannot retroactively repair the retained evidence.
