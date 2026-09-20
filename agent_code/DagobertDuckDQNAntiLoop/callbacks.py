@@ -21,6 +21,7 @@ from .persistence import (
 )
 from .replay import ReplayBuffer
 from .safe_attack_guard import SafeAttackGuard
+from .trapped_attack_guard import TrappedAttackGuard
 
 EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
@@ -71,6 +72,7 @@ def act(self, game_state: dict | None) -> str:
         "early_persistent",
         "mid_persistent",
         "broad_persistent",
+        "broad_trapped_attack",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -79,7 +81,7 @@ def act(self, game_state: dict | None) -> str:
         window = _loop_guard_window(guard_mode)
         guard = self.narrow_loop_guard = NarrowLoopGuard(
             window=window,
-            require_no_crates=guard_mode != "broad_persistent",
+            require_no_crates=guard_mode not in {"broad_persistent", "broad_trapped_attack"},
         )
     guard.observe(game_state)
 
@@ -100,12 +102,18 @@ def act(self, game_state: dict | None) -> str:
         if attack_guard is None:
             attack_guard = self.safe_attack_guard = SafeAttackGuard()
         action = attack_guard.choose(game_state, action, q_values, legal)
+    if guard_mode == "broad_trapped_attack":
+        attack_guard = getattr(self, "safe_attack_guard", None)
+        if attack_guard is None:
+            attack_guard = self.safe_attack_guard = TrappedAttackGuard()
+        action = attack_guard.choose(game_state, action, q_values, legal)
     if guard_mode in {
         "cooldown",
         "persistent",
         "early_persistent",
         "mid_persistent",
         "broad_persistent",
+        "broad_trapped_attack",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -121,6 +129,7 @@ def act(self, game_state: dict | None) -> str:
             "early_persistent": 400,
             "mid_persistent": 400,
             "broad_persistent": 400,
+            "broad_trapped_attack": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -131,6 +140,7 @@ def _loop_guard_window(mode: str) -> int:
         "early_persistent": 12,
         "mid_persistent": 16,
         "broad_persistent": 16,
+        "broad_trapped_attack": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 

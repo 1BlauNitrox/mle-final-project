@@ -1,0 +1,240 @@
+{
+    "issue":  225,
+    "campaign":  "autonomous-antiloop",
+    "iteration":  "09-trapped-opponent-attack",
+    "runtime_commit":  "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "parent_fallback_sha256":  "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "reference_sha256":  "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+    "analyzer":  "scripts.analyze_autonomous_antiloop",
+    "arms":  [
+                 "control",
+                 "broad_trapped_attack"
+             ],
+    "arm_modes":  {
+                      "control":  "broad_persistent",
+                      "broad_trapped_attack":  "broad_trapped_attack"
+                  },
+    "candidate_arm":  "broad_trapped_attack",
+    "evaluation_agent_seed":  1822090010,
+    "bootstrap_seed":  1822090011,
+    "bootstrap_resamples":  10000,
+    "smoke_seed":  1822099991,
+    "devices":  {
+                    "pc":  {
+                               "workers":  2,
+                               "cpu_seconds":  144000,
+                               "rss_bytes":  8589934592
+                           }
+                },
+    "limits":  {
+                   "wall_seconds":  86400,
+                   "minimum_available_bytes":  1073741824,
+                   "experiment_stop_utc":  "2026-09-21T13:00:00+00:00",
+                   "stop_utc":  "2026-09-21T14:00:00+00:00",
+                   "pipeline_stop_utc":  "2026-09-21T14:00:00+00:00"
+               },
+    "prior_usage":  {
+                        "pc":  {
+                                   "cpu_seconds":  40600,
+                                   "note":  "Completed direct V8 ledger plus a conservative transition margin; shared 40 CPU-hour cap is not reset."
+                               }
+                    },
+    "protocol":  {
+                     "hypothesis":  "A bomb placed only against a sole opponent with no geometric route out of the blast before detonation, while the agent has a verified escape, increases kills by at least 0.025 per multiplayer game without regressing score or the confirmed broad-loop behavior.",
+                     "changed_factor":  "Only a once-per-round trapped-opponent BOMB override is enabled. The candidate otherwise uses the confirmed broad_persistent runtime and identical frozen checkpoint.",
+                     "controls":  "Both arms use the identical frozen checkpoint, broad 16-step loop guard, features, action mask, scenarios, opponents, paired seeds, slots, and evaluator. No training, reward, architecture, or ordinary movement-selection change.",
+                     "baselines":  [
+                                       "confirmed V7 broad_persistent submission candidate"
+                                   ],
+                     "expected_additional_cpu_seconds":  10800,
+                     "decision":  "Keep the trapped attack only if both pilot blocks and held-out confirmation show at least +0.025 kills per multiplayer game, nonnegative score, no broad-loop increase, at least ten attack overrides, and every safety, correctness, collection, and latency gate."
+                 },
+    "evaluation":  {
+                       "pilot_r1":  {
+                                        "classic":  {
+                                                        "scenario":  "classic",
+                                                        "opponents":  [
+                                                                          "rule_based_agent",
+                                                                          "rule_based_agent",
+                                                                          "rule_based_agent"
+                                                                      ],
+                                                        "seeds":  [
+                                                                      1822100001,
+                                                                      1822100060
+                                                                  ]
+                                                    },
+                                        "mixed":  {
+                                                      "scenario":  "classic",
+                                                      "opponents":  [
+                                                                        "rule_based_agent",
+                                                                        "coin_collector_agent",
+                                                                        "peaceful_agent"
+                                                                    ],
+                                                      "seeds":  [
+                                                                    1822101001,
+                                                                    1822101020
+                                                                ]
+                                                  },
+                                        "coins":  {
+                                                      "scenario":  "coin-heaven",
+                                                      "opponents":  [
+
+                                                                    ],
+                                                      "seeds":  [
+                                                                    1822102001,
+                                                                    1822102010
+                                                                ]
+                                                  },
+                                        "crates":  {
+                                                       "scenario":  "loot-crate",
+                                                       "opponents":  [
+
+                                                                     ],
+                                                       "seeds":  [
+                                                                     1822103001,
+                                                                     1822103010
+                                                                 ]
+                                                   }
+                                    },
+                       "pilot_r2":  {
+                                        "classic":  {
+                                                        "scenario":  "classic",
+                                                        "opponents":  [
+                                                                          "rule_based_agent",
+                                                                          "rule_based_agent",
+                                                                          "rule_based_agent"
+                                                                      ],
+                                                        "seeds":  [
+                                                                      1822110001,
+                                                                      1822110060
+                                                                  ]
+                                                    },
+                                        "mixed":  {
+                                                      "scenario":  "classic",
+                                                      "opponents":  [
+                                                                        "rule_based_agent",
+                                                                        "coin_collector_agent",
+                                                                        "peaceful_agent"
+                                                                    ],
+                                                      "seeds":  [
+                                                                    1822111001,
+                                                                    1822111020
+                                                                ]
+                                                  },
+                                        "coins":  {
+                                                      "scenario":  "coin-heaven",
+                                                      "opponents":  [
+
+                                                                    ],
+                                                      "seeds":  [
+                                                                    1822112001,
+                                                                    1822112010
+                                                                ]
+                                                  },
+                                        "crates":  {
+                                                       "scenario":  "loot-crate",
+                                                       "opponents":  [
+
+                                                                     ],
+                                                       "seeds":  [
+                                                                     1822113001,
+                                                                     1822113010
+                                                                 ]
+                                                   }
+                                    },
+                       "confirmation":  {
+                                            "classic":  {
+                                                            "scenario":  "classic",
+                                                            "opponents":  [
+                                                                              "rule_based_agent",
+                                                                              "rule_based_agent",
+                                                                              "rule_based_agent"
+                                                                          ],
+                                                            "seeds":  [
+                                                                          1822200001,
+                                                                          1822200120
+                                                                      ]
+                                                        },
+                                            "mixed":  {
+                                                          "scenario":  "classic",
+                                                          "opponents":  [
+                                                                            "rule_based_agent",
+                                                                            "coin_collector_agent",
+                                                                            "peaceful_agent"
+                                                                        ],
+                                                          "seeds":  [
+                                                                        1822201001,
+                                                                        1822201040
+                                                                    ]
+                                                      },
+                                            "coins":  {
+                                                          "scenario":  "coin-heaven",
+                                                          "opponents":  [
+
+                                                                        ],
+                                                          "seeds":  [
+                                                                        1822202001,
+                                                                        1822202020
+                                                                    ]
+                                                      },
+                                            "crates":  {
+                                                           "scenario":  "loot-crate",
+                                                           "opponents":  [
+
+                                                                         ],
+                                                           "seeds":  [
+                                                                         1822203001,
+                                                                         1822203020
+                                                                     ]
+                                                       },
+                                            "latency":  {
+                                                            "scenario":  "classic",
+                                                            "opponents":  [
+                                                                              "rule_based_agent",
+                                                                              "rule_based_agent",
+                                                                              "rule_based_agent"
+                                                                          ],
+                                                            "seeds":  [
+                                                                          1822204001,
+                                                                          1822204010
+                                                                      ]
+                                                        }
+                                        }
+                   },
+    "screen":  {
+                   "multiplayer_suites":  [
+                                              "classic",
+                                              "mixed"
+                                          ],
+                   "loop_suites":  [
+                                       "classic",
+                                       "mixed"
+                                   ],
+                   "loop_ratio":  1,
+                   "minimum_guarded_games":  20,
+                   "score_gain":  0.0,
+                   "kills_gain":  0.025,
+                   "survival_loss":  0.05,
+                   "self_kills_increase":  0.05,
+                   "collection_loss":  0.1,
+                   "invalid_actions":  {
+                                           "pooled_increase_per_game":  0.25,
+                                           "block_increase_per_game":  0.5,
+                                           "solo_maximum_total":  0,
+                                           "exclude_suites":  [
+                                                                  "latency"
+                                                              ]
+                                       },
+                   "latency_p95_ms":  50,
+                   "latency_max_ms":  100,
+                   "loop_metric":  "broad_loop_windows",
+                   "minimum_attack_overrides":  10
+               },
+    "selection":  "Both fresh pilot blocks must pass before fixed fresh confirmation. Never promote automatically; dest remains protected until all gates pass.",
+    "fallback_if_failed":  "Retain the directly confirmed broad_persistent ZIP in dest and preserve the negative attack evidence.",
+    "authorization":  {
+                          "owner":  "Julius",
+                          "record":  "2026-09-20 autonomous anti-loop authorization through Monday 15:00-16:00 Berlin.",
+                          "scope":  "Shared 40 CPU-hour cap, at most two one-thread workers; looping primary, killing only after loop success."
+                      }
+}
