@@ -16,7 +16,7 @@
     "refs/remotes/origin/experiment/217-hunting-curriculum": "64ace82f8ce7e2e4dbd2011029412ed2fd83e4a1",
     "refs/remotes/origin/experiment/217-laptop-results": "5a1c37fe4274f0c55d55180d78991993da13b7b2",
     "refs/remotes/origin/experiment/221-antiloop": "6fa8485f20b667c94963efe56193dd518ae50157",
-    "refs/remotes/origin/experiment/225-teacher-loop": "6252cfe548fd8706ec7587b474aa32ea62d1c2c1",
+    "refs/remotes/origin/experiment/225-teacher-loop": "5b92bdcec52148dba731ce902f7e77cc631701eb",
     "refs/remotes/origin/experiment/98-dqn-task2-safety-constrained-exploration": "acda8bef7655207413962ce84f6b07ee9422a76e",
     "refs/remotes/origin/experiment/task4-exploration-period-results": "9dc45f5ce5c42bb96d80bc5c9d43be5a4396d685",
     "refs/remotes/origin/experiment/task4-final-training": "326590f559607af08644864df477b23c45fd5332",
@@ -31,8 +31,8 @@
     "refs/remotes/origin/pr/218": "b2cdf6f75eda3674b23c8a2a7bea6b6e6fff7485",
     "refs/remotes/origin/test/60-docs-only-ci-validation": "31fc7737be5abe5c923b6f3aeb9d0e28f2604937"
   },
-  "unique_text_blobs": 1028,
-  "blob_set_sha256": "280d7907d7ba8242978c3347013b631fd7824df4b0a4342fa2fa00b10ca831a4",
+  "unique_text_blobs": 1037,
+  "blob_set_sha256": "704e6424edcf29691675a93c78cbc0119aa55ac549094ab5acc10dfa5c9bb0ea",
   "excluded_own_registration": "experiments/2026-09-20-autonomous-antiloop-cooldown/",
   "colliding_files": [],
   "passed": true

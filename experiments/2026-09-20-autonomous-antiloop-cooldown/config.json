@@ -17,15 +17,15 @@
   "devices": {"pc": {"workers": 2, "cpu_seconds": 144000, "rss_bytes": 8589934592}},
   "limits": {
     "wall_seconds": 86400,
-    "minimum_available_bytes": 2147483648,
+    "minimum_available_bytes": 1073741824,
     "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
     "stop_utc": "2026-09-21T14:00:00+00:00",
     "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
   },
   "prior_usage": {
     "pc": {
-      "cpu_seconds": 10418.5,
-      "note": "Final v1 campaign ledger plus a conservative 60-second transition margin; shared 40 CPU-hour cap is not reset."
+      "cpu_seconds": 10478.5,
+      "note": "Final v1 campaign ledger plus 60-second transition and 60-second pre-game memory-stop margins; shared 40 CPU-hour cap is not reset."
     }
   },
   "protocol": {
@@ -77,6 +77,7 @@
     "latency_max_ms": 100
   },
   "selection": "Both fresh pilot blocks must pass. If they do, all three arms run the fixed fresh confirmation and cooldown_guard must pass again. Never promote automatically.",
+  "resource_amendment": "The first v2 root stopped before any scientific game when system free memory briefly crossed the 2 GiB reserve during worker launch. The replacement root retains a 1 GiB system reserve; the 8 GiB owned-process cap, two-worker cap, scientific inputs, and gates are unchanged.",
   "fallback_if_failed": "Retain all rows and continue only with a prospectively registered anti-loop iteration inside the same budget and deadline.",
   "authorization": {
     "owner": "Julius",
