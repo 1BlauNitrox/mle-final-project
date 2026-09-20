@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 220
-status: preregistered
+status: completed_failed
 agent: DerKleineKonkurrenzvernichter
 hypothesis: Double Q-learning reduces maximization bias and improves peaceful-opponent elimination without material Task 2 regression.
 literature:
@@ -38,5 +38,9 @@ authorization:
   owner_requested_direct_execution: true
   intermediate_review_waived_by_owner: true
 execution:
-  status: pending
-decision: pending
+  status: completed
+  completed_at: 2026-09-20
+  control_completed_jobs: 1005
+  candidate_completed_jobs: 1005
+  failed_jobs: 0
+decision: reject_double_q_keep_single_q
