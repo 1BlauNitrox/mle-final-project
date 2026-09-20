@@ -44,8 +44,8 @@ def pacing(**kwargs):
 LEGAL = np.ones(6, dtype=bool)
 
 
-def test_frozen_evaluation_default_selects_confirmed_sixteen_step_mode():
-    assert DEFAULT_NARROW_LOOP_GUARD_MODE == "mid_persistent"
+def test_frozen_evaluation_default_selects_confirmed_broad_sixteen_step_mode():
+    assert DEFAULT_NARROW_LOOP_GUARD_MODE == "broad_persistent"
     assert _loop_guard_window(DEFAULT_NARROW_LOOP_GUARD_MODE) == 16
 
 
