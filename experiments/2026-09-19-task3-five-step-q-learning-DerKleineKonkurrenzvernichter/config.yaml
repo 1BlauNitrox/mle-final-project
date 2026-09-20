@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 210
-status: completed_failed
+status: completed_deviated
 agent: DerKleineKonkurrenzvernichter
 hypothesis: Five-step Q-learning propagates delayed opponent-elimination rewards more effectively than one-step Q-learning without material Task 2 regression.
 literature:
@@ -42,4 +42,7 @@ execution:
   control_completed_jobs: 1005
   candidate_completed_jobs: 1005
   failed_jobs: 0
-decision: reject_five_step_keep_one_step
+deviation:
+  description: Both arms requested task2_prior, but fresh setup omitted the parent values and initialized unseen states with zeros.
+  impact: The comparison does not establish the registered effect of five-step learning while retaining the frozen Task 2 prior.
+decision: inconclusive_due_to_initialization_deviation
