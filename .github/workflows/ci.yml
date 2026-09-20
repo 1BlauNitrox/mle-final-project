@@ -84,7 +84,8 @@ jobs:
           agent_code/DagobertDuckDQN
           agent_code/DerKleineSprengstoffkapitalist
           agent_code/DagobertDuckDQNTask2
-          agent_code/DagobertDuckDQNTask3
+            agent_code/DagobertDuckDQNTask3
+            agent_code/DagobertDuckDQNAntiLoop
 
       - name: Compile Python sources
         run: python -m compileall -q .
