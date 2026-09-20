@@ -3,6 +3,10 @@
 import numpy as np
 import pytest
 
+from agent_code.DagobertDuckDQNAntiLoop.callbacks import (
+    DEFAULT_NARROW_LOOP_GUARD_MODE,
+    _loop_guard_window,
+)
 from agent_code.DagobertDuckDQNAntiLoop.config import ACTIONS
 from agent_code.DagobertDuckDQNAntiLoop.narrow_loop_guard import NarrowLoopGuard
 
@@ -38,6 +42,11 @@ def pacing(**kwargs):
 
 
 LEGAL = np.ones(6, dtype=bool)
+
+
+def test_frozen_evaluation_default_selects_confirmed_sixteen_step_mode():
+    assert DEFAULT_NARROW_LOOP_GUARD_MODE == "mid_persistent"
+    assert _loop_guard_window(DEFAULT_NARROW_LOOP_GUARD_MODE) == 16
 
 
 def test_guard_requires_a_full_unchanged_hazard_free_late_game_window():

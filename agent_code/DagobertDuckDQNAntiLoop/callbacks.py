@@ -25,6 +25,7 @@ EVALUATION_CHECKPOINT_ENV = "BOMBERMAN_EVALUATION_CHECKPOINT"
 ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
 NARROW_LOOP_GUARD_ENV = "BOMBERMAN_NARROW_LOOP_GUARD"
+DEFAULT_NARROW_LOOP_GUARD_MODE = "mid_persistent"
 
 
 def setup(self) -> None:
@@ -59,7 +60,7 @@ def act(self, game_state: dict | None) -> str:
         rng=self.action_rng,
         action_mask=action_mask,
     )
-    guard_mode = os.environ.get(NARROW_LOOP_GUARD_ENV, "on")
+    guard_mode = os.environ.get(NARROW_LOOP_GUARD_ENV, DEFAULT_NARROW_LOOP_GUARD_MODE)
     if self.train or guard_mode == "off":
         return action
     if guard_mode not in {
@@ -72,7 +73,7 @@ def act(self, game_state: dict | None) -> str:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
     guard = getattr(self, "narrow_loop_guard", None)
     if guard is None:
-        window = {"early_persistent": 12, "mid_persistent": 16}.get(guard_mode, 24)
+        window = _loop_guard_window(guard_mode)
         guard = self.narrow_loop_guard = NarrowLoopGuard(window=window)
     guard.observe(game_state)
 
@@ -103,6 +104,10 @@ def act(self, game_state: dict | None) -> str:
             "mid_persistent": 400,
         }[guard_mode],
     )
+
+
+def _loop_guard_window(mode: str) -> int:
+    return {"early_persistent": 12, "mid_persistent": 16}.get(mode, 24)
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:
