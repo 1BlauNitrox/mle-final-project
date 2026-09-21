@@ -1,6 +1,6 @@
 {
   "issue": 225,
-  "revision": 1,
+  "revision": 2,
   "runtime_commit": "f1731bba9d87265846bcf0a7d0f1f722777daccd",
   "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
   "hypothesis": "A supervised policy trained to pursue reachable safe bombing tiles can improve eliminations in empty-board endgames, while a hard context gate preserves the confirmed fallback whenever crates, visible coins, bombs, or explosions remain.",
@@ -73,10 +73,10 @@
   },
   "selection": "Reject training unless a fixed confidence threshold passes grouped teacher-agreement gates. Among fresh-pilot-eligible thresholds, select the largest paired kill gain, then score gain, then the higher threshold. Confirm once on fresh worlds; never promote automatically.",
   "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
-  "prior_usage": {"pc": {"cpu_seconds": 45979.53125, "note": "Cumulative issue #225 debit through completed V9c; the shared 40 CPU-hour cap is not reset."}},
+  "prior_usage": {"pc": {"cpu_seconds": 46006.875, "note": "Cumulative issue #225 debit through the resource-stopped V12 attempt; the shared 40 CPU-hour cap is not reset."}},
   "limits": {
     "wall_seconds": 45000,
-    "minimum_available_bytes": 536870912,
+    "minimum_available_bytes": 268435456,
     "training_stop_utc": "2026-09-21T10:00:00+00:00",
     "stop_utc": "2026-09-21T13:00:00+00:00"
   },
