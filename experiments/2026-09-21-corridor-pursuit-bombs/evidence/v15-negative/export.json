@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-corridor-pursuit-bombs-v15\\issue225-corridor-pursuit-bombs-1789965099768579200.zip",
+  "sha256": "f8c9263d818a8b6e6907b39e8420a50474798ac41283f2dd22c1203469eda780",
+  "bytes": 1538041,
+  "final_pipeline_resources": {
+    "cpu_seconds": 57518.109375,
+    "first_start": 1789963030.9989772,
+    "wall_seconds": 2069.960126876831,
+    "stage": "complete",
+    "peak_rss_bytes": 219648000.0
+  }
+}

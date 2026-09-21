@@ -1,0 +1,24 @@
+{
+  "classifier_accepted": true,
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "candidates": {
+    "corridor1": {
+      "path": "candidates/corridor-pursuit-t85.pt",
+      "file_name": "corridor-pursuit-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85,
+      "guard_mode": "broad_learned_pursuit_corridor1",
+      "maximum_immediate_target_escapes": 1
+    },
+    "corridor2": {
+      "path": "candidates/corridor-pursuit-t85.pt",
+      "file_name": "corridor-pursuit-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85,
+      "guard_mode": "broad_learned_pursuit_corridor2",
+      "maximum_immediate_target_escapes": 2
+    }
+  }
+}
