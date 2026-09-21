@@ -1,0 +1,442 @@
+{
+  "complete": true,
+  "eligible": [],
+  "selected": null,
+  "submission_promotion": false,
+  "diagnostics": {
+    "baseline": {
+      "classic": {
+        "games": 40,
+        "score": 2.725,
+        "kills": 0.125,
+        "survival": 0.3,
+        "self_kills": 0.475,
+        "invalid": 1.375,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1099,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "mixed": {
+        "games": 40,
+        "score": 4.0,
+        "kills": 0.15,
+        "survival": 0.525,
+        "self_kills": 0.45,
+        "invalid": 1.325,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1815,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "peaceful": {
+        "games": 20,
+        "score": 11.95,
+        "kills": 1.05,
+        "survival": 0.75,
+        "self_kills": 0.25,
+        "invalid": 0.15,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 30,
+          "looping": 9,
+          "rate": 0.3
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 26.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.5389999999999999,
+        "loops": {
+          "eligible": 5712,
+          "looping": 5677,
+          "rate": 0.9938725490196079
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 25.85,
+        "kills": 0.0,
+        "survival": 0.9,
+        "self_kills": 0.1,
+        "invalid": 0.0,
+        "collection_fraction": 0.5170000000000001,
+        "loops": {
+          "eligible": 1944,
+          "looping": 1931,
+          "rate": 0.9933127572016461
+        }
+      }
+    },
+    "u25": {
+      "classic": {
+        "games": 40,
+        "score": 2.8,
+        "kills": 0.125,
+        "survival": 0.3,
+        "self_kills": 0.45,
+        "invalid": 1.7,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 934,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "mixed": {
+        "games": 40,
+        "score": 3.825,
+        "kills": 0.15,
+        "survival": 0.525,
+        "self_kills": 0.45,
+        "invalid": 1.975,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1586,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "peaceful": {
+        "games": 20,
+        "score": 11.8,
+        "kills": 1.05,
+        "survival": 0.75,
+        "self_kills": 0.25,
+        "invalid": 0.15,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 318,
+          "looping": 303,
+          "rate": 0.9528301886792453
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 26.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.5389999999999999,
+        "loops": {
+          "eligible": 5712,
+          "looping": 5677,
+          "rate": 0.9938725490196079
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 28.85,
+        "kills": 0.0,
+        "survival": 0.9,
+        "self_kills": 0.1,
+        "invalid": 0.0,
+        "collection_fraction": 0.5770000000000002,
+        "loops": {
+          "eligible": 1620,
+          "looping": 1607,
+          "rate": 0.9919753086419754
+        }
+      }
+    },
+    "u100": {
+      "classic": {
+        "games": 40,
+        "score": 2.825,
+        "kills": 0.15,
+        "survival": 0.225,
+        "self_kills": 0.5,
+        "invalid": 1.4,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 749,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "mixed": {
+        "games": 40,
+        "score": 3.75,
+        "kills": 0.125,
+        "survival": 0.5,
+        "self_kills": 0.475,
+        "invalid": 2.1,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1434,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "peaceful": {
+        "games": 20,
+        "score": 11.3,
+        "kills": 1.0,
+        "survival": 0.75,
+        "self_kills": 0.25,
+        "invalid": 0.15,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 440,
+          "looping": 303,
+          "rate": 0.6886363636363636
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 26.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.5389999999999999,
+        "loops": {
+          "eligible": 5712,
+          "looping": 5677,
+          "rate": 0.9938725490196079
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 29.25,
+        "kills": 0.0,
+        "survival": 0.9,
+        "self_kills": 0.1,
+        "invalid": 0.0,
+        "collection_fraction": 0.5850000000000002,
+        "loops": {
+          "eligible": 1684,
+          "looping": 1607,
+          "rate": 0.9542755344418052
+        }
+      }
+    },
+    "u300": {
+      "classic": {
+        "games": 40,
+        "score": 3.1,
+        "kills": 0.175,
+        "survival": 0.275,
+        "self_kills": 0.5,
+        "invalid": 1.6,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 783,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "mixed": {
+        "games": 40,
+        "score": 3.7,
+        "kills": 0.125,
+        "survival": 0.55,
+        "self_kills": 0.425,
+        "invalid": 2.15,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1604,
+          "looping": 0,
+          "rate": 0.0
+        }
+      },
+      "peaceful": {
+        "games": 20,
+        "score": 11.55,
+        "kills": 1.05,
+        "survival": 0.75,
+        "self_kills": 0.25,
+        "invalid": 0.15,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 454,
+          "looping": 317,
+          "rate": 0.698237885462555
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 26.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.5389999999999999,
+        "loops": {
+          "eligible": 5712,
+          "looping": 5677,
+          "rate": 0.9938725490196079
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 29.3,
+        "kills": 0.0,
+        "survival": 0.9,
+        "self_kills": 0.1,
+        "invalid": 0.0,
+        "collection_fraction": 0.5860000000000001,
+        "loops": {
+          "eligible": 1690,
+          "looping": 1613,
+          "rate": 0.9544378698224852
+        }
+      }
+    }
+  },
+  "pilot": {
+    "u25": {
+      "passed": false,
+      "gates": {
+        "kills": false,
+        "score": false,
+        "survival": true,
+        "self_kills": true,
+        "invalid_pooled": false,
+        "classic.invalid": true,
+        "mixed.invalid": false,
+        "peaceful.invalid": true,
+        "loops": false,
+        "coins.collection": true,
+        "coins.self_kills": true,
+        "coins.invalid": true,
+        "crates.collection": true,
+        "crates.self_kills": true,
+        "crates.invalid": true
+      },
+      "effects": {
+        "score": -0.07,
+        "kills": 0.0,
+        "survived": 0.0,
+        "self_kills": -0.01,
+        "invalid": 0.39,
+        "classic.invalid": 0.325,
+        "mixed.invalid": 0.65,
+        "peaceful.invalid": 0.0,
+        "loops": {
+          "candidate": {
+            "eligible": 2838,
+            "looping": 303,
+            "rate": 0.10676532769556026
+          },
+          "baseline": {
+            "eligible": 2944,
+            "looping": 9,
+            "rate": 0.0030570652173913045
+          }
+        },
+        "coins.collection": 0.0,
+        "coins.self_kills": 0.0,
+        "coins.invalid_total": 0.0,
+        "crates.collection": 0.06000000000000001,
+        "crates.self_kills": 0.0,
+        "crates.invalid_total": 0.0
+      }
+    },
+    "u100": {
+      "passed": false,
+      "gates": {
+        "kills": false,
+        "score": false,
+        "survival": true,
+        "self_kills": true,
+        "invalid_pooled": false,
+        "classic.invalid": true,
+        "mixed.invalid": false,
+        "peaceful.invalid": true,
+        "loops": false,
+        "coins.collection": true,
+        "coins.self_kills": true,
+        "coins.invalid": true,
+        "crates.collection": true,
+        "crates.self_kills": true,
+        "crates.invalid": true
+      },
+      "effects": {
+        "score": -0.19,
+        "kills": -0.01,
+        "survived": -0.04,
+        "self_kills": 0.02,
+        "invalid": 0.32,
+        "classic.invalid": 0.025,
+        "mixed.invalid": 0.775,
+        "peaceful.invalid": 0.0,
+        "loops": {
+          "candidate": {
+            "eligible": 2623,
+            "looping": 303,
+            "rate": 0.1155165840640488
+          },
+          "baseline": {
+            "eligible": 2944,
+            "looping": 9,
+            "rate": 0.0030570652173913045
+          }
+        },
+        "coins.collection": 0.0,
+        "coins.self_kills": 0.0,
+        "coins.invalid_total": 0.0,
+        "crates.collection": 0.06800000000000002,
+        "crates.self_kills": 0.0,
+        "crates.invalid_total": 0.0
+      }
+    },
+    "u300": {
+      "passed": false,
+      "gates": {
+        "kills": false,
+        "score": false,
+        "survival": true,
+        "self_kills": true,
+        "invalid_pooled": false,
+        "classic.invalid": true,
+        "mixed.invalid": false,
+        "peaceful.invalid": true,
+        "loops": false,
+        "coins.collection": true,
+        "coins.self_kills": true,
+        "coins.invalid": true,
+        "crates.collection": true,
+        "crates.self_kills": true,
+        "crates.invalid": true
+      },
+      "effects": {
+        "score": -0.05,
+        "kills": 0.01,
+        "survived": 0.0,
+        "self_kills": 0.0,
+        "invalid": 0.42,
+        "classic.invalid": 0.225,
+        "mixed.invalid": 0.825,
+        "peaceful.invalid": 0.0,
+        "loops": {
+          "candidate": {
+            "eligible": 2841,
+            "looping": 317,
+            "rate": 0.11158042942625836
+          },
+          "baseline": {
+            "eligible": 2944,
+            "looping": 9,
+            "rate": 0.0030570652173913045
+          }
+        },
+        "coins.collection": 0.0,
+        "coins.self_kills": 0.0,
+        "coins.invalid_total": 0.0,
+        "crates.collection": 0.06899999999999999,
+        "crates.self_kills": 0.0,
+        "crates.invalid_total": 0.0
+      }
+    }
+  }
+}

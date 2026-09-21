@@ -1,0 +1,37 @@
+[
+  {
+    "name": "v5b/analysis.json",
+    "bytes": 19986,
+    "sha256": "0ba7315cea603da690a1bd08f8950ebdcf730e82c3c1af672e70a446334d5665"
+  },
+  {
+    "name": "v5b/binding.json",
+    "bytes": 92273,
+    "sha256": "20e4f839d076566b60bbee37618a60b73e7083265af64fc8bcc77f69ab93a88a"
+  },
+  {
+    "name": "v5b/complete.json",
+    "bytes": 102,
+    "sha256": "851d31867b0074ca97be04c1c4ddd1f9a4afcc3ce61add9e55ee09f717061fce"
+  },
+  {
+    "name": "v5b/export.json",
+    "bytes": 526,
+    "sha256": "b33f05743c958301c0c73d053050715a11fc0a436fe9414fd189efe1d30cc186"
+  },
+  {
+    "name": "v5b/raw-results.zip",
+    "bytes": 2287845,
+    "sha256": "7d01d5d52eae49e4edf0b20f94c17570070d7e8455423cdee0a1021a220ec1cb"
+  },
+  {
+    "name": "v5b/resources.json",
+    "bytes": 162,
+    "sha256": "557f3fd27eeb3f36044856fc81226b39ebb336d704c0fa6acc7201e2f0334c53"
+  },
+  {
+    "name": "v5b/watchdog.json",
+    "bytes": 424,
+    "sha256": "32eb8247cadf5d53fdb4e83347216d6a3dc8b0707ee20c173d9d9fd96aa290b1"
+  }
+]

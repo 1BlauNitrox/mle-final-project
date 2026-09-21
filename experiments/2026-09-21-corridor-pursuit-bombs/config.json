@@ -1,0 +1,62 @@
+{
+  "issue": 225,
+  "revision": 1,
+  "runtime_commit": "c11b76701f095556df7282ec013ced3b4a15dc31",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "artifact": {
+    "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+    "bytes": 14053,
+    "threshold": 0.85
+  },
+  "arms": {
+    "corridor1": {"guard_mode": "broad_learned_pursuit_corridor1", "maximum_immediate_target_escapes": 1},
+    "corridor2": {"guard_mode": "broad_learned_pursuit_corridor2", "maximum_immediate_target_escapes": 2}
+  },
+  "hypothesis": "High-confidence learned BOMB proposals against opponents with at most one or two immediate moves outside the proposed blast will create at least 0.025 additional kills per multiplayer game while preserving the frozen policy's anti-loop behavior, score, survival, action correctness, and earlier-task collection.",
+  "changed_factor": "Both arms use the fixed V12 t85 head only for BOMB proposals, disable pursuit movement overrides, allow at most three learned bombs per round, and retain the seven-step safe-continuation follow-up. The sole comparison is whether every accepted proposal must threaten a target with at most one versus at most two immediate legal moves outside the blast. No DQN rank filter is applied.",
+  "controls": "Same frozen checkpoint, learned t85 artifact, empty-board context, broad persistent loop guard, action mask, scenarios, opponents, slots, evaluator, metrics, gates, and paired fresh seeds. No parameters, rewards, features, or DQN weights are changed.",
+  "evaluation_agent_seed": 1836090010,
+  "smoke_seed": 1836099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1836100001, 1836100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1836101001, 1836101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1836102001, 1836102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1836103001, 1836103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1836104001, 1836104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1836200001, 1836200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1836201001, 1836201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1836202001, 1836202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1836203001, 1836203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1836204001, 1836204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1836205001, 1836205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "minimum_pursuit_overrides": 10,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {"pooled_increase_per_game": 0.25, "block_increase_per_game": 0.5, "solo_maximum_total": 0},
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Among pilot-eligible fixed mobility thresholds, choose the largest kill gain, then score gain, then the stricter target-mobility threshold. Confirm once on fresh worlds; never promote automatically.",
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 55582.03125, "note": "Cumulative issue #225 debit through completed V14; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {"wall_seconds": 32400, "minimum_available_bytes": 16777216, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Paired evaluation of fixed target-mobility learned-bomb gates, confirmation, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}

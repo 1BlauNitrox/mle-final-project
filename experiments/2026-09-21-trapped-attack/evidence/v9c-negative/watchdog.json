@@ -1,0 +1,32 @@
+{
+  "restarts": 0,
+  "cpu_seconds": 7.21875,
+  "pid": 524908,
+  "created": 1789948244.0563006,
+  "runner_sha256": "5ea20d23d439b94f67dd36f9640402e2eccb6990681391abebeefae2035f32f1",
+  "time": 1789949892.1834621,
+  "launching": {
+    "pid": 514120,
+    "created": 1789948244.6464455
+  },
+  "launches": 1,
+  "status": "pipeline_complete",
+  "family": [
+    {
+      "pid": 508836,
+      "created": 1789948244.7110767
+    },
+    {
+      "pid": 533692,
+      "created": 1789949060.7150357
+    },
+    {
+      "pid": 533588,
+      "created": 1789949060.7497716
+    },
+    {
+      "pid": 510708,
+      "created": 1789949060.785458
+    }
+  ]
+}

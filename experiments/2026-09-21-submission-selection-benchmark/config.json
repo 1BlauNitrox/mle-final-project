@@ -1,0 +1,55 @@
+{
+  "issue": 225,
+  "purpose": "Fresh common-seed comparison for the final human submission decision.",
+  "reference": "fallback",
+  "candidates": {
+    "fallback": {
+      "root": "../../training_outputs/issue225-pc-v2/source",
+      "agent": "DagobertDuckDQNAntiLoop",
+      "checkpoint": "../../training_outputs/issue225-pc-v2/initial/reference.pt",
+      "environment": {}
+    },
+    "warm_lineup": {
+      "root": "C:/task4-warm-lineup/source",
+      "agent": "DagobertDuckDQNTask3",
+      "checkpoint": "C:/task4-warm-lineup/reference.pt",
+      "environment": {}
+    },
+    "targeted_unqualified": {
+      "root": "../../training_outputs/issue225-targeted-pursuit-v19-restart-r3/source",
+      "agent": "DagobertDuckDQNAntiLoop",
+      "checkpoint": "../../training_outputs/issue225-targeted-pursuit-v19-restart-r3/reference.pt",
+      "environment": {
+        "BOMBERMAN_NARROW_LOOP_GUARD": "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "BOMBERMAN_PURSUIT_HEAD": "post-kill-cap2-t85.pt"
+      },
+      "promotion_eligible": false,
+      "ineligibility_reason": "Failed its registered fresh-confirmation self-kill and loop gates."
+    }
+  },
+  "suites": {
+    "classic": {
+      "scenario": "classic",
+      "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      "seeds": [1850100001, 1850100016]
+    },
+    "mixed": {
+      "scenario": "classic",
+      "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"],
+      "seeds": [1850101001, 1850101012]
+    },
+    "coins": {
+      "scenario": "coin-heaven",
+      "opponents": [],
+      "seeds": [1850102001, 1850102012]
+    },
+    "crates": {
+      "scenario": "loot-crate",
+      "opponents": [],
+      "seeds": [1850103001, 1850103012]
+    }
+  },
+  "metrics": ["score", "kills", "self_kills", "survived", "coins", "collection_fraction", "invalid"],
+  "selection_rule": "The targeted candidate is displayed but remains ineligible because its registered confirmation failed. Between fallback and warm_lineup, retain fallback unless warm_lineup has nonnegative paired score, kills, survival, and collection effects; no increase in self-kills or invalid actions; and at least +0.05 collection fraction in the Coins suite. The owner makes the final selection after reviewing the evidence.",
+  "authorization": "2026-09-21: owner requested comparison of fallback, warm-lineup, and the latest unqualified candidate before final submission selection."
+}

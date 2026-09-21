@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-bounded-pursuit-bombs-v14\\issue225-bounded-pursuit-bombs-1789962482328459200.zip",
+  "sha256": "4614f27165eed329460f8f18c937cd0dc67790dd8d9c5f6d1269d24e2a14312f",
+  "bytes": 1579265,
+  "final_pipeline_resources": {
+    "cpu_seconds": 55582.03125,
+    "first_start": 1789959922.9305186,
+    "wall_seconds": 2559.940009832382,
+    "stage": "complete",
+    "peak_rss_bytes": 226394112.0
+  }
+}

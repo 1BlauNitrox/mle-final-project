@@ -1,0 +1,88 @@
+{
+  "issue": 225,
+  "revision": 2,
+  "runtime_commit": "f1731bba9d87265846bcf0a7d0f1f722777daccd",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "hypothesis": "A supervised policy trained to pursue reachable safe bombing tiles can improve eliminations in empty-board endgames, while a hard context gate preserves the confirmed fallback whenever crates, visible coins, bombs, or explosions remain.",
+  "changed_factor": "Candidates add one 74-input, 32-hidden-unit pursuit classifier at confidence 0.70 or 0.85. It may override the frozen DQN only in hazard-free states with opponents but no crates or visible coins; the broad persistent loop guard remains active afterward.",
+  "controls": "Same frozen DQN checkpoint, features, Q-values, broad loop guard, action mask, opponents, scenarios, slots, and paired evaluation seeds. The classifier cannot change checkpoint weights and solo coin/crate behavior is outside its activation set.",
+  "collection": {
+    "seed_range": [1833000001, 1833000200],
+    "minimum_episodes": 120,
+    "block_episodes": 40,
+    "maximum_episodes": 200,
+    "minimum_examples": 1000,
+    "minimum_bomb_examples": 50,
+    "lineups": [
+      ["peaceful_agent", "peaceful_agent", "peaceful_agent"],
+      ["peaceful_agent", "peaceful_agent", "peaceful_agent"],
+      ["coin_collector_agent", "coin_collector_agent", "coin_collector_agent"],
+      ["rule_based_agent", "rule_based_agent", "rule_based_agent"]
+    ],
+    "layouts": "Open hunting layouts only; distances cycle through 2, 3, 5, and 7. Baseline rollouts supply states; labels use only public-state shortest paths to verified safe attack tiles."
+  },
+  "training": {
+    "folds": 5,
+    "epochs": 400,
+    "learning_rate": 0.01,
+    "l2_weight": 0.001,
+    "optimizer_seed": 1833090001,
+    "thresholds": [0.7, 0.85],
+    "minimum_oof_coverage": 0.2,
+    "minimum_oof_accuracy": 0.75,
+    "minimum_oof_bomb_precision": 0.7,
+    "minimum_oof_bomb_recall": 0.4
+  },
+  "evaluation_agent_seed": 1833090010,
+  "smoke_seed": 1833099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1833100001, 1833100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1833101001, 1833101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1833102001, 1833102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1833103001, 1833103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1833104001, 1833104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1833200001, 1833200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1833201001, 1833201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1833202001, 1833202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1833203001, 1833203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1833204001, 1833204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1833205001, 1833205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "minimum_pursuit_overrides": 10,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Reject training unless a fixed confidence threshold passes grouped teacher-agreement gates. Among fresh-pilot-eligible thresholds, select the largest paired kill gain, then score gain, then the higher threshold. Confirm once on fresh worlds; never promote automatically.",
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 46006.875, "note": "Cumulative issue #225 debit through the resource-stopped V12 attempt; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {
+    "wall_seconds": 45000,
+    "minimum_available_bytes": 268435456,
+    "training_stop_utc": "2026-09-21T10:00:00+00:00",
+    "stop_utc": "2026-09-21T13:00:00+00:00"
+  },
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Teacher-state collection, supervised pursuit training, paired evaluation, confirmation, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}

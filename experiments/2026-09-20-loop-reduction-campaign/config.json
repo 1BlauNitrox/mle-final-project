@@ -1,0 +1,102 @@
+{
+  "issue": 225,
+  "campaign": "autonomous-antiloop",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "arms": ["control", "narrow_guard"],
+  "evaluation_agent_seed": 1820090010,
+  "bootstrap_seed": 1820090011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1820099991,
+  "devices": {
+    "pc": {
+      "workers": 2,
+      "cpu_seconds": 144000,
+      "rss_bytes": 8589934592
+    }
+  },
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 2147483648,
+    "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
+    "stop_utc": "2026-09-21T14:00:00+00:00",
+    "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
+  },
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 7122.015625,
+      "note": "Measured issue225 teacher campaign plus a conservative 900-second implementation and preparation debit."
+    }
+  },
+  "iteration": {
+    "name": "narrow_guard",
+    "changed_factor": "Frozen action selection receives a conservative escape override; checkpoint bytes and all learned values remain fixed.",
+    "window": 24,
+    "maximum_distinct_positions": 3,
+    "requires": [
+      "consecutive steps",
+      "unchanged field, visible coins, score, and opponent count",
+      "no bombs or explosions during the complete window",
+      "no crates remain",
+      "a visible coin or live opponent remains",
+      "the selected directional action returns to the recent position set"
+    ],
+    "alternative": "Highest-Q legal directional action that leaves the recent set, has a five-arrival safe continuation, and is outside every opponent's current or one-step-reachable tile.",
+    "unchanged": [
+      "checkpoint",
+      "features",
+      "rewards",
+      "model architecture",
+      "training",
+      "bomb and wait actions"
+    ]
+  },
+  "evaluation": {
+    "pilot_r1": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820100001, 1820100080]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820101001, 1820101020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820102001, 1820102020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820103001, 1820103020]}
+    },
+    "pilot_r2": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820110001, 1820110080]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820111001, 1820111020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820112001, 1820112020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820113001, 1820113020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820200001, 1820200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820201001, 1820201040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820202001, 1820202040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820203001, 1820203040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820204001, 1820204010]}
+    }
+  },
+  "screen": {
+    "multiplayer_suites": ["classic", "mixed"],
+    "loop_suites": ["classic", "mixed"],
+    "loop_ratio": 0.75,
+    "minimum_guarded_games": 20,
+    "score_gain": 0.0,
+    "kills_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.10,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": ["latency"]
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Pilot passes only if both registered blocks reduce eligible loop-window rate by at least 25%, at least 20 games are actually guarded in total, pooled score and kills do not decrease, and every registered safety, retention, action-correctness, and latency gate passes. Only then run the equally sized fresh confirmation. Never promote automatically.",
+  "fallback_if_failed": "Retain every result, analyze the failure, and prospectively register at most one next anti-loop iteration under this same campaign budget and deadline.",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-20: autonomous permission through Monday 15:00-16:00 Berlin to register, run, stop, analyze, and replace bounded anti-loop attempts; preserve time to evaluate and package.",
+    "scope": "Up to two one-thread workers and 40 shared CPU-hours including prior issue225 work; looping is primary and killing work is allowed only after a loop improvement passes."
+  }
+}

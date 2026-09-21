@@ -1,0 +1,63 @@
+{
+  "issue": 225,
+  "revision": 1,
+  "runtime_commit": "ab5dfa5042486a2c8cdd35461764825c2cd77481",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "artifact": {
+    "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+    "bytes": 14053,
+    "threshold": 0.85
+  },
+  "arms": {
+    "cap1": {"guard_mode": "broad_learned_pursuit_corridor1_cap1", "maximum_bomb_overrides_per_round": 1},
+    "cap2": {"guard_mode": "broad_learned_pursuit_corridor1_cap2", "maximum_bomb_overrides_per_round": 2}
+  },
+  "hypothesis": "Restricting the V15 one-escape attack gate to one or two learned bombs per round will retain at least 0.025 additional kills per multiplayer game while eliminating V15's self-kill and loop-rate regressions and preserving score, survival, action correctness, and earlier-task collection.",
+  "changed_factor": "Both arms use the fixed V12 t85 head only for BOMB proposals, require a threatened opponent to have at most one immediate move outside the blast, disable pursuit movement overrides, and retain the seven-step safe-continuation follow-up. The sole comparison is one versus two learned bomb overrides per round.",
+  "controls": "Same frozen checkpoint, learned t85 artifact, one-escape geometry, empty-board context, broad persistent loop guard, action mask, scenarios, opponents, slots, evaluator, metrics, gates, and paired fresh seeds. No parameters, rewards, features, or DQN weights are changed.",
+  "evaluation_agent_seed": 1837090010,
+  "smoke_seed": 1837099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1837100001, 1837100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1837101001, 1837101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1837102001, 1837102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1837103001, 1837103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1837104001, 1837104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1837200001, 1837200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1837201001, 1837201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1837202001, 1837202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1837203001, 1837203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1837204001, 1837204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1837205001, 1837205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "minimum_pursuit_overrides": 10,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {"pooled_increase_per_game": 0.25, "block_increase_per_game": 0.5, "solo_maximum_total": 0},
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Among pilot-eligible fixed caps, choose the largest kill gain, then score gain, then the lower learned-bomb cap. Confirm once on fresh worlds; never promote automatically.",
+  "expected_cost": {"pilot_cpu_seconds": 2500, "confirmation_cpu_seconds": 2500, "basis": "Observed V15 throughput on this PC."},
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 57518.109375, "note": "Cumulative issue #225 debit through completed V15; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {"wall_seconds": 28800, "minimum_available_bytes": 16777216, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Paired evaluation of fixed one-escape bomb caps, confirmation, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}

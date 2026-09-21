@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-endgame-pursuit-v12b\\issue225-endgame-pursuit-1789954146325156200.zip",
+  "sha256": "4ee9595e1c7c2b30fc2043bfa162a91f367b492130b64b61ff220098d7e475cb",
+  "bytes": 3809553,
+  "final_pipeline_resources": {
+    "cpu_seconds": 49172.515625,
+    "first_start": 1789950778.0489774,
+    "wall_seconds": 3369.814120054245,
+    "stage": "complete",
+    "peak_rss_bytes": 336678912.0
+  }
+}

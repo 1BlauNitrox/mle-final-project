@@ -1,0 +1,11 @@
+{
+  "reason": "Memory limit reached",
+  "time": 1789919874.807133,
+  "usage": {
+    "cpu_seconds": 10424.890625,
+    "first_start": 1789919818.3110943,
+    "wall_seconds": 56.467835426330566,
+    "stage": "pilot",
+    "peak_rss_bytes": 461627392
+  }
+}

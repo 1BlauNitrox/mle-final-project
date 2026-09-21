@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-pursuit-move-v13b\\issue225-pursuit-movement-1789959253345239900.zip",
+  "sha256": "43b8f059e1321c341609d952cc0136667713a42255ee1d2efa4eeb5fc376ed2d",
+  "bytes": 1621445,
+  "final_pipeline_resources": {
+    "cpu_seconds": 53283.9375,
+    "first_start": 1789957022.704491,
+    "wall_seconds": 2231.001305103302,
+    "stage": "complete",
+    "peak_rss_bytes": 226230272.0
+  }
+}

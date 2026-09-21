@@ -1,0 +1,24 @@
+{
+  "classifier_accepted": true,
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "candidates": {
+    "bomb1": {
+      "path": "candidates/bounded-pursuit-t85.pt",
+      "file_name": "bounded-pursuit-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85,
+      "guard_mode": "broad_learned_pursuit_bomb1",
+      "maximum_bomb_overrides_per_round": 1
+    },
+    "bomb3": {
+      "path": "candidates/bounded-pursuit-t85.pt",
+      "file_name": "bounded-pursuit-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85,
+      "guard_mode": "broad_learned_pursuit_bomb3",
+      "maximum_bomb_overrides_per_round": 3
+    }
+  }
+}

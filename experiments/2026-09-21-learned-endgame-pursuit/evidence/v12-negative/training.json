@@ -1,0 +1,67 @@
+{
+  "classifier_accepted": true,
+  "cross_validation": {
+    "rows": 40909,
+    "bomb_labels": 6279,
+    "folds": [
+      {
+        "fold": 0,
+        "rows": 8547
+      },
+      {
+        "fold": 1,
+        "rows": 7613
+      },
+      {
+        "fold": 2,
+        "rows": 8638
+      },
+      {
+        "fold": 3,
+        "rows": 7596
+      },
+      {
+        "fold": 4,
+        "rows": 8515
+      }
+    ],
+    "thresholds": [
+      {
+        "threshold": 0.7,
+        "coverage": 0.9188198195995991,
+        "accuracy": 0.9142811535596467,
+        "bomb_precision": 1.0,
+        "bomb_recall": 1.0,
+        "eligible": true
+      },
+      {
+        "threshold": 0.85,
+        "coverage": 0.7117749150553668,
+        "accuracy": 0.9558348787691462,
+        "bomb_precision": 1.0,
+        "bomb_recall": 1.0,
+        "eligible": true
+      }
+    ],
+    "accepted_thresholds": [
+      0.7,
+      0.85
+    ]
+  },
+  "candidates": {
+    "t70": {
+      "path": "candidates/endgame-pursuit-t70.pt",
+      "file_name": "endgame-pursuit-t70.pt",
+      "sha256": "e66973b7d1c31a12b8413e48036c6541445c91d548cd980a74aa4bd45e0f070e",
+      "bytes": 14053,
+      "threshold": 0.7
+    },
+    "t85": {
+      "path": "candidates/endgame-pursuit-t85.pt",
+      "file_name": "endgame-pursuit-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85
+    }
+  }
+}

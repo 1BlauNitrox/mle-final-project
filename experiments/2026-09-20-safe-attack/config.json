@@ -1,0 +1,228 @@
+{
+  "issue": 225,
+  "campaign": "autonomous-antiloop",
+  "iteration": "06-safe-attack-second-rank",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "analyzer": "scripts.analyze_autonomous_antiloop",
+  "arms": [
+    "control",
+    "attack_second"
+  ],
+  "arm_modes": {
+    "control": "mid_persistent",
+    "attack_second": "mid_attack_second"
+  },
+  "candidate_arm": "attack_second",
+  "evaluation_agent_seed": 1821390010,
+  "bootstrap_seed": 1821390011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1821399991,
+  "devices": {
+    "pc": {
+      "workers": 1,
+      "cpu_seconds": 144000,
+      "rss_bytes": 8589934592
+    }
+  },
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 1073741824,
+    "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
+    "stop_utc": "2026-09-21T14:00:00+00:00",
+    "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
+  },
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 28760.0,
+      "note": "Final confirmed v5b ledger plus a conservative 60-second transition margin; shared 40 CPU-hour cap is not reset."
+    }
+  },
+  "protocol": {
+    "hypothesis": "After loop elimination is confirmed, selecting BOMB at most once per round when the learned DQN ranks it second, an opponent is in the current blast footprint, and a time-safe escape exists should improve kills by at least 0.025/game without regressing score or reintroducing loops.",
+    "changed_factor": "The candidate changes one action at most once per round: a legal, hazard-free, opponent-facing safe bomb replaces the learned top action only when BOMB is already the learned policy second choice.",
+    "controls": "Both arms use the identical frozen checkpoint, 16-step loop guard, persistent contested-destination filter, features, action mask, scenarios, opponents, paired seeds, slots, and evaluator. No training, reward, architecture, navigation, or other bomb-rule change.",
+    "baselines": [
+      "confirmed 16-step persistent guard"
+    ],
+    "expected_additional_cpu_seconds": 5400,
+    "decision": "Keep attack_second only if both pilot blocks and confirmation gain at least 0.025 kills/game, preserve score and zero measured loops, and pass every registered safety, correctness, collection, exposure, and latency gate."
+  },
+  "evaluation": {
+    "pilot_r1": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821400001,
+          1821400060
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821401001,
+          1821401020
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821402001,
+          1821402010
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821403001,
+          1821403010
+        ]
+      }
+    },
+    "pilot_r2": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821410001,
+          1821410060
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821411001,
+          1821411020
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821412001,
+          1821412010
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821413001,
+          1821413010
+        ]
+      }
+    },
+    "confirmation": {
+      "classic": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821500001,
+          1821500120
+        ]
+      },
+      "mixed": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "coin_collector_agent",
+          "peaceful_agent"
+        ],
+        "seeds": [
+          1821501001,
+          1821501040
+        ]
+      },
+      "coins": {
+        "scenario": "coin-heaven",
+        "opponents": [],
+        "seeds": [
+          1821502001,
+          1821502020
+        ]
+      },
+      "crates": {
+        "scenario": "loot-crate",
+        "opponents": [],
+        "seeds": [
+          1821503001,
+          1821503020
+        ]
+      },
+      "latency": {
+        "scenario": "classic",
+        "opponents": [
+          "rule_based_agent",
+          "rule_based_agent",
+          "rule_based_agent"
+        ],
+        "seeds": [
+          1821504001,
+          1821504010
+        ]
+      }
+    }
+  },
+  "screen": {
+    "multiplayer_suites": [
+      "classic",
+      "mixed"
+    ],
+    "loop_suites": [
+      "classic",
+      "mixed"
+    ],
+    "loop_ratio": 0.75,
+    "minimum_guarded_games": 20,
+    "score_gain": 0.0,
+    "kills_gain": 0.025,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.1,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": [
+        "latency"
+      ]
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100,
+    "loop_absolute_rate": 0.0,
+    "minimum_attack_overrides": 20
+  },
+  "selection": "Both fresh pilot blocks must pass before the fixed fresh confirmation. Never promote automatically.",
+  "fallback_if_failed": "Retain the confirmed 16-step persistent guard and all safe-attack rows.",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-20 autonomous anti-loop authorization through Monday 15:00-16:00 Berlin.",
+    "scope": "Shared 40 CPU-hour cap, at most two one-thread workers; looping primary, killing only after loop success."
+  }
+}

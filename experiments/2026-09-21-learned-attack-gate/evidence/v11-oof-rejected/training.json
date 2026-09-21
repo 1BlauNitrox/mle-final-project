@@ -1,0 +1,98 @@
+{
+  "classifier_accepted": false,
+  "cross_validation": {
+    "rows": 302,
+    "positives": 32,
+    "folds": [
+      {
+        "fold": 0,
+        "rows": 66,
+        "positives": 8
+      },
+      {
+        "fold": 1,
+        "rows": 54,
+        "positives": 5
+      },
+      {
+        "fold": 2,
+        "rows": 48,
+        "positives": 4
+      },
+      {
+        "fold": 3,
+        "rows": 74,
+        "positives": 8
+      },
+      {
+        "fold": 4,
+        "rows": 60,
+        "positives": 7
+      }
+    ],
+    "thresholds": [
+      {
+        "threshold": 0.5,
+        "predicted": 38,
+        "true_positive": 4,
+        "false_positive": 34,
+        "precision": 0.10526315789473684,
+        "recall": 0.125,
+        "f0_5": 0.10869565217391304,
+        "eligible": false
+      },
+      {
+        "threshold": 0.6,
+        "predicted": 18,
+        "true_positive": 2,
+        "false_positive": 16,
+        "precision": 0.1111111111111111,
+        "recall": 0.0625,
+        "f0_5": 0.09615384615384616,
+        "eligible": false
+      },
+      {
+        "threshold": 0.7,
+        "predicted": 13,
+        "true_positive": 0,
+        "false_positive": 13,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f0_5": 0.0,
+        "eligible": false
+      },
+      {
+        "threshold": 0.8,
+        "predicted": 10,
+        "true_positive": 0,
+        "false_positive": 10,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f0_5": 0.0,
+        "eligible": false
+      },
+      {
+        "threshold": 0.9,
+        "predicted": 7,
+        "true_positive": 0,
+        "false_positive": 7,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f0_5": 0.0,
+        "eligible": false
+      },
+      {
+        "threshold": 0.95,
+        "predicted": 6,
+        "true_positive": 0,
+        "false_positive": 6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f0_5": 0.0,
+        "eligible": false
+      }
+    ],
+    "selected_threshold": null
+  },
+  "candidates": {}
+}

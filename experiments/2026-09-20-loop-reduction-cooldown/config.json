@@ -1,0 +1,87 @@
+{
+  "issue": 225,
+  "campaign": "autonomous-antiloop",
+  "iteration": "02-collision-cooldown",
+  "runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "parent_fallback_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "analyzer": "scripts.analyze_autonomous_antiloop",
+  "arms": ["control", "narrow_guard", "cooldown_guard"],
+  "arm_modes": {"control": "off", "narrow_guard": "on", "cooldown_guard": "cooldown"},
+  "candidate_arm": "cooldown_guard",
+  "invalid_improvement_vs": {"arm": "narrow_guard", "minimum_reduction_per_game": 0.20},
+  "evaluation_agent_seed": 1820290010,
+  "bootstrap_seed": 1820290011,
+  "bootstrap_resamples": 10000,
+  "smoke_seed": 1820299991,
+  "devices": {"pc": {"workers": 2, "cpu_seconds": 144000, "rss_bytes": 8589934592}},
+  "limits": {
+    "wall_seconds": 86400,
+    "minimum_available_bytes": 1073741824,
+    "experiment_stop_utc": "2026-09-21T13:00:00+00:00",
+    "stop_utc": "2026-09-21T14:00:00+00:00",
+    "pipeline_stop_utc": "2026-09-21T14:00:00+00:00"
+  },
+  "prior_usage": {
+    "pc": {
+      "cpu_seconds": 10478.5,
+      "note": "Final v1 campaign ledger plus 60-second transition and 60-second pre-game memory-stop margins; shared 40 CPU-hour cap is not reset."
+    }
+  },
+  "protocol": {
+    "hypothesis": "The v1 invalid-action increase is caused by simultaneous opponent movement after the policy's legal-state snapshot. A short post-override contested-target filter will preserve the loop escape while removing at least 0.20 invalid actions per game relative to v1.",
+    "changed_factor": "For four decisions after a v1 loop override, redirect only a chosen directional action whose destination is occupied by or one step from an opponent; select the highest-Q remaining framework-legal action.",
+    "controls": "All three arms use the identical frozen checkpoint, features, action mask, scenarios, opponents, seeds, slots, and evaluator. No training, reward, feature, architecture, or bomb-rule change.",
+    "baselines": ["control", "narrow_guard"],
+    "expected_additional_cpu_seconds": 14400,
+    "decision": "Confirm only cooldown_guard if it passes every original v1 gate and reduces pooled invalid actions by at least 0.20/game versus narrow_guard."
+  },
+  "evaluation": {
+    "pilot_r1": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820300001, 1820300060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820301001, 1820301020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820302001, 1820302010]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820303001, 1820303010]}
+    },
+    "pilot_r2": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820310001, 1820310060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820311001, 1820311020]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820312001, 1820312010]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820313001, 1820313010]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820400001, 1820400120]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1820401001, 1820401040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1820402001, 1820402020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1820403001, 1820403020]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1820404001, 1820404010]}
+    }
+  },
+  "screen": {
+    "multiplayer_suites": ["classic", "mixed"],
+    "loop_suites": ["classic", "mixed"],
+    "loop_ratio": 0.75,
+    "minimum_guarded_games": 20,
+    "score_gain": 0.0,
+    "kills_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.10,
+    "invalid_actions": {
+      "pooled_increase_per_game": 0.25,
+      "block_increase_per_game": 0.5,
+      "solo_maximum_total": 0,
+      "exclude_suites": ["latency"]
+    },
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Both fresh pilot blocks must pass. If they do, all three arms run the fixed fresh confirmation and cooldown_guard must pass again. Never promote automatically.",
+  "resource_amendment": "The first v2 root stopped before any scientific game when system free memory briefly crossed the 2 GiB reserve during worker launch. The replacement root retains a 1 GiB system reserve; the 8 GiB owned-process cap, two-worker cap, scientific inputs, and gates are unchanged.",
+  "fallback_if_failed": "Retain all rows and continue only with a prospectively registered anti-loop iteration inside the same budget and deadline.",
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-20 autonomous anti-loop authorization through Monday 15:00-16:00 Berlin.",
+    "scope": "Shared 40 CPU-hour cap, at most two one-thread workers; looping primary, killing only after loop success."
+  }
+}

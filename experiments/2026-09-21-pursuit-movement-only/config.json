@@ -1,0 +1,57 @@
+{
+  "issue": 225,
+  "revision": 2,
+  "runtime_commit": "0e8178d52250633fc76d0f5eafacd13d3799e2bc",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "artifacts": {
+    "t70": {"sha256": "e66973b7d1c31a12b8413e48036c6541445c91d548cd980a74aa4bd45e0f070e", "bytes": 14053, "threshold": 0.7},
+    "t85": {"sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53", "bytes": 14053, "threshold": 0.85}
+  },
+  "hypothesis": "The V12 learned pursuit movement accounts for its +0.058 kills/game signal, while its learned BOMB overrides account for the large self-kill regression; preserving every frozen-DQN bomb decision should retain some kill gain without losing survival or anti-loop behavior.",
+  "changed_factor": "The two fixed V12 pursuit heads may override only learned directional actions at confidence 0.70 or 0.85. Every learned BOMB recommendation falls back to the frozen DQN action. No parameters are retrained or selected from V12 evaluation outcomes.",
+  "controls": "Same frozen checkpoint, trained pursuit artifacts, empty-board context gate, broad persistent loop guard, action mask, scenarios, opponents, slots, and paired fresh seeds. Only learned BOMB override permission changes from V12.",
+  "evaluation_agent_seed": 1834090010,
+  "smoke_seed": 1834099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1834100001, 1834100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1834101001, 1834101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1834102001, 1834102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1834103001, 1834103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1834104001, 1834104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1834200001, 1834200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1834201001, 1834201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1834202001, 1834202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1834203001, 1834203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1834204001, 1834204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1834205001, 1834205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "minimum_pursuit_overrides": 10,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {"pooled_increase_per_game": 0.25, "block_increase_per_game": 0.5, "solo_maximum_total": 0},
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Among fresh-pilot-eligible fixed heads, choose the largest kill gain, then score gain, then the higher confidence threshold. Confirm once on fresh worlds; never promote automatically.",
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 51193.96875, "note": "Cumulative issue #225 debit through the resource-stopped V13 attempt; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {"wall_seconds": 37800, "minimum_available_bytes": 67108864, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Paired evaluation of fixed trained movement-only pursuit heads, confirmation, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "issue": 225,
+  "revision": 1,
+  "runtime_commit": "64459fa01aa6e66aa1852e284ee2578ab04e6c8e",
+  "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "artifact": {
+    "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+    "bytes": 14053,
+    "threshold": 0.85
+  },
+  "arms": {
+    "cap2": {"guard_mode": "broad_learned_pursuit_corridor1_cap2", "maximum_bomb_overrides_per_round": 2}
+  },
+  "hypothesis": "The V16 cap2 policy will reproduce at least 0.025 additional kills per multiplayer game on fresh paired worlds while preserving score, survival, self-kills, action correctness, earlier-task collection, loop windows per game, and the incidence of games containing loops.",
+  "changed_factor": "The candidate is fixed to V16 cap2: the V12 t85 head proposes only BOMB, a threatened opponent must have at most one immediate move outside the blast, movement overrides are disabled, at most two learned bombs are allowed per round, and the seven-step safe-continuation follow-up is retained. The loop gate compares paired loop outcomes rather than a pooled rate whose denominator changes with survival.",
+  "controls": "Same frozen checkpoint, learned t85 artifact, one-escape geometry, empty-board context, broad persistent loop guard, action mask, scenarios, opponents, slots, evaluator, all non-loop gates, and fresh paired seeds. No parameters, rewards, features, or DQN weights are changed. The former pooled loop rate remains diagnostic.",
+  "evaluation_agent_seed": 1838090010,
+  "smoke_seed": 1838099991,
+  "evaluation": {
+    "pilot": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1838100001, 1838100060]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1838101001, 1838101030]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1838102001, 1838102030]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1838103001, 1838103020]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1838104001, 1838104020]}
+    },
+    "confirmation": {
+      "classic": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1838200001, 1838200160]},
+      "mixed": {"scenario": "classic", "opponents": ["rule_based_agent", "coin_collector_agent", "peaceful_agent"], "seeds": [1838201001, 1838201080]},
+      "peaceful": {"scenario": "classic", "opponents": ["peaceful_agent", "peaceful_agent", "peaceful_agent"], "seeds": [1838202001, 1838202040]},
+      "coins": {"scenario": "coin-heaven", "opponents": [], "seeds": [1838203001, 1838203040]},
+      "crates": {"scenario": "loot-crate", "opponents": [], "seeds": [1838204001, 1838204040]},
+      "latency": {"scenario": "classic", "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"], "seeds": [1838205001, 1838205010]}
+    }
+  },
+  "screen": {
+    "kills_gain": 0.025,
+    "score_gain": 0.0,
+    "survival_loss": 0.05,
+    "self_kills_increase": 0.05,
+    "collection_loss": 0.05,
+    "loop_ratio": 1.1,
+    "loop_absolute_rate": 0.02,
+    "loop_count_increase_per_game": 0.0,
+    "loop_game_incidence_increase": 0.0,
+    "minimum_pursuit_overrides": 10,
+    "multiplayer_suites": ["classic", "mixed", "peaceful"],
+    "loop_suites": ["classic", "mixed", "peaceful"],
+    "invalid_actions": {"pooled_increase_per_game": 0.25, "block_increase_per_game": 0.5, "solo_maximum_total": 0},
+    "latency_p95_ms": 50,
+    "latency_max_ms": 100
+  },
+  "selection": "Advance fixed cap2 only if every pilot gate passes. Confirm once on fresh worlds; never promote automatically.",
+  "expected_cost": {"pilot_cpu_seconds": 1800, "confirmation_cpu_seconds": 3500, "basis": "Observed V16 throughput on this PC."},
+  "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
+  "prior_usage": {"pc": {"cpu_seconds": 59782.796875, "note": "Cumulative issue #225 debit through completed V16, including its conservative recovery debit; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {"wall_seconds": 25200, "minimum_available_bytes": 0, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
+  "authorization": {
+    "owner": "Julius",
+    "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
+    "scope": "Fresh paired pilot and confirmation of fixed cap2 using non-confounded loop preservation gates, watcher recovery, evidence export, and packaging only after every registered gate passes."
+  }
+}

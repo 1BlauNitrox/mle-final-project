@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-paired-loop-confirmation-v17\\issue225-paired-loop-confirmation-1789970654524196200.zip",
+  "sha256": "7d23717038ea90471509cfd6910be6513a4e25e1316081674004b33bc65241af",
+  "bytes": 1103871,
+  "final_pipeline_resources": {
+    "cpu_seconds": 61174.234375,
+    "first_start": 1789969095.271251,
+    "wall_seconds": 1559.682648897171,
+    "stage": "complete",
+    "peak_rss_bytes": 212971520.0
+  }
+}

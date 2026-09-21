@@ -1,0 +1,12 @@
+{
+  "path": "C:\\Users\\Julius\\Desktop\\Uni\\SS 26\\machine-learning-essentials\\.BOMBERMAN\\mle-final-project\\training_outputs\\issue225-corridor-pursuit-cap-v16\\issue225-corridor-pursuit-cap-1789968646985283100.zip",
+  "sha256": "32f0f5d8f9867adb08f344f0e2a60027c8ca9230c218e64009f18dab62edc782",
+  "bytes": 1587721,
+  "final_pipeline_resources": {
+    "cpu_seconds": 59782.796875,
+    "first_start": 1789966026.2345526,
+    "wall_seconds": 2621.2590792179108,
+    "stage": "complete",
+    "peak_rss_bytes": 215740416.0
+  }
+}

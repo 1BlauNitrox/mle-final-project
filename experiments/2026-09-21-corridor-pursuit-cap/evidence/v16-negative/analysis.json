@@ -1,0 +1,575 @@
+{
+  "complete": true,
+  "eligible": [],
+  "selected": null,
+  "submission_promotion": false,
+  "training": {
+    "classifier_accepted": true,
+    "source_run": "issue225-endgame-pursuit-v12b",
+    "candidates": {
+      "cap1": {
+        "path": "candidates/corridor-cap-t85.pt",
+        "file_name": "corridor-cap-t85.pt",
+        "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+        "bytes": 14053,
+        "threshold": 0.85,
+        "guard_mode": "broad_learned_pursuit_corridor1_cap1",
+        "maximum_bomb_overrides_per_round": 1
+      },
+      "cap2": {
+        "path": "candidates/corridor-cap-t85.pt",
+        "file_name": "corridor-cap-t85.pt",
+        "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+        "bytes": 14053,
+        "threshold": 0.85,
+        "guard_mode": "broad_learned_pursuit_corridor1_cap2",
+        "maximum_bomb_overrides_per_round": 2
+      }
+    }
+  },
+  "diagnostics": {
+    "baseline": {
+      "classic": {
+        "games": 60,
+        "score": 2.816666666666667,
+        "kills": 0.11666666666666667,
+        "survival": 0.45,
+        "self_kills": 0.4666666666666667,
+        "invalid": 1.7333333333333334,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 2904,
+          "looping": 0,
+          "rate": 0.0
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "mixed": {
+        "games": 30,
+        "score": 4.066666666666666,
+        "kills": 0.3333333333333333,
+        "survival": 0.4666666666666667,
+        "self_kills": 0.5,
+        "invalid": 0.9666666666666667,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1591,
+          "looping": 119,
+          "rate": 0.07479572595851666
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "peaceful": {
+        "games": 30,
+        "score": 11.766666666666667,
+        "kills": 1.0333333333333334,
+        "survival": 0.8666666666666667,
+        "self_kills": 0.13333333333333333,
+        "invalid": 0.0,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 648,
+          "looping": 301,
+          "rate": 0.4645061728395062
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 28.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.579,
+        "loops": {
+          "eligible": 5632,
+          "looping": 5550,
+          "rate": 0.9854403409090909
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 22.95,
+        "kills": 0.0,
+        "survival": 0.8,
+        "self_kills": 0.2,
+        "invalid": 0.0,
+        "collection_fraction": 0.45899999999999996,
+        "loops": {
+          "eligible": 1120,
+          "looping": 1108,
+          "rate": 0.9892857142857143
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      }
+    },
+    "cap1": {
+      "classic": {
+        "games": 60,
+        "score": 2.816666666666667,
+        "kills": 0.11666666666666667,
+        "survival": 0.4166666666666667,
+        "self_kills": 0.48333333333333334,
+        "invalid": 1.45,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 2157,
+          "looping": 0,
+          "rate": 0.0
+        },
+        "pursuit": {
+          "eligible": 3723,
+          "overrides": 25,
+          "rejected_confidence": 364,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 25,
+          "rejected_movement_override": 2029,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 920,
+          "rejected_target_mobility": 385,
+          "escape_checks": 144,
+          "escape_redirects": 1,
+          "escape_rejected_no_candidate": 2
+        }
+      },
+      "mixed": {
+        "games": 30,
+        "score": 4.233333333333333,
+        "kills": 0.36666666666666664,
+        "survival": 0.43333333333333335,
+        "self_kills": 0.5333333333333333,
+        "invalid": 0.9,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1440,
+          "looping": 119,
+          "rate": 0.08263888888888889
+        },
+        "pursuit": {
+          "eligible": 1898,
+          "overrides": 9,
+          "rejected_confidence": 536,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 9,
+          "rejected_movement_override": 678,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 477,
+          "rejected_target_mobility": 198,
+          "escape_checks": 48,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 2
+        }
+      },
+      "peaceful": {
+        "games": 30,
+        "score": 11.766666666666667,
+        "kills": 1.0333333333333334,
+        "survival": 0.8666666666666667,
+        "self_kills": 0.13333333333333333,
+        "invalid": 0.0,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 648,
+          "looping": 301,
+          "rate": 0.4645061728395062
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 28.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.579,
+        "loops": {
+          "eligible": 5632,
+          "looping": 5550,
+          "rate": 0.9854403409090909
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 22.95,
+        "kills": 0.0,
+        "survival": 0.8,
+        "self_kills": 0.2,
+        "invalid": 0.0,
+        "collection_fraction": 0.45899999999999996,
+        "loops": {
+          "eligible": 1120,
+          "looping": 1108,
+          "rate": 0.9892857142857143
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      }
+    },
+    "cap2": {
+      "classic": {
+        "games": 60,
+        "score": 2.9833333333333334,
+        "kills": 0.15,
+        "survival": 0.4166666666666667,
+        "self_kills": 0.5,
+        "invalid": 1.55,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 2381,
+          "looping": 0,
+          "rate": 0.0
+        },
+        "pursuit": {
+          "eligible": 3974,
+          "overrides": 46,
+          "rejected_confidence": 370,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 46,
+          "rejected_movement_override": 2027,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 1120,
+          "rejected_target_mobility": 411,
+          "escape_checks": 256,
+          "escape_redirects": 3,
+          "escape_rejected_no_candidate": 3
+        }
+      },
+      "mixed": {
+        "games": 30,
+        "score": 4.233333333333333,
+        "kills": 0.36666666666666664,
+        "survival": 0.36666666666666664,
+        "self_kills": 0.6,
+        "invalid": 0.9,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 1073,
+          "looping": 119,
+          "rate": 0.11090400745573159
+        },
+        "pursuit": {
+          "eligible": 1419,
+          "overrides": 15,
+          "rejected_confidence": 518,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 15,
+          "rejected_movement_override": 620,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 176,
+          "rejected_target_mobility": 90,
+          "escape_checks": 82,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 5
+        }
+      },
+      "peaceful": {
+        "games": 30,
+        "score": 11.766666666666667,
+        "kills": 1.0333333333333334,
+        "survival": 0.8666666666666667,
+        "self_kills": 0.13333333333333333,
+        "invalid": 0.0,
+        "collection_fraction": null,
+        "loops": {
+          "eligible": 648,
+          "looping": 301,
+          "rate": 0.4645061728395062
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "coins": {
+        "games": 20,
+        "score": 28.95,
+        "kills": 0.0,
+        "survival": 1.0,
+        "self_kills": 0.0,
+        "invalid": 0.0,
+        "collection_fraction": 0.579,
+        "loops": {
+          "eligible": 5632,
+          "looping": 5550,
+          "rate": 0.9854403409090909
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      },
+      "crates": {
+        "games": 20,
+        "score": 22.95,
+        "kills": 0.0,
+        "survival": 0.8,
+        "self_kills": 0.2,
+        "invalid": 0.0,
+        "collection_fraction": 0.45899999999999996,
+        "loops": {
+          "eligible": 1120,
+          "looping": 1108,
+          "rate": 0.9892857142857143
+        },
+        "pursuit": {
+          "eligible": 0,
+          "overrides": 0,
+          "rejected_confidence": 0,
+          "rejected_bomb_safety": 0,
+          "rejected_bomb_override": 0,
+          "bomb_overrides": 0,
+          "rejected_movement_override": 0,
+          "rejected_bomb_rank": 0,
+          "rejected_bomb_limit": 0,
+          "rejected_target_mobility": 0,
+          "escape_checks": 0,
+          "escape_redirects": 0,
+          "escape_rejected_no_candidate": 0
+        }
+      }
+    }
+  },
+  "pilot": {
+    "cap1": {
+      "passed": false,
+      "gates": {
+        "kills": false,
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "invalid_pooled": true,
+        "classic.invalid": true,
+        "mixed.invalid": true,
+        "peaceful.invalid": true,
+        "loops": false,
+        "pursuit_exposure": true,
+        "coins.collection": true,
+        "coins.self_kills": true,
+        "coins.invalid": true,
+        "crates.collection": true,
+        "crates.self_kills": true,
+        "crates.invalid": true
+      },
+      "effects": {
+        "score": 0.041666666666666664,
+        "kills": 0.008333333333333333,
+        "survived": -0.025,
+        "self_kills": 0.016666666666666666,
+        "invalid": -0.15833333333333333,
+        "classic.invalid": -0.2833333333333333,
+        "mixed.invalid": -0.06666666666666667,
+        "peaceful.invalid": 0.0,
+        "loops": {
+          "candidate": {
+            "eligible": 4245,
+            "looping": 420,
+            "rate": 0.0989399293286219
+          },
+          "baseline": {
+            "eligible": 5143,
+            "looping": 420,
+            "rate": 0.0816643982111608
+          }
+        },
+        "pursuit_overrides": 34,
+        "coins.collection": 0.0,
+        "coins.self_kills": 0.0,
+        "coins.invalid_total": 0.0,
+        "crates.collection": 0.0,
+        "crates.self_kills": 0.0,
+        "crates.invalid_total": 0.0
+      }
+    },
+    "cap2": {
+      "passed": false,
+      "gates": {
+        "kills": true,
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "invalid_pooled": true,
+        "classic.invalid": true,
+        "mixed.invalid": true,
+        "peaceful.invalid": true,
+        "loops": false,
+        "pursuit_exposure": true,
+        "coins.collection": true,
+        "coins.self_kills": true,
+        "coins.invalid": true,
+        "crates.collection": true,
+        "crates.self_kills": true,
+        "crates.invalid": true
+      },
+      "effects": {
+        "score": 0.125,
+        "kills": 0.025,
+        "survived": -0.041666666666666664,
+        "self_kills": 0.041666666666666664,
+        "invalid": -0.10833333333333334,
+        "classic.invalid": -0.18333333333333332,
+        "mixed.invalid": -0.06666666666666667,
+        "peaceful.invalid": 0.0,
+        "loops": {
+          "candidate": {
+            "eligible": 4102,
+            "looping": 420,
+            "rate": 0.10238907849829351
+          },
+          "baseline": {
+            "eligible": 5143,
+            "looping": 420,
+            "rate": 0.0816643982111608
+          }
+        },
+        "pursuit_overrides": 61,
+        "coins.collection": 0.0,
+        "coins.self_kills": 0.0,
+        "coins.invalid_total": 0.0,
+        "crates.collection": 0.0,
+        "crates.self_kills": 0.0,
+        "crates.invalid_total": 0.0
+      }
+    }
+  }
+}
