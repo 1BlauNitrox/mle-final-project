@@ -1,6 +1,6 @@
 schema_version: 1
 issue: 230
-status: registered
+status: completed_failed
 agent: DerKleineKonkurrenzvernichter
 date: 2026-09-21
 branch: freeze/230-final-tabular-agent
@@ -82,3 +82,10 @@ decision_supported: >-
   Freeze the unchanged installed incumbent only if its artifact integrity,
   evaluation-only loading, compatibility, and confirmation gates pass. Do not
   promote any failed experimental treatment.
+
+execution:
+  executed_commit: 34b0b600c44579860d2373f5a6428afcef81c8b4
+  jobs_completed: 240
+  jobs_failed: 0
+  result: do_not_freeze_confirmation_failed
+  selected_checkpoint: null

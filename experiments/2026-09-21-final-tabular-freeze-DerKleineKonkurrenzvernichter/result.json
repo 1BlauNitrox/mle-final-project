@@ -1,0 +1,590 @@
+{
+  "schema_version": 1,
+  "issue": 230,
+  "plan_id": "issue230-final-tabular-freeze-confirmation",
+  "candidate": "installed_task3_incumbent",
+  "model": {
+    "path": "agent_code/DerKleineKonkurrenzvernichter/model.npz",
+    "sha256": "9ef02537efd75b70cbfdd5f973d391ed4924bec91735e07a51b866f3beeee031",
+    "size_bytes": 1493
+  },
+  "primary_rows": 120,
+  "repeat_rows": 120,
+  "repeat_mismatch_count": 40,
+  "repeat_mismatches": [
+    {
+      "key": [
+        "competitive",
+        230001,
+        330001
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230002,
+        330002
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "opponents_eliminated",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230004,
+        330004
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230005,
+        330005
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230006,
+        330006
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230007,
+        330007
+      ],
+      "fields": [
+        "self_kills",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230008,
+        330008
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230009,
+        330009
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230010,
+        330010
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230012,
+        330012
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230013,
+        330013
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230014,
+        330014
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230015,
+        330015
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230016,
+        330016
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230017,
+        330017
+      ],
+      "fields": [
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230018,
+        330018
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230019,
+        330019
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "competitive",
+        230020,
+        330020
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230101,
+        330101
+      ],
+      "fields": [
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230102,
+        330102
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "opponents_eliminated",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230103,
+        330103
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230104,
+        330104
+      ],
+      "fields": [
+        "score",
+        "opponents_eliminated",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230105,
+        330105
+      ],
+      "fields": [
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230106,
+        330106
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230107,
+        330107
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230108,
+        330108
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230109,
+        330109
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230111,
+        330111
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "opponents_eliminated",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230112,
+        330112
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230113,
+        330113
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230114,
+        330114
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230115,
+        330115
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230116,
+        330116
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230118,
+        330118
+      ],
+      "fields": [
+        "self_kills",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230119,
+        330119
+      ],
+      "fields": [
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "mixed",
+        230120,
+        330120
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "peaceful",
+        230203,
+        330203
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "peaceful",
+        230206,
+        330206
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "peaceful",
+        230212,
+        330212
+      ],
+      "fields": [
+        "score",
+        "coins_collected",
+        "self_kills",
+        "opponents_eliminated",
+        "survived",
+        "termination_reason",
+        "executed_action_sequence_sha256"
+      ]
+    },
+    {
+      "key": [
+        "peaceful",
+        230219,
+        330219
+      ],
+      "fields": [
+        "executed_action_sequence_sha256"
+      ]
+    }
+  ],
+  "aggregate_self_kill_rate": 0.24166666666666667,
+  "maximum_suite_p95_ms": 1.840925216674804,
+  "maximum_decision_time_ms": 12.166261672973633,
+  "summaries": [
+    {
+      "suite": "competitive",
+      "rounds": 20,
+      "mean_score": 1.45,
+      "collection_fraction": 0.13333333333333333,
+      "self_kill_rate": 0.4,
+      "eliminations_per_round": 0.05,
+      "survival_rate": 0.1,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 1.270842552185058,
+      "decision_time_max_ms_max": 4.993915557861328
+    },
+    {
+      "suite": "mixed",
+      "rounds": 20,
+      "mean_score": 1.65,
+      "collection_fraction": 0.15555555555555553,
+      "self_kill_rate": 0.55,
+      "eliminations_per_round": 0.05,
+      "survival_rate": 0.15,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 1.840925216674804,
+      "decision_time_max_ms_max": 3.1299591064453125
+    },
+    {
+      "suite": "peaceful",
+      "rounds": 20,
+      "mean_score": 2.65,
+      "collection_fraction": 0.2111111111111111,
+      "self_kill_rate": 0.1,
+      "eliminations_per_round": 0.15,
+      "survival_rate": 0.9,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 1.2688040733337393,
+      "decision_time_max_ms_max": 9.022951126098633
+    },
+    {
+      "suite": "classic",
+      "rounds": 20,
+      "mean_score": 2.2,
+      "collection_fraction": 0.2444444444444444,
+      "self_kill_rate": 0.05,
+      "eliminations_per_round": 0.0,
+      "survival_rate": 0.95,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 0.24820566177368142,
+      "decision_time_max_ms_max": 1.2450218200683594
+    },
+    {
+      "suite": "coin-heaven",
+      "rounds": 20,
+      "mean_score": 50.0,
+      "collection_fraction": 1.0,
+      "self_kill_rate": 0.0,
+      "eliminations_per_round": 0.0,
+      "survival_rate": 1.0,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 0.5688667297363282,
+      "decision_time_max_ms_max": 1.271963119506836
+    },
+    {
+      "suite": "loot-crate",
+      "rounds": 20,
+      "mean_score": 11.8,
+      "collection_fraction": 0.236,
+      "self_kill_rate": 0.35,
+      "eliminations_per_round": 0.0,
+      "survival_rate": 0.65,
+      "first_place_rate": 0.0,
+      "tied_first_rate": 0.0,
+      "decision_time_p95_ms_max": 0.8544564247131343,
+      "decision_time_max_ms_max": 12.166261672973633
+    }
+  ],
+  "gates": {
+    "classic_collection_at_least_0_15": true,
+    "coin_heaven_collection_at_least_0_90": true,
+    "loot_crate_collection_at_least_0_20": true,
+    "peaceful_eliminations_at_least_0_10": true,
+    "aggregate_self_kill_at_most_0_20": false,
+    "p95_latency_at_most_50_ms": true,
+    "max_latency_at_most_100_ms": true,
+    "exact_repeats": false
+  },
+  "passed": false,
+  "decision": "do_not_freeze_confirmation_failed"
+}
