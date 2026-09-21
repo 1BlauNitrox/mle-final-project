@@ -1,0 +1,36 @@
+{
+  "manifest_schema_version": 1,
+  "status": "submission_candidate_pending_human_review",
+  "agent": "Bomb-omb",
+  "artifact": {
+    "path": "checkpoint.pt",
+    "sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "size_bytes": 3436279,
+    "completed_episodes": 8000,
+    "agent_seed": 9281501
+  },
+  "model_contract": {
+    "algorithm": "deep_q_network",
+    "checkpoint_schema_version": 1,
+    "model_schema_version": 1,
+    "feature_schema_version": 4,
+    "input_dim": 39,
+    "hidden_sizes": [64, 64],
+    "action_order": ["UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB"],
+    "evaluation_threads": 1,
+    "evaluation_multiprocessing": false
+  },
+  "runtime_provenance": {
+    "renamed_from": "DagobertDuckDQNTask3",
+    "source_directory": "C:/task4-warm-lineup/source/agent_code/DagobertDuckDQNTask3",
+    "source_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "checkpoint_source": "C:/task4-warm-lineup/reference.pt",
+    "selection_evidence": "experiments/2026-09-21-submission-selection-benchmark/benchmark-analysis.json",
+    "selection_status": "human-selected tournament candidate pending clean-runtime and package verification"
+  },
+  "limitations": [
+    "The final common-seed benchmark found stronger mixed-opponent score and kills than the protected fallback, but weaker Classic survival.",
+    "Visible right-left oscillations remain; no claim of complete loop removal is supported.",
+    "The agent card is a human-review draft and must be manually revised before final submission documentation is committed."
+  ]
+}
