@@ -174,58 +174,67 @@
   ],
   "registered_experiments": [
     {
-      "experiment": "2026-09-20-autonomous-antiloop-broad",
+      "experiment": "2026-09-20-loop-reduction-broad",
       "config_sha256": "8c7326368e44f4123f15460ce9226673cf2b0929b39f3cbc43debc98253f12b0",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-broad"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-campaign",
+      "experiment": "2026-09-20-loop-reduction-campaign",
       "config_sha256": "7646087ebf8baf78245c14d007169bc41b63536345d9c882cdad78d19ae13058",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-campaign"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-cooldown",
+      "experiment": "2026-09-20-loop-reduction-cooldown",
       "config_sha256": "4c0c11b66566ab68e6c93e3a6010bd42b2d29ae2a6ebf5a150fd9c2c6d808237",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-cooldown"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-direct",
+      "experiment": "2026-09-20-loop-reduction-direct",
       "config_sha256": "d1c6f5a0eaf4504d793daff318062a28c2a20df47d2d576c712bf331b2847743",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-direct"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-early",
+      "experiment": "2026-09-20-loop-reduction-early",
       "config_sha256": "8c27d6f17e050f3b4a2c8d4b0a42727449cf7f4e2716bc9449815eec57ddaa0d",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-early"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-mid",
+      "experiment": "2026-09-20-loop-reduction-mid",
       "config_sha256": "ed834e314f20bade48518b75353214f3ae6084578b257dccdcbcd16090bbe95e",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-mid"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-mid-serial",
+      "experiment": "2026-09-20-loop-reduction-mid-serial",
       "config_sha256": "5cc38b038b9c514bc31668cae8691c09108cf42844f3e8827dd2e1fe17165adc",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-mid-serial"
     },
     {
-      "experiment": "2026-09-20-autonomous-antiloop-persistent",
+      "experiment": "2026-09-20-loop-reduction-persistent",
       "config_sha256": "9dd6993e883ff6a8eed6e89369df58a8867f6da12504d0fdc57f5e1611246922",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-antiloop-persistent"
     },
     {
-      "experiment": "2026-09-20-autonomous-safe-attack",
+      "experiment": "2026-09-20-safe-attack",
       "config_sha256": "d300adb26b188643533626e3907ea85c08a994c2f2250267583b2a11a4c2b767",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-20-autonomous-safe-attack"
     },
     {
       "experiment": "2026-09-20-teacher-loop",
@@ -234,10 +243,11 @@
       "registered_issue": 225
     },
     {
-      "experiment": "2026-09-21-autonomous-trapped-attack",
+      "experiment": "2026-09-21-trapped-attack",
       "config_sha256": "773818704bddcdcd48057881ee145512e6f224d8b2d3e484fcbe39a58306d480",
       "purpose": null,
-      "registered_issue": 225
+      "registered_issue": 225,
+      "previous_directory": "2026-09-21-autonomous-trapped-attack"
     },
     {
       "experiment": "2026-09-21-bomb-head-finetune",
