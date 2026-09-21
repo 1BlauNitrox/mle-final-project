@@ -134,6 +134,24 @@ def test_escape_followup_redirects_only_an_unsafe_frozen_action():
     assert guard.snapshot()["escape_redirects"] == 1
 
 
+def test_corridor_gate_counts_immediate_target_escapes():
+    guard = bomb_guard(allow=True)
+    guard.allow_movement_override = False
+    guard.maximum_immediate_target_escapes = 1
+    values = np.zeros(len(ACTIONS))
+    q_values = lambda: values  # noqa: E731
+
+    open_state = state()
+    assert guard._target_escape_options(open_state) == [2]
+    assert guard.choose(open_state, "WAIT", q_values, LEGAL, FEATURES) == "WAIT"
+    assert guard.snapshot()["rejected_target_mobility"] == 1
+
+    corridor_state = state()
+    corridor_state["field"][3, 6] = -1
+    assert guard._target_escape_options(corridor_state) == [1]
+    assert guard.choose(corridor_state, "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
+
+
 def test_grouped_pursuit_training_accepts_separable_teacher_actions():
     values, labels, groups = [], [], []
     for group in range(5):

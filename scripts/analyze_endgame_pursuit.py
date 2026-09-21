@@ -60,6 +60,7 @@ def diagnostics(root, cfg, stage, arm):
                     "rejected_movement_override",
                     "rejected_bomb_rank",
                     "rejected_bomb_limit",
+                    "rejected_target_mobility",
                     "escape_checks",
                     "escape_redirects",
                     "escape_rejected_no_candidate",

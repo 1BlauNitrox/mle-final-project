@@ -67,6 +67,7 @@ class EndgamePursuitGuard:
     allow_movement_override: bool = True
     maximum_better_bomb_actions: int | None = None
     maximum_bomb_overrides_per_round: int | None = None
+    maximum_immediate_target_escapes: int | None = None
     escape_followup_steps: int = 0
     eligible: int = 0
     overrides: int = 0
@@ -77,6 +78,7 @@ class EndgamePursuitGuard:
     rejected_movement_override: int = 0
     rejected_bomb_rank: int = 0
     rejected_bomb_limit: int = 0
+    rejected_target_mobility: int = 0
     escape_checks: int = 0
     escape_redirects: int = 0
     escape_rejected_no_candidate: int = 0
@@ -94,6 +96,7 @@ class EndgamePursuitGuard:
         allow_movement_override: bool = True,
         maximum_better_bomb_actions: int | None = None,
         maximum_bomb_overrides_per_round: int | None = None,
+        maximum_immediate_target_escapes: int | None = None,
         escape_followup_steps: int = 0,
     ) -> EndgamePursuitGuard:
         """Load a strictly shaped, training-produced pursuit artifact."""
@@ -136,6 +139,11 @@ class EndgamePursuitGuard:
             and maximum_bomb_overrides_per_round < 1
         ):
             raise ValueError("maximum_bomb_overrides_per_round must be positive")
+        if (
+            maximum_immediate_target_escapes is not None
+            and maximum_immediate_target_escapes < 0
+        ):
+            raise ValueError("maximum_immediate_target_escapes must be non-negative")
         if escape_followup_steps < 0:
             raise ValueError("escape_followup_steps must be non-negative")
         return cls(
@@ -145,6 +153,7 @@ class EndgamePursuitGuard:
             allow_movement_override=allow_movement_override,
             maximum_better_bomb_actions=maximum_better_bomb_actions,
             maximum_bomb_overrides_per_round=maximum_bomb_overrides_per_round,
+            maximum_immediate_target_escapes=maximum_immediate_target_escapes,
             escape_followup_steps=escape_followup_steps,
         )
 
@@ -172,6 +181,36 @@ class EndgamePursuitGuard:
             bombs,
             position,
         )
+
+    @staticmethod
+    def _target_escape_options(game_state: dict) -> list[int]:
+        """Count immediate open moves out of the proposed blast for each target."""
+        field = np.asarray(game_state["field"])
+        position = tuple(int(value) for value in game_state["self"][3])
+        footprint = set(blast_footprint(position, field))
+        targets = [
+            tuple(int(value) for value in other[3])
+            for other in game_state["others"]
+            if tuple(int(value) for value in other[3]) in footprint
+        ]
+        occupied = _blocked_positions(game_state) | {position}
+        counts = []
+        for target in targets:
+            count = 0
+            for dx, dy in ESCAPE_ACTIONS.values():
+                if (dx, dy) == (0, 0):
+                    continue
+                neighbor = target[0] + dx, target[1] + dy
+                if (
+                    0 <= neighbor[0] < field.shape[0]
+                    and 0 <= neighbor[1] < field.shape[1]
+                    and field[neighbor] == 0
+                    and neighbor not in occupied
+                    and neighbor not in footprint
+                ):
+                    count += 1
+            counts.append(count)
+        return counts
 
     def choose(
         self,
@@ -209,6 +248,16 @@ class EndgamePursuitGuard:
             self.rejected_bomb_safety += 1
             return chosen
         if proposed == "BOMB" and chosen != "BOMB":
+            target_escapes = self._target_escape_options(game_state)
+            if (
+                self.maximum_immediate_target_escapes is not None
+                and (
+                    not target_escapes
+                    or min(target_escapes) > self.maximum_immediate_target_escapes
+                )
+            ):
+                self.rejected_target_mobility += 1
+                return chosen
             better_actions = int(
                 np.count_nonzero(legal_mask & (values > values[BOMB_INDEX] + 1e-12))
             )
@@ -297,6 +346,7 @@ class EndgamePursuitGuard:
             "rejected_movement_override": self.rejected_movement_override,
             "rejected_bomb_rank": self.rejected_bomb_rank,
             "rejected_bomb_limit": self.rejected_bomb_limit,
+            "rejected_target_mobility": self.rejected_target_mobility,
             "escape_checks": self.escape_checks,
             "escape_redirects": self.escape_redirects,
             "escape_rejected_no_candidate": self.escape_rejected_no_candidate,

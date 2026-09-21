@@ -82,6 +82,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_move",
         "broad_learned_pursuit_bomb1",
         "broad_learned_pursuit_bomb3",
+        "broad_learned_pursuit_corridor1",
+        "broad_learned_pursuit_corridor2",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -99,6 +101,8 @@ def act(self, game_state: dict | None) -> str:
                 "broad_learned_pursuit_move",
                 "broad_learned_pursuit_bomb1",
                 "broad_learned_pursuit_bomb3",
+                "broad_learned_pursuit_corridor1",
+                "broad_learned_pursuit_corridor2",
             },
         )
     guard.observe(game_state)
@@ -141,6 +145,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_move",
         "broad_learned_pursuit_bomb1",
         "broad_learned_pursuit_bomb3",
+        "broad_learned_pursuit_corridor1",
+        "broad_learned_pursuit_corridor2",
     }
     if guard_mode in pursuit_modes:
         pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
@@ -162,11 +168,22 @@ def act(self, game_state: dict | None) -> str:
                 maximum_bomb_overrides_per_round={
                     "broad_learned_pursuit_bomb1": 1,
                     "broad_learned_pursuit_bomb3": 3,
+                    "broad_learned_pursuit_corridor1": 3,
+                    "broad_learned_pursuit_corridor2": 3,
+                }.get(guard_mode),
+                maximum_immediate_target_escapes={
+                    "broad_learned_pursuit_corridor1": 1,
+                    "broad_learned_pursuit_corridor2": 2,
                 }.get(guard_mode),
                 escape_followup_steps=(
                     7
                     if guard_mode
-                    in {"broad_learned_pursuit_bomb1", "broad_learned_pursuit_bomb3"}
+                    in {
+                        "broad_learned_pursuit_bomb1",
+                        "broad_learned_pursuit_bomb3",
+                        "broad_learned_pursuit_corridor1",
+                        "broad_learned_pursuit_corridor2",
+                    }
                     else 0
                 ),
             )
@@ -183,6 +200,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_move",
         "broad_learned_pursuit_bomb1",
         "broad_learned_pursuit_bomb3",
+        "broad_learned_pursuit_corridor1",
+        "broad_learned_pursuit_corridor2",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -204,12 +223,16 @@ def act(self, game_state: dict | None) -> str:
             "broad_learned_pursuit_move": 400,
             "broad_learned_pursuit_bomb1": 400,
             "broad_learned_pursuit_bomb3": 400,
+            "broad_learned_pursuit_corridor1": 400,
+            "broad_learned_pursuit_corridor2": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
     if guard_mode in {
         "broad_learned_pursuit_bomb1",
         "broad_learned_pursuit_bomb3",
+        "broad_learned_pursuit_corridor1",
+        "broad_learned_pursuit_corridor2",
     }:
         action = pursuit_guard.redirect_unsafe_escape(game_state, action, q_values, legal)
     return action
@@ -226,6 +249,8 @@ def _loop_guard_window(mode: str) -> int:
         "broad_learned_pursuit_move": 16,
         "broad_learned_pursuit_bomb1": 16,
         "broad_learned_pursuit_bomb3": 16,
+        "broad_learned_pursuit_corridor1": 16,
+        "broad_learned_pursuit_corridor2": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 
