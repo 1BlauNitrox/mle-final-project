@@ -66,7 +66,7 @@ and opponent hunting more attractive, reevaluate useful-bomb reward and unuseful
 and see what happens (time restrains and scientific work let us plan preregistered
 experiments, if we had more time we would have tested some random changes to widen
 our horizon and maybe find different changes we could make)
-- evaluate if the features give enough information of the agents surroundings 
+- evaluate if the features give enough information of the agents surroundings
 -> he sometimes places bombs where crates are near but the bomb can't reach them
 because there is a block in the way, does our agent know this and doesn't care
 or are the features not sufficient? With more time we would experiment with additional
