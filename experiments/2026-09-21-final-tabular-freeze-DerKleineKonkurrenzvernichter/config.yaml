@@ -1,0 +1,83 @@
+schema_version: 1
+issue: 230
+status: registered
+agent: DerKleineKonkurrenzvernichter
+date: 2026-09-21
+branch: freeze/230-final-tabular-agent
+base_commit: c414771
+
+objective: >-
+  Select, confirm, and package one final tabular submission agent without new
+  training or post-hoc tuning.
+
+candidate_pool:
+  installed_task3_incumbent:
+    path: agent_code/DerKleineKonkurrenzvernichter/model.npz
+    eligible: true
+    reason: unchanged installed incumbent retained when no treatment passes
+  issue_204_shared_target:
+    eligible: false
+    reason: registered experiment failed its adoption criteria
+  issue_210_five_step_q_learning:
+    eligible: false
+    reason: registered experiment failed its adoption criteria
+  issue_220_double_q_learning:
+    eligible: false
+    reason: registered experiment failed its adoption criteria
+  issue_224_kill_reward_redistribution:
+    eligible: false
+    reason: registered experiment failed its adoption criteria
+  issue_228_competitive_r5:
+    eligible: false
+    reason: Task 4 baseline failed primary, retention, and repeatability gates
+
+selection_rule:
+  eligibility: all registered adoption and retention gates must pass
+  fallback: retain the installed Task 3 incumbent when no treatment is eligible
+  ranking:
+    - strict first-place rate descending
+    - competitive mean score descending
+    - survival rate descending
+    - opponent eliminations descending
+    - self-kill rate ascending
+    - Classic collection fraction descending
+    - stable candidate identifier ascending
+
+confirmation:
+  run_plan: training/run_plans/issue230-final-tabular-freeze-confirmation.yaml
+  training_episodes: 0
+  evaluation_jobs: 240
+  primary_rounds_per_suite: 20
+  repeat_rounds_per_suite: 20
+  suites:
+    competitive: [rule_based_agent, rule_based_agent, rule_based_agent]
+    mixed: [rule_based_agent, coin_collector_agent, peaceful_agent]
+    peaceful: [peaceful_agent]
+    classic: []
+    coin-heaven: []
+    loot-crate: []
+  execution_authorization:
+    source: direct user instruction in the Codex thread
+    approval_wait_waived: true
+
+confirmation_gates:
+  classic_collection_fraction_min: 0.15
+  coin_heaven_collection_fraction_min: 0.90
+  loot_crate_collection_fraction_min: 0.20
+  peaceful_eliminations_per_round_min: 0.10
+  equal_suite_aggregate_self_kill_rate_max: 0.20
+  decision_time_p95_ms_max: 50.0
+  decision_time_max_ms_max: 100.0
+  exact_repeat_required: true
+  evaluation_only_load_required: true
+  self_contained_agent_required: true
+
+expected_cost:
+  training_episodes: 0
+  evaluation_episodes: 240
+  expected_wall_time_minutes: 5
+
+decision_supported: >-
+  Freeze the unchanged installed incumbent only if its artifact integrity,
+  evaluation-only loading, compatibility, and confirmation gates pass. Do not
+  promote any failed experimental treatment.

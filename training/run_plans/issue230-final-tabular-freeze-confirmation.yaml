@@ -1,0 +1,71 @@
+schema_version: 1
+plan_id: issue230-final-tabular-freeze-confirmation
+agent: DerKleineKonkurrenzvernichter
+artifact_path: model.npz
+action_masking: none
+useful_bomb_reward: 0.0
+state_representation: compact_opponent
+potential_shaping: none
+tabular_exploration_mode: standard
+tabular_initialization: task2_prior
+max_parallel_training: 1
+
+replicas:
+  - {id: incumbent, world_seed: 230000, agent_seed: 330000}
+
+training_stages: []
+
+evaluation_suites:
+  - id: competitive-primary
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: &competitive_worlds [230001, 230002, 230003, 230004, 230005, 230006, 230007, 230008, 230009, 230010, 230011, 230012, 230013, 230014, 230015, 230016, 230017, 230018, 230019, 230020]
+    agent_seeds: &competitive_agents [330001, 330002, 330003, 330004, 330005, 330006, 330007, 330008, 330009, 330010, 330011, 330012, 330013, 330014, 330015, 330016, 330017, 330018, 330019, 330020]
+    opponents: [rule_based_agent, rule_based_agent, rule_based_agent]
+  - {id: competitive-repeat, population: final, scenario: classic, rounds: 1, world_seeds: *competitive_worlds, agent_seeds: *competitive_agents, opponents: [rule_based_agent, rule_based_agent, rule_based_agent]}
+
+  - id: mixed-primary
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: &mixed_worlds [230101, 230102, 230103, 230104, 230105, 230106, 230107, 230108, 230109, 230110, 230111, 230112, 230113, 230114, 230115, 230116, 230117, 230118, 230119, 230120]
+    agent_seeds: &mixed_agents [330101, 330102, 330103, 330104, 330105, 330106, 330107, 330108, 330109, 330110, 330111, 330112, 330113, 330114, 330115, 330116, 330117, 330118, 330119, 330120]
+    opponents: [rule_based_agent, coin_collector_agent, peaceful_agent]
+  - {id: mixed-repeat, population: final, scenario: classic, rounds: 1, world_seeds: *mixed_worlds, agent_seeds: *mixed_agents, opponents: [rule_based_agent, coin_collector_agent, peaceful_agent]}
+
+  - id: peaceful-primary
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: &peaceful_worlds [230201, 230202, 230203, 230204, 230205, 230206, 230207, 230208, 230209, 230210, 230211, 230212, 230213, 230214, 230215, 230216, 230217, 230218, 230219, 230220]
+    agent_seeds: &peaceful_agents [330201, 330202, 330203, 330204, 330205, 330206, 330207, 330208, 330209, 330210, 330211, 330212, 330213, 330214, 330215, 330216, 330217, 330218, 330219, 330220]
+    opponents: [peaceful_agent]
+  - {id: peaceful-repeat, population: final, scenario: classic, rounds: 1, world_seeds: *peaceful_worlds, agent_seeds: *peaceful_agents, opponents: [peaceful_agent]}
+
+  - id: classic-primary
+    population: final
+    scenario: classic
+    rounds: 1
+    world_seeds: &classic_worlds [230301, 230302, 230303, 230304, 230305, 230306, 230307, 230308, 230309, 230310, 230311, 230312, 230313, 230314, 230315, 230316, 230317, 230318, 230319, 230320]
+    agent_seeds: &classic_agents [330301, 330302, 330303, 330304, 330305, 330306, 330307, 330308, 330309, 330310, 330311, 330312, 330313, 330314, 330315, 330316, 330317, 330318, 330319, 330320]
+    opponents: []
+  - {id: classic-repeat, population: final, scenario: classic, rounds: 1, world_seeds: *classic_worlds, agent_seeds: *classic_agents, opponents: []}
+
+  - id: coin-heaven-primary
+    population: final
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: &coin_worlds [230401, 230402, 230403, 230404, 230405, 230406, 230407, 230408, 230409, 230410, 230411, 230412, 230413, 230414, 230415, 230416, 230417, 230418, 230419, 230420]
+    agent_seeds: &coin_agents [330401, 330402, 330403, 330404, 330405, 330406, 330407, 330408, 330409, 330410, 330411, 330412, 330413, 330414, 330415, 330416, 330417, 330418, 330419, 330420]
+    opponents: []
+  - {id: coin-heaven-repeat, population: final, scenario: coin-heaven, rounds: 1, world_seeds: *coin_worlds, agent_seeds: *coin_agents, opponents: []}
+
+  - id: loot-crate-primary
+    population: final
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: &loot_worlds [230501, 230502, 230503, 230504, 230505, 230506, 230507, 230508, 230509, 230510, 230511, 230512, 230513, 230514, 230515, 230516, 230517, 230518, 230519, 230520]
+    agent_seeds: &loot_agents [330501, 330502, 330503, 330504, 330505, 330506, 330507, 330508, 330509, 330510, 330511, 330512, 330513, 330514, 330515, 330516, 330517, 330518, 330519, 330520]
+    opponents: []
+  - {id: loot-crate-repeat, population: final, scenario: loot-crate, rounds: 1, world_seeds: *loot_worlds, agent_seeds: *loot_agents, opponents: []}
