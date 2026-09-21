@@ -24,7 +24,8 @@ sys.path.insert(0, str(ROOT))
 from scripts.curriculum_io import read, require, sha, write  # noqa: E402
 
 EXPERIMENT = ROOT / "experiments/2026-09-21-post-kill-pursuit"
-CONFIG = EXPERIMENT / "config.json"
+DEFAULT_CONFIG = EXPERIMENT / "config.json"
+CONFIG = DEFAULT_CONFIG
 
 
 def sources():
@@ -410,10 +411,13 @@ def main():
     parser.add_argument("--reference", type=Path)
     parser.add_argument("--head85", type=Path)
     parser.add_argument("--device", default="pc")
-    parser.add_argument("--config", type=Path, default=CONFIG)
+    parser.add_argument("--config", type=Path)
     args = parser.parse_args()
     args.root = args.root.resolve()
-    CONFIG = args.config.resolve()
+    run_config = args.root / "config.json"
+    CONFIG = args.config.resolve() if args.config is not None else run_config
+    if not run_config.is_file() and args.config is None:
+        CONFIG = DEFAULT_CONFIG
     for key in (
         "OMP_NUM_THREADS",
         "MKL_NUM_THREADS",
