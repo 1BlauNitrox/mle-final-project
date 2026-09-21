@@ -68,6 +68,7 @@ class EndgamePursuitGuard:
     maximum_better_bomb_actions: int | None = None
     maximum_bomb_overrides_per_round: int | None = None
     maximum_immediate_target_escapes: int | None = None
+    stop_after_opponent_elimination: bool = False
     escape_followup_steps: int = 0
     eligible: int = 0
     overrides: int = 0
@@ -79,11 +80,13 @@ class EndgamePursuitGuard:
     rejected_bomb_rank: int = 0
     rejected_bomb_limit: int = 0
     rejected_target_mobility: int = 0
+    rejected_post_kill: int = 0
     escape_checks: int = 0
     escape_redirects: int = 0
     escape_rejected_no_candidate: int = 0
     round_id: int | None = None
     bomb_overrides_this_round: int = 0
+    opponents_at_first_bomb_override: int | None = None
     escape_steps_remaining: int = 0
     escape_armed_step: int | None = None
 
@@ -97,6 +100,7 @@ class EndgamePursuitGuard:
         maximum_better_bomb_actions: int | None = None,
         maximum_bomb_overrides_per_round: int | None = None,
         maximum_immediate_target_escapes: int | None = None,
+        stop_after_opponent_elimination: bool = False,
         escape_followup_steps: int = 0,
     ) -> EndgamePursuitGuard:
         """Load a strictly shaped, training-produced pursuit artifact."""
@@ -154,6 +158,7 @@ class EndgamePursuitGuard:
             maximum_better_bomb_actions=maximum_better_bomb_actions,
             maximum_bomb_overrides_per_round=maximum_bomb_overrides_per_round,
             maximum_immediate_target_escapes=maximum_immediate_target_escapes,
+            stop_after_opponent_elimination=stop_after_opponent_elimination,
             escape_followup_steps=escape_followup_steps,
         )
 
@@ -225,6 +230,7 @@ class EndgamePursuitGuard:
         if round_id != self.round_id:
             self.round_id = round_id
             self.bomb_overrides_this_round = 0
+            self.opponents_at_first_bomb_override = None
             self.escape_steps_remaining = 0
             self.escape_armed_step = None
         if not pursuit_eligible(game_state):
@@ -268,6 +274,13 @@ class EndgamePursuitGuard:
                 self.rejected_bomb_rank += 1
                 return chosen
             if (
+                self.stop_after_opponent_elimination
+                and self.opponents_at_first_bomb_override is not None
+                and len(game_state["others"]) < self.opponents_at_first_bomb_override
+            ):
+                self.rejected_post_kill += 1
+                return chosen
+            if (
                 self.maximum_bomb_overrides_per_round is not None
                 and self.bomb_overrides_this_round
                 >= self.maximum_bomb_overrides_per_round
@@ -275,6 +288,8 @@ class EndgamePursuitGuard:
                 self.rejected_bomb_limit += 1
                 return chosen
             self.bomb_overrides_this_round += 1
+            if self.opponents_at_first_bomb_override is None:
+                self.opponents_at_first_bomb_override = len(game_state["others"])
             self.bomb_overrides += 1
             self.escape_steps_remaining = self.escape_followup_steps
             self.escape_armed_step = int(game_state["step"])
@@ -347,6 +362,7 @@ class EndgamePursuitGuard:
             "rejected_bomb_rank": self.rejected_bomb_rank,
             "rejected_bomb_limit": self.rejected_bomb_limit,
             "rejected_target_mobility": self.rejected_target_mobility,
+            "rejected_post_kill": self.rejected_post_kill,
             "escape_checks": self.escape_checks,
             "escape_redirects": self.escape_redirects,
             "escape_rejected_no_candidate": self.escape_rejected_no_candidate,

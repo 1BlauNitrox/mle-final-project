@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 from agent_code.DagobertDuckDQNAntiLoop.callbacks import (
+    _active_loop_guard_window,
     _loop_guard_window,
     _pursuit_guard_kwargs,
 )
@@ -179,6 +180,57 @@ def test_earlier_loop_modes_change_only_the_registered_history_window():
     ):
         assert _pursuit_guard_kwargs(mode) == cap2
         assert _loop_guard_window(mode) == window
+
+
+def test_post_kill_cap_preserves_second_attempt_until_an_opponent_is_eliminated():
+    values = np.zeros(len(ACTIONS))
+    q_values = lambda: values  # noqa: E731
+
+    guard = bomb_guard(allow=True)
+    guard.maximum_bomb_overrides_per_round = 2
+    guard.stop_after_opponent_elimination = True
+    first = state(opponents=(("a", 0, True, (4, 6)), ("b", 0, True, (6, 4))))
+    assert guard.choose(first, "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
+    after_kill = state(opponents=(("a", 0, True, (4, 6)),))
+    after_kill["step"] += 10
+    assert guard.choose(after_kill, "WAIT", q_values, LEGAL, FEATURES) == "WAIT"
+    assert guard.snapshot()["rejected_post_kill"] == 1
+
+    retry_guard = bomb_guard(allow=True)
+    retry_guard.maximum_bomb_overrides_per_round = 2
+    retry_guard.stop_after_opponent_elimination = True
+    assert retry_guard.choose(first, "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
+    retry = state(opponents=(("a", 0, True, (4, 6)), ("b", 0, True, (6, 4))))
+    retry["step"] += 10
+    assert retry_guard.choose(retry, "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
+
+
+def test_post_kill_mode_changes_only_the_registered_kill_cap():
+    control = _pursuit_guard_kwargs("broad_learned_pursuit_corridor1_cap2_w12")
+    candidate = _pursuit_guard_kwargs(
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill"
+    )
+    assert candidate == {**control, "stop_after_opponent_elimination": True}
+    assert _loop_guard_window("broad_learned_pursuit_corridor1_cap2_w12_postkill") == 12
+
+
+def test_targeted_loop_mode_shortens_history_only_after_a_pursuit_bomb():
+    mode = "broad_learned_pursuit_corridor1_cap2_targeted12"
+    guard = bomb_guard(allow=True)
+    assert _pursuit_guard_kwargs(mode) == _pursuit_guard_kwargs(
+        "broad_learned_pursuit_corridor1_cap2"
+    )
+    assert _loop_guard_window(mode) == 16
+    assert _active_loop_guard_window(mode, guard) == 16
+    guard.bomb_overrides_this_round = 1
+    assert _active_loop_guard_window(mode, guard) == 12
+
+    postkill = "broad_learned_pursuit_corridor1_cap2_targeted12_postkill"
+    assert _pursuit_guard_kwargs(postkill) == {
+        **_pursuit_guard_kwargs(mode),
+        "stop_after_opponent_elimination": True,
+    }
+    assert _active_loop_guard_window(postkill, guard) == 12
 
 
 def test_grouped_pursuit_training_accepts_separable_teacher_actions():

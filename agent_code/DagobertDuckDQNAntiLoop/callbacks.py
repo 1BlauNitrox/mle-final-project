@@ -87,6 +87,9 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
         "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
         "broad_learned_pursuit_corridor1_cap2_w8",
         "mid_attack_second",
     }:
@@ -110,6 +113,9 @@ def act(self, game_state: dict | None) -> str:
                 "broad_learned_pursuit_corridor1_cap1",
                 "broad_learned_pursuit_corridor1_cap2",
                 "broad_learned_pursuit_corridor1_cap2_w12",
+                "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+                "broad_learned_pursuit_corridor1_cap2_targeted12",
+                "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
                 "broad_learned_pursuit_corridor1_cap2_w8",
             },
         )
@@ -158,6 +164,9 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
         "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
         "broad_learned_pursuit_corridor1_cap2_w8",
     }
     if guard_mode in pursuit_modes:
@@ -171,6 +180,7 @@ def act(self, game_state: dict | None) -> str:
                 **_pursuit_guard_kwargs(guard_mode),
             )
         action = pursuit_guard.choose(game_state, action, q_values, legal, state)
+        guard.window = _active_loop_guard_window(guard_mode, pursuit_guard)
     if guard_mode in {
         "cooldown",
         "persistent",
@@ -188,6 +198,9 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
         "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
         "broad_learned_pursuit_corridor1_cap2_w8",
         "mid_attack_second",
     }:
@@ -215,6 +228,9 @@ def act(self, game_state: dict | None) -> str:
             "broad_learned_pursuit_corridor1_cap1": 400,
             "broad_learned_pursuit_corridor1_cap2": 400,
             "broad_learned_pursuit_corridor1_cap2_w12": 400,
+            "broad_learned_pursuit_corridor1_cap2_w12_postkill": 400,
+            "broad_learned_pursuit_corridor1_cap2_targeted12": 400,
+            "broad_learned_pursuit_corridor1_cap2_targeted12_postkill": 400,
             "broad_learned_pursuit_corridor1_cap2_w8": 400,
             "mid_attack_second": 400,
         }[guard_mode],
@@ -227,6 +243,9 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
         "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
         "broad_learned_pursuit_corridor1_cap2_w8",
     }:
         action = pursuit_guard.redirect_unsafe_escape(game_state, action, q_values, legal)
@@ -249,9 +268,22 @@ def _loop_guard_window(mode: str) -> int:
         "broad_learned_pursuit_corridor1_cap1": 16,
         "broad_learned_pursuit_corridor1_cap2": 16,
         "broad_learned_pursuit_corridor1_cap2_w12": 12,
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill": 12,
+        "broad_learned_pursuit_corridor1_cap2_targeted12": 16,
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill": 16,
         "broad_learned_pursuit_corridor1_cap2_w8": 8,
         "mid_attack_second": 16,
     }.get(mode, 24)
+
+
+def _active_loop_guard_window(mode: str, pursuit_guard: EndgamePursuitGuard) -> int:
+    """Shorten history only after this round's learned pursuit intervention."""
+    if mode in {
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
+    } and pursuit_guard.bomb_overrides_this_round:
+        return 12
+    return _loop_guard_window(mode)
 
 
 def _pursuit_guard_kwargs(mode: str) -> dict:
@@ -263,9 +295,12 @@ def _pursuit_guard_kwargs(mode: str) -> dict:
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
         "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
         "broad_learned_pursuit_corridor1_cap2_w8",
     }
-    return {
+    controls = {
         "allow_bomb_override": mode != "broad_learned_pursuit_move",
         "allow_movement_override": mode
         in {"broad_learned_pursuit", "broad_learned_pursuit_move"},
@@ -278,6 +313,9 @@ def _pursuit_guard_kwargs(mode: str) -> dict:
             "broad_learned_pursuit_corridor1_cap1": 1,
             "broad_learned_pursuit_corridor1_cap2": 2,
             "broad_learned_pursuit_corridor1_cap2_w12": 2,
+            "broad_learned_pursuit_corridor1_cap2_w12_postkill": 2,
+            "broad_learned_pursuit_corridor1_cap2_targeted12": 2,
+            "broad_learned_pursuit_corridor1_cap2_targeted12_postkill": 2,
             "broad_learned_pursuit_corridor1_cap2_w8": 2,
         }.get(mode),
         "maximum_immediate_target_escapes": {
@@ -286,10 +324,19 @@ def _pursuit_guard_kwargs(mode: str) -> dict:
             "broad_learned_pursuit_corridor1_cap1": 1,
             "broad_learned_pursuit_corridor1_cap2": 1,
             "broad_learned_pursuit_corridor1_cap2_w12": 1,
+            "broad_learned_pursuit_corridor1_cap2_w12_postkill": 1,
+            "broad_learned_pursuit_corridor1_cap2_targeted12": 1,
+            "broad_learned_pursuit_corridor1_cap2_targeted12_postkill": 1,
             "broad_learned_pursuit_corridor1_cap2_w8": 1,
         }.get(mode),
         "escape_followup_steps": 7 if mode in safe_followup_modes else 0,
     }
+    if mode in {
+        "broad_learned_pursuit_corridor1_cap2_w12_postkill",
+        "broad_learned_pursuit_corridor1_cap2_targeted12_postkill",
+    }:
+        controls["stop_after_opponent_elimination"] = True
+    return controls
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:

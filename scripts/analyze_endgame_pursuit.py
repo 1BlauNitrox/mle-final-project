@@ -61,6 +61,7 @@ def diagnostics(root, cfg, stage, arm):
                     "rejected_bomb_rank",
                     "rejected_bomb_limit",
                     "rejected_target_mobility",
+                    "rejected_post_kill",
                     "escape_checks",
                     "escape_redirects",
                     "escape_rejected_no_candidate",
@@ -169,6 +170,19 @@ def gate(root, cfg, stage, candidate, *, latency=False):
     return {"passed": all(gates.values()), "gates": gates, "effects": effects}
 
 
+def selection_key(pilot: dict, training: dict, arm: str) -> tuple[float, ...]:
+    """Prefer attack strength, then the safer result when effects tie."""
+    effects = pilot[arm]["effects"]
+    return (
+        effects["kills"],
+        effects["score"],
+        -effects["self_kills"],
+        effects["survived"],
+        -effects.get("loop_count_increase_per_game", 0.0),
+        training["candidates"][arm]["threshold"],
+    )
+
+
 def analyze(root):
     root = Path(root)
     cfg = read(root / "config.json")
@@ -199,17 +213,20 @@ def analyze(root):
     if report["eligible"]:
         report["selected"] = max(
             report["eligible"],
-            key=lambda arm: (
-                report["pilot"][arm]["effects"]["kills"],
-                report["pilot"][arm]["effects"]["score"],
-                training["candidates"][arm]["threshold"],
-            ),
+            key=lambda arm: selection_key(report["pilot"], training, arm),
         )
-    if report["selected"] and (root / "results" / "confirmation").exists():
+    confirmation_required = [
+        root / "results" / "confirmation" / arm / f"{suite}.json"
+        for arm in ("baseline", report["selected"])
+        for suite in cfg["evaluation"]["confirmation"]
+    ] if report["selected"] else []
+    if confirmation_required and all(path.exists() for path in confirmation_required):
         report["confirmation"] = gate(root, cfg, "confirmation", report["selected"], latency=True)
         report["confirmation_diagnostics"] = {
             arm: diagnostics(root, cfg, "confirmation", arm)
             for arm in ("baseline", report["selected"])
         }
         report["confirmed_for_human_review"] = bool(report["confirmation"]["passed"])
+    elif confirmation_required:
+        report["confirmation_complete"] = False
     return report

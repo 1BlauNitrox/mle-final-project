@@ -2,7 +2,7 @@
 
 import json
 
-from scripts.analyze_endgame_pursuit import gate
+from scripts.analyze_endgame_pursuit import gate, selection_key
 
 
 def row(*, kills=0, overrides=0, coins=1, loop_eligible=10, looping=0):
@@ -129,3 +129,35 @@ def test_paired_loop_counts_are_not_confounded_by_fewer_eligible_windows(tmp_pat
     )
     assert result["effects"]["loop_count_increase_per_game"] == 0
     assert result["effects"]["loop_game_incidence_increase"] == 0
+
+
+def test_selection_breaks_equal_kill_and_score_effects_by_safety():
+    pilot = {
+        "control": {
+            "effects": {
+                "kills": 0.05,
+                "score": 0.25,
+                "self_kills": 0.04,
+                "survived": -0.02,
+                "loop_count_increase_per_game": 0.0,
+            }
+        },
+        "postkill": {
+            "effects": {
+                "kills": 0.05,
+                "score": 0.25,
+                "self_kills": 0.01,
+                "survived": 0.01,
+                "loop_count_increase_per_game": 0.0,
+            }
+        },
+    }
+    training = {
+        "candidates": {
+            "control": {"threshold": 0.85},
+            "postkill": {"threshold": 0.85},
+        }
+    }
+    assert selection_key(pilot, training, "postkill") > selection_key(
+        pilot, training, "control"
+    )
