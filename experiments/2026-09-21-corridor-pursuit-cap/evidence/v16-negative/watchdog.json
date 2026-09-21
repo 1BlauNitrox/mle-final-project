@@ -1,0 +1,22 @@
+{
+  "restarts": 1,
+  "cpu_seconds": 13.59375,
+  "pid": 626260,
+  "created": 1789967899.6180046,
+  "runner_sha256": "becb63ea85ae62bd5bc667870de4544681b7cbea4e8c9b0c5692a72d22e7fea2",
+  "time": 1789968662.439872,
+  "launching": {
+    "pid": 630780,
+    "created": 1789967918.334231
+  },
+  "launches": 2,
+  "status": "pipeline_complete",
+  "family": [
+    {
+      "pid": 634728,
+      "created": 1789967918.8295605
+    }
+  ],
+  "reason": "Persistent stop or retry limit",
+  "cpu_debited": 9.609375
+}

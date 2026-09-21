@@ -1,0 +1,107 @@
+{
+  "results/pilot/baseline/classic.json": {
+    "stored": "results/pilot/baseline/classic.json.gz",
+    "bytes": 795202,
+    "sha256": "f4d9f62929f8499c3eccfe603b3879d1b9934ddf904de16ba109afb3365cefa3",
+    "stored_bytes": 154152,
+    "stored_sha256": "8739121ea6307dddc813c261f6e2cc2fa0fcd221f0f39ca35d77f604040eb903"
+  },
+  "results/pilot/baseline/coins.json": {
+    "stored": "results/pilot/baseline/coins.json.gz",
+    "bytes": 311598,
+    "sha256": "8049d3f1c261a63c2398ae1d2ca791380c873d9b308ebf34b011b193be68d5a8",
+    "stored_bytes": 72903,
+    "stored_sha256": "4dd2d13f6d9523bb3810c81b917caef438540387ab8450ca6f512e6c0b427ee0"
+  },
+  "results/pilot/baseline/crates.json": {
+    "stored": "results/pilot/baseline/crates.json.gz",
+    "bytes": 369240,
+    "sha256": "3373e051edafecd8857118f613aa4451a4f3f6e2856b7d2c142cf3b7a216e2d4",
+    "stored_bytes": 68977,
+    "stored_sha256": "d3e4b8762dbfd223deabe0a5ae9cda7255975553d8cc01bce63fd2229404f5e7"
+  },
+  "results/pilot/baseline/mixed.json": {
+    "stored": "results/pilot/baseline/mixed.json.gz",
+    "bytes": 417505,
+    "sha256": "bdb1f011a1ffbd41ef53a9bb406cd94bdb8a137644f95b9d7dd696ee226ff70c",
+    "stored_bytes": 80656,
+    "stored_sha256": "efc48f09f23aaaf3cfe11057c158e17c6b9e10d7c61c8c41661cf8e0f4e5e414"
+  },
+  "results/pilot/baseline/peaceful.json": {
+    "stored": "results/pilot/baseline/peaceful.json.gz",
+    "bytes": 656348,
+    "sha256": "82a32ebbbb977c02e9b70ec06f45ba2117d92c07bb27e91cf616e01dfff9d547",
+    "stored_bytes": 113767,
+    "stored_sha256": "deb801c5954894677f6a0cc36ca906427dca599c831e4cbe734254051a68de6d"
+  },
+  "results/pilot/cap1/classic.json": {
+    "stored": "results/pilot/cap1/classic.json.gz",
+    "bytes": 792383,
+    "sha256": "32c068be4c62a809b6f909e9b2b304363046c99e2c5f44620706eb2a21f665fb",
+    "stored_bytes": 149560,
+    "stored_sha256": "4e174293f65ae64af0ceb4d042ca9166603863429ac5c6fa3ed926e2315aa1d9"
+  },
+  "results/pilot/cap1/coins.json": {
+    "stored": "results/pilot/cap1/coins.json.gz",
+    "bytes": 317975,
+    "sha256": "cf53bf5553d850100658fc5283cfb564380bad8cc0148729a01769e253249c3c",
+    "stored_bytes": 73153,
+    "stored_sha256": "650544897dc7ac362dec7ee573dae068623cb2f1bdd6873f4389b32a6a56e68c"
+  },
+  "results/pilot/cap1/crates.json": {
+    "stored": "results/pilot/cap1/crates.json.gz",
+    "bytes": 375672,
+    "sha256": "94f021fdb7251e9003ba965b1134b190a47db67badf1fa17d6eb355056ca4a2f",
+    "stored_bytes": 69363,
+    "stored_sha256": "89d22aa9724e5e4311cbbfcaeb0a0f3626d95051e6eaa5c11d611cdf9da5991f"
+  },
+  "results/pilot/cap1/mixed.json": {
+    "stored": "results/pilot/cap1/mixed.json.gz",
+    "bytes": 427074,
+    "sha256": "f09eb3dd5c3c6e8e0bd310b17e0dca41e95509f756f4ce091fb671b7730d6331",
+    "stored_bytes": 81606,
+    "stored_sha256": "3c8484653c3363100e67991330c4130a8d9847a6b03186e738c38fe937112c4c"
+  },
+  "results/pilot/cap1/peaceful.json": {
+    "stored": "results/pilot/cap1/peaceful.json.gz",
+    "bytes": 665920,
+    "sha256": "99b0942bb7dc90c721fe908746999a067d43684a953def49b56d791f522015f8",
+    "stored_bytes": 114314,
+    "stored_sha256": "dcea09165624c1b5c05c7af3bc556d57fd15ef5b40c9a6c9b80faab2c5430be4"
+  },
+  "results/pilot/cap2/classic.json": {
+    "stored": "results/pilot/cap2/classic.json.gz",
+    "bytes": 803295,
+    "sha256": "047ab7f07ef025d4807aa8606d1c6fb0f890cea46b08be6bd6ed6d4c3fb0aeee",
+    "stored_bytes": 152053,
+    "stored_sha256": "c0d07ace4cea18a368d3048e66a56ae7b09bfa7b312f7b1219042adf22617653"
+  },
+  "results/pilot/cap2/coins.json": {
+    "stored": "results/pilot/cap2/coins.json.gz",
+    "bytes": 318073,
+    "sha256": "be41ff8f1fb69de756d6410d1458cb5820e13c471636fc797758697769f1e125",
+    "stored_bytes": 73204,
+    "stored_sha256": "03453172867e83764b9f622cd1a6061c86535ab6258b8379c1d01db40be633fa"
+  },
+  "results/pilot/cap2/crates.json": {
+    "stored": "results/pilot/cap2/crates.json.gz",
+    "bytes": 375685,
+    "sha256": "c8087cc1cf997f525edee71fea96f08f566d4c732c2d6e254ee4b966eb434c48",
+    "stored_bytes": 69232,
+    "stored_sha256": "916ea81a7bd9fe073e51e218378f2ced44f19100d592a82183a81f6fd256ed81"
+  },
+  "results/pilot/cap2/mixed.json": {
+    "stored": "results/pilot/cap2/mixed.json.gz",
+    "bytes": 414168,
+    "sha256": "b5e12d82a6e416a14454c7adff2c4361dd422d85f5ff558c298faa707aec4971",
+    "stored_bytes": 77316,
+    "stored_sha256": "e0ebc0d4118021ece93aa8365c4ead18bfe6c350b98849837e74be31a2d99882"
+  },
+  "results/pilot/cap2/peaceful.json": {
+    "stored": "results/pilot/cap2/peaceful.json.gz",
+    "bytes": 665985,
+    "sha256": "9cea8243a66e6abf13f3c6061fd07f9b4813ec35d920b5a55d6d27af7d549491",
+    "stored_bytes": 114281,
+    "stored_sha256": "faa501aa5802fb6a1a6bbe60a4ca29701c4c88346b6e54a86dc091eaf3749901"
+  }
+}
