@@ -1,0 +1,15 @@
+{
+  "classifier_accepted": true,
+  "source_run": "issue225-endgame-pursuit-v12b",
+  "candidates": {
+    "cap2": {
+      "path": "candidates/paired-loop-cap2-t85.pt",
+      "file_name": "paired-loop-cap2-t85.pt",
+      "sha256": "95e903c7d4164bb0cabc87a16fe2fb7db8d5161600d216ca27c056b823511e53",
+      "bytes": 14053,
+      "threshold": 0.85,
+      "guard_mode": "broad_learned_pursuit_corridor1_cap2",
+      "maximum_bomb_overrides_per_round": 2
+    }
+  }
+}
