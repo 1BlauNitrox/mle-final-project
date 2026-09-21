@@ -1,6 +1,6 @@
 {
   "issue": 225,
-  "revision": 1,
+  "revision": 2,
   "runtime_commit": "0e8178d52250633fc76d0f5eafacd13d3799e2bc",
   "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
   "source_run": "issue225-endgame-pursuit-v12b",
@@ -47,8 +47,8 @@
   },
   "selection": "Among fresh-pilot-eligible fixed heads, choose the largest kill gain, then score gain, then the higher confidence threshold. Confirm once on fresh worlds; never promote automatically.",
   "devices": {"pc": {"workers": 1, "cpu_seconds": 144000, "rss_bytes": 2147483648}},
-  "prior_usage": {"pc": {"cpu_seconds": 49172.515625, "note": "Cumulative issue #225 debit through completed V12b; the shared 40 CPU-hour cap is not reset."}},
-  "limits": {"wall_seconds": 41400, "minimum_available_bytes": 268435456, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
+  "prior_usage": {"pc": {"cpu_seconds": 51193.96875, "note": "Cumulative issue #225 debit through the resource-stopped V13 attempt; the shared 40 CPU-hour cap is not reset."}},
+  "limits": {"wall_seconds": 37800, "minimum_available_bytes": 67108864, "training_stop_utc": "2026-09-21T10:00:00+00:00", "stop_utc": "2026-09-21T13:00:00+00:00"},
   "authorization": {
     "owner": "Julius",
     "record": "2026-09-21: primary goal is killing without losing reduced looping or learned abilities; autonomous training and selection decisions authorized through final submission preparation.",
