@@ -79,6 +79,61 @@ def test_movement_only_mode_preserves_fallback_bomb_decision():
     assert bomb_guard(allow=True).choose(state(), "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
 
 
+def test_bomb_only_mode_preserves_learned_movement_decision():
+    guard = movement_guard()
+    guard.allow_movement_override = False
+    q_values = lambda: np.zeros(len(ACTIONS))  # noqa: E731
+
+    assert guard.choose(state(), "WAIT", q_values, LEGAL, FEATURES) == "WAIT"
+    assert guard.snapshot()["rejected_movement_override"] == 1
+
+
+def test_bomb_only_mode_requires_dqn_agreement_and_enforces_round_limit():
+    guard = bomb_guard(allow=True)
+    guard.allow_movement_override = False
+    guard.maximum_better_bomb_actions = 2
+    guard.maximum_bomb_overrides_per_round = 1
+    values = np.zeros(len(ACTIONS))
+    values[ACTIONS.index("UP")] = 3
+    values[BOMB_INDEX] = 2
+    q_values = lambda: values  # noqa: E731
+
+    first = state()
+    assert guard.choose(first, "UP", q_values, LEGAL, FEATURES) == "BOMB"
+    first["step"] += 1
+    assert guard.choose(first, "UP", q_values, LEGAL, FEATURES) == "UP"
+
+    next_round = state()
+    next_round["round"] = 2
+    assert guard.choose(next_round, "UP", q_values, LEGAL, FEATURES) == "BOMB"
+
+    too_low = bomb_guard(allow=True)
+    too_low.maximum_better_bomb_actions = 2
+    values[ACTIONS.index("RIGHT")] = 4
+    values[ACTIONS.index("DOWN")] = 5
+    assert too_low.choose(state(), "DOWN", q_values, LEGAL, FEATURES) == "DOWN"
+    assert too_low.snapshot()["rejected_bomb_rank"] == 1
+
+
+def test_escape_followup_redirects_only_an_unsafe_frozen_action():
+    guard = bomb_guard(allow=True)
+    guard.escape_steps_remaining = 7
+    guard.escape_armed_step = 100
+    game_state = state()
+    game_state["step"] = 101
+    game_state["self"] = ("me", 0, False, (4, 5))
+    game_state["bombs"] = [((4, 4), 0)]
+    legal = LEGAL.copy()
+    legal[BOMB_INDEX] = False
+    values = np.zeros(len(ACTIONS))
+    values[ACTIONS.index("WAIT")] = 10
+    values[ACTIONS.index("RIGHT")] = 5
+    q_values = lambda: values  # noqa: E731
+
+    assert guard.redirect_unsafe_escape(game_state, "WAIT", q_values, legal) == "RIGHT"
+    assert guard.snapshot()["escape_redirects"] == 1
+
+
 def test_grouped_pursuit_training_accepts_separable_teacher_actions():
     values, labels, groups = [], [], []
     for group in range(5):

@@ -80,6 +80,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_attack",
         "broad_learned_pursuit",
         "broad_learned_pursuit_move",
+        "broad_learned_pursuit_bomb1",
+        "broad_learned_pursuit_bomb3",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -95,6 +97,8 @@ def act(self, game_state: dict | None) -> str:
                 "broad_learned_attack",
                 "broad_learned_pursuit",
                 "broad_learned_pursuit_move",
+                "broad_learned_pursuit_bomb1",
+                "broad_learned_pursuit_bomb3",
             },
         )
     guard.observe(game_state)
@@ -132,7 +136,13 @@ def act(self, game_state: dict | None) -> str:
                 self.policy_network,
             )
         action = attack_guard.choose(game_state, action, q_values, legal, state)
-    if guard_mode in {"broad_learned_pursuit", "broad_learned_pursuit_move"}:
+    pursuit_modes = {
+        "broad_learned_pursuit",
+        "broad_learned_pursuit_move",
+        "broad_learned_pursuit_bomb1",
+        "broad_learned_pursuit_bomb3",
+    }
+    if guard_mode in pursuit_modes:
         pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
         if pursuit_guard is None:
             file_name = os.environ.get(PURSUIT_HEAD_ENV, "pursuit_head.pt")
@@ -140,7 +150,25 @@ def act(self, game_state: dict | None) -> str:
                 raise ValueError(f"{PURSUIT_HEAD_ENV} must contain one file name.")
             pursuit_guard = self.endgame_pursuit_guard = EndgamePursuitGuard.load(
                 Path(__file__).resolve().parent / file_name,
-                allow_bomb_override=guard_mode == "broad_learned_pursuit",
+                allow_bomb_override=guard_mode != "broad_learned_pursuit_move",
+                allow_movement_override=guard_mode
+                in {"broad_learned_pursuit", "broad_learned_pursuit_move"},
+                maximum_better_bomb_actions=(
+                    2
+                    if guard_mode
+                    in {"broad_learned_pursuit_bomb1", "broad_learned_pursuit_bomb3"}
+                    else None
+                ),
+                maximum_bomb_overrides_per_round={
+                    "broad_learned_pursuit_bomb1": 1,
+                    "broad_learned_pursuit_bomb3": 3,
+                }.get(guard_mode),
+                escape_followup_steps=(
+                    7
+                    if guard_mode
+                    in {"broad_learned_pursuit_bomb1", "broad_learned_pursuit_bomb3"}
+                    else 0
+                ),
             )
         action = pursuit_guard.choose(game_state, action, q_values, legal, state)
     if guard_mode in {
@@ -153,10 +181,12 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_attack",
         "broad_learned_pursuit",
         "broad_learned_pursuit_move",
+        "broad_learned_pursuit_bomb1",
+        "broad_learned_pursuit_bomb3",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
-    return guard.choose(
+    action = guard.choose(
         game_state,
         action,
         q_values,
@@ -172,9 +202,17 @@ def act(self, game_state: dict | None) -> str:
             "broad_learned_attack": 400,
             "broad_learned_pursuit": 400,
             "broad_learned_pursuit_move": 400,
+            "broad_learned_pursuit_bomb1": 400,
+            "broad_learned_pursuit_bomb3": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
+    if guard_mode in {
+        "broad_learned_pursuit_bomb1",
+        "broad_learned_pursuit_bomb3",
+    }:
+        action = pursuit_guard.redirect_unsafe_escape(game_state, action, q_values, legal)
+    return action
 
 
 def _loop_guard_window(mode: str) -> int:
@@ -186,6 +224,8 @@ def _loop_guard_window(mode: str) -> int:
         "broad_learned_attack": 16,
         "broad_learned_pursuit": 16,
         "broad_learned_pursuit_move": 16,
+        "broad_learned_pursuit_bomb1": 16,
+        "broad_learned_pursuit_bomb3": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 
