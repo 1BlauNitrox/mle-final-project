@@ -49,6 +49,14 @@ def movement_guard():
     )
 
 
+def bomb_guard(*, allow):
+    value = movement_guard()
+    value.bias2[:] = -10
+    value.bias2[ACTIONS.index("BOMB")] = 10
+    value.allow_bomb_override = allow
+    return value
+
+
 def test_guard_changes_only_eligible_empty_board_states():
     guard = movement_guard()
 
@@ -63,6 +71,12 @@ def test_guard_changes_only_eligible_empty_board_states():
 def test_teacher_bombs_from_a_safe_attack_tile():
     assert pursuit_teacher_action(state(), LEGAL) == "BOMB"
     assert pursuit_teacher_action(state(crates=True), LEGAL) is None
+
+
+def test_movement_only_mode_preserves_fallback_bomb_decision():
+    q_values = lambda: np.zeros(len(ACTIONS))  # noqa: E731
+    assert bomb_guard(allow=False).choose(state(), "WAIT", q_values, LEGAL, FEATURES) == "WAIT"
+    assert bomb_guard(allow=True).choose(state(), "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
 
 
 def test_grouped_pursuit_training_accepts_separable_teacher_actions():

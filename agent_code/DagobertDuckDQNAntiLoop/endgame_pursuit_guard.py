@@ -51,13 +51,15 @@ class EndgamePursuitGuard:
     weight2: np.ndarray
     bias2: np.ndarray
     threshold: float
+    allow_bomb_override: bool = True
     eligible: int = 0
     overrides: int = 0
     rejected_confidence: int = 0
     rejected_bomb_safety: int = 0
+    rejected_bomb_override: int = 0
 
     @classmethod
-    def load(cls, path: Path) -> EndgamePursuitGuard:
+    def load(cls, path: Path, *, allow_bomb_override: bool = True) -> EndgamePursuitGuard:
         """Load a strictly shaped, training-produced pursuit artifact."""
         payload = torch.load(path, map_location="cpu", weights_only=True)
         required = {
@@ -91,7 +93,11 @@ class EndgamePursuitGuard:
         threshold = float(payload["threshold"])
         if np.any(arrays["scale"] <= 0) or not 0.0 < threshold < 1.0:
             raise ValueError("Learned pursuit artifact has invalid controls")
-        return cls(**arrays, threshold=threshold)
+        return cls(
+            **arrays,
+            threshold=threshold,
+            allow_bomb_override=allow_bomb_override,
+        )
 
     def _probabilities(self, features: np.ndarray) -> np.ndarray:
         normalized = (features - self.mean) / self.scale
@@ -137,6 +143,9 @@ class EndgamePursuitGuard:
             self.rejected_confidence += 1
             return chosen
         proposed = ACTIONS[index]
+        if proposed == "BOMB" and not self.allow_bomb_override:
+            self.rejected_bomb_override += 1
+            return chosen
         if proposed == "BOMB" and not self._safe_bomb(game_state):
             self.rejected_bomb_safety += 1
             return chosen
@@ -150,5 +159,6 @@ class EndgamePursuitGuard:
             "overrides": self.overrides,
             "rejected_confidence": self.rejected_confidence,
             "rejected_bomb_safety": self.rejected_bomb_safety,
+            "rejected_bomb_override": self.rejected_bomb_override,
             "threshold": self.threshold,
         }

@@ -384,6 +384,7 @@ def play_episode(
                 "overrides": 0,
                 "rejected_confidence": 0,
                 "rejected_bomb_safety": 0,
+                "rejected_bomb_override": 0,
             },
             "completed_episodes": policy.completed_episodes,
             "loop_penalties": getattr(policy, "loop_penalty_count", 0),

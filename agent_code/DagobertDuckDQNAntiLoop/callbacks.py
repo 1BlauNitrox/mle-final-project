@@ -79,6 +79,7 @@ def act(self, game_state: dict | None) -> str:
         "broad_trapped_attack",
         "broad_learned_attack",
         "broad_learned_pursuit",
+        "broad_learned_pursuit_move",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -93,6 +94,7 @@ def act(self, game_state: dict | None) -> str:
                 "broad_trapped_attack",
                 "broad_learned_attack",
                 "broad_learned_pursuit",
+                "broad_learned_pursuit_move",
             },
         )
     guard.observe(game_state)
@@ -130,14 +132,15 @@ def act(self, game_state: dict | None) -> str:
                 self.policy_network,
             )
         action = attack_guard.choose(game_state, action, q_values, legal, state)
-    if guard_mode == "broad_learned_pursuit":
+    if guard_mode in {"broad_learned_pursuit", "broad_learned_pursuit_move"}:
         pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
         if pursuit_guard is None:
             file_name = os.environ.get(PURSUIT_HEAD_ENV, "pursuit_head.pt")
             if not file_name or file_name != os.path.basename(file_name):
                 raise ValueError(f"{PURSUIT_HEAD_ENV} must contain one file name.")
             pursuit_guard = self.endgame_pursuit_guard = EndgamePursuitGuard.load(
-                Path(__file__).resolve().parent / file_name
+                Path(__file__).resolve().parent / file_name,
+                allow_bomb_override=guard_mode == "broad_learned_pursuit",
             )
         action = pursuit_guard.choose(game_state, action, q_values, legal, state)
     if guard_mode in {
@@ -149,6 +152,7 @@ def act(self, game_state: dict | None) -> str:
         "broad_trapped_attack",
         "broad_learned_attack",
         "broad_learned_pursuit",
+        "broad_learned_pursuit_move",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -167,6 +171,7 @@ def act(self, game_state: dict | None) -> str:
             "broad_trapped_attack": 400,
             "broad_learned_attack": 400,
             "broad_learned_pursuit": 400,
+            "broad_learned_pursuit_move": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -180,6 +185,7 @@ def _loop_guard_window(mode: str) -> int:
         "broad_trapped_attack": 16,
         "broad_learned_attack": 16,
         "broad_learned_pursuit": 16,
+        "broad_learned_pursuit_move": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 

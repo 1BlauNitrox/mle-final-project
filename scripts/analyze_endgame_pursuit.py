@@ -55,6 +55,7 @@ def diagnostics(root, cfg, stage, arm):
                     "overrides",
                     "rejected_confidence",
                     "rejected_bomb_safety",
+                    "rejected_bomb_override",
                 )
             },
         }
