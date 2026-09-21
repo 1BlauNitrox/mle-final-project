@@ -1,12 +1,11 @@
-"""Blast danger, escape, and crate-targeting geometry for Task 2.
+"""Blast danger, escape, and crate-targeting geometry.
 
 Blast physics mirror items.Bomb.get_blast_coords and environment.py's
 update_bombs and update_explosions behavior. Blasts stop at stone walls but
 continue through crates in the current framework revision.
 
-Issue #45 covers Task 2 without opponents. The danger model therefore handles
-bombs already visible in the game state but does not simulate opponents placing
-new bombs.
+The danger model handles bombs visible in the game state. It does not predict
+future bomb placements by other agents.
 """
 
 from __future__ import annotations
@@ -123,7 +122,7 @@ def safe_direction(
     """Return whether moving one step in `direction` is enterable and safe next turn.
 
     "Enterable" matches `navigation._is_free_tile` exactly (field openness and
-    the current bomb/opponent occupancy), so this reduces to the Task 1
+    the current bomb and opponent occupancy), so this becomes a normal
     free-direction check whenever nothing is dangerous.
     """
     x, y = position
@@ -150,9 +149,8 @@ def safe_escape_exists(
     still occupied by an undetonated bomb.
 
     `blocked_positions` (current bombs and opponents) is only applied to the
-    first step for opponents, which are not modeled forward in time (the
-    Task 2 curriculum has none, see the module docstring). Bomb occupancy is
-    instead modeled for every step from `bombs` directly, matching whichever
+    first step for opponents, which are not modeled forward in time. Bomb
+    occupancy is instead modeled for every step from `bombs`, matching whichever
     bomb list built `danger_map` (including a hypothetical bomb the caller
     added): a bomb tile stays non-enterable until the framework actually
     removes it, including after waits and detours, not just for one step.

@@ -1,4 +1,4 @@
-"""Behavior-preserving callbacks for the tabular Task 2 successor."""
+"""Runtime callbacks for the opponent-aware tabular agent."""
 
 from __future__ import annotations
 
@@ -237,7 +237,7 @@ def _read_agent_seed() -> int:
 
 
 def _read_useful_bomb_reward() -> float:
-    """Read the prospectively registered reward treatment."""
+    """Read the configured reward treatment."""
 
     raw_reward = os.environ.get(USEFUL_BOMB_REWARD_ENV, "0.0")
     try:

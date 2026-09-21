@@ -1,4 +1,4 @@
-"""Q-tabel and policy"""
+"""Sparse tabular Q-learning policy."""
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ Task1State = tuple[int, ...]
 
 
 class QTable:
-    """Sparse Task 2 Q-table initialized from frozen Task 1 values."""
+    """Sparse Q-table initialized from the previous task when requested."""
 
     def __init__(
         self,
@@ -160,7 +160,7 @@ class QTable:
         return float(td_error)
 
     def __len__(self) -> int:
-        """Return the number of materialized Task 2 states."""
+        """Return the number of materialized states."""
 
         return len(self.values)
 
@@ -229,7 +229,7 @@ class QTable:
         self,
         state: StateFeatures,
     ) -> np.ndarray:
-        """Materialize a Task 2 state only during an update."""
+        """Materialize a state only during an update."""
 
         self._validate_state(state)
         self.visit_counts[state] = self.visit_counts.get(state, 0) + 1
@@ -240,7 +240,7 @@ class QTable:
         return self.values[state]
 
     def _validate_state(self, state: StateFeatures) -> None:
-        """Validate the minimum structural Task 2 state contract."""
+        """Validate the minimum structural state contract."""
 
         if not isinstance(state, tuple):
             raise ValueError("State must be a tuple.")

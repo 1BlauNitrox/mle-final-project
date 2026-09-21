@@ -1,4 +1,4 @@
-"""State-representation selection for the tabular Task 2 agent."""
+"""State-representation selection for the opponent-aware tabular agent."""
 
 from __future__ import annotations
 

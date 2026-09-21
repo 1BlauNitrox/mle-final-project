@@ -1,4 +1,4 @@
-"""game state -> hashable features"""
+"""Feature extraction for coin collection."""
 
 from __future__ import annotations
 

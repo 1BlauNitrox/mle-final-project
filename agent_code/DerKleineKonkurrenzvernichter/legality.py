@@ -1,4 +1,4 @@
-"""Framework-level legal-action masking for the Task 2 tabular agent."""
+"""Framework-level legal-action masking for the tabular agent."""
 
 from __future__ import annotations
 
