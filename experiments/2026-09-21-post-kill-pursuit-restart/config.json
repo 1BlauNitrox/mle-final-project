@@ -1,7 +1,7 @@
 {
   "issue": 225,
   "revision": 2,
-  "runtime_commit": "e1b12c073becb49c70dc659c97d4e5665036c981",
+  "runtime_commit": "23e9cf228325db779554a2267f7c70b96abf0caa",
   "reference_sha256": "85f2d9a436cccae99ceefb181d9e759c82c50718872b91723d21b923b3c87f6f",
   "source_run": "issue225-targeted-pursuit-v19",
   "artifact": {
