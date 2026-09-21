@@ -86,6 +86,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor2",
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
+        "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w8",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -107,6 +109,8 @@ def act(self, game_state: dict | None) -> str:
                 "broad_learned_pursuit_corridor2",
                 "broad_learned_pursuit_corridor1_cap1",
                 "broad_learned_pursuit_corridor1_cap2",
+                "broad_learned_pursuit_corridor1_cap2_w12",
+                "broad_learned_pursuit_corridor1_cap2_w8",
             },
         )
     guard.observe(game_state)
@@ -153,6 +157,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor2",
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
+        "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w8",
     }
     if guard_mode in pursuit_modes:
         pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
@@ -181,6 +187,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor2",
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
+        "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w8",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -206,6 +214,8 @@ def act(self, game_state: dict | None) -> str:
             "broad_learned_pursuit_corridor2": 400,
             "broad_learned_pursuit_corridor1_cap1": 400,
             "broad_learned_pursuit_corridor1_cap2": 400,
+            "broad_learned_pursuit_corridor1_cap2_w12": 400,
+            "broad_learned_pursuit_corridor1_cap2_w8": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -216,6 +226,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_corridor2",
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
+        "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w8",
     }:
         action = pursuit_guard.redirect_unsafe_escape(game_state, action, q_values, legal)
     return action
@@ -236,6 +248,8 @@ def _loop_guard_window(mode: str) -> int:
         "broad_learned_pursuit_corridor2": 16,
         "broad_learned_pursuit_corridor1_cap1": 16,
         "broad_learned_pursuit_corridor1_cap2": 16,
+        "broad_learned_pursuit_corridor1_cap2_w12": 12,
+        "broad_learned_pursuit_corridor1_cap2_w8": 8,
         "mid_attack_second": 16,
     }.get(mode, 24)
 
@@ -248,6 +262,8 @@ def _pursuit_guard_kwargs(mode: str) -> dict:
         "broad_learned_pursuit_corridor2",
         "broad_learned_pursuit_corridor1_cap1",
         "broad_learned_pursuit_corridor1_cap2",
+        "broad_learned_pursuit_corridor1_cap2_w12",
+        "broad_learned_pursuit_corridor1_cap2_w8",
     }
     return {
         "allow_bomb_override": mode != "broad_learned_pursuit_move",
@@ -261,12 +277,16 @@ def _pursuit_guard_kwargs(mode: str) -> dict:
             "broad_learned_pursuit_corridor2": 3,
             "broad_learned_pursuit_corridor1_cap1": 1,
             "broad_learned_pursuit_corridor1_cap2": 2,
+            "broad_learned_pursuit_corridor1_cap2_w12": 2,
+            "broad_learned_pursuit_corridor1_cap2_w8": 2,
         }.get(mode),
         "maximum_immediate_target_escapes": {
             "broad_learned_pursuit_corridor1": 1,
             "broad_learned_pursuit_corridor2": 2,
             "broad_learned_pursuit_corridor1_cap1": 1,
             "broad_learned_pursuit_corridor1_cap2": 1,
+            "broad_learned_pursuit_corridor1_cap2_w12": 1,
+            "broad_learned_pursuit_corridor1_cap2_w8": 1,
         }.get(mode),
         "escape_followup_steps": 7 if mode in safe_followup_modes else 0,
     }
