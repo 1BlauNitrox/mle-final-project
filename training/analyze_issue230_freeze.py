@@ -115,6 +115,43 @@ def collect_rows(run_root: Path = RUN_ROOT) -> list[dict[str, Any]]:
     return rows
 
 
+def load_evidence(path: Path = EVIDENCE) -> list[dict[str, Any]]:
+    """Load the committed evidence without requiring local run outputs."""
+    with path.open(newline="", encoding="utf-8") as handle:
+        stored_rows = list(csv.DictReader(handle))
+
+    rows = []
+    for row in stored_rows:
+        rows.append(
+            {
+                "suite": row["suite"],
+                "phase": row["phase"],
+                "world_seed": _integer(row, "world_seed"),
+                "agent_seed": _integer(row, "agent_seed"),
+                "score": _number(row, "score"),
+                "coins_collected": _integer(row, "coins_collected"),
+                "initially_available_coins": _integer(
+                    row, "initially_available_coins"
+                ),
+                "collection_fraction": _number(row, "collection_fraction"),
+                "self_kills": _integer(row, "self_kills"),
+                "opponents_eliminated": _integer(row, "opponents_eliminated"),
+                "survived": _boolean(row, "survived"),
+                "termination_reason": row["termination_reason"],
+                "executed_action_sequence_sha256": row[
+                    "executed_action_sequence_sha256"
+                ],
+                "first_place": _boolean(row, "first_place"),
+                "tied_first": _boolean(row, "tied_first"),
+                "decision_time_p95_ms": _number(row, "decision_time_p95_ms"),
+                "decision_time_max_ms": _number(row, "decision_time_max_ms"),
+            }
+        )
+    if len(rows) != 240:
+        raise ValueError(f"Expected 240 evidence rows, found {len(rows)}")
+    return rows
+
+
 def summarize(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Aggregate primary confirmation rows by suite."""
     groups: dict[str, list[dict[str, Any]]] = defaultdict(list)
