@@ -312,5 +312,12 @@
       "registered_issue": 225
     }
   ],
-  "caveat": "Eligibility is an experiment-local screen only; final selection requires the fresh submission benchmark and human review."
+  "caveat": "Eligibility is an experiment-local screen only; final selection requires the fresh submission benchmark and human review.",
+  "final_selection_benchmark": {
+    "config": "experiments/2026-09-21-submission-selection-benchmark/config.json",
+    "per_game_rows": 156,
+    "per_game_sha256": "1500169342d305811b9fc0916d9e0432e7a18d8dd4c0f835219b50ba37352482",
+    "analysis_sha256": "fecaf28350b2156a3239b8bd44cd8acbdefb37fc1c6031acb10ff75f335f0782",
+    "automatic_recommendation": "fallback"
+  }
 }
