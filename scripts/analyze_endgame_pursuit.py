@@ -56,6 +56,13 @@ def diagnostics(root, cfg, stage, arm):
                     "rejected_confidence",
                     "rejected_bomb_safety",
                     "rejected_bomb_override",
+                    "bomb_overrides",
+                    "rejected_movement_override",
+                    "rejected_bomb_rank",
+                    "rejected_bomb_limit",
+                    "escape_checks",
+                    "escape_redirects",
+                    "escape_rejected_no_candidate",
                 )
             },
         }
