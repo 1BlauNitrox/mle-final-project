@@ -49,3 +49,35 @@ rate was 0.41 and peaceful-opponent elimination retention was 0.08. Collection
 and latency gates passed, but the primary, peaceful-retention, and repeatability
 gates failed. No Task 4 checkpoint is promoted; the current agent remains a
 Task 3 successor rather than a validated competitive policy.
+
+Issue #230 then audited the completed tabular candidate pool. Its prospective
+confirmation selected no checkpoint: aggregate self-kills were `0.242` against
+a `0.20` ceiling and 40 of 120 repeats differed. Because og time shortage we
+still decided to freeze `r5` from Issue #228 as the highest-ranked Task 4 replica.
+The installed model has 7,909 learned states after 10,000 episodes and further
+training is disabled.
+This deadline override is not a scientific promotion: the failed Task 4,
+safety, and repeatability gates remain part of the artifact's provenance.
+
+What we would have experimented on further:
+- reward shaping: different values for existing rewards -> make coin collection
+and opponent hunting more attractive, reevaluate useful-bomb reward and unuseful-bomb
+-> agent currently places a lot of useless bombs, and generally playing with them
+and see what happens (time restrains and scientific work let us plan preregistered
+experiments, if we had more time we would have tested some random changes to widen
+our horizon and maybe find different changes we could make)
+- evaluate if the features give enough information of the agents surroundings 
+-> he sometimes places bombs where crates are near but the bomb can't reach them
+because there is a block in the way, does our agent know this and doesn't care
+or are the features not sufficient? With more time we would experiment with additional
+features (probably more traing time in combination) or honed the ones we already have.
+Also intresting could be the combination of crates and opponents, beacuse the handling
+of both seems similar.
+- play with hyperparameters, they were except for one experiment largely igrnored
+if we had more time we could test again if a higher epsilon would help training
+also maybe in combination with more training episodes.
+- last we could have revisited failed experiments, some of them failed our pre-
+registered gates but did improve the agent a littlebit, maybe some of them could
+have helped with the later improvements in place. Some had good scientific backround,
+for example potential based reward shaping, but didn't really improve anything here.
+Perhabs with different learning metrics that would have changed.
