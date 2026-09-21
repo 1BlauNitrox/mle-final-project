@@ -5,6 +5,7 @@ agent: DerKleineKonkurrenzvernichter
 date: 2026-09-21
 branch: freeze/230-final-tabular-agent
 base_commit: c414771
+experiment_commit: e1c2814a604c5ba4cbc498fe415ed559112b7b35
 
 objective: >-
   Select, confirm, and package one final tabular submission agent without new
