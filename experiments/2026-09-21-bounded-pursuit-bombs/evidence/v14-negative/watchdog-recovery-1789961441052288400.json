@@ -1,0 +1,27 @@
+{
+  "reason": "Unexpected process exit; recover last verified generation",
+  "orphan_cpu_debit": 0.0,
+  "state": {
+    "restarts": 1,
+    "cpu_seconds": 7.765625,
+    "pid": 583980,
+    "created": 1789961437.9424129,
+    "runner_sha256": "194bf2facc158b93e92b881e5e7a5f5b6154b91a10f8a790774c665239ed6332",
+    "time": 1789961440.2559931,
+    "launching": {
+      "pid": 595724,
+      "created": 1789960028.935364
+    },
+    "launches": 1,
+    "status": "stopped",
+    "family": [
+      {
+        "pid": 596340,
+        "created": 1789960029.0232935
+      }
+    ],
+    "reason": "Persistent stop or retry limit",
+    "cpu_debited": 7.765625
+  },
+  "recovering": true
+}
