@@ -46,6 +46,20 @@ def sources():
     return {path.relative_to(ROOT).as_posix(): sha(path) for path in paths}
 
 
+def bound_config_for_root(root: Path) -> Path:
+    """Find the frozen source config matching a prepared run's copied config."""
+    copied = root / "config.json"
+    if not copied.is_file():
+        return DEFAULT_CONFIG
+    matches = [
+        path
+        for path in (ROOT / "experiments").glob("*/config.json")
+        if sha(path) == sha(copied)
+    ]
+    require(len(matches) == 1, "Prepared config has no unique frozen source match")
+    return matches[0]
+
+
 def bound(root):
     binding, cfg = read(root / "binding.json"), read(root / "config.json")
     require(binding["tools"] == sources(), "Executed tools changed")
@@ -414,10 +428,11 @@ def main():
     parser.add_argument("--config", type=Path)
     args = parser.parse_args()
     args.root = args.root.resolve()
-    run_config = args.root / "config.json"
-    CONFIG = args.config.resolve() if args.config is not None else run_config
-    if not run_config.is_file() and args.config is None:
-        CONFIG = DEFAULT_CONFIG
+    CONFIG = (
+        args.config.resolve()
+        if args.config is not None
+        else bound_config_for_root(args.root)
+    )
     for key in (
         "OMP_NUM_THREADS",
         "MKL_NUM_THREADS",
