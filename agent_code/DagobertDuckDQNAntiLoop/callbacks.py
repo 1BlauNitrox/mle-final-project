@@ -84,6 +84,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_bomb3",
         "broad_learned_pursuit_corridor1",
         "broad_learned_pursuit_corridor2",
+        "broad_learned_pursuit_corridor1_cap1",
+        "broad_learned_pursuit_corridor1_cap2",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -103,6 +105,8 @@ def act(self, game_state: dict | None) -> str:
                 "broad_learned_pursuit_bomb3",
                 "broad_learned_pursuit_corridor1",
                 "broad_learned_pursuit_corridor2",
+                "broad_learned_pursuit_corridor1_cap1",
+                "broad_learned_pursuit_corridor1_cap2",
             },
         )
     guard.observe(game_state)
@@ -147,6 +151,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_bomb3",
         "broad_learned_pursuit_corridor1",
         "broad_learned_pursuit_corridor2",
+        "broad_learned_pursuit_corridor1_cap1",
+        "broad_learned_pursuit_corridor1_cap2",
     }
     if guard_mode in pursuit_modes:
         pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
@@ -156,36 +162,7 @@ def act(self, game_state: dict | None) -> str:
                 raise ValueError(f"{PURSUIT_HEAD_ENV} must contain one file name.")
             pursuit_guard = self.endgame_pursuit_guard = EndgamePursuitGuard.load(
                 Path(__file__).resolve().parent / file_name,
-                allow_bomb_override=guard_mode != "broad_learned_pursuit_move",
-                allow_movement_override=guard_mode
-                in {"broad_learned_pursuit", "broad_learned_pursuit_move"},
-                maximum_better_bomb_actions=(
-                    2
-                    if guard_mode
-                    in {"broad_learned_pursuit_bomb1", "broad_learned_pursuit_bomb3"}
-                    else None
-                ),
-                maximum_bomb_overrides_per_round={
-                    "broad_learned_pursuit_bomb1": 1,
-                    "broad_learned_pursuit_bomb3": 3,
-                    "broad_learned_pursuit_corridor1": 3,
-                    "broad_learned_pursuit_corridor2": 3,
-                }.get(guard_mode),
-                maximum_immediate_target_escapes={
-                    "broad_learned_pursuit_corridor1": 1,
-                    "broad_learned_pursuit_corridor2": 2,
-                }.get(guard_mode),
-                escape_followup_steps=(
-                    7
-                    if guard_mode
-                    in {
-                        "broad_learned_pursuit_bomb1",
-                        "broad_learned_pursuit_bomb3",
-                        "broad_learned_pursuit_corridor1",
-                        "broad_learned_pursuit_corridor2",
-                    }
-                    else 0
-                ),
+                **_pursuit_guard_kwargs(guard_mode),
             )
         action = pursuit_guard.choose(game_state, action, q_values, legal, state)
     if guard_mode in {
@@ -202,6 +179,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_bomb3",
         "broad_learned_pursuit_corridor1",
         "broad_learned_pursuit_corridor2",
+        "broad_learned_pursuit_corridor1_cap1",
+        "broad_learned_pursuit_corridor1_cap2",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -225,6 +204,8 @@ def act(self, game_state: dict | None) -> str:
             "broad_learned_pursuit_bomb3": 400,
             "broad_learned_pursuit_corridor1": 400,
             "broad_learned_pursuit_corridor2": 400,
+            "broad_learned_pursuit_corridor1_cap1": 400,
+            "broad_learned_pursuit_corridor1_cap2": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -233,6 +214,8 @@ def act(self, game_state: dict | None) -> str:
         "broad_learned_pursuit_bomb3",
         "broad_learned_pursuit_corridor1",
         "broad_learned_pursuit_corridor2",
+        "broad_learned_pursuit_corridor1_cap1",
+        "broad_learned_pursuit_corridor1_cap2",
     }:
         action = pursuit_guard.redirect_unsafe_escape(game_state, action, q_values, legal)
     return action
@@ -251,8 +234,42 @@ def _loop_guard_window(mode: str) -> int:
         "broad_learned_pursuit_bomb3": 16,
         "broad_learned_pursuit_corridor1": 16,
         "broad_learned_pursuit_corridor2": 16,
+        "broad_learned_pursuit_corridor1_cap1": 16,
+        "broad_learned_pursuit_corridor1_cap2": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
+
+
+def _pursuit_guard_kwargs(mode: str) -> dict:
+    """Return the fixed runtime controls for one learned-pursuit mode."""
+    bounded_rank_modes = {"broad_learned_pursuit_bomb1", "broad_learned_pursuit_bomb3"}
+    safe_followup_modes = bounded_rank_modes | {
+        "broad_learned_pursuit_corridor1",
+        "broad_learned_pursuit_corridor2",
+        "broad_learned_pursuit_corridor1_cap1",
+        "broad_learned_pursuit_corridor1_cap2",
+    }
+    return {
+        "allow_bomb_override": mode != "broad_learned_pursuit_move",
+        "allow_movement_override": mode
+        in {"broad_learned_pursuit", "broad_learned_pursuit_move"},
+        "maximum_better_bomb_actions": 2 if mode in bounded_rank_modes else None,
+        "maximum_bomb_overrides_per_round": {
+            "broad_learned_pursuit_bomb1": 1,
+            "broad_learned_pursuit_bomb3": 3,
+            "broad_learned_pursuit_corridor1": 3,
+            "broad_learned_pursuit_corridor2": 3,
+            "broad_learned_pursuit_corridor1_cap1": 1,
+            "broad_learned_pursuit_corridor1_cap2": 2,
+        }.get(mode),
+        "maximum_immediate_target_escapes": {
+            "broad_learned_pursuit_corridor1": 1,
+            "broad_learned_pursuit_corridor2": 2,
+            "broad_learned_pursuit_corridor1_cap1": 1,
+            "broad_learned_pursuit_corridor1_cap2": 1,
+        }.get(mode),
+        "escape_followup_steps": 7 if mode in safe_followup_modes else 0,
+    }
 
 
 def _setup_training_policy(self, agent_seed: int) -> None:

@@ -3,6 +3,7 @@
 import numpy as np
 import torch
 
+from agent_code.DagobertDuckDQNAntiLoop.callbacks import _pursuit_guard_kwargs
 from agent_code.DagobertDuckDQNAntiLoop.config import ACTIONS
 from agent_code.DagobertDuckDQNAntiLoop.endgame_pursuit_guard import EndgamePursuitGuard
 from training.endgame_pursuit import (
@@ -150,6 +151,21 @@ def test_corridor_gate_counts_immediate_target_escapes():
     corridor_state["field"][3, 6] = -1
     assert guard._target_escape_options(corridor_state) == [1]
     assert guard.choose(corridor_state, "WAIT", q_values, LEGAL, FEATURES) == "BOMB"
+
+
+def test_corridor_cap_modes_change_only_the_registered_bomb_limit():
+    cap1 = _pursuit_guard_kwargs("broad_learned_pursuit_corridor1_cap1")
+    cap2 = _pursuit_guard_kwargs("broad_learned_pursuit_corridor1_cap2")
+
+    assert cap1 == {
+        "allow_bomb_override": True,
+        "allow_movement_override": False,
+        "maximum_better_bomb_actions": None,
+        "maximum_bomb_overrides_per_round": 1,
+        "maximum_immediate_target_escapes": 1,
+        "escape_followup_steps": 7,
+    }
+    assert cap2 == {**cap1, "maximum_bomb_overrides_per_round": 2}
 
 
 def test_grouped_pursuit_training_accepts_separable_teacher_actions():
