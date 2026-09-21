@@ -50,8 +50,11 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Initialize Task 3 training state."""
-    _initialize_training_state(self)
+    """Reject training of the final deadline-frozen submission policy."""
+    raise RuntimeError(
+        "DerKleineKonkurrenzvernichter is the frozen final tabular agent; "
+        "training is disabled"
+    )
 
 
 def _initialize_training_state(self) -> None:

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "issue": 230,
+  "status": "frozen_by_explicit_deadline_override",
+  "artifact": {
+    "path": "model.npz",
+    "sha256": "945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d",
+    "size_bytes": 197177
+  },
+  "source": {
+    "issue": 228,
+    "plan_id": "issue228-task4-competitive-baseline",
+    "replica": "r5",
+    "training_commit": "026c371a80c0a7189990a13f7bfeb7afe2b34f98",
+    "world_seed": 228005,
+    "agent_seed": 328005,
+    "completed_episodes": 10000,
+    "learned_states": 7909
+  },
+  "selection": {
+    "decision": "freeze_r5_despite_failed_registered_gates",
+    "selected_by": "explicit_human_deadline_override",
+    "selection_basis": "highest Issue #228 prospective lexicographic ranking",
+    "registered_gates_passed": false,
+    "failed_gates": [
+      "competitive_first_place_rate",
+      "peaceful_elimination_retention",
+      "exact_repeatability"
+    ],
+    "authorization_date": "2026-09-21",
+    "submission_deadline_hours_remaining": 4
+  },
+  "evidence": {
+    "experiment": "experiments/2026-09-20-task4-competitive-baseline-DerKleineKonkurrenzvernichter",
+    "competitive_first_place_rate": 0.05,
+    "competitive_tied_first_rate": 0.05,
+    "competitive_mean_score": 2.5,
+    "competitive_survival_rate": 0.2,
+    "competitive_eliminations_per_round": 0.15,
+    "competitive_self_kill_rate": 0.45
+  },
+  "policy": {
+    "training_allowed": false,
+    "promotion_claimed": false,
+    "task4_success_claimed": false
+  }
+}

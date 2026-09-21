@@ -4,16 +4,19 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import Mock
 
-from agent_code.DerKleineKonkurrenzvernichter import callbacks
+import pytest
+
+from agent_code.DerKleineKonkurrenzvernichter import callbacks, train
 
 ROOT = Path(__file__).resolve().parents[1]
 AGENT = ROOT / "agent_code/DerKleineKonkurrenzvernichter"
 MODEL = AGENT / "model.npz"
-EXPECTED_SHA256 = "9ef02537efd75b70cbfdd5f973d391ed4924bec91735e07a51b866f3beeee031"
+EXPECTED_SHA256 = "945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d"
 
 
 def _model_hash() -> str:
@@ -21,8 +24,17 @@ def _model_hash() -> str:
 
 
 def test_confirmation_candidate_integrity() -> None:
-    assert MODEL.stat().st_size == 1493
+    assert MODEL.stat().st_size == 197177
     assert _model_hash() == EXPECTED_SHA256
+
+    artifact = json.loads((AGENT / "artifact.json").read_text(encoding="utf-8"))
+    freeze = json.loads((AGENT / "freeze.json").read_text(encoding="utf-8"))
+    assert artifact["artifact"]["sha256"] == EXPECTED_SHA256
+    assert artifact["policy"]["training_allowed"] is False
+    assert artifact["policy"]["registered_gates_passed"] is False
+    assert freeze["artifact"]["sha256"] == EXPECTED_SHA256
+    assert freeze["selection"]["selected_by"] == "explicit_human_deadline_override"
+    assert freeze["selection"]["registered_gates_passed"] is False
 
 
 def test_candidate_loads_in_evaluation_without_modification(
@@ -45,6 +57,17 @@ def test_candidate_loads_in_evaluation_without_modification(
     assert agent.state_representation == "compact_opponent"
     assert agent.initialization == "task2_prior"
     assert agent.epsilon == 0.0
+    assert agent.completed_episodes == 10000
+    assert len(agent.q_table) == 7909
+    assert _model_hash() == before
+
+
+def test_deadline_frozen_agent_rejects_training() -> None:
+    before = _model_hash()
+
+    with pytest.raises(RuntimeError, match="frozen final tabular agent"):
+        train.setup_training(SimpleNamespace(train=True, logger=Mock()))
+
     assert _model_hash() == before
 
 

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "issue": 230,
+  "decision": "freeze_issue228_r5_by_explicit_deadline_override",
+  "registered_confirmation_passed": false,
+  "selected_checkpoint": "issue228-r5",
+  "artifact_sha256": "945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d",
+  "artifact_size_bytes": 197177,
+  "selection_basis": "highest prospective Issue #228 lexicographic ranking",
+  "scientific_promotion_claimed": false,
+  "task4_success_claimed": false,
+  "human_authorization": {
+    "kind": "explicit_deadline_override",
+    "date": "2026-09-21",
+    "reported_hours_to_submission": 4
+  }
+}

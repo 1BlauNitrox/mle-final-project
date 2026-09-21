@@ -59,17 +59,24 @@ def test_opponent_features_encode_route_distance_and_attack() -> None:
     assert features[5:] == (2, 2, 2)
 
 
-def test_task2_prior_is_preserved_for_every_opponent_suffix() -> None:
+def test_task2_prior_is_preserved_for_unseen_opponent_state() -> None:
     parent = load_parent_prior()
     loaded = load_model()
-    parent_state = next(iter(parent.values))
-    expected = parent.values[parent_state]
+    unseen_state = None
+    for parent_state, expected in parent.values.items():
+        for suffix in ((0, 0, 0), (1, 3, 1), (4, 2, 2)):
+            candidate = (*parent_state, *suffix)
+            if not loaded.q_table.contains_state(candidate):
+                unseen_state = candidate
+                np.testing.assert_array_equal(
+                    loaded.q_table.q_values(candidate),
+                    expected,
+                )
+                break
+        if unseen_state is not None:
+            break
 
-    for suffix in ((0, 0, 0), (1, 3, 1), (4, 2, 2)):
-        np.testing.assert_array_equal(
-            loaded.q_table.q_values((*parent_state, *suffix)),
-            expected,
-        )
+    assert unseen_state is not None
 
 
 def test_shared_target_prefers_reachable_opponent_over_crate() -> None:
@@ -178,9 +185,9 @@ def test_shared_target_model_round_trip(tmp_path) -> None:
     )
 
 
-def test_training_is_enabled_only_in_successor() -> None:
+def test_final_deadline_freeze_rejects_training() -> None:
     agent = SimpleNamespace(train=True, logger=Mock())
     callbacks.setup(agent)
-    train.setup_training(agent)
-    assert agent.completed_episodes == 0
-    assert agent.pending_transition is None
+    with pytest.raises(RuntimeError, match="frozen final tabular agent"):
+        train.setup_training(agent)
+    assert agent.completed_episodes == 10000
