@@ -1,0 +1,316 @@
+{
+  "generated_utc": "2026-09-21T15:38:34.752518+00:00",
+  "scope": "Issue 225 campaign artifacts from 2026-09-20 noon onward, including negative results.",
+  "runs": [
+    {
+      "run": "issue225-autonomous-antiloop-direct",
+      "modified_utc": "2026-09-20T22:03:53.743136+00:00",
+      "complete": true,
+      "eligible": true,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v1",
+      "modified_utc": "2026-09-20T15:47:28.430908+00:00",
+      "complete": true,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v2b",
+      "modified_utc": "2026-09-20T16:28:40.413969+00:00",
+      "complete": true,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v3",
+      "modified_utc": "2026-09-20T17:47:03.117633+00:00",
+      "complete": true,
+      "eligible": true,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v4",
+      "modified_utc": "2026-09-20T18:11:34.221475+00:00",
+      "complete": true,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v5b",
+      "modified_utc": "2026-09-20T19:17:48.549549+00:00",
+      "complete": true,
+      "eligible": true,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-antiloop-v7",
+      "modified_utc": "2026-09-20T21:04:05.259622+00:00",
+      "complete": true,
+      "eligible": true,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-autonomous-safe-attack-v6",
+      "modified_utc": "2026-09-20T19:51:36.115428+00:00",
+      "complete": true,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-bomb-head-v10",
+      "modified_utc": "2026-09-20T23:27:38.267201+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-bounded-pursuit-bombs-v14",
+      "modified_utc": "2026-09-21T03:48:11.820031+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-corridor-pursuit-bombs-v15",
+      "modified_utc": "2026-09-21T04:32:18.635978+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-corridor-pursuit-cap-v16",
+      "modified_utc": "2026-09-21T05:31:02.488168+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-early-loop-pursuit-v18",
+      "modified_utc": "2026-09-21T09:27:59.124778+00:00",
+      "complete": true,
+      "eligible": [
+        "window12"
+      ],
+      "selected": "window12",
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-endgame-pursuit-v12b",
+      "modified_utc": "2026-09-21T01:29:24.693762+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-learned-attack-v11",
+      "modified_utc": "2026-09-20T23:43:13.653167+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-paired-loop-confirmation-v17",
+      "modified_utc": "2026-09-21T06:04:43.498699+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-pc-v2",
+      "modified_utc": "2026-09-20T13:23:32.272476+00:00",
+      "complete": false,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false,
+      "confirmation": {
+        "passed": false,
+        "status": "screen_not_eligible"
+      }
+    },
+    {
+      "run": "issue225-pursuit-move-v13b",
+      "modified_utc": "2026-09-21T02:54:21.123674+00:00",
+      "complete": true,
+      "eligible": [],
+      "selected": null,
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-targeted-pursuit-v19-restart-r3",
+      "modified_utc": "2026-09-21T14:57:20.208736+00:00",
+      "complete": true,
+      "eligible": [
+        "targeted",
+        "postkill"
+      ],
+      "selected": "targeted",
+      "submission_promotion": false
+    },
+    {
+      "run": "issue225-trapped-v9c",
+      "modified_utc": "2026-09-21T00:18:12.217325+00:00",
+      "complete": true,
+      "eligible": false,
+      "selected": null,
+      "submission_promotion": false
+    }
+  ],
+  "registered_experiments": [
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-broad",
+      "config_sha256": "8c7326368e44f4123f15460ce9226673cf2b0929b39f3cbc43debc98253f12b0",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-campaign",
+      "config_sha256": "7646087ebf8baf78245c14d007169bc41b63536345d9c882cdad78d19ae13058",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-cooldown",
+      "config_sha256": "4c0c11b66566ab68e6c93e3a6010bd42b2d29ae2a6ebf5a150fd9c2c6d808237",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-direct",
+      "config_sha256": "d1c6f5a0eaf4504d793daff318062a28c2a20df47d2d576c712bf331b2847743",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-early",
+      "config_sha256": "8c27d6f17e050f3b4a2c8d4b0a42727449cf7f4e2716bc9449815eec57ddaa0d",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-mid",
+      "config_sha256": "ed834e314f20bade48518b75353214f3ae6084578b257dccdcbcd16090bbe95e",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-mid-serial",
+      "config_sha256": "5cc38b038b9c514bc31668cae8691c09108cf42844f3e8827dd2e1fe17165adc",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-antiloop-persistent",
+      "config_sha256": "9dd6993e883ff6a8eed6e89369df58a8867f6da12504d0fdc57f5e1611246922",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-autonomous-safe-attack",
+      "config_sha256": "d300adb26b188643533626e3907ea85c08a994c2f2250267583b2a11a4c2b767",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-20-teacher-loop",
+      "config_sha256": "1bb0f421147b4f441056ca133cb99af9716e4ec2a6d15ab07e040fe659a4ce41",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-autonomous-trapped-attack",
+      "config_sha256": "773818704bddcdcd48057881ee145512e6f224d8b2d3e484fcbe39a58306d480",
+      "purpose": null,
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-bomb-head-finetune",
+      "config_sha256": "a41d17c68c4e259d95e209fb512e37e64310631a942d1d49d4e392ccabde5efa",
+      "purpose": "Owner-attributed successful bombs plus a trapped-opponent teacher can improve eliminations when only the BOMB output row is updated and ordinary-state anchoring preserves the parent policy.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-bounded-pursuit-bombs",
+      "config_sha256": "1d6d589089e94306db2dfbaedfc622ac3ad63d2d05793684cb07a703815baf42",
+      "purpose": "A high-confidence learned endgame attack can retain at least 0.025 kills/game when it changes only BOMB decisions, requires BOMB to be among the frozen DQN's top three legal actions, caps learned bombs per round, and redirects only frozen follow-up actions without a safe continuation.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-corridor-pursuit-bombs",
+      "config_sha256": "ec28259974b270b0d910b43c5b7cd17d22406fa4c125ed2591224a64465bb5fc",
+      "purpose": "High-confidence learned BOMB proposals against opponents with at most one or two immediate moves outside the proposed blast will create at least 0.025 additional kills per multiplayer game while preserving the frozen policy's anti-loop behavior, score, survival, action correctness, and earlier-task collection.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-corridor-pursuit-cap",
+      "config_sha256": "be86ccde36296bf635d38bb59245894aabd7f1abb72077c703bc49ff14b262ff",
+      "purpose": "Restricting the V15 one-escape attack gate to one or two learned bombs per round will retain at least 0.025 additional kills per multiplayer game while eliminating V15's self-kill and loop-rate regressions and preserving score, survival, action correctness, and earlier-task collection.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-early-loop-pursuit",
+      "config_sha256": "a394493ff81c1dd411ddbdfc2ad83268ae2f1b16c27bdf84e5cccb22870adb71",
+      "purpose": "Detecting progress-free cap2 pursuit loops after 12 or 8 steps instead of 16 will retain at least 0.025 additional kills per multiplayer game while preventing any increase in paired loop windows or loop-game incidence and preserving score, survival, self-kills, action correctness, and earlier-task collection.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-learned-attack-gate",
+      "config_sha256": "919f012cdb199e75784612dfabeb7a6b9b113b843fbf7ee96fc0b355d5cb898e",
+      "purpose": "A high-precision classifier trained on causal safe-bomb outcomes can identify rare attack opportunities where a bomb improves eliminations, while an exact geometric and Q-rank gate preserves the anti-loop fallback everywhere else.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-learned-endgame-pursuit",
+      "config_sha256": "5d34bf45afc9fdb2a6b8492c2c320aae675faeca53a9af6b86dcde55249c4f61",
+      "purpose": "A supervised policy trained to pursue reachable safe bombing tiles can improve eliminations in empty-board endgames, while a hard context gate preserves the confirmed fallback whenever crates, visible coins, bombs, or explosions remain.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-paired-loop-confirmation",
+      "config_sha256": "ece264a3db072c7ef9d5a81ddca8ef3faf3399f2b5131551b5a6330c812fe908",
+      "purpose": "The V16 cap2 policy will reproduce at least 0.025 additional kills per multiplayer game on fresh paired worlds while preserving score, survival, self-kills, action correctness, earlier-task collection, loop windows per game, and the incidence of games containing loops.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-post-kill-pursuit",
+      "config_sha256": "4c76c58f60489f29e85b791c66fa705f9ff919c10d560ccd192d44d7e7e9e6d0",
+      "purpose": "Shortening loop history from 16 to 12 steps only after a learned pursuit bomb will retain at least 0.025 additional kills per multiplayer game without increasing paired loop counts or loop-game incidence. Blocking a further learned bomb after that intervention has already eliminated an opponent may reduce self-kills while retaining the kill gain.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-post-kill-pursuit-restart",
+      "config_sha256": "a437f9e5a96dbfa5216d2ee4af14cdb2acea9bc243da0c8fa348a5aa0586cbf8",
+      "purpose": "Shortening loop history from 16 to 12 steps only after a learned pursuit bomb will retain at least 0.025 additional kills per multiplayer game without increasing paired loop counts or loop-game incidence. Blocking a further learned bomb after that intervention has already eliminated an opponent may reduce self-kills while retaining the kill gain.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-pursuit-movement-only",
+      "config_sha256": "ccf11453ffd7f4e571c81d3aeef83b2a2808272338ee136e532d3cfca42441fd",
+      "purpose": "The V12 learned pursuit movement accounts for its +0.058 kills/game signal, while its learned BOMB overrides account for the large self-kill regression; preserving every frozen-DQN bomb decision should retain some kill gain without losing survival or anti-loop behavior.",
+      "registered_issue": 225
+    },
+    {
+      "experiment": "2026-09-21-submission-selection-benchmark",
+      "config_sha256": "399a427fbd350fddb0556e6fb3a0d844657b5be7b58970f088e76ef8191b2d03",
+      "purpose": "Fresh common-seed comparison for the final human submission decision.",
+      "registered_issue": 225
+    }
+  ],
+  "caveat": "Eligibility is an experiment-local screen only; final selection requires the fresh submission benchmark and human review."
+}
