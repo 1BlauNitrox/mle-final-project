@@ -1,4 +1,4 @@
-"""Package immutable Issue #114 evidence with a SHA-256 manifest."""
+"""Package the Issue #114 evidence with a SHA-256 manifest."""
 
 from __future__ import annotations
 

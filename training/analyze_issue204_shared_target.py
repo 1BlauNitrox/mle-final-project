@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #204 shared-target experiment."""
+"""Analyze the Issue #204 shared-target experiment."""
 
 from __future__ import annotations
 
@@ -40,7 +40,7 @@ SUITES = {
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require both completed plans and evaluate every registered gate."""
+    """Check both completed plans and evaluate the fixed criteria."""
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     evidence: list[dict[str, Any]] = []
@@ -197,7 +197,7 @@ def _training_diagnostic(
 
 
 def peaceful_elimination_comparison(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Return the registered matched-replica/seed bootstrap comparison."""
+    """Compare matched replicas and seeds with a bootstrap."""
     values: dict[str, dict[str, dict[int, float]]] = defaultdict(dict)
     for row in rows:
         if row["scenario"] != "peaceful":
@@ -218,7 +218,7 @@ def evaluate_criteria(
     deterministic: bool,
     latency_ok: bool,
 ) -> dict[str, bool]:
-    """Evaluate the exact gates preregistered in config.yaml."""
+    """Evaluate the criteria defined in config.yaml."""
     aggregate = _aggregate(summaries)
     peaceful = {
         treatment: {

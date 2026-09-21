@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #228 Task 4 competitive baseline."""
+"""Analyze the Issue #228 Task 4 competitive baseline."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ SUITES = {
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require the completed plan and evaluate every registered gate."""
+    """Check the completed plan and evaluate the fixed criteria."""
 
     directory = Path(plan_root).resolve() / PLAN_ID
     status = _read_json(directory / "status.json")
@@ -262,7 +262,7 @@ def evaluate_criteria(
     deterministic: bool,
     latency_ok: bool,
 ) -> dict[str, bool]:
-    """Evaluate the exact gates registered before execution."""
+    """Evaluate the criteria fixed before the run."""
 
     def mean(scenario: str, metric: str) -> float:
         values = [
@@ -305,7 +305,7 @@ def evaluate_criteria(
 
 
 def rank_replicas(summaries: list[dict[str, Any]]) -> list[str]:
-    """Apply the prospectively registered competitive checkpoint ordering."""
+    """Apply the checkpoint ordering fixed before the run."""
 
     rows = [row for row in summaries if row["scenario"] == "competitive"]
     if len(rows) != 5:

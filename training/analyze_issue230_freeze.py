@@ -179,7 +179,7 @@ def repeat_mismatches(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def analyze(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    """Apply the prospectively registered freeze gates."""
+    """Apply the freeze criteria fixed before the run."""
     summaries = summarize(rows)
     by_suite = {row["suite"]: row for row in summaries}
     mismatches = repeat_mismatches(rows)
@@ -243,7 +243,7 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
 
 
 def main() -> None:
-    """Write durable evidence and print the gate decision."""
+    """Write the evidence and print the decision."""
     rows = collect_rows()
     result = analyze(rows)
     EXPERIMENT.mkdir(parents=True, exist_ok=True)
