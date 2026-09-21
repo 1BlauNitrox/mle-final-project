@@ -108,9 +108,3 @@ the current default stays unchanged.
 There was also one repeat mismatch and one latency outlier. Since the safety CI
 and collection criteria already failed, rerunning would not change the decision.
 No confirmation seeds were used.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
-and documentation. All reported results come from the saved experiment output
-and require human review.

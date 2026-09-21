@@ -100,9 +100,3 @@ values. For the visited states, the extra category only renamed states instead
 of separating them. This check was not part of the decision criteria and only
 explains why the results were identical.
 Confirmation seeds were not used.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
-and documentation. All reported results come from the saved experiment output
-and require human review.

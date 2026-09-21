@@ -103,9 +103,3 @@ The saved metrics do not distinguish unsafe bombs chosen during exploration
 from unsafe bombs chosen by the learned policy. We therefore cannot tell which
 of the two caused the result.
 Confirmation seeds were not used.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
-and documentation. All reported results come from the saved experiment output
-and require human review before merge.

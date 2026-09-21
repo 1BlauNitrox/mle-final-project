@@ -147,9 +147,3 @@ paired comparison in this experiment is the important one.
 A value such as `0.75` could continue the sweep. A better follow-up would keep
 a strong penalty only when no complete escape route exists and use a weaker
 signal for normal escape progress.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
-and documentation. All reported results come from the saved experiment output
-and require human review.

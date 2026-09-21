@@ -167,9 +167,3 @@ self-kills fell by 72.7%, four replicas improved, and Loot Crate self-kills
 also decreased. The lower collection suggests that the `-5` no-route value or
 the coarse distance buckets make the agent too cautious. A follow-up should use
 a weaker signal or separate bomb-placement risk from escape progress.
-
-## AI assistance
-
-AI assistance was used for implementation, tests, execution, analysis, plots,
-and documentation. The results were checked with Ruff, pytest, and the fixed
-experiment protocol. The owner allowed execution without the usual pause.
