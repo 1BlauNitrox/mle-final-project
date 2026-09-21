@@ -132,31 +132,24 @@ python -m training.plot_issue139_half_strength
 
 ## Interpretation and decision
 
-Reject half-strength shaping as the new default because both registered safety
-criteria failed, despite a statistically supported collection improvement.
+Reject half-strength shaping because both safety criteria failed, even though
+collection improved.
 
-The result supports a genuine strength trade-off. Halving the potential
-restored Classic collection to approximately the historical no-shaping level
-from Issue #135 and improved Loot Crate collection, but also removed the safety
-advantage and more than doubled Loot Crate self-kills relative to full
-strength. This is not evidence that half strength is globally worse: it is
-evidence that it does not satisfy the prospectively required combination of
-collection and safety.
+Halving the potential restored Classic collection and improved Loot Crate
+collection. At the same time, it removed the safety advantage and more than
+doubled Loot Crate self-kills compared with full strength. It therefore does
+not provide the required combination of collection and safety.
 
-The fresh full-strength control also differed from Issue #135's full-strength
-result, which shows that point estimates remain sensitive to trained replicas
-and evaluation populations. The paired within-experiment collection result is
-therefore the defensible causal comparison; the Issue #135 no-shaping value is
-used only for the preregistered absolute guard.
+The new full-strength control also differed from Issue #135. This shows that
+the exact values depend on the trained replicas and evaluation games, so the
+paired comparison in this experiment is the important one.
 
-A further scalar interpolation such as `0.75` could continue the sweep, but a
-more informative follow-up would separate the strong penalty for having no
-complete escape route from ordinary distance-progress shaping. That isolates
-catastrophic bomb-placement risk without suppressing all productive movement.
+A value such as `0.75` could continue the sweep. A better follow-up would keep
+a strong penalty only when no complete escape route exists and use a weaker
+signal for normal escape progress.
 
 ## AI assistance
 
-OpenAI Codex assisted with implementation, tests, protocol registration,
-execution, analysis, plotting and documentation. AI output is not experimental
-evidence; all claims must be computed from retained outputs and reviewed by the
-owner and a non-author reviewer.
+OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
+and documentation. All reported results come from the saved experiment output
+and require human review.

@@ -62,26 +62,23 @@ and size 1,493 bytes.
 
 ## Interpretation
 
-The incumbent retains the earlier collection capabilities and shows some
-peaceful-opponent elimination behavior, but it is unsafe in opponent-heavy play
-and does not produce exact fixed-seed repeats under the registered protocol. It
-also achieved no strict first places in the 20-game competitive confirmation.
-These failures are directly relevant to a final submission freeze and cannot be
-overridden by choosing an attractive failed replica from another experiment.
+The agent kept its earlier collection capability and sometimes eliminated a
+peaceful opponent. However, it was unsafe against active opponents, repeats
+differed, and it achieved no strict first places in the 20 competitive games.
+Choosing a good-looking replica from another failed experiment would not fix
+these problems.
 
 ## Decision
 
-The prospective confirmation selected no checkpoint because the safety and
-repeatability gates failed. For time reasons we still chose to freeze `r5`
-from Issue #228, which ranked first under that experiment's prospective
-lexicographic ordering. This is a submission-packaging decision, not a scientific
-promotion and not evidence that Task 4 passed.
+The confirmation selected no checkpoint because safety and repeatability failed.
+Because of the deadline, we still froze `r5` from Issue #228, which ranked first
+there. This is only the final submission choice and does not mean Task 4 passed.
 
 The frozen model contains 7,909 learned states after 10,000 training episodes.
 Its SHA-256 is
 `945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d`
-and its size is 197,177 bytes. Training is disabled. The manifest preserves the
-failed gates and identifies the human deadline override explicitly.
+and its size is 197,177 bytes. Training is disabled. The manifest also records
+the failed criteria and the deadline decision.
 
 ## Reproduction
 

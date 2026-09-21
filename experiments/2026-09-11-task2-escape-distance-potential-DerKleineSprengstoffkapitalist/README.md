@@ -159,22 +159,17 @@ Generated evidence:
 
 ## Decision
 
-Reject `escape_distance` shaping as the new default because three registered
-gates failed: the safety CI upper bound, Classic collection retention and
-maximum decision time.
+Reject `escape_distance` shaping because the safety CI, Classic collection,
+and maximum decision-time criteria failed.
 
-The treatment nevertheless produced the strongest safety signal observed in
-this experiment sequence: aggregate Classic self-kills fell by 72.7%, four
-replicas improved, and Loot Crate self-kills also decreased. The accompanying
-collection loss suggests that the `-5` no-route potential or the coarse
-distance buckets make the policy too conservative. A follow-up should preserve
-the time-aware progress signal while reducing its magnitude or separating bomb
-placement risk from post-placement escape progress.
+It still produced the best safety result in this experiment sequence: Classic
+self-kills fell by 72.7%, four replicas improved, and Loot Crate self-kills
+also decreased. The lower collection suggests that the `-5` no-route value or
+the coarse distance buckets make the agent too cautious. A follow-up should use
+a weaker signal or separate bomb-placement risk from escape progress.
 
 ## AI assistance
 
-AI assistance was used for implementation, test design, experiment
-registration, execution monitoring, analysis scaffolding, plotting and result
-interpretation. All changes were validated locally with Ruff, pytest and the
-registered deterministic experiment protocol. The owner explicitly authorized
-execution without the normal intermediate approval pause.
+AI assistance was used for implementation, tests, execution, analysis, plots,
+and documentation. The results were checked with Ruff, pytest, and the fixed
+experiment protocol. The owner allowed execution without the usual pause.

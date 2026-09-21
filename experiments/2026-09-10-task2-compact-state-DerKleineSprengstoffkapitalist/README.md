@@ -242,10 +242,8 @@ Generated evidence:
 
 ## Decision
 
-Reject the compact representation as the new default Task 2 state because the
-registered safety criterion and strict unseen-state criterion failed.
+Reject the compact representation as the new default because the safety and
+strict unseen-state criteria failed.
 
-The experiment nevertheless provides strong evidence that compact state
-abstraction improves learning efficiency and coin collection. A follow-up
-experiment should retain the compact representation while addressing bomb and
-escape safety, without changing the interpretation of this completed result.
+The compact state still improved learning efficiency and coin collection. A
+follow-up should keep it and focus on bomb and escape safety.

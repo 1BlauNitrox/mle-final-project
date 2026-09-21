@@ -52,24 +52,19 @@ Because not every gate passed, the registered rule selects no checkpoint.
 
 ## Interpretation
 
-Training the unchanged Task 3 state and reward design directly against three
-rule-based opponents produces occasional strict wins but not a viable Task 4
-policy. The confidence interval remains entirely below the registered 0.10
-target, so the failure is not explained merely by one weak replica. Positive
-mean score also does not imply competitive success because the agent survives
-only 26% of competitive episodes and frequently kills itself.
+Training the Task 3 agent directly against three rule-based opponents produced
+some wins, but not a useful Task 4 policy. Every part of the confidence interval
+stayed below the `0.10` target. The positive mean score is also misleading
+because the agent survived only 26% of competitive games and often killed itself.
 
-Earlier coin-collection capability is retained at the registered thresholds,
-but peaceful hunting regresses below its gate. A next Task 4 experiment should
-therefore not simply extend the same strong-opponent training. The evidence
-supports investigating a curriculum or rehearsal mixture that preserves
-peaceful hunting while gradually introducing active opponents, together with
-state information that distinguishes opponent bombs and immediate competitive
-danger. Any such change requires a new controlled experiment.
+The earlier coin collection stayed above its limits, but peaceful hunting got
+worse. A follow-up could use a curriculum that slowly adds active opponents
+while still training peaceful hunting. Features for opponent bombs and immediate
+danger may also help.
 
-Repeat failures occur across the evaluation matrix and remain a shared
-reproducibility limitation. They do not rescue this baseline because the
-primary first-place and peaceful-retention gates independently fail.
+Repeats differed across several evaluation suites. This should be investigated,
+but it does not change the result because the first-place and peaceful-hunting
+criteria already failed.
 
 ## Decision
 

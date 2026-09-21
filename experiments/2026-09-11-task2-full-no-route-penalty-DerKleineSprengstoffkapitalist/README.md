@@ -100,23 +100,17 @@ python -m training.analyze_issue142_full_no_route --verify-from-evidence
 
 ## Interpretation and decision
 
-The result supports the narrower mechanistic hypothesis descriptively: keeping
-the stronger penalty only for no-route states coincided with substantially
-fewer Classic self-kills than uniform half strength. The paired uncertainty is
-still too wide to establish the registered confirmatory safety improvement,
-and the treatment again sacrifices too much Classic collection. Therefore the
-candidate is rejected as the default, and the current default remains
-unchanged.
+Keeping the stronger penalty only for no-route states led to fewer Classic
+self-kills than uniform half strength. However, the uncertainty is still too
+large and Classic collection dropped too much. The candidate is rejected and
+the current default stays unchanged.
 
-The isolated repeat mismatch and latency outlier also mean the complete
-protocol did not reproduce deterministically under this execution. Because the
-scientific decision already fails the safety-CI and collection gates, rerunning
-that completed observation would not rescue the candidate and would violate
-the prospective comparison. No confirmation seeds were used.
+There was also one repeat mismatch and one latency outlier. Since the safety CI
+and collection criteria already failed, rerunning would not change the decision.
+No confirmation seeds were used.
 
 ## AI assistance
 
-OpenAI Codex assisted with implementation, tests, protocol registration,
-execution, analysis, plotting and documentation. AI output is not experimental
-evidence; all claims must be computed from retained outputs and reviewed by the
-owner and a non-author reviewer.
+OpenAI Codex assisted with implementation, tests, execution, analysis, plots,
+and documentation. All reported results come from the saved experiment output
+and require human review.

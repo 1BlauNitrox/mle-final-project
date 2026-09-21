@@ -60,23 +60,18 @@ treatments, so the registered determinism gate also failed.
 
 ## Interpretation
 
-The shared representation substantially reduces state fragmentation, but the
-extra reuse did not translate into better opponent hunting. Combining crate and
-opponent targets appears to introduce harmful aliasing: states that require
-different pursuit and bomb-risk behaviour receive the same value estimates.
-That interpretation is consistent with unchanged peaceful eliminations and the
-simultaneous safety and Coin Heaven regressions.
+The shared representation created fewer states and more reuse, but opponent
+hunting did not improve. Crates and opponents sometimes need different actions,
+so combining them probably merges states that should stay separate. This fits
+the unchanged eliminations and the worse safety and Coin Heaven results.
 
-Because both arms used the corrected Task 2 prior, the comparison isolates the
-representation change within this experiment. It should not be compared as an
-exact reproduction of the historical Issue #186 numbers. The repeatability
-failure affects both treatments and should be investigated separately, but it
-does not rescue the candidate: its primary paired hunting estimate is neutral
-and its registered retention and safety gates independently fail.
+Both variants used the corrected Task 2 prior, so the comparison is fair within
+this experiment but is not an exact repeat of Issue #186. Repeatability failed
+for both variants and should be investigated separately. It does not change the
+decision because hunting did not improve and the safety criteria also failed.
 
 ## Decision
 
-Reject `compact_shared_target` as the Task 3 successor. Keep
-`compact_opponent` as the current representation. The compact candidate may be
-useful as evidence that fewer states and more visits per state are not
-sufficient when the abstraction merges behaviourally different targets.
+Reject `compact_shared_target` and keep `compact_opponent`. Fewer states and
+more visits per state are not useful when different targets need different
+behavior.

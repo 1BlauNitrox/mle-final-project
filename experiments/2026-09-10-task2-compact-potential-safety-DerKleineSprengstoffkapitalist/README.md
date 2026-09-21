@@ -205,12 +205,10 @@ Generated evidence:
 
 ## Decision
 
-Reject `compact_safety` potential shaping as the default. It preserved the
-compact representation's learning efficiency and did not reduce `classic`
-collection, but it failed to reduce self-kills and slightly increased the
-aggregate self-kill rate.
+Reject `compact_safety` shaping. It kept the learning-efficiency and `classic`
+collection benefits, but it did not reduce self-kills. The overall self-kill
+rate even increased slightly.
 
-The result suggests that this coarse state-only potential does not distinguish
-enough between genuinely safe escape progress and locally safe but ultimately
-trapped movement. A future experiment should improve the safety information or
-the potential definition rather than merely increasing the shaping magnitude.
+The potential probably cannot distinguish a complete escape from a move that
+is only safe for the next step. A follow-up should improve that information
+instead of only increasing the reward strength.
