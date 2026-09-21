@@ -1,0 +1,64 @@
+{
+  "passed": true,
+  "groups": {
+    "pilot.classic": {
+      "first": 1838100001,
+      "last": 1838100060,
+      "count": 60
+    },
+    "pilot.mixed": {
+      "first": 1838101001,
+      "last": 1838101030,
+      "count": 30
+    },
+    "pilot.peaceful": {
+      "first": 1838102001,
+      "last": 1838102030,
+      "count": 30
+    },
+    "pilot.coins": {
+      "first": 1838103001,
+      "last": 1838103020,
+      "count": 20
+    },
+    "pilot.crates": {
+      "first": 1838104001,
+      "last": 1838104020,
+      "count": 20
+    },
+    "confirmation.classic": {
+      "first": 1838200001,
+      "last": 1838200160,
+      "count": 160
+    },
+    "confirmation.mixed": {
+      "first": 1838201001,
+      "last": 1838201080,
+      "count": 80
+    },
+    "confirmation.peaceful": {
+      "first": 1838202001,
+      "last": 1838202040,
+      "count": 40
+    },
+    "confirmation.coins": {
+      "first": 1838203001,
+      "last": 1838203040,
+      "count": 40
+    },
+    "confirmation.crates": {
+      "first": 1838204001,
+      "last": 1838204040,
+      "count": 40
+    },
+    "confirmation.latency": {
+      "first": 1838205001,
+      "last": 1838205010,
+      "count": 10
+    }
+  },
+  "special": [
+    1838090010,
+    1838099991
+  ]
+}
