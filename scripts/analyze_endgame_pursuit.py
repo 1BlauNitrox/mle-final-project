@@ -107,14 +107,35 @@ def gate(root, cfg, stage, candidate, *, latency=False):
     baseline_values = [row for suite in multiplayer for row in rows(root, stage, "baseline", suite)]
     candidate_loop, baseline_loop = loop_rate(candidate_values), loop_rate(baseline_values)
     effects["loops"] = {"candidate": candidate_loop, "baseline": baseline_loop}
-    gates["loops"] = bool(
-        candidate_loop["eligible"]
-        and baseline_loop["eligible"]
-        and candidate_loop["rate"] is not None
-        and baseline_loop["rate"] is not None
-        and candidate_loop["rate"]
-        <= max(screen["loop_absolute_rate"], baseline_loop["rate"] * screen["loop_ratio"])
-    )
+    if "loop_count_increase_per_game" in screen:
+        loop_counts = np.asarray(
+            [row["broad_loop_windows"]["looping"] for row in candidate_values], dtype=float
+        ) - np.asarray(
+            [row["broad_loop_windows"]["looping"] for row in baseline_values], dtype=float
+        )
+        loop_games = np.asarray(
+            [row["broad_loop_windows"]["looping"] > 0 for row in candidate_values], dtype=float
+        ) - np.asarray(
+            [row["broad_loop_windows"]["looping"] > 0 for row in baseline_values], dtype=float
+        )
+        effects["loop_count_increase_per_game"] = float(loop_counts.mean())
+        effects["loop_game_incidence_increase"] = float(loop_games.mean())
+        gates["loop_count"] = effects["loop_count_increase_per_game"] <= (
+            screen["loop_count_increase_per_game"] + 1e-12
+        )
+        gates["loop_game_incidence"] = effects["loop_game_incidence_increase"] <= (
+            screen["loop_game_incidence_increase"] + 1e-12
+        )
+        gates["loops"] = gates["loop_count"] and gates["loop_game_incidence"]
+    else:
+        gates["loops"] = bool(
+            candidate_loop["eligible"]
+            and baseline_loop["eligible"]
+            and candidate_loop["rate"] is not None
+            and baseline_loop["rate"] is not None
+            and candidate_loop["rate"]
+            <= max(screen["loop_absolute_rate"], baseline_loop["rate"] * screen["loop_ratio"])
+        )
     overrides = sum(row["endgame_pursuit_guard"]["overrides"] for row in candidate_values)
     effects["pursuit_overrides"] = overrides
     gates["pursuit_exposure"] = overrides >= screen["minimum_pursuit_overrides"]
