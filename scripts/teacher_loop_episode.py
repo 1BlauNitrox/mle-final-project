@@ -97,6 +97,8 @@ def play_episode(
     collect_head_training_trace=False,
     trace_stride=20,
     attack_head_name=None,
+    collect_pursuit_training_trace=False,
+    pursuit_head_name=None,
 ):
 
     source = (root / "source").resolve()
@@ -121,6 +123,7 @@ def play_episode(
     decision_record = None
     anchor_records = []
     placed_bomb_records = []
+    pursuit_records = []
 
     def observe_action(world, agent, action):
         if agent is learner:
@@ -171,9 +174,12 @@ def play_episode(
         if training and tracker is not None and hasattr(tracker, "observe"):
             tracker.observe(state)
         action = original_act(policy, state)
-        if collect_head_training_trace:
+        if collect_head_training_trace or collect_pursuit_training_trace:
             import torch
 
+            from agent_code.DagobertDuckDQNAntiLoop.endgame_pursuit_guard import (
+                pursuit_input,
+            )
             from agent_code.DagobertDuckDQNAntiLoop.legality import (
                 framework_legal_action_mask,
             )
@@ -191,28 +197,42 @@ def play_episode(
                 q_values = (
                     policy.policy_network(torch.from_numpy(features).to(CPU_DEVICE)).cpu().numpy()
                 )
-            trapped = (
-                TrappedAttackGuard().choose(
-                    state,
-                    "WAIT",
-                    lambda: q_values,
-                    legal,
+            if collect_head_training_trace:
+                trapped = (
+                    TrappedAttackGuard().choose(
+                        state,
+                        "WAIT",
+                        lambda: q_values,
+                        legal,
+                    )
+                    == "BOMB"
                 )
-                == "BOMB"
-            )
-            decision_record = {
-                "step": int(state["step"]),
-                "features": features.tolist(),
-                "q_values": q_values.tolist(),
-                "legal": legal.tolist(),
-                "safe_attack": bool(observed and observed["safe_attack_position"]),
-                "trapped_attack": bool(trapped),
-                "selected_action": action,
-            }
-            if trace_stride <= 0:
-                raise ValueError("trace_stride must be positive")
-            if int(state["step"]) % trace_stride == 0 or trapped:
-                anchor_records.append(dict(decision_record))
+                decision_record = {
+                    "step": int(state["step"]),
+                    "features": features.tolist(),
+                    "q_values": q_values.tolist(),
+                    "legal": legal.tolist(),
+                    "safe_attack": bool(observed and observed["safe_attack_position"]),
+                    "trapped_attack": bool(trapped),
+                    "selected_action": action,
+                }
+                if trace_stride <= 0:
+                    raise ValueError("trace_stride must be positive")
+                if int(state["step"]) % trace_stride == 0 or trapped:
+                    anchor_records.append(dict(decision_record))
+            if collect_pursuit_training_trace:
+                from training.endgame_pursuit import pursuit_teacher_action
+
+                teacher_action = pursuit_teacher_action(state, legal)
+                if teacher_action is not None:
+                    pursuit_records.append(
+                        {
+                            "step": int(state["step"]),
+                            "input": pursuit_input(state, features, q_values).tolist(),
+                            "teacher_action": teacher_action,
+                            "selected_action": action,
+                        }
+                    )
         return action
 
     log_dir = root / "framework-logs" / str(os.getpid())
@@ -247,6 +267,8 @@ def play_episode(
         env["BOMBERMAN_NARROW_LOOP_GUARD"] = guard_mode
     if attack_head_name is not None:
         env["BOMBERMAN_ATTACK_HEAD"] = attack_head_name
+    if pursuit_head_name is not None:
+        env["BOMBERMAN_PURSUIT_HEAD"] = pursuit_head_name
     with (
         release_agent_logs(),
         patch.dict(os.environ, env),
@@ -355,6 +377,14 @@ def play_episode(
                 "rejected_rank": 0,
                 "rejected_confidence": 0,
             },
+            "endgame_pursuit_guard": getattr(policy, "endgame_pursuit_guard", None).snapshot()
+            if hasattr(policy, "endgame_pursuit_guard")
+            else {
+                "eligible": 0,
+                "overrides": 0,
+                "rejected_confidence": 0,
+                "rejected_bomb_safety": 0,
+            },
             "completed_episodes": policy.completed_episodes,
             "loop_penalties": getattr(policy, "loop_penalty_count", 0),
             "optimizer_updates": policy.learner.update_steps if training else None,
@@ -374,4 +404,6 @@ def play_episode(
                     )
                 ],
             }
+        if collect_pursuit_training_trace:
+            result["pursuit_training_trace"] = pursuit_records
         return result

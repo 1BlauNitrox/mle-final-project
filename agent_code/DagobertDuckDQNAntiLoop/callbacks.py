@@ -10,6 +10,7 @@ import numpy as np
 import torch
 
 from .config import ACTIONS, DEFAULT_CONFIG, DQNConfig
+from .endgame_pursuit_guard import EndgamePursuitGuard
 from .learned_attack_guard import LearnedAttackGuard
 from .legality import framework_legal_action_mask
 from .model import CPU_DEVICE, DQNLearner, select_action
@@ -29,6 +30,7 @@ ACTION_MASKING_ENV = "BOMBERMAN_DQN_ACTION_MASKING"
 ESCAPE_CONTINUATIONS_ENV = "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS"
 NARROW_LOOP_GUARD_ENV = "BOMBERMAN_NARROW_LOOP_GUARD"
 ATTACK_HEAD_ENV = "BOMBERMAN_ATTACK_HEAD"
+PURSUIT_HEAD_ENV = "BOMBERMAN_PURSUIT_HEAD"
 DEFAULT_NARROW_LOOP_GUARD_MODE = "broad_persistent"
 
 
@@ -76,6 +78,7 @@ def act(self, game_state: dict | None) -> str:
         "broad_persistent",
         "broad_trapped_attack",
         "broad_learned_attack",
+        "broad_learned_pursuit",
         "mid_attack_second",
     }:
         raise ValueError(f"Invalid {NARROW_LOOP_GUARD_ENV} mode")
@@ -85,7 +88,12 @@ def act(self, game_state: dict | None) -> str:
         guard = self.narrow_loop_guard = NarrowLoopGuard(
             window=window,
             require_no_crates=guard_mode
-            not in {"broad_persistent", "broad_trapped_attack", "broad_learned_attack"},
+            not in {
+                "broad_persistent",
+                "broad_trapped_attack",
+                "broad_learned_attack",
+                "broad_learned_pursuit",
+            },
         )
     guard.observe(game_state)
 
@@ -122,6 +130,16 @@ def act(self, game_state: dict | None) -> str:
                 self.policy_network,
             )
         action = attack_guard.choose(game_state, action, q_values, legal, state)
+    if guard_mode == "broad_learned_pursuit":
+        pursuit_guard = getattr(self, "endgame_pursuit_guard", None)
+        if pursuit_guard is None:
+            file_name = os.environ.get(PURSUIT_HEAD_ENV, "pursuit_head.pt")
+            if not file_name or file_name != os.path.basename(file_name):
+                raise ValueError(f"{PURSUIT_HEAD_ENV} must contain one file name.")
+            pursuit_guard = self.endgame_pursuit_guard = EndgamePursuitGuard.load(
+                Path(__file__).resolve().parent / file_name
+            )
+        action = pursuit_guard.choose(game_state, action, q_values, legal, state)
     if guard_mode in {
         "cooldown",
         "persistent",
@@ -130,6 +148,7 @@ def act(self, game_state: dict | None) -> str:
         "broad_persistent",
         "broad_trapped_attack",
         "broad_learned_attack",
+        "broad_learned_pursuit",
         "mid_attack_second",
     }:
         action = guard.redirect_contested(game_state, action, q_values, legal)
@@ -147,6 +166,7 @@ def act(self, game_state: dict | None) -> str:
             "broad_persistent": 400,
             "broad_trapped_attack": 400,
             "broad_learned_attack": 400,
+            "broad_learned_pursuit": 400,
             "mid_attack_second": 400,
         }[guard_mode],
     )
@@ -159,6 +179,7 @@ def _loop_guard_window(mode: str) -> int:
         "broad_persistent": 16,
         "broad_trapped_attack": 16,
         "broad_learned_attack": 16,
+        "broad_learned_pursuit": 16,
         "mid_attack_second": 16,
     }.get(mode, 24)
 
