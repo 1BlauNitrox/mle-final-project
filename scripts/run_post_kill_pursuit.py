@@ -72,6 +72,27 @@ def prepare(args):
     args.root.mkdir(parents=True)
     shutil.copy2(CONFIG, args.root / "config.json")
     shutil.copy2(args.reference, args.root / "reference.pt")
+    carried_inputs = []
+    carry_forward = cfg.get("carry_forward", {})
+    if carry_forward:
+        source_root = (ROOT / carry_forward["source_root"]).resolve()
+        transferred = {}
+        for relative, expected_sha256 in carry_forward["results"].items():
+            source = source_root / relative
+            require(source.is_file(), f"Missing carried result: {relative}")
+            require(sha(source) == expected_sha256, f"Changed carried result: {relative}")
+            destination = args.root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+            carried_inputs.append(destination)
+            transferred[relative] = {
+                "source": str(source),
+                "sha256": expected_sha256,
+                "bytes": source.stat().st_size,
+            }
+        transfer = args.root / "restart-transfer.json"
+        write(transfer, {"source_root": str(source_root), "results": transferred})
+        carried_inputs.append(transfer)
     archive = args.root / "runtime.tar"
     subprocess.run(
         ["git", "archive", "--format=tar", f"--output={archive}", cfg["runtime_commit"]],
@@ -111,6 +132,7 @@ def prepare(args):
     inputs = [
         args.root / "reference.pt",
         path,
+        *carried_inputs,
     ]
     inputs += [
         path
@@ -381,14 +403,17 @@ def run(root):
 
 
 def main():
+    global CONFIG
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mode", choices=("prepare", "smoke", "run", "export"))
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--reference", type=Path)
     parser.add_argument("--head85", type=Path)
     parser.add_argument("--device", default="pc")
+    parser.add_argument("--config", type=Path, default=CONFIG)
     args = parser.parse_args()
     args.root = args.root.resolve()
+    CONFIG = args.config.resolve()
     for key in (
         "OMP_NUM_THREADS",
         "MKL_NUM_THREADS",
