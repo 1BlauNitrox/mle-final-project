@@ -20,6 +20,7 @@ from .representations import (
     encode_state,
     get_state_representation,
 )
+from .shared_targets import SHARED_TARGET_STATE_REPRESENTATION
 
 __all__ = [
     "FEATURE_COUNT",
@@ -29,6 +30,7 @@ __all__ = [
     "THEORETICAL_STATE_SPACE_UPPER_BOUND",
     "StateFeatures",
     "OPPONENT_STATE_REPRESENTATION",
+    "SHARED_TARGET_STATE_REPRESENTATION",
     "state_to_features",
     "validate_features",
     "BASELINE_STATE_REPRESENTATION",

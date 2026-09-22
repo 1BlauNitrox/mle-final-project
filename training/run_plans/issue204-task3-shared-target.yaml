@@ -1,0 +1,63 @@
+schema_version: 1
+plan_id: issue204-task3-shared-target
+agent: DerKleineKonkurrenzvernichter
+artifact_path: model.npz
+action_masking: none
+useful_bomb_reward: 0.0
+state_representation: compact_shared_target
+potential_shaping: none
+tabular_exploration_mode: standard
+tabular_initialization: task2_prior
+max_parallel_training: 2
+
+replicas:
+  - {id: r1, world_seed: 204001, agent_seed: 304001}
+  - {id: r2, world_seed: 204002, agent_seed: 304002}
+  - {id: r3, world_seed: 204003, agent_seed: 304003}
+  - {id: r4, world_seed: 204004, agent_seed: 304004}
+  - {id: r5, world_seed: 204005, agent_seed: 304005}
+
+training_stages:
+  - {id: peaceful-hunting, scenario: classic, rounds: 10000, opponents: [peaceful_agent]}
+
+evaluation_suites:
+  - id: peaceful-primary
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: &peaceful_worlds [204101, 204102, 204103, 204104, 204105, 204106, 204107, 204108, 204109, 204110, 204111, 204112, 204113, 204114, 204115, 204116, 204117, 204118, 204119, 204120]
+    agent_seeds: &peaceful_agents [304101, 304102, 304103, 304104, 304105, 304106, 304107, 304108, 304109, 304110, 304111, 304112, 304113, 304114, 304115, 304116, 304117, 304118, 304119, 304120]
+    opponents: [peaceful_agent]
+  - {id: peaceful-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *peaceful_worlds, agent_seeds: *peaceful_agents, opponents: [peaceful_agent]}
+  - id: coincollector-primary
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: &collector_worlds [204201, 204202, 204203, 204204, 204205, 204206, 204207, 204208, 204209, 204210, 204211, 204212, 204213, 204214, 204215, 204216, 204217, 204218, 204219, 204220]
+    agent_seeds: &collector_agents [304201, 304202, 304203, 304204, 304205, 304206, 304207, 304208, 304209, 304210, 304211, 304212, 304213, 304214, 304215, 304216, 304217, 304218, 304219, 304220]
+    opponents: [coin_collector_agent]
+  - {id: coincollector-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *collector_worlds, agent_seeds: *collector_agents, opponents: [coin_collector_agent]}
+  - id: classic-primary
+    population: development
+    scenario: classic
+    rounds: 1
+    world_seeds: &classic_worlds [204301, 204302, 204303, 204304, 204305, 204306, 204307, 204308, 204309, 204310, 204311, 204312, 204313, 204314, 204315, 204316, 204317, 204318, 204319, 204320]
+    agent_seeds: &classic_agents [304301, 304302, 304303, 304304, 304305, 304306, 304307, 304308, 304309, 304310, 304311, 304312, 304313, 304314, 304315, 304316, 304317, 304318, 304319, 304320]
+    opponents: []
+  - {id: classic-repeat, population: development, scenario: classic, rounds: 1, world_seeds: *classic_worlds, agent_seeds: *classic_agents, opponents: []}
+  - id: coin-heaven-primary
+    population: development
+    scenario: coin-heaven
+    rounds: 1
+    world_seeds: &coin_worlds [204401, 204402, 204403, 204404, 204405, 204406, 204407, 204408, 204409, 204410, 204411, 204412, 204413, 204414, 204415, 204416, 204417, 204418, 204419, 204420]
+    agent_seeds: &coin_agents [304401, 304402, 304403, 304404, 304405, 304406, 304407, 304408, 304409, 304410, 304411, 304412, 304413, 304414, 304415, 304416, 304417, 304418, 304419, 304420]
+    opponents: []
+  - {id: coin-heaven-repeat, population: development, scenario: coin-heaven, rounds: 1, world_seeds: *coin_worlds, agent_seeds: *coin_agents, opponents: []}
+  - id: loot-crate-primary
+    population: development
+    scenario: loot-crate
+    rounds: 1
+    world_seeds: &loot_worlds [204501, 204502, 204503, 204504, 204505, 204506, 204507, 204508, 204509, 204510, 204511, 204512, 204513, 204514, 204515, 204516, 204517, 204518, 204519, 204520]
+    agent_seeds: &loot_agents [304501, 304502, 304503, 304504, 304505, 304506, 304507, 304508, 304509, 304510, 304511, 304512, 304513, 304514, 304515, 304516, 304517, 304518, 304519, 304520]
+    opponents: []
+  - {id: loot-crate-repeat, population: development, scenario: loot-crate, rounds: 1, world_seeds: *loot_worlds, agent_seeds: *loot_agents, opponents: []}
