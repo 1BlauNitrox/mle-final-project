@@ -486,6 +486,18 @@ def test_task3_tabular_prior_can_be_selected(tmp_path: Path) -> None:
     assert plan.tabular_initialization == "task2_prior"
 
 
+def test_shared_target_task3_prior_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["agent"] = "DerKleineKonkurrenzvernichter"
+    data["state_representation"] = "compact_shared_target"
+    data["tabular_initialization"] = "task2_prior"
+
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+
+    assert plan.state_representation == "compact_shared_target"
+    assert plan.tabular_initialization == "task2_prior"
+
+
 def test_half_escape_distance_treatment_can_be_selected(tmp_path: Path) -> None:
     data = _plan_data()
     data["state_representation"] = "compact_decision"

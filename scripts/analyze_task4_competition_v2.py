@@ -20,6 +20,7 @@ from scripts.pilot_task4_competition import (
     artifacts,
     config,
     episode_epsilon,
+    evaluated_suites,
     read_json,
     sha,
     verify,
@@ -67,9 +68,7 @@ def legality_not_worse(invalid_by_artifact):
 
 def median_replica_by_score(suite_summary, arm, replicas):
     """The median-final replica by hunting score; the best-looking one is not selectable."""
-    ordered = sorted(
-        range(replicas), key=lambda r: (suite_summary[f"{arm}-r{r + 1}"]["score"], r)
-    )
+    ordered = sorted(range(replicas), key=lambda r: (suite_summary[f"{arm}-r{r + 1}"]["score"], r))
     return ordered[len(ordered) // 2]
 
 
@@ -227,26 +226,30 @@ def analyze(root):
     models = artifacts(root)
     initial_network_hash = verify_training_tensors(root)
     arms = cfg["arms"]
-    treatments = [arm for arm in arms if arm != "control"]
     replicas = cfg["replicas"]
     uncertainty = cfg["uncertainty"]
     # The promotion rule is conjunctive, so its individual tests need no
     # adjustment (an intersection-union test holds its level). The multiplicity
     # that does inflate the error rate is the number of treatment arms that each
     # get a chance to be promoted, so the family size is that arm count.
-    percent = 100.0 - (100.0 - uncertainty["interval_percent"]) / max(len(treatments), 1)
+    # The multiplicity that inflates the error rate is the number of arms that
+    # each get a chance to be promoted. The control arm is judged here too, so
+    # that is every arm, which widens the intervals. The correction has to follow
+    # the rule it protects, and the conservative direction is the correct one.
+    family = max(len(arms), 1)
+    percent = 100.0 - (100.0 - uncertainty["interval_percent"]) / family
 
     data, environments = _load_stage(
         root,
         "evaluation",
         models,
         cfg,
-        expected_jobs=len(models) * len(cfg["evaluation_suites"]),
+        expected_jobs=len(models) * len(evaluated_suites(cfg)),
     )
     expected = {
         (artifact, suite, seed, repeat)
         for artifact in models
-        for suite, setting in cfg["evaluation_suites"].items()
+        for suite, setting in evaluated_suites(cfg).items()
         for seed in setting["world_seeds"]
         for repeat in range(cfg["evaluation_repeats"])
     }
@@ -260,7 +263,7 @@ def analyze(root):
 
     hunting_suite = cfg["hunting_suite"]
     summary, paired, retention = {}, {}, {}
-    for suite, setting in cfg["evaluation_suites"].items():
+    for suite, setting in evaluated_suites(cfg).items():
         seeds = setting["world_seeds"]
         rows = {a: [metrics(data[(a, suite, w, 0)]) for w in seeds] for a in models}
         opponent_free = not setting["opponents"]
@@ -290,9 +293,9 @@ def analyze(root):
                     matrix = [
                         [
                             rows[f"{arm}-r{r + 1}"][w][metric]
-                            - rows[
-                                "reference" if baseline == "reference" else f"control-r{r + 1}"
-                            ][w][metric]
+                            - rows["reference" if baseline == "reference" else f"control-r{r + 1}"][
+                                w
+                            ][metric]
                             for w in range(len(seeds))
                         ]
                         for r in range(replicas)
@@ -385,9 +388,7 @@ def analyze(root):
     if initial_hashes != {initial_network_hash}:
         raise ValueError("Unequal initialization")
 
-    latency_data, _ = _load_stage(
-        root, "latency", models, cfg, expected_jobs=len(models)
-    )
+    latency_data, _ = _load_stage(root, "latency", models, cfg, expected_jobs=len(models))
     times = sorted(
         t
         for row in latency_data.values()
@@ -444,7 +445,7 @@ def analyze(root):
             == behavioral(data[("reference", s, w, 0)]["native"])
             and data[(f"{arm}-r{r + 1}", s, w, 0)]["greedy_actions_sha256"]
             == data[("reference", s, w, 0)]["greedy_actions_sha256"]
-            for s, setting in cfg["evaluation_suites"].items()
+            for s, setting in evaluated_suites(cfg).items()
             if not setting["opponents"]
             for w in setting["world_seeds"]
             for arm in arms
@@ -457,13 +458,16 @@ def analyze(root):
 
     thresholds = cfg["decision_thresholds"]
     efficacy, diagnostics, promotable = {}, {}, []
-    for arm in treatments:
-        versus_control = hunting[arm]["control"]
+    # Every arm is judged, not only the treatments. The control arm is a trained
+    # agent like any other - it is the *reference* that is untrained - so a rule
+    # that skips it cannot select the best available agent whenever the baseline
+    # setting happens to win. Gates defined against the control are not
+    # applicable to the control itself and are reported as null.
+    for arm in arms:
+        versus_control = None if arm == "control" else hunting[arm]["control"]
         versus_reference = hunting[arm]["reference"]
         arm_retention = all(
-            retention[suite][arm][key]
-            for suite in retention
-            for key in ("coins", "self_kills")
+            retention[suite][arm][key] for suite in retention for key in ("coins", "self_kills")
         )
         # Re-specified: the registered primary endpoint is score, because tournament
         # placing is decided by score. The +0.10 elimination thresholds were carried
@@ -479,28 +483,28 @@ def analyze(root):
                 "mean_difference"
             ]
             >= -thresholds["self_kills"],
-            "self_kills_versus_control": versus_control["self_kills"]["mean_difference"]
-            <= thresholds["self_kills"],
+            "self_kills_versus_control": None
+            if versus_control is None
+            else versus_control["self_kills"]["mean_difference"] <= thresholds["self_kills"],
             "self_kills_versus_reference": versus_reference["self_kills"]["mean_difference"]
             <= thresholds["self_kills"],
             "nonworse_replicas": nonworse[arm] >= thresholds["nonworse_replicas"],
             "earlier_task_retention": arm_retention,
         }
         diagnostics[arm] = {
-            "exposure_increase": versus_control["attack_opportunities_per_100_steps"][
-                "mean_difference"
-            ]
+            "exposure_increase": None
+            if versus_control is None
+            else versus_control["attack_opportunities_per_100_steps"]["mean_difference"] > 0,
+            "exposure_increase_ci": None
+            if versus_control is None
+            else versus_control["attack_opportunities_per_100_steps"]["paired_crossed_bootstrap"][0]
             > 0,
-            "exposure_increase_ci": versus_control["attack_opportunities_per_100_steps"][
-                "paired_crossed_bootstrap"
-            ][0]
-            > 0,
-            "hunting_improvement": versus_control["eliminations"]["mean_difference"]
-            >= thresholds["eliminations"],
-            "hunting_improvement_ci": versus_control["eliminations"][
-                "paired_crossed_bootstrap"
-            ][0]
-            > 0,
+            "hunting_improvement": None
+            if versus_control is None
+            else versus_control["eliminations"]["mean_difference"] >= thresholds["eliminations"],
+            "hunting_improvement_ci": None
+            if versus_control is None
+            else versus_control["eliminations"]["paired_crossed_bootstrap"][0] > 0,
             "hunting_versus_reference": versus_reference["eliminations"]["mean_difference"]
             >= thresholds["eliminations"],
             "hunting_versus_reference_ci": versus_reference["eliminations"][
@@ -509,7 +513,7 @@ def analyze(root):
             > 0,
         }
         efficacy[arm] = checks
-        if all(blocking_gates(integrity)) and all(checks.values()):
+        if all(blocking_gates(integrity)) and all(blocking_gates(checks)):
             promotable.append(arm)
 
     # Registered selection, as the configuration states it: "the largest mean score
@@ -544,7 +548,7 @@ def analyze(root):
         "retention_suites": retention,
         "selection": selection,
         "interval_percent": percent,
-        "bonferroni_family_size": max(len(treatments), 1),
+        "bonferroni_family_size": family,
         "summary": summary,
         "paired_differences": paired,
         "training_summary": training_summary,
