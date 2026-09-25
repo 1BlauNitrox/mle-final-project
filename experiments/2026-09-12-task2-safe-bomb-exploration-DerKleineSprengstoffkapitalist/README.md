@@ -94,22 +94,12 @@ The committed result is reproduced from compact evidence with:
 
 ## Interpretation and decision
 
-Reject `safe_bomb` exploration and retain standard epsilon-greedy exploration.
-Restricting only random unsafe bomb choices did not transfer to a safer greedy
-Classic policy. Instead, Classic self-kills increased and collection crossed
-the registered degradation limit. The lower Loot Crate self-kill rate is a
-secondary, scenario-specific observation accompanied by lower collection and
-does not override the prospective decision rule.
+Reject `safe_bomb` exploration and keep standard epsilon-greedy exploration.
+Blocking unsafe random bombs did not lead to a safer final Classic policy.
+Classic self-kills increased and collection dropped too much. Loot Crate
+self-kills decreased, but collection also decreased there.
 
-The generic retained metrics include bomb totals and useful-bomb training
-diagnostics, but do not distinguish unsafe placements made through exploration
-from those made through exploitation. Consequently, the proposed unsafe-bomb
-placement diagnostic is unavailable and no mechanism claim is made from it.
+The saved metrics do not distinguish unsafe bombs chosen during exploration
+from unsafe bombs chosen by the learned policy. We therefore cannot tell which
+of the two caused the result.
 Confirmation seeds were not used.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, registration, execution,
-analysis, plotting, and documentation. AI output is not experimental evidence;
-reported values must come from retained framework outputs and receive human
-review before merge.

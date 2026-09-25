@@ -1,4 +1,4 @@
-"""events -> reward mapping for DerKleineVermögensumverteiler."""
+"""Reward mapping for the opponent-aware tabular agent."""
 
 from __future__ import annotations
 

@@ -49,7 +49,7 @@ the registered repeatability gate failed and opponent evaluation needs a
 separate seed-control investigation before deterministic opponent comparisons
 are claimed.
 
-The durable evidence is in `evidence.csv`, `summary.csv`, and `result.json`.
+The evidence is in `evidence.csv`, `summary.csv`, and `result.json`.
 Figures are in `figures/`. Recompute them with:
 
     python -m training.analyze_issue186_task3_baseline
@@ -57,17 +57,14 @@ Figures are in `figures/`. Recompute them with:
 
 ## Interpretation
 
-The appended opponent state and direct `KILLED_OPPONENT` reward produced a
-measurable but weak hunting signal. Because all five replicas remained below
-the preregistered mean-elimination threshold, this experiment does not support
-claiming Task 3 capability. It does support the narrower conclusion that the
-strict Task 2 prior migration preserved the earlier collection behavior while
-allowing occasional opponent eliminations.
+The opponent features and `KILLED_OPPONENT` reward produced a small hunting
+signal, but all five replicas stayed below the elimination target. The agent is
+therefore not ready for Task 3. It did keep its earlier collection behavior and
+occasionally eliminated an opponent.
 
-The results suggest that nearest-opponent direction, a coarse distance bin,
-and a current blast-line flag are insufficient on their own for reliable bomb
-interception. Maybe in a follow up we could try is adding more information,
-for example a possible opponent escape route, will make  better progress.
+Opponent direction, a coarse distance bin, and a blast-line flag are not enough
+for reliable hunting. A follow-up could add information about possible opponent
+escape routes.
 
 ## Decision
 

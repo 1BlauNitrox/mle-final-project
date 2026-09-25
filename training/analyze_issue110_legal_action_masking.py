@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #110 legal-action-masking experiment."""
+"""Analyze the Issue #110 legal-action-masking experiment."""
 
 from __future__ import annotations
 
@@ -79,7 +79,7 @@ def analyze(
     plan_root: Path = PLAN_ROOT,
     output: Path = DEFAULT_OUTPUT,
 ) -> dict[str, Any]:
-    """Validate outputs and evaluate the registered Issue #110 criteria."""
+    """Validate the outputs and evaluate the Issue #110 criteria."""
 
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
@@ -284,7 +284,7 @@ def _suite_rows(
 def _summarize(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Aggregate primary results by treatment, model and scenario."""
+    """Aggregate results by treatment, model, and scenario."""
 
     groups: dict[
         tuple[str, str, str],
@@ -384,7 +384,7 @@ def _values_by_model_and_seed(
 def _comparisons(
     rows: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Calculate all registered paired comparisons."""
+    """Calculate the paired comparisons."""
 
     comparisons: dict[str, Any] = {}
 
@@ -439,7 +439,7 @@ def _criteria(
     comparisons: dict[str, Any],
     deterministic: bool,
 ) -> dict[str, bool]:
-    """Evaluate the prospectively registered success criteria."""
+    """Evaluate the success criteria fixed before the run."""
 
     classic_comparison = comparisons["classic_masked_minus_unmasked"]
     retention_comparison = comparisons["coin_heaven_masked_minus_task1"]

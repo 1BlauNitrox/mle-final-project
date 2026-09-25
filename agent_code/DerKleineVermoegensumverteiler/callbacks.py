@@ -1,9 +1,4 @@
-"""Runnable starting point for a new learned agent.
-
-Copy and rename this directory before implementing a real project agent. The
-included policy is an intentionally weak action-value baseline, not a tournament
-candidate.
-"""
+"""Runtime callbacks for the tabular coin-collection agent."""
 
 from __future__ import annotations
 
@@ -18,7 +13,7 @@ from .persistence import MODEL_PATH, load_model
 
 
 def setup(self) -> None:
-    """Initialize the Qtable, random generator and exploration state."""
+    """Load the Q-table and initialize the policy state."""
 
     agent_seed = _read_agent_seed()
 

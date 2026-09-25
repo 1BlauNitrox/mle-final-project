@@ -42,7 +42,7 @@ MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 @dataclass(frozen=True)
 class LoadedModel:
-    """A loaded Task 2 model and its training state."""
+    """A loaded tabular model and its training state."""
 
     q_table: QTable
     epsilon: float
@@ -70,7 +70,7 @@ def save_model(
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
-    """Save a sparse Task 2 Q-table as an atomic non-pickle archive."""
+    """Save a sparse Q-table as an atomic non-pickle archive."""
 
     if not 0.0 <= epsilon <= 1.0:
         raise ValueError("Epsilon must be in [0, 1].")
@@ -175,7 +175,7 @@ def load_model(
     *,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> LoadedModel:
-    """Load a Task 2 model and attach its validated Task 1 prior."""
+    """Load a model and attach its validated parent prior."""
 
     path = Path(path)
 
@@ -335,7 +335,7 @@ def _serialize_q_table(
     *,
     representation: str,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Serialize materialized Task 2 states and their visit counts."""
+    """Serialize materialized states and their visit counts."""
 
     representation_contract = get_state_representation(representation)
     ordered_entries = sorted(q_table.values.items())
@@ -461,7 +461,7 @@ def _validate_raw_arrays(
 
 
 def _validate_metadata(metadata: Any) -> None:
-    """Validate the complete Task 2 model metadata."""
+    """Validate the complete model metadata."""
 
     if not isinstance(metadata, dict):
         raise ValueError("Model metadata must be a dictionary")

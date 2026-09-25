@@ -132,9 +132,8 @@ and increased between-model variation.
 | Aggregate steps per coin | < 3.599 | 4.796 | **Fail** |
 
 ## Interpretation
-The hypothesis was not supported. Potential-based reward shaping preserved
-strong performance in four of the five independently trained models, but it
-did not reduce variation between models.
+The hypothesis was not supported. Four models performed well, but the fifth
+one made the result much less stable.
 
 Compared with the immediate lower-learning-rate baseline, the aggregate coin
 collection fraction decreased from 0.9812 to 0.8276. The between-model
@@ -144,23 +143,15 @@ collection fraction decreased from 0.9060 to 0.2060.
 Run 3 was the main source of this instability. It selected WAIT in 14,703 of
 16,000 evaluation steps and collected only 10.3 coins per episode on average.
 The other four models collected between 48.175 and 50 coins per episode.
-This indicates that the potential-based reward did not consistently guide
-training towards the same effective policy.
+The new reward therefore did not reliably lead to the same useful policy.
 
-The potential-based formulation is theoretically policy-preserving when the
-potential represents the state appropriately. However, this experiment uses
-finite training and a compact feature-based Q-table in which different game
-states may share the same feature representation. Therefore, the theoretical
-guarantee does not necessarily imply stable learning under this form of state
-aggregation.
+Potential-based shaping is policy-preserving under its theoretical assumptions.
+Those assumptions do not guarantee stable learning here because training is
+finite and several game states share the same compact representation.
 
-The experiment passed the aggregate collection threshold and all runtime,
-action-safety, and integrity criteria. It failed the individual performance
-and steps-per-coin criteria because of Run 3. Therefore, the new formulation
-cannot be considered an improvement over the immediate baseline.
+The aggregate collection, runtime, safety, and integrity criteria passed. The
+individual performance and steps-per-coin criteria failed because of Run 3.
 
 ## Decision and follow-up
-The potential-based reward-shaping implementation is rejected as the new
-default for the current agent. The lower-learning-rate agent remains the
-preferred Task 1 configuration because it achieved better aggregate
-performance and substantially lower between-model variation.
+The potential-based reward is rejected. The lower-learning-rate agent remains
+the Task 1 baseline because it performed better and was more consistent.

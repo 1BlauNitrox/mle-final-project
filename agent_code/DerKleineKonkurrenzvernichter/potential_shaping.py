@@ -1,4 +1,4 @@
-"""Potential-based safety shaping for the compact Task 2 state."""
+"""Potential-based safety shaping for compact states."""
 
 from __future__ import annotations
 

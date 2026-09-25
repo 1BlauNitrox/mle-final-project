@@ -89,22 +89,14 @@ Figures:
 
 ## Interpretation and decision
 
-Reject `compact_post_bomb_escape` and retain `compact_decision` as the default.
-The candidate did not merely fail to improve the metrics: every retained
-performance, safety and learning-efficiency outcome was identical to control.
+Reject `compact_post_bomb_escape` and keep `compact_decision`. Every performance,
+safety, and learning-efficiency result was identical to the control.
 
-A post-hoc inspection of the five candidate final Q-tables found status counts
-of roughly 1,022--1,051 `NOT_APPLICABLE`, 47 `COMPLETE_ROUTE`, four
+An additional check of the five final Q-tables found roughly 1,022--1,051
+`NOT_APPLICABLE`, 47 `COMPLETE_ROUTE`, four
 `TEMPORARY_SAFETY_ONLY`, and zero `NO_ROUTE` states per table. More importantly,
 no shared five-value compact-state prefix occurred with multiple escape-status
-values. Thus, on the visited data, the appended category acted only as a
-one-to-one relabeling rather than resolving state aliasing. This diagnostic was
-not a registered criterion and is used only to explain the exact null result.
+values. For the visited states, the extra category only renamed states instead
+of separating them. This check was not part of the decision criteria and only
+explains why the results were identical.
 Confirmation seeds were not used.
-
-## AI assistance
-
-OpenAI Codex assisted with implementation, tests, registration, execution,
-analysis, plotting and documentation. AI output is not experimental evidence;
-all reported values must be derived from retained framework outputs and
-reviewed by the owner and a non-author reviewer.

@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #144 post-bomb escape experiment."""
+"""Analyze the Issue #144 post-bomb escape experiment."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ SUITES = {
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require complete plans and evaluate every registered criterion."""
+    """Check completed plans and evaluate the fixed criteria."""
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []

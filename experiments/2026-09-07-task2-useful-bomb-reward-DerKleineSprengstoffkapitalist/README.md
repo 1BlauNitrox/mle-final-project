@@ -114,14 +114,11 @@ policies or replacing the original evaluation evidence.
 
 ## Decision and interpretation
 
-Decision: **reject `USEFUL_BOMB_PLACED: +1.0` for this configuration**. The
-reward successfully encourages crate-directed bombs, but over-incentivizes
-bomb placement without accounting for escape safety. It fails the registered
-CI, replica-consistency, and self-kill gates. The default reward therefore
-remains `0.0`; the opt-in capability is retained for controlled follow-up work.
-A sensible next experiment would combine a smaller useful-bomb reward with an
-explicit safe-escape condition, registered as a new experiment rather than
-tuned on these development results.
+**Reject `USEFUL_BOMB_PLACED: +1.0`.** The reward encourages useful bombs, but
+it also encourages bombing without enough attention to escape safety. The CI,
+replica-consistency, and self-kill criteria failed, so the default stays at
+`0.0`. A possible follow-up would combine a smaller reward with an explicit
+safe-escape condition.
 
 ## Figures and reproduction
 
@@ -135,7 +132,7 @@ python -m training.plot_issue114_results
 ```
 
 `evidence.csv`, `training-summary.csv`, `summary.csv`, and `result.json` are
-compact committed derivatives. The immutable run evidence is available as
+compact committed files. The full run evidence is available as
 [`issue114-evidence-v1.tar.gz`](https://github.com/1BlauNitrox/mle-final-project/releases/download/issue114-evidence-v1/issue114-evidence-v1.tar.gz)
 (13,349,397 bytes; SHA-256
 `855f9e5bf00b478ce9993e5107deb45a515536e345fdf8cb51723139dba05554`). Its
