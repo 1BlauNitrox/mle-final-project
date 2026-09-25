@@ -17,6 +17,7 @@ from .features import (
     StateFeatures,
     get_state_representation,
 )
+from .kill_reward import NATIVE_KILL_REWARD, VALID_KILL_REWARD_MODES
 from .migration import (
     EXPECTED_PARENT_SHA256,
     PARENT_MODEL_PATH,
@@ -34,9 +35,9 @@ from .potential_shaping import (
     VALID_POTENTIAL_SHAPING_MODES,
 )
 
-MODEL_SCHEMA_VERSION = 7
+MODEL_SCHEMA_VERSION = 8
 LEGACY_MODEL_SCHEMA_VERSION = 3
-PREVIOUS_MODEL_SCHEMA_VERSIONS = (4, 5)
+PREVIOUS_MODEL_SCHEMA_VERSIONS = (4, 5, 7)
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -54,6 +55,7 @@ class LoadedModel:
     initialization: str
     potential_shaping: str
     exploration_mode: str
+    kill_reward_mode: str
 
 
 def save_model(
@@ -67,6 +69,7 @@ def save_model(
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
+    kill_reward_mode: str = NATIVE_KILL_REWARD,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -94,6 +97,9 @@ def save_model(
 
     if exploration_mode not in {"standard", "safe_bomb"}:
         raise ValueError("Invalid exploration mode.")
+
+    if kill_reward_mode not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Invalid kill-reward mode.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -131,6 +137,7 @@ def save_model(
         "useful_bomb_reward": useful_bomb_reward,
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
+        "kill_reward_mode": kill_reward_mode,
     }
 
     path = Path(path)
@@ -245,6 +252,12 @@ def load_model(
         if "exploration_mode" not in metadata:
             metadata = {**metadata, "exploration_mode": "standard"}
 
+        if "kill_reward_mode" not in metadata:
+            metadata = {
+                **metadata,
+                "kill_reward_mode": NATIVE_KILL_REWARD,
+            }
+
         stored_schema_version = metadata.get("model_schema_version")
 
         if stored_schema_version == LEGACY_MODEL_SCHEMA_VERSION:
@@ -327,6 +340,7 @@ def load_model(
         initialization=initialization,
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
+        kill_reward_mode=str(metadata["kill_reward_mode"]),
     )
 
 
@@ -489,6 +503,7 @@ def _validate_metadata(metadata: Any) -> None:
         "action_masking",
         "potential_shaping",
         "exploration_mode",
+        "kill_reward_mode",
     }
 
     if (
@@ -502,6 +517,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["exploration_mode"] not in {"standard", "safe_bomb"}:
         raise ValueError("Stored exploration mode is invalid")
+
+    if metadata["kill_reward_mode"] not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Stored kill-reward mode is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")

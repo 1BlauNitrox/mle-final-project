@@ -12,6 +12,11 @@ import numpy as np
 from .config import ACTIONS, EPSILON_DECAY, MINIMUM_EPSILON
 from .features import StateFeatures, encode_state
 from .features.bombs_and_crates import crates_destroyed_by_bomb_at
+from .kill_reward import (
+    CAUSAL_BOMB_KILL_REWARD,
+    redistributed_kill_reward,
+    without_native_kill_reward,
+)
 from .legality import framework_legal_action_mask
 from .persistence import MODEL_PATH, save_model
 from .potential_shaping import (
@@ -45,8 +50,18 @@ class PendingTransition:
     next_action_mask: np.ndarray | None
     reward: float
     diagnostic_events: tuple[str, ...]
+    bomb_position: tuple[int, int] | None = None
     current_external_potential: float | None = None
     next_external_potential: float | None = None
+
+
+@dataclass(frozen=True)
+class DeferredBombTransition:
+    """A bomb transition retained until the agent's own bomb resolves."""
+
+    transition: PendingTransition
+    position: tuple[int, int]
+    origin_step: int
 
 
 def setup_training(self) -> None:
@@ -61,6 +76,7 @@ def _initialize_training_state(self) -> None:
     self.absolute_td_errors: list[float] = []
     self.episode_event_counts: Counter[str] = Counter()
     self.pending_transition: PendingTransition | None = None
+    self.deferred_bomb_transition: DeferredBombTransition | None = None
 
     self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
 
@@ -75,6 +91,13 @@ def game_events_occurred(
     """store current transition and finalice previous."""
 
     _finalize_pending_transition(self)
+
+    reward_events = _resolve_deferred_bomb(
+        self,
+        old_game_state=old_game_state,
+        new_game_state=new_game_state,
+        events=events,
+    )
 
     _count_diagnostic_events(self, events)
 
@@ -109,7 +132,7 @@ def game_events_occurred(
     if old_state is None or new_state is None:
         return
 
-    training_events = list(events)
+    training_events = list(reward_events)
 
     if useful_bomb:
         training_events.append("USEFUL_BOMB_PLACED")
@@ -138,6 +161,11 @@ def game_events_occurred(
             else None
         ),
         diagnostic_events=tuple(events),
+        bomb_position=(
+            tuple(old_game_state["self"][3])
+            if self_action == "BOMB" and "BOMB_DROPPED" in events
+            else None
+        ),
         current_external_potential=_external_potential(self, old_game_state),
         next_external_potential=_external_potential(self, new_game_state),
     )
@@ -161,6 +189,12 @@ def end_of_round(
         and last_action == pending.action
     )
 
+    reward_events = _resolve_deferred_bomb_at_terminal(
+        self,
+        last_game_state=last_game_state,
+        events=events,
+    )
+
     if callback_matches_pending:
         assert pending is not None
 
@@ -172,7 +206,7 @@ def end_of_round(
             self,
             state=pending.state,
             action=pending.action,
-            reward=reward_from_events(events),
+            reward=reward_from_events(reward_events),
             next_state=None,
             terminal=True,
             current_external_potential=pending.current_external_potential,
@@ -192,7 +226,7 @@ def end_of_round(
                     self,
                     state=last_state,
                     action=last_action,
-                    reward=reward_from_events(events),
+                    reward=reward_from_events(reward_events),
                     next_state=None,
                     terminal=True,
                     current_external_potential=_external_potential(
@@ -232,12 +266,14 @@ def end_of_round(
         path=MODEL_PATH,
         potential_shaping=self.potential_shaping,
         exploration_mode=self.exploration_mode,
+        kill_reward_mode=self.kill_reward_mode,
     )
 
     self.episode_reward = 0.0
     self.absolute_td_errors = []
     self.episode_event_counts = Counter()
     self.pending_transition = None
+    self.deferred_bomb_transition = None
 
     return metrics
 
@@ -248,6 +284,22 @@ def _finalize_pending_transition(self) -> None:
     pending = self.pending_transition
 
     if pending is None:
+        return
+
+    if (
+        self.kill_reward_mode == CAUSAL_BOMB_KILL_REWARD
+        and pending.action == "BOMB"
+        and "BOMB_DROPPED" in pending.diagnostic_events
+    ):
+        if self.deferred_bomb_transition is not None:
+            raise RuntimeError("Cannot retain more than one own bomb transition")
+        assert pending.identity is not None
+        self.deferred_bomb_transition = DeferredBombTransition(
+            transition=pending,
+            position=_bomb_position_from_transition(pending),
+            origin_step=int(pending.identity[1]),
+        )
+        self.pending_transition = None
         return
 
     _apply_update(
@@ -263,6 +315,97 @@ def _finalize_pending_transition(self) -> None:
     )
 
     self.pending_transition = None
+
+
+def _resolve_deferred_bomb(
+    self,
+    *,
+    old_game_state: dict | None,
+    new_game_state: dict,
+    events: list[str],
+) -> list[str]:
+    """Resolve a retained bomb transition and return events used for reward."""
+
+    deferred = self.deferred_bomb_transition
+    if deferred is None:
+        return list(events)
+
+    active_positions = {tuple(position) for position, _timer in new_game_state["bombs"]}
+    if deferred.position in active_positions:
+        return list(events)
+
+    delay = _transition_delay(old_game_state, deferred.origin_step)
+    return _finish_deferred_bomb(self, events=events, delay=delay)
+
+
+def _resolve_deferred_bomb_at_terminal(
+    self,
+    *,
+    last_game_state: dict | None,
+    events: list[str],
+) -> list[str]:
+    """Flush a retained bomb transition when an episode terminates."""
+
+    deferred = self.deferred_bomb_transition
+    if deferred is None:
+        return list(events)
+
+    delay = _transition_delay(last_game_state, deferred.origin_step)
+    return _finish_deferred_bomb(self, events=events, delay=delay)
+
+
+def _finish_deferred_bomb(
+    self,
+    *,
+    events: list[str],
+    delay: int,
+) -> list[str]:
+    """Apply one retained bomb transition with any attributable kill credit."""
+
+    deferred = self.deferred_bomb_transition
+    assert deferred is not None
+
+    kill_count = events.count("KILLED_OPPONENT")
+    credit = redistributed_kill_reward(
+        kill_count=kill_count,
+        delay=delay,
+        discount_factor=self.q_table.discount_factor,
+        native_reward=reward_from_events(["KILLED_OPPONENT"]),
+    )
+    transition = deferred.transition
+    _apply_update(
+        self,
+        state=transition.state,
+        action=transition.action,
+        reward=transition.reward + credit,
+        next_state=transition.next_state,
+        terminal=False,
+        next_action_mask=transition.next_action_mask,
+        current_external_potential=transition.current_external_potential,
+        next_external_potential=transition.next_external_potential,
+    )
+    self.deferred_bomb_transition = None
+
+    return without_native_kill_reward(events) if kill_count else list(events)
+
+
+def _transition_delay(game_state: dict | None, origin_step: int) -> int:
+    """Return the number of transitions since the bomb-placement action."""
+
+    if game_state is None or "step" not in game_state:
+        return 0
+    return max(0, int(game_state["step"]) - origin_step)
+
+
+def _bomb_position_from_transition(
+    transition: PendingTransition,
+) -> tuple[int, int]:
+    """Recover the bomb position from the encoded transition identity context."""
+
+    position = transition.bomb_position
+    if position is None:
+        raise RuntimeError("Bomb transition is missing its placement position")
+    return tuple(position)
 
 
 def _apply_update(

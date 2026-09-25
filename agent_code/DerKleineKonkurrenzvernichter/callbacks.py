@@ -12,6 +12,10 @@ from .features import (
     encode_state,
     get_state_representation,
 )
+from .kill_reward import (
+    NATIVE_KILL_REWARD,
+    VALID_KILL_REWARD_MODES,
+)
 from .legality import framework_legal_action_mask
 from .migration import load_parent_prior
 from .model import (
@@ -34,6 +38,7 @@ STATE_REPRESENTATION_ENV = "BOMBERMAN_TABULAR_STATE_REPRESENTATION"
 INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
 POTENTIAL_SHAPING_ENV = "BOMBERMAN_TABULAR_POTENTIAL_SHAPING"
 EXPLORATION_MODE_ENV = "BOMBERMAN_TABULAR_EXPLORATION_MODE"
+KILL_REWARD_MODE_ENV = "BOMBERMAN_TABULAR_KILL_REWARD_MODE"
 STANDARD_EXPLORATION = "standard"
 SAFE_BOMB_EXPLORATION = "safe_bomb"
 VALID_EXPLORATION_MODES = (STANDARD_EXPLORATION, SAFE_BOMB_EXPLORATION)
@@ -52,6 +57,7 @@ def setup(self) -> None:
     self.initialization = _read_initialization()
     self.potential_shaping = _read_potential_shaping()
     self.exploration_mode = _read_exploration_mode()
+    self.kill_reward_mode = _read_kill_reward_mode()
 
     representation = get_state_representation(
         self.state_representation
@@ -96,6 +102,9 @@ def setup(self) -> None:
 
         if loaded.exploration_mode != self.exploration_mode:
             mismatches.append(EXPLORATION_MODE_ENV)
+
+        if loaded.kill_reward_mode != self.kill_reward_mode:
+            mismatches.append(KILL_REWARD_MODE_ENV)
 
         if mismatches and (not is_fresh_model or not self.train):
             raise ValueError(
@@ -321,5 +330,17 @@ def _read_exploration_mode() -> str:
         raise ValueError(
             f"{EXPLORATION_MODE_ENV} must be one of "
             f"{list(VALID_EXPLORATION_MODES)}."
+        )
+    return mode
+
+
+def _read_kill_reward_mode() -> str:
+    """Read the opponent-kill reward timing treatment."""
+
+    mode = os.environ.get(KILL_REWARD_MODE_ENV, NATIVE_KILL_REWARD)
+    if mode not in VALID_KILL_REWARD_MODES:
+        raise ValueError(
+            f"{KILL_REWARD_MODE_ENV} must be one of "
+            f"{list(VALID_KILL_REWARD_MODES)}."
         )
     return mode
