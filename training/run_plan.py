@@ -47,6 +47,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
 )
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros", "task2_prior")
 VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
+VALID_TABULAR_LEARNING_ALGORITHMS = ("q_learning", "double_q_learning")
 VALID_REWARD_VARIANTS = ("control", "survival_rebalance", "safety_bomb")
 VALID_ESCAPE_CONTINUATIONS = ("off", "on")
 VALID_REPLAY_TREATMENTS = ("uniform", "protected_task1")
@@ -120,6 +121,7 @@ class ResolvedPlan:
     potential_shaping: str
     tabular_exploration_mode: str
     tabular_initialization: str
+    tabular_learning_algorithm: str
     useful_bomb_reward: float
     reward_variant: str
     escape_continuations: str
@@ -209,6 +211,16 @@ def load_plan(path: Path) -> ResolvedPlan:
     if tabular_initialization not in VALID_TABULAR_INITIALIZATIONS:
         raise ValueError(
             f"tabular_initialization must be one of {list(VALID_TABULAR_INITIALIZATIONS)}"
+        )
+
+    tabular_learning_algorithm = raw.get(
+        "tabular_learning_algorithm",
+        "q_learning",
+    )
+    if tabular_learning_algorithm not in VALID_TABULAR_LEARNING_ALGORITHMS:
+        raise ValueError(
+            "tabular_learning_algorithm must be one of "
+            f"{list(VALID_TABULAR_LEARNING_ALGORITHMS)}"
         )
 
     if (
@@ -308,6 +320,7 @@ def load_plan(path: Path) -> ResolvedPlan:
         potential_shaping=potential_shaping,
         tabular_exploration_mode=tabular_exploration_mode,
         tabular_initialization=tabular_initialization,
+        tabular_learning_algorithm=tabular_learning_algorithm,
         useful_bomb_reward=float(useful_bomb_reward),
         reward_variant=reward_variant,
         escape_continuations=escape_continuations,
@@ -528,6 +541,9 @@ def _run_job(
             "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": plan.potential_shaping,
             "BOMBERMAN_TABULAR_EXPLORATION_MODE": plan.tabular_exploration_mode,
             "BOMBERMAN_TABULAR_INITIALIZATION": plan.tabular_initialization,
+            "BOMBERMAN_TABULAR_LEARNING_ALGORITHM": (
+                plan.tabular_learning_algorithm
+            ),
             "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": plan.escape_continuations,
             "BOMBERMAN_DQN_REPLAY_TREATMENT": plan.replay_treatment,
         }
@@ -566,6 +582,7 @@ def _run_job(
                     "potential_shaping": plan.potential_shaping,
                     "tabular_exploration_mode": plan.tabular_exploration_mode,
                     "tabular_initialization": plan.tabular_initialization,
+                    "tabular_learning_algorithm": plan.tabular_learning_algorithm,
                     "useful_bomb_reward": plan.useful_bomb_reward,
                     "reward_variant": plan.reward_variant,
                     "escape_continuations": plan.escape_continuations,
