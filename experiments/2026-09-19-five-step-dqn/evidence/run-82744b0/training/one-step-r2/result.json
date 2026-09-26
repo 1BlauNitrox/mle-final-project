@@ -1,0 +1,10 @@
+{
+  "arm": "one-step",
+  "replica": 2,
+  "episodes": 1000,
+  "complete": true,
+  "checkpoint_sha256": "8b51ce2861027ae92c4a096d092f08938f17d61dacaaf04de21140322691c383",
+  "wall_seconds": 2440.9382924000092,
+  "cpu_seconds": 2380.1875,
+  "ended_at": "2026-09-19T15:53:47.628141+02:00"
+}

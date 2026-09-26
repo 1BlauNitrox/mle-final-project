@@ -1,0 +1,10 @@
+{
+  "artifact": "one-step-r2",
+  "suite": "classic-peaceful",
+  "stage": "evaluation",
+  "episodes": 40,
+  "checkpoint_sha256": "8b51ce2861027ae92c4a096d092f08938f17d61dacaaf04de21140322691c383",
+  "rows_sha256": "bcd3124f04d25c1aaff1dfea2a4b880de22016a2db12c1b728cd7ff0b923a250",
+  "wall_seconds": 63.471450699988054,
+  "cpu_seconds": 61.75
+}

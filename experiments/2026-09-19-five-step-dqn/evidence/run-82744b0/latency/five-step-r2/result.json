@@ -1,0 +1,10 @@
+{
+  "artifact": "five-step-r2",
+  "suite": "primary-classic-rule-based",
+  "stage": "latency",
+  "episodes": 10,
+  "checkpoint_sha256": "b6d2c1914d88ba0e13957e56a7fcb840a0f6efb7b0f25f1663faab40405b8d76",
+  "rows_sha256": "721fc6f706c063aa317347a8fa8eac3ee6ad00de4bf33b62f6823f8bac1c78b6",
+  "wall_seconds": 18.918215900019277,
+  "cpu_seconds": 18.546875
+}

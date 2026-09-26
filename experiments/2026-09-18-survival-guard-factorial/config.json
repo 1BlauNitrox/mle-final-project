@@ -1,0 +1,107 @@
+{
+  "name": "survival-guard-factorial",
+  "registered": "2026-09-18",
+  "question": "Can we cut Bomb-omb's self-kills at play time, without paying for it in tournament score? Self-kills sit at 0.51 per classic round and have not moved since about episode 1,500 of the final run, while coins and crates keep improving. The agent already receives the information it would need: features/assemble.py feeds the network five flags for 'this move has a surviving continuation' and one for 'a bomb placed here still leaves an escape'. legality.py masks framework legality only and says so. So the question is not whether the agent can know, it is whether enforcing what it knows helps.",
+  "hypothesis": "We expect the bomb veto to do most of the work, because a bomb dropped without an escape is the one mistake that is certainly fatal and cannot be undone. We expect the move veto to be smaller and possibly negative: its horizon is ten steps and it treats opponents as a step-zero snapshot, so it will sometimes refuse a move that would have been fine, and refusing moves costs tempo. We are genuinely unsure about the two together. The loop guard looked just as reasonable and lost on classic score.",
+  "design": {
+    "shape": "2x2 factorial, one shared control",
+    "factors": {
+      "bomb_veto": "refuse BOMB when placing it here leaves no escape (BOMBERMAN_SURVIVAL_GUARD_BOMB)",
+      "move_veto": "refuse a move or WAIT with no surviving continuation (BOMBERMAN_SURVIVAL_GUARD_MOVE)"
+    },
+    "cells": [
+      {"name": "control", "bomb": "off", "move": "off", "note": "identical play to the shipped Bomb-omb; the guard returns before it looks at anything"},
+      {"name": "both", "bomb": "on", "move": "on", "note": "the configuration we would actually ship"},
+      {"name": "bomb", "bomb": "on", "move": "off"},
+      {"name": "move", "bomb": "off", "move": "on"}
+    ],
+    "order": "control, both, bomb, move. The headline comparison is finished after two cells, so an interrupted run still answers the main question.",
+    "mechanism": "The guard never invents a move. It walks the policy's own Q ranking downwards and takes the best legal action the agent's danger model calls survivable. If nothing is survivable the policy's choice stands.",
+    "why_at_play_time": "It is inference only, so it needs no retraining and applies to whatever checkpoint we select on Sunday. The live training run is untouched."
+  },
+  "compared_agents": {
+    "unguarded_reference_implementation": {
+      "agent": "Bomb-omb",
+      "role": "the shipped agent; the control cell reproduces it inside the prototype directory"
+    },
+    "prototype": {
+      "agent": "Bomb-omb-survivalguard",
+      "note": "byte-identical copy of Bomb-omb plus survival_guard.py and a hook in callbacks.py; every other file is unchanged"
+    }
+  },
+  "checkpoints": {
+    "bundles": ["final-training-ep2000.zip", "final-training-ep4000.zip", "final-training-ep006000.zip"],
+    "bundle_sha256": {
+      "final-training-ep2000.zip": "cd3ce3fbc2f64327319bacd0e1c8a87a98047270256e95642e7de2369cb5c9b1",
+      "final-training-ep4000.zip": "8574e14f3cf82a9f6a2b16a06fe783490e9d6e7c7ef2657943738c951a9d1c7e",
+      "final-training-ep006000.zip": "b5a961462927cbe01f9226d93a65f063696ff3780811f87d9c85824c779d491f"
+    },
+    "judged": "all 18 milestones: control-r1..r3 and halved-r1..r3 at episodes 2,000, 4,000 and 6,000",
+    "why_all_three_episodes": "We will ship a much later checkpoint than any of these. Three episode levels tell us whether the guard's benefit shrinks as the network learns safety by itself, which is what we would be extrapolating.",
+    "also_played": "the untrained reference, for context only. It does not enter the decision."
+  },
+  "suite": {
+    "name": "survival-guard-classic-fresh",
+    "scenario": "classic",
+    "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+    "world_seeds": [
+      980000001, 980000002, 980000003, 980000004, 980000005, 980000006,
+      980000007, 980000008, 980000009, 980000010, 980000011, 980000012,
+      980000013, 980000014, 980000015, 980000016, 980000017, 980000018,
+      980000019, 980000020, 980000021, 980000022, 980000023, 980000024,
+      980000025, 980000026, 980000027, 980000028, 980000029, 980000030,
+      980000031, 980000032, 980000033, 980000034, 980000035, 980000036,
+      980000037, 980000038, 980000039, 980000040, 980000041, 980000042,
+      980000043, 980000044, 980000045, 980000046, 980000047, 980000048,
+      980000049, 980000050, 980000051, 980000052, 980000053, 980000054,
+      980000055, 980000056, 980000057, 980000058, 980000059, 980000060,
+      980000061, 980000062, 980000063, 980000064, 980000065, 980000066,
+      980000067, 980000068, 980000069, 980000070, 980000071, 980000072,
+      980000073, 980000074, 980000075, 980000076, 980000077, 980000078,
+      980000079, 980000080, 980000081, 980000082, 980000083, 980000084,
+      980000085, 980000086, 980000087, 980000088, 980000089, 980000090,
+      980000091, 980000092, 980000093, 980000094, 980000095, 980000096,
+      980000097, 980000098, 980000099, 980000100, 980000101, 980000102,
+      980000103, 980000104, 980000105, 980000106, 980000107, 980000108,
+      980000109, 980000110, 980000111, 980000112, 980000113, 980000114,
+      980000115, 980000116, 980000117, 980000118, 980000119, 980000120
+    ],
+    "seed_audit": "We checked all 120 seeds and their plus and minus 1,000,000 offsets against every integer of six digits or more in the 922 readable tracked text files on 18 September. No collision, and no overlap with the held-out suite. These worlds are fresh: they are not the 40 development worlds, not the 100 classic monitoring worlds (970000001-100) and not the loop-guard worlds (960000001-100)."
+  },
+  "decision_rule": {
+    "primary_contrast": "both minus control",
+    "primary_metric": "score per game",
+    "pairing": "the same checkpoint on the same world, guard on versus guard off",
+    "interval": {
+      "method": "hierarchical paired bootstrap, resampling the 18 checkpoints and then the 120 worlds",
+      "percent": 95,
+      "resamples": 10000,
+      "seed": 980001
+    },
+    "thresholds": {
+      "self_kills_upper_bound_below": 0.0,
+      "score_lower_bound_above": -0.15,
+      "score_point_estimate_at_least": 0.0
+    },
+    "ship_if_all": [
+      "the upper bound of the self-kill interval is below 0, so the reduction is real and not just plausible",
+      "the lower bound of the score interval is above -0.15",
+      "the score point estimate is at least 0"
+    ],
+    "otherwise": "The guard does not ship in this form and Bomb-omb stays exactly the agent we trained.",
+    "why_these_numbers": "The whole claim is that we stop suicides, so we demand a self-kill interval that clears zero rather than one that merely allows an improvement. On score we are stricter than the loop-guard test was: that guard was allowed to cost up to 0.30 points because it bought solo coin collection, while this one has to pay for itself in tournament score, so the point estimate may not be negative at all and the floor is half as deep.",
+    "secondary_contrasts": [
+      "bomb minus control, and move minus control, to say which half of the effect is which",
+      "the same three contrasts split by episode (2,000, 4,000, 6,000), to see whether the benefit decays as the network learns safety on its own"
+    ],
+    "multiplicity": "Three contrasts share one dataset, so the secondary intervals are descriptive and only the primary one decides. If 'both' fails its thresholds while 'bomb' alone passes them, that is a candidate and not a result: it would need a confirmatory run on a fresh world block before anything ships."
+  },
+  "known_limits": [
+    "Opponents are not seeded, so the same world plays out differently each time and part of every difference is noise. Pairing removes the world, not the opponents.",
+    "The danger model is not an oracle. It searches ten steps ahead and treats opponents as a step-zero snapshot, so it will refuse some survivable actions and accept some fatal ones. This experiment measures the guard we can actually ship, not perfect play.",
+    "We judge the guard on episodes 2,000 to 6,000 and would apply it to a checkpoint near 24,000. The per-episode split is what tells us how far that carries.",
+    "Self-kills and score are not independent: dying less leaves more time to score. A score gain that comes entirely through survival is still a gain, but it is not evidence about play quality while alive."
+  ],
+  "expected_cost": "4 cells x 19 checkpoints x 120 worlds = 9,120 games. At the 26 games per minute this laptop managed with two jobs, that is about 6 hours, and the guarded cells cost a little more per step. It resumes from games.jsonl if interrupted.",
+  "authorization": "Julius (1BlauNitrox) asked for this experiment on the night of 17 to 18 September 2026 and runs it on the laptop overnight."
+}
