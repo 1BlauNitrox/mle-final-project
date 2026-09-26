@@ -1,0 +1,688 @@
+{
+  "combined_status": {
+    "complete": false,
+    "eligible": false,
+    "submission_promotion": false,
+    "reason": "All three complete pairs required; missing/stopped evidence retained"
+  },
+  "decisions": {
+    "r1": {
+      "status": "stopped_safety",
+      "check": "u500-or-e25",
+      "submission_promotion": false
+    },
+    "r2": {
+      "status": "stopped_safety",
+      "check": "e10",
+      "submission_promotion": false
+    },
+    "r3": {
+      "status": "stopped_safety",
+      "check": "e10",
+      "submission_promotion": false
+    }
+  },
+  "gates": {
+    "r1/gate-e10": {
+      "passed": true,
+      "arms": {
+        "control": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.35,
+            "classic.survived": 0.0,
+            "classic.self_kills": 0.1,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": 0.008999999999999985,
+            "crates.self_kills": -0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.55,
+            "classic.survived": -0.025,
+            "classic.self_kills": 0.1,
+            "coins.collection_fraction": -0.023,
+            "crates.collection_fraction": 0.06600000000000002,
+            "crates.self_kills": -0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "e10",
+        "episodes": 10
+      }
+    },
+    "r1/gate-u100-or-e10": {
+      "passed": true,
+      "arms": {
+        "control": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.3,
+            "classic.survived": 0.1,
+            "classic.self_kills": -0.025,
+            "coins.collection_fraction": 0.063,
+            "crates.collection_fraction": 0.005999999999999993,
+            "crates.self_kills": -0.1
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.1,
+            "classic.survived": 0.05,
+            "classic.self_kills": 0.025,
+            "coins.collection_fraction": 0.063,
+            "crates.collection_fraction": -0.015000000000000008,
+            "crates.self_kills": -0.1
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "u100-or-e10",
+        "updates": 100,
+        "episode_stop": 10
+      }
+    },
+    "r1/gate-u500-or-e25": {
+      "passed": false,
+      "arms": {
+        "control": {
+          "passed": false,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": false,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.225,
+            "classic.survived": -0.025,
+            "classic.self_kills": 0.125,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": 0.004999999999999988,
+            "crates.self_kills": -0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.675,
+            "classic.survived": 0.0,
+            "classic.self_kills": 0.075,
+            "coins.collection_fraction": 0.063,
+            "crates.collection_fraction": 0.06500000000000002,
+            "crates.self_kills": -0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "u500-or-e25",
+        "updates": 500,
+        "episode_stop": 25
+      }
+    },
+    "r2/gate-e10": {
+      "passed": false,
+      "arms": {
+        "control": {
+          "passed": false,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": false,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.325,
+            "classic.survived": -0.075,
+            "classic.self_kills": 0.15,
+            "coins.collection_fraction": 0.126,
+            "crates.collection_fraction": -0.06000000000000001,
+            "crates.self_kills": 0.0
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.275,
+            "classic.survived": -0.05,
+            "classic.self_kills": 0.075,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.037000000000000005,
+            "crates.self_kills": 0.0
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "e10",
+        "episodes": 10
+      }
+    },
+    "r2/gate-u100-or-e10": {
+      "passed": true,
+      "arms": {
+        "control": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.025,
+            "classic.survived": 0.025,
+            "classic.self_kills": 0.025,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.04000000000000001,
+            "crates.self_kills": 0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.575,
+            "classic.survived": 0.025,
+            "classic.self_kills": 0.025,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.04000000000000001,
+            "crates.self_kills": 0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "u100-or-e10",
+        "updates": 100,
+        "episode_stop": 10
+      }
+    },
+    "r3/gate-e10": {
+      "passed": false,
+      "arms": {
+        "control": {
+          "passed": false,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": false,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.125,
+            "classic.survived": -0.05,
+            "classic.self_kills": 0.125,
+            "coins.collection_fraction": -0.023,
+            "crates.collection_fraction": 0.008000000000000002,
+            "crates.self_kills": -0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": false,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": false,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": -0.225,
+            "classic.survived": -0.075,
+            "classic.self_kills": 0.175,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.02,
+            "crates.self_kills": 0.05
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "e10",
+        "episodes": 10
+      }
+    },
+    "r3/gate-u100-or-e10": {
+      "passed": true,
+      "arms": {
+        "control": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.05,
+            "classic.survived": 0.0,
+            "classic.self_kills": 0.025,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.0010000000000000078,
+            "crates.self_kills": -0.1
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        },
+        "curriculum": {
+          "passed": true,
+          "gates": {
+            "score": true,
+            "survival": true,
+            "self_kills": true,
+            "coin_retention": true,
+            "crate_retention": true,
+            "crate_self_kills": true
+          },
+          "effects": {
+            "classic.score": 0.05,
+            "classic.survived": 0.0,
+            "classic.self_kills": 0.05,
+            "coins.collection_fraction": 0.0,
+            "crates.collection_fraction": -0.0010000000000000078,
+            "crates.self_kills": -0.1
+          },
+          "interpretation": "Exploratory point estimates; no significance claim"
+        }
+      },
+      "checkpoint": {
+        "name": "u100-or-e10",
+        "updates": 100,
+        "episode_stop": 10
+      }
+    }
+  },
+  "training": {
+    "r1/control/e10": {
+      "episodes": 10,
+      "updates": 492,
+      "survival_rate": 0.4,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 524,
+      "safe_attack_bombs": 23,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 3,
+      "invalid_per_game": 1.3,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.9045985772357723,
+        "classic": 0.09540142276422764,
+        "hunting": 0.0
+      }
+    },
+    "r1/control/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 213,
+      "safe_attack_bombs": 1,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 0.0,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.97875,
+        "classic": 0.02125,
+        "hunting": 0.0
+      }
+    },
+    "r1/control/u500-or-e25": {
+      "episodes": 11,
+      "updates": 500,
+      "survival_rate": 0.36363636363636365,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 524,
+      "safe_attack_bombs": 25,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 3,
+      "invalid_per_game": 1.1818181818181819,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.90296875,
+        "classic": 0.09703125,
+        "hunting": 0.0
+      }
+    },
+    "r1/curriculum/e10": {
+      "episodes": 10,
+      "updates": 470,
+      "survival_rate": 0.4,
+      "loop_window_rate": 0.7440318302387268,
+      "eligible_loop_windows": 754,
+      "safe_attack_bombs": 11,
+      "native_kills": 5,
+      "safe_bomb_kill_credits": 1,
+      "safe_bomb_self_kill_credits": 3,
+      "invalid_per_game": 0.5,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.2554204124801692,
+        "hunting": 0.7445795875198308
+      },
+      "sampled": {
+        "parent": 0.9090093085106383,
+        "classic": 0.021409574468085106,
+        "hunting": 0.06958111702127659
+      }
+    },
+    "r1/curriculum/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 0.896551724137931,
+      "eligible_loop_windows": 377,
+      "safe_attack_bombs": 0,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 0.0,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.0196078431372549,
+        "hunting": 0.9803921568627451
+      },
+      "sampled": {
+        "parent": 0.97875,
+        "classic": 0.00109375,
+        "hunting": 0.02015625
+      }
+    },
+    "r1/curriculum/u500-or-e25": {
+      "episodes": 12,
+      "updates": 500,
+      "survival_rate": 0.4166666666666667,
+      "loop_window_rate": 0.7440318302387268,
+      "eligible_loop_windows": 754,
+      "safe_attack_bombs": 12,
+      "native_kills": 8,
+      "safe_bomb_kill_credits": 1,
+      "safe_bomb_self_kill_credits": 4,
+      "invalid_per_game": 0.4166666666666667,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.2569476082004556,
+        "hunting": 0.7430523917995444
+      },
+      "sampled": {
+        "parent": 0.90296875,
+        "classic": 0.02353125,
+        "hunting": 0.0735
+      }
+    },
+    "r2/control/e10": {
+      "episodes": 10,
+      "updates": 671,
+      "survival_rate": 0.6,
+      "loop_window_rate": 0.9904240766073872,
+      "eligible_loop_windows": 731,
+      "safe_attack_bombs": 13,
+      "native_kills": 2,
+      "safe_bomb_kill_credits": 2,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 1.1,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.865545827123696,
+        "classic": 0.134454172876304,
+        "hunting": 0.0
+      }
+    },
+    "r2/control/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 129,
+      "safe_attack_bombs": 1,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 0.0,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.9775,
+        "classic": 0.0225,
+        "hunting": 0.0
+      }
+    },
+    "r2/curriculum/e10": {
+      "episodes": 10,
+      "updates": 681,
+      "survival_rate": 0.6,
+      "loop_window_rate": 0.7270358306188925,
+      "eligible_loop_windows": 1535,
+      "safe_attack_bombs": 18,
+      "native_kills": 3,
+      "safe_bomb_kill_credits": 3,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 1.3,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.4111396115793331,
+        "hunting": 0.5888603884206669
+      },
+      "sampled": {
+        "parent": 0.8637114537444934,
+        "classic": 0.05201450073421439,
+        "hunting": 0.08427404552129222
+      }
+    },
+    "r2/curriculum/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 0.9071618037135278,
+      "eligible_loop_windows": 377,
+      "safe_attack_bombs": 0,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 0.5,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.0171990171990172,
+        "hunting": 0.9828009828009828
+      },
+      "sampled": {
+        "parent": 0.9775,
+        "classic": 0.00046875,
+        "hunting": 0.02203125
+      }
+    },
+    "r3/control/e10": {
+      "episodes": 10,
+      "updates": 530,
+      "survival_rate": 0.5,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 316,
+      "safe_attack_bombs": 20,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 1,
+      "invalid_per_game": 2.2,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.8753537735849056,
+        "classic": 0.12464622641509433,
+        "hunting": 0.0
+      }
+    },
+    "r3/control/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 1.0,
+      "eligible_loop_windows": 55,
+      "safe_attack_bombs": 6,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 2.5,
+      "generated": {
+        "parent": 0.0,
+        "classic": 1.0,
+        "hunting": 0.0
+      },
+      "sampled": {
+        "parent": 0.98015625,
+        "classic": 0.01984375,
+        "hunting": 0.0
+      }
+    },
+    "r3/curriculum/e10": {
+      "episodes": 10,
+      "updates": 573,
+      "survival_rate": 0.5,
+      "loop_window_rate": 0.6245173745173745,
+      "eligible_loop_windows": 1036,
+      "safe_attack_bombs": 18,
+      "native_kills": 4,
+      "safe_bomb_kill_credits": 2,
+      "safe_bomb_self_kill_credits": 1,
+      "invalid_per_game": 0.8,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.35561708860759494,
+        "hunting": 0.6443829113924051
+      },
+      "sampled": {
+        "parent": 0.8656195462478184,
+        "classic": 0.04608420593368237,
+        "hunting": 0.08829624781849912
+      }
+    },
+    "r3/curriculum/u100-or-e10": {
+      "episodes": 2,
+      "updates": 100,
+      "survival_rate": 0.5,
+      "loop_window_rate": 0.5994694960212201,
+      "eligible_loop_windows": 377,
+      "safe_attack_bombs": 4,
+      "native_kills": 0,
+      "safe_bomb_kill_credits": 0,
+      "safe_bomb_self_kill_credits": 0,
+      "invalid_per_game": 2.5,
+      "generated": {
+        "parent": 0.0,
+        "classic": 0.3710691823899371,
+        "hunting": 0.6289308176100629
+      },
+      "sampled": {
+        "parent": 0.98015625,
+        "classic": 0.01640625,
+        "hunting": 0.0034375
+      }
+    }
+  },
+  "artifact_verification": {
+    "laptop_release_zip_sha256": "3174aa99d93fa53df2a1b6bbf7470c2c5e0a977b07619b8d777a73baa83386ad",
+    "pc_export_zip_sha256": "fb78148f774ca8195e846cd6275fce1d689a9b5e41b8e130830b0b3640fda416"
+  }
+}

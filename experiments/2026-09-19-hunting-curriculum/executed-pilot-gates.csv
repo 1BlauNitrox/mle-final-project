@@ -1,0 +1,15 @@
+replica,checkpoint,arm,gate_passed,classic.score,classic.survived,classic.self_kills,coins.collection_fraction,crates.collection_fraction,crates.self_kills,failed_gates
+r1,e10,control,True,0.35,0.0,0.1,0.0,0.008999999999999985,-0.05,
+r1,e10,curriculum,True,0.55,-0.025,0.1,-0.023,0.06600000000000002,-0.05,
+r1,u100-or-e10,control,True,-0.3,0.1,-0.025,0.063,0.005999999999999993,-0.1,
+r1,u100-or-e10,curriculum,True,-0.1,0.05,0.025,0.063,-0.015000000000000008,-0.1,
+r1,u500-or-e25,control,False,0.225,-0.025,0.125,0.0,0.004999999999999988,-0.05,self_kills
+r1,u500-or-e25,curriculum,True,0.675,0.0,0.075,0.063,0.06500000000000002,-0.05,
+r2,e10,control,False,-0.325,-0.075,0.15,0.126,-0.06000000000000001,0.0,self_kills
+r2,e10,curriculum,True,-0.275,-0.05,0.075,0.0,-0.037000000000000005,0.0,
+r2,u100-or-e10,control,True,-0.025,0.025,0.025,0.0,-0.04000000000000001,0.05,
+r2,u100-or-e10,curriculum,True,0.575,0.025,0.025,0.0,-0.04000000000000001,0.05,
+r3,e10,control,False,-0.125,-0.05,0.125,-0.023,0.008000000000000002,-0.05,self_kills
+r3,e10,curriculum,False,-0.225,-0.075,0.175,0.0,-0.02,0.05,self_kills
+r3,u100-or-e10,control,True,0.05,0.0,0.025,0.0,-0.0010000000000000078,-0.1,
+r3,u100-or-e10,curriculum,True,0.05,0.0,0.05,0.0,-0.0010000000000000078,-0.1,

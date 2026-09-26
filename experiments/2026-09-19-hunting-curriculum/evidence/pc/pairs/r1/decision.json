@@ -1,0 +1,5 @@
+{
+  "status": "stopped_safety",
+  "check": "u500-or-e25",
+  "submission_promotion": false
+}
