@@ -1,0 +1,419 @@
+{
+  "issue": 207,
+  "complete": true,
+  "five_step_minus_one_step": {
+    "kills": {
+      "estimate": -0.016666666666666666,
+      "ci95": [
+        -0.12777777777777777,
+        0.08888888888888889
+      ],
+      "replica_means": [
+        -0.05,
+        0.06666666666666667,
+        -0.06666666666666667
+      ]
+    },
+    "score": {
+      "estimate": 0.08333333333333333,
+      "ci95": [
+        -0.7111111111111111,
+        0.8333333333333334
+      ],
+      "replica_means": [
+        -0.08333333333333333,
+        0.6333333333333333,
+        -0.3
+      ]
+    },
+    "survived": {
+      "estimate": 0.11666666666666667,
+      "ci95": [
+        -0.11666666666666667,
+        0.3277777777777778
+      ],
+      "replica_means": [
+        -0.11666666666666667,
+        0.23333333333333334,
+        0.23333333333333334
+      ]
+    },
+    "self_kills": {
+      "estimate": -0.1111111111111111,
+      "ci95": [
+        -0.2388888888888889,
+        0.022222222222222223
+      ],
+      "replica_means": [
+        -0.11666666666666667,
+        -0.13333333333333333,
+        -0.08333333333333333
+      ]
+    },
+    "invalid": {
+      "estimate": 0.17222222222222222,
+      "ci95": [
+        -0.8444444444444444,
+        1.0888888888888888
+      ],
+      "replica_means": [
+        -0.8,
+        0.9166666666666666,
+        0.4
+      ]
+    },
+    "coins": {
+      "estimate": 0.16666666666666666,
+      "ci95": [
+        -0.24444444444444444,
+        0.5611111111111111
+      ],
+      "replica_means": [
+        0.16666666666666666,
+        0.3,
+        0.03333333333333333
+      ]
+    }
+  },
+  "five_step_minus_reference": {
+    "kills": {
+      "estimate": -0.06111111111111111,
+      "ci95": [
+        -0.2,
+        0.06666666666666667
+      ],
+      "replica_means": [
+        -0.1,
+        -0.016666666666666666,
+        -0.06666666666666667
+      ]
+    },
+    "score": {
+      "estimate": -0.19444444444444445,
+      "ci95": [
+        -1.0333333333333334,
+        0.5833333333333334
+      ],
+      "replica_means": [
+        -0.35,
+        -0.1,
+        -0.13333333333333333
+      ]
+    },
+    "survived": {
+      "estimate": -0.14444444444444443,
+      "ci95": [
+        -0.32222222222222224,
+        0.027777777777777776
+      ],
+      "replica_means": [
+        -0.26666666666666666,
+        -0.06666666666666667,
+        -0.1
+      ]
+    },
+    "self_kills": {
+      "estimate": 0.06111111111111111,
+      "ci95": [
+        -0.09444444444444444,
+        0.20555555555555555
+      ],
+      "replica_means": [
+        0.03333333333333333,
+        0.05,
+        0.1
+      ]
+    },
+    "invalid": {
+      "estimate": -0.25555555555555554,
+      "ci95": [
+        -1.1333333333333333,
+        0.6166666666666667
+      ],
+      "replica_means": [
+        -0.8166666666666667,
+        0.05,
+        0.0
+      ]
+    },
+    "coins": {
+      "estimate": 0.1111111111111111,
+      "ci95": [
+        -0.3277777777777778,
+        0.55
+      ],
+      "replica_means": [
+        0.15,
+        -0.016666666666666666,
+        0.2
+      ]
+    }
+  },
+  "retention": {
+    "five_vs_one": {
+      "coin_heaven_collection_fraction": {
+        "estimate": 0.20416666666666664,
+        "ci95": [
+          -0.1555,
+          0.829
+        ],
+        "replica_means": [
+          0.8390000000000001,
+          -0.09,
+          -0.1365
+        ]
+      },
+      "classic_peaceful_survived": {
+        "estimate": -0.125,
+        "ci95": [
+          -0.325,
+          0.05
+        ],
+        "replica_means": [
+          -0.275,
+          -0.125,
+          0.025
+        ]
+      },
+      "classic_peaceful_self_kills": {
+        "estimate": 0.125,
+        "ci95": [
+          -0.05,
+          0.325
+        ],
+        "replica_means": [
+          0.275,
+          0.125,
+          -0.025
+        ]
+      },
+      "loot_crate_coins": {
+        "estimate": 1.3416666666666666,
+        "ci95": [
+          -10.475,
+          16.425624999999993
+        ],
+        "replica_means": [
+          17.45,
+          -5.5,
+          -7.925
+        ]
+      },
+      "loot_crate_self_kills": {
+        "estimate": 0.14166666666666666,
+        "ci95": [
+          -0.325,
+          0.5083333333333333
+        ],
+        "replica_means": [
+          0.325,
+          -0.375,
+          0.475
+        ]
+      }
+    },
+    "five_vs_reference": {
+      "coin_heaven_collection_fraction": {
+        "estimate": 0.01816666666666666,
+        "ci95": [
+          -0.3110041666666667,
+          0.5360124999999998
+        ],
+        "replica_means": [
+          0.55,
+          -0.2875,
+          -0.20800000000000002
+        ]
+      },
+      "classic_peaceful_survived": {
+        "estimate": -0.2,
+        "ci95": [
+          -0.36666666666666664,
+          -0.058333333333333334
+        ],
+        "replica_means": [
+          -0.325,
+          -0.125,
+          -0.15
+        ]
+      },
+      "classic_peaceful_self_kills": {
+        "estimate": 0.2,
+        "ci95": [
+          0.058333333333333334,
+          0.36666666666666664
+        ],
+        "replica_means": [
+          0.325,
+          0.125,
+          0.15
+        ]
+      },
+      "loot_crate_coins": {
+        "estimate": -1.5916666666666666,
+        "ci95": [
+          -10.800416666666667,
+          8.475
+        ],
+        "replica_means": [
+          7.0,
+          -8.65,
+          -3.125
+        ]
+      },
+      "loot_crate_self_kills": {
+        "estimate": 0.30833333333333335,
+        "ci95": [
+          0.05,
+          0.6
+        ],
+        "replica_means": [
+          0.25,
+          0.075,
+          0.6
+        ]
+      }
+    }
+  },
+  "looping_by_artifact": {
+    "reference": {
+      "late_state_steps": 5667,
+      "observed_steps": 62021,
+      "late_state_time_fraction": 0.09137227713193918,
+      "looping_windows": 3687,
+      "late_loop_rate": 0.6506087877183695
+    },
+    "one-step-r1": {
+      "late_state_steps": 3741,
+      "observed_steps": 59032,
+      "late_state_time_fraction": 0.06337240818539097,
+      "looping_windows": 1055,
+      "late_loop_rate": 0.28201015771184174
+    },
+    "one-step-r2": {
+      "late_state_steps": 2637,
+      "observed_steps": 52583,
+      "late_state_time_fraction": 0.0501492877926326,
+      "looping_windows": 1540,
+      "late_loop_rate": 0.583996966249526
+    },
+    "one-step-r3": {
+      "late_state_steps": 2304,
+      "observed_steps": 52213,
+      "late_state_time_fraction": 0.0441269415662766,
+      "looping_windows": 1191,
+      "late_loop_rate": 0.5169270833333334
+    },
+    "five-step-r1": {
+      "late_state_steps": 3233,
+      "observed_steps": 44277,
+      "late_state_time_fraction": 0.07301759378458342,
+      "looping_windows": 1962,
+      "late_loop_rate": 0.6068666872873492
+    },
+    "five-step-r2": {
+      "late_state_steps": 4966,
+      "observed_steps": 59374,
+      "late_state_time_fraction": 0.08363930339879408,
+      "looping_windows": 2620,
+      "late_loop_rate": 0.5275875956504229
+    },
+    "five-step-r3": {
+      "late_state_steps": 4801,
+      "observed_steps": 53364,
+      "late_state_time_fraction": 0.08996701896409565,
+      "looping_windows": 2832,
+      "late_loop_rate": 0.5898771089356384
+    }
+  },
+  "looping_by_arm": {
+    "one-step": {
+      "late_state_steps": 8682,
+      "observed_steps": 163828,
+      "looping_windows": 3786,
+      "late_state_time_fraction": 0.05299460409697976,
+      "late_loop_rate": 0.4360746371803732
+    },
+    "five-step": {
+      "late_state_steps": 13000,
+      "observed_steps": 157015,
+      "looping_windows": 7414,
+      "late_state_time_fraction": 0.08279463745502022,
+      "late_loop_rate": 0.5703076923076923
+    }
+  },
+  "loop_differences": {
+    "late_state_time_fraction": 0.029800033358040462,
+    "late_loop_rate": 0.1342330551273191
+  },
+  "latency": {
+    "reference": {
+      "decisions": 3219,
+      "p95_ms": 6.676220893859863,
+      "maximum_ms": 39.9017333984375,
+      "passes": true
+    },
+    "one-step-r1": {
+      "decisions": 2151,
+      "p95_ms": 5.845785140991211,
+      "maximum_ms": 9.988784790039062,
+      "passes": true
+    },
+    "one-step-r2": {
+      "decisions": 2542,
+      "p95_ms": 6.24868869781494,
+      "maximum_ms": 10.477066040039062,
+      "passes": true
+    },
+    "one-step-r3": {
+      "decisions": 2235,
+      "p95_ms": 5.684781074523924,
+      "maximum_ms": 9.035825729370117,
+      "passes": true
+    },
+    "five-step-r1": {
+      "decisions": 1548,
+      "p95_ms": 6.273949146270749,
+      "maximum_ms": 8.726358413696289,
+      "passes": true
+    },
+    "five-step-r2": {
+      "decisions": 2757,
+      "p95_ms": 5.610704421997069,
+      "maximum_ms": 9.207487106323242,
+      "passes": true
+    },
+    "five-step-r3": {
+      "decisions": 2245,
+      "p95_ms": 6.260585784912109,
+      "maximum_ms": 10.31637191772461,
+      "passes": true
+    }
+  },
+  "claim_gates": {
+    "kills": false,
+    "score": false,
+    "survival": true,
+    "self_kills": true,
+    "invalid": true,
+    "coin_heaven": true,
+    "classic_peaceful": false,
+    "loot_crate": false,
+    "late_loop_rate": false,
+    "late_state_time": false,
+    "latency": true
+  },
+  "claim_success": false,
+  "promotion_gates": {
+    "claim_success": false,
+    "score": false,
+    "kills": false,
+    "survival": false,
+    "self_kills": false,
+    "retention": false,
+    "latency": true
+  },
+  "promotable": false,
+  "selected_artifact": "reference",
+  "language": "registered decision rule, not a significance test"
+}

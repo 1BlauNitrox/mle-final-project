@@ -1,0 +1,44 @@
+{
+  "issue": 234,
+  "title": "Head-to-head benchmark of the final tabular agent and the submitted Bomb-omb",
+  "agents": {
+    "Bomb-omb": {
+      "role": "submitted DQN",
+      "source_commit": "6871896",
+      "source_path": "agent_code/Bomb-omb",
+      "artifact": "checkpoint.pt",
+      "sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6"
+    },
+    "DerKleineKonkurrenzvernichter": {
+      "role": "frozen tabular agent (Issue #228 replica r5)",
+      "source_commit": "b4b53c7092287356e8cd13caff03eab61410a551",
+      "source_path": "agent_code/DerKleineKonkurrenzvernichter",
+      "artifact": "model.npz",
+      "sha256": "945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d"
+    }
+  },
+  "scenario": "classic",
+  "world_seeds": {
+    "first": 234001,
+    "count": 100
+  },
+  "suites": {
+    "head_to_head": {
+      "lineup": ["Bomb-omb", "DerKleineKonkurrenzvernichter", "rule_based_agent", "rule_based_agent"],
+      "rotations": [0, 1, 2, 3]
+    },
+    "versus_rule_based": {
+      "learned_agents": ["Bomb-omb", "DerKleineKonkurrenzvernichter"],
+      "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      "learned_seat": "world index mod 4"
+    }
+  },
+  "analysis": {
+    "primary": "head_to_head mean per-game score difference Bomb-omb minus DerKleineKonkurrenzvernichter, world as unit",
+    "success": "lower bound of the 95% interval above 0",
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 234,
+    "interval": "percentile, 95%"
+  },
+  "workers": 6
+}

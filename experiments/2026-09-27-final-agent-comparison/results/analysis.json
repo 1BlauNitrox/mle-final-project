@@ -1,0 +1,392 @@
+{
+  "games": {
+    "head_to_head": 400,
+    "versus_rule_based": 200
+  },
+  "primary": {
+    "metric": "head_to_head score difference Bomb-omb minus tabular",
+    "mean": 1.4575,
+    "low": 1.1575,
+    "high": 1.7675,
+    "worlds": 100,
+    "success": true
+  },
+  "head_to_head": {
+    "difference": {
+      "score": {
+        "mean": 1.4575,
+        "low": 1.1575,
+        "high": 1.7675,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 1.145,
+        "low": 0.9775,
+        "high": 1.3175,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.0625,
+        "low": 0.015,
+        "high": 0.1125,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.06,
+        "low": -0.0075,
+        "high": 0.1275,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.17,
+        "low": 0.11,
+        "high": 0.23,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.175,
+        "low": 0.1225,
+        "high": 0.2275,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": -5.77,
+        "low": -6.4375,
+        "high": -5.145,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": -0.8175,
+        "low": -0.9525,
+        "high": -0.6825,
+        "worlds": 100
+      }
+    },
+    "Bomb-omb": {
+      "score": {
+        "mean": 3.275,
+        "low": 3.035,
+        "high": 3.525,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 2.575,
+        "low": 2.455,
+        "high": 2.695,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.14,
+        "low": 0.1025,
+        "high": 0.18,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.485,
+        "low": 0.4375,
+        "high": 0.5325,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.4575,
+        "low": 0.41,
+        "high": 0.505,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.2475,
+        "low": 0.205,
+        "high": 0.29,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": 1.6975,
+        "low": 1.4925,
+        "high": 1.91,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": 2.0925,
+        "low": 2.0025,
+        "high": 2.1825,
+        "worlds": 100
+      }
+    },
+    "DerKleineKonkurrenzvernichter": {
+      "score": {
+        "mean": 1.8175,
+        "low": 1.6575,
+        "high": 1.9800624999999992,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 1.43,
+        "low": 1.34,
+        "high": 1.5225,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.0775,
+        "low": 0.0525,
+        "high": 0.105,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.425,
+        "low": 0.3775,
+        "high": 0.475,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.2875,
+        "low": 0.245,
+        "high": 0.33,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.0725,
+        "low": 0.0475,
+        "high": 0.1,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": 7.4675,
+        "low": 6.8725,
+        "high": 8.095,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": 2.91,
+        "low": 2.8175,
+        "high": 3.0,
+        "worlds": 100
+      }
+    },
+    "rule_based_agent": {
+      "score": {
+        "mean": 3.46625,
+        "low": 3.30125,
+        "high": 3.63625,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 2.44125,
+        "low": 2.36875,
+        "high": 2.515,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.205,
+        "low": 0.1775,
+        "high": 0.2325,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.44,
+        "low": 0.405,
+        "high": 0.47375,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.485,
+        "low": 0.45125,
+        "high": 0.52,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.2625,
+        "low": 0.23625,
+        "high": 0.28875,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": 5.5675,
+        "low": 5.3225,
+        "high": 5.813781249999999,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": 2.09625,
+        "low": 2.04,
+        "high": 2.15125,
+        "worlds": 100
+      }
+    }
+  },
+  "versus_rule_based": {
+    "difference": {
+      "score": {
+        "mean": 0.95,
+        "low": 0.42,
+        "high": 1.49,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 1.05,
+        "low": 0.75,
+        "high": 1.36,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": -0.02,
+        "low": -0.1,
+        "high": 0.06,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": -0.05,
+        "low": -0.19,
+        "high": 0.09,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.23,
+        "low": 0.1,
+        "high": 0.36,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.16,
+        "low": 0.07,
+        "high": 0.25,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": -7.71,
+        "low": -9.18,
+        "high": -6.36,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": -0.48,
+        "low": -0.75,
+        "high": -0.21,
+        "worlds": 100
+      }
+    },
+    "gap_to_rule_based": {
+      "Bomb-omb": {
+        "mean": 0.08666666666666666,
+        "low": -0.45000000000000007,
+        "high": 0.6533333333333333,
+        "worlds": 100
+      },
+      "DerKleineKonkurrenzvernichter": {
+        "mean": -1.4033333333333333,
+        "low": -1.9199999999999997,
+        "high": -0.8700000000000001,
+        "worlds": 100
+      }
+    },
+    "Bomb-omb": {
+      "score": {
+        "mean": 2.98,
+        "low": 2.57,
+        "high": 3.43,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 2.63,
+        "low": 2.33,
+        "high": 2.94,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.07,
+        "low": 0.02,
+        "high": 0.13,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.41,
+        "low": 0.31,
+        "high": 0.51,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.5,
+        "low": 0.4,
+        "high": 0.6,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.24,
+        "low": 0.16,
+        "high": 0.33,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": 1.61,
+        "low": 1.2,
+        "high": 2.06,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": 2.21,
+        "low": 2.01,
+        "high": 2.42,
+        "worlds": 100
+      }
+    },
+    "DerKleineKonkurrenzvernichter": {
+      "score": {
+        "mean": 2.03,
+        "low": 1.67,
+        "high": 2.42,
+        "worlds": 100
+      },
+      "coins": {
+        "mean": 1.58,
+        "low": 1.34,
+        "high": 1.83,
+        "worlds": 100
+      },
+      "kills": {
+        "mean": 0.09,
+        "low": 0.04,
+        "high": 0.15,
+        "worlds": 100
+      },
+      "self_kills": {
+        "mean": 0.46,
+        "low": 0.36,
+        "high": 0.56,
+        "worlds": 100
+      },
+      "survived": {
+        "mean": 0.27,
+        "low": 0.19,
+        "high": 0.36,
+        "worlds": 100
+      },
+      "strict_first": {
+        "mean": 0.08,
+        "low": 0.03,
+        "high": 0.14,
+        "worlds": 100
+      },
+      "invalid_actions": {
+        "mean": 9.32,
+        "low": 8.05,
+        "high": 10.73,
+        "worlds": 100
+      },
+      "placement": {
+        "mean": 2.69,
+        "low": 2.48,
+        "high": 2.89,
+        "worlds": 100
+      }
+    }
+  },
+  "decision_times": {
+    "Bomb-omb": {
+      "median_of_p95_ms": 8.56945514678955,
+      "max_ms": 44.07215118408203
+    },
+    "DerKleineKonkurrenzvernichter": {
+      "median_of_p95_ms": 0.9293556213378905,
+      "max_ms": 34.97886657714844
+    }
+  }
+}

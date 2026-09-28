@@ -126,6 +126,25 @@ def test_invalid_tabular_learning_algorithm_is_rejected(tmp_path: Path) -> None:
     data["tabular_learning_algorithm"] = "unknown"
     with pytest.raises(ValueError, match="tabular_learning_algorithm"):
         run_plan.load_plan(_write_plan(tmp_path, data))
+    assert first.tabular_update_horizon == 1
+
+
+@pytest.mark.parametrize("horizon", [0, 2, 6, True, "5"])
+def test_invalid_tabular_update_horizons_are_rejected(
+    tmp_path: Path,
+    horizon: object,
+) -> None:
+    data = _plan_data()
+    data["tabular_update_horizon"] = horizon
+    with pytest.raises(ValueError, match="tabular_update_horizon"):
+        run_plan.load_plan(_write_plan(tmp_path, data))
+
+
+def test_five_step_tabular_update_horizon_is_resolved(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["tabular_update_horizon"] = 5
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    assert plan.tabular_update_horizon == 5
 
 
 def test_safe_bomb_exploration_requires_compact_state(tmp_path: Path) -> None:
@@ -349,6 +368,10 @@ def test_execution_preserves_failures_and_resumes_exactly(
         "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
         "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
         "BOMBERMAN_TABULAR_LEARNING_ALGORITHM": "q_learning",
+            "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
+                "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
+                "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
+            "BOMBERMAN_TABULAR_UPDATE_HORIZON": "1",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",

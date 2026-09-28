@@ -1,0 +1,10 @@
+{
+  "artifact": "one-step-r2",
+  "suite": "coin-heaven",
+  "stage": "evaluation",
+  "episodes": 40,
+  "checkpoint_sha256": "8b51ce2861027ae92c4a096d092f08938f17d61dacaaf04de21140322691c383",
+  "rows_sha256": "a274bbb676a19aa2b51fcd1ea67d44b7c22438fda21d01a377d1c18b9c1cf4d4",
+  "wall_seconds": 87.19519249998848,
+  "cpu_seconds": 85.46875
+}

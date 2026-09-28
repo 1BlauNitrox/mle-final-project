@@ -1,0 +1,10 @@
+{
+  "artifact": "one-step-r1",
+  "suite": "primary-classic-rule-based",
+  "stage": "latency",
+  "episodes": 10,
+  "checkpoint_sha256": "6b2196b72b9647904bcd8c9d08cfda2dd698841fe8d2325bbadcbbf325ad42f1",
+  "rows_sha256": "9dea9c0866f2a65dd59291d12c0c07c58ca3de18f372861bf7b5b9216d3a4412",
+  "wall_seconds": 15.195291900017764,
+  "cpu_seconds": 14.875
+}

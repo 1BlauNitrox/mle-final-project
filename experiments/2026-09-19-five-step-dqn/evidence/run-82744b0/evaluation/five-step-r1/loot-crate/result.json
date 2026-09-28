@@ -1,0 +1,10 @@
+{
+  "artifact": "five-step-r1",
+  "suite": "loot-crate",
+  "stage": "evaluation",
+  "episodes": 40,
+  "checkpoint_sha256": "4f2442561f20884552a7f6eee54358318c8cb912dc28ca02a746bc640e6d44b0",
+  "rows_sha256": "4b2aa5ee49bb2a694eb4feaf1e81864c48e561bf9c452330a353456a4cba3106",
+  "wall_seconds": 43.7278832999873,
+  "cpu_seconds": 42.484375
+}

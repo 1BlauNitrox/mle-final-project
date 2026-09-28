@@ -1,0 +1,18 @@
+{
+  "updated_at": "2026-09-19T16:32:57.281853+02:00",
+  "last_finished": "five-step-r3",
+  "exit_code": 0,
+  "pending": [],
+  "active": [],
+  "command": [
+    "C:\\task3-cadence\\.venv\\Scripts\\python.exe",
+    "C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\five-step-worktree\\scripts\\run_five_step_experiment.py",
+    "_train-job",
+    "--root",
+    "C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue207-five-step-82744b0",
+    "--arm",
+    "five-step",
+    "--replica",
+    "2"
+  ]
+}

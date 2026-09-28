@@ -58,6 +58,7 @@ class LoadedModel:
     potential_shaping: str
     exploration_mode: str
     learning_algorithm: str
+    update_horizon: int
 
 
 def save_model(
@@ -71,6 +72,7 @@ def save_model(
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
+    update_horizon: int = 1,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -98,6 +100,9 @@ def save_model(
 
     if exploration_mode not in {"standard", "safe_bomb"}:
         raise ValueError("Invalid exploration mode.")
+
+    if type(update_horizon) is not int or update_horizon not in (1, 5):
+        raise ValueError("Update horizon must be either 1 or 5.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -136,6 +141,7 @@ def save_model(
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
         "learning_algorithm": q_table.learning_algorithm,
+        "update_horizon": update_horizon,
     }
 
     path = Path(path)
@@ -274,6 +280,9 @@ def load_model(
 
         if "learning_algorithm" not in metadata:
             metadata = {**metadata, "learning_algorithm": Q_LEARNING}
+ 
+        if "update_horizon" not in metadata:
+            metadata = {**metadata, "update_horizon": 1}
 
         stored_schema_version = metadata.get("model_schema_version")
 
@@ -364,6 +373,7 @@ def load_model(
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
         learning_algorithm=str(metadata["learning_algorithm"]),
+        update_horizon=int(metadata["update_horizon"]),
     )
 
 
@@ -556,6 +566,7 @@ def _validate_metadata(metadata: Any) -> None:
         "potential_shaping",
         "exploration_mode",
         "learning_algorithm",
+        "update_horizon",
     }
 
     if (
@@ -572,6 +583,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["learning_algorithm"] not in VALID_LEARNING_ALGORITHMS:
         raise ValueError("Stored learning algorithm is invalid")
+  
+    if type(metadata["update_horizon"]) is not int or metadata["update_horizon"] not in (1, 5):
+        raise ValueError("Stored update horizon is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")
