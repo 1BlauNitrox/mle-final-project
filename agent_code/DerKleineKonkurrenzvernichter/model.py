@@ -150,23 +150,6 @@ class QTable:
     ) -> float:
         """Update one Q-value and return its temporal difference."""
 
-        if action not in ACTIONS:
-            raise ValueError(f"Invalid action: {action}")
-
-        if not terminal and next_state is None:
-            raise ValueError("Next state must be provided for non-terminal updates.")
-
-        if self.learning_algorithm == DOUBLE_Q_LEARNING:
-            if rng is None:
-                raise ValueError("Double Q-learning updates require an RNG.")
-            update_secondary = bool(rng.integers(0, 2))
-            current_values = self._get_or_create_table(
-                state,
-                secondary=update_secondary,
-            )
-        else:
-            update_secondary = False
-            current_values = self._get_or_create(state)
         return self.update_n_step(
             state=state,
             action=action,

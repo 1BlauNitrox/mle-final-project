@@ -62,6 +62,9 @@ class DeferredBombTransition:
     transition: PendingTransition
     position: tuple[int, int]
     origin_step: int
+
+
+@dataclass(frozen=True)
 class LearningTransition:
     """One fully observed transition waiting for an n-step update."""
 
@@ -316,7 +319,6 @@ def _finalize_pending_transition(self) -> None:
         self.pending_transition = None
         return
 
-    _apply_update(
     _record_transition(
         self,
         state=pending.state,
@@ -421,6 +423,8 @@ def _bomb_position_from_transition(
     if position is None:
         raise RuntimeError("Bomb transition is missing its placement position")
     return tuple(position)
+
+
 def _record_transition(
     self,
     *,
@@ -523,7 +527,7 @@ def _apply_update(
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
-        rng=self.rng,
+        rng=getattr(self, "rng", None),
     )
 
     self.episode_reward += learning_reward
