@@ -346,6 +346,7 @@ def _drain_transition_queue(self, *, force: bool) -> None:
             terminal=successor.terminal,
             bootstrap_steps=steps,
             next_action_mask=successor.next_action_mask,
+            rng=getattr(self, "rng", None),
         )
         self.absolute_td_errors.append(abs(td_error))
         self.transition_queue.pop(0)

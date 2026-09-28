@@ -365,7 +365,6 @@ def test_double_q_model_round_trip(tmp_path: Path) -> None:
 
 def test_existing_model_migrates_as_single_q_learning() -> None:
     assert load_model().learning_algorithm == Q_LEARNING
-    assert agent.transition_queue == []
 
 
 def test_one_step_wrapper_matches_general_n_step_update() -> None:

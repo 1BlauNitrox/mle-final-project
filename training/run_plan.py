@@ -223,6 +223,8 @@ def load_plan(path: Path) -> ResolvedPlan:
         raise ValueError(
             "tabular_learning_algorithm must be one of "
             f"{list(VALID_TABULAR_LEARNING_ALGORITHMS)}"
+        )
+
     tabular_update_horizon = raw.get("tabular_update_horizon", 1)
     if (
         type(tabular_update_horizon) is not int

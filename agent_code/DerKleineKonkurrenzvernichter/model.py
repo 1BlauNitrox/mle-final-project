@@ -175,6 +175,7 @@ class QTable:
             terminal=terminal,
             bootstrap_steps=1,
             next_action_mask=next_action_mask,
+            rng=rng,
         )
 
     def update_n_step(
@@ -187,6 +188,7 @@ class QTable:
         terminal: bool,
         bootstrap_steps: int,
         next_action_mask: np.ndarray | None = None,
+        rng: np.random.Generator | None = None,
     ) -> float:
         """Apply a pre-accumulated n-step return and return its TD error."""
 
@@ -199,7 +201,17 @@ class QTable:
         if not terminal and next_state is None:
             raise ValueError("Next state must be provided for non-terminal updates.")
 
-        current_values = self._get_or_create(state)
+        if self.learning_algorithm == DOUBLE_Q_LEARNING:
+            if rng is None:
+                raise ValueError("Double Q-learning updates require an RNG.")
+            update_secondary = bool(rng.integers(0, 2))
+            current_values = self._get_or_create_table(
+                state,
+                secondary=update_secondary,
+            )
+        else:
+            update_secondary = False
+            current_values = self._get_or_create(state)
         action_index = ACTIONS.index(action)
         current_value = current_values[action_index]
 
@@ -226,10 +238,9 @@ class QTable:
                 masked_next_values = np.where(legal, next_values, -np.inf)
                 bootstrap_value = float(np.max(masked_next_values))
 
-            target = reward + self.discount_factor * bootstrap_value
             target = (
                 discounted_return
-                + self.discount_factor**bootstrap_steps * maximum_next_value
+                + self.discount_factor**bootstrap_steps * bootstrap_value
             )
 
         td_error = target - current_value
