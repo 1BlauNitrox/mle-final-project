@@ -262,7 +262,7 @@ def evaluate_criteria(
     deterministic: bool,
     latency_ok: bool,
 ) -> dict[str, bool]:
-    """Evaluate the criteria fixed before the run."""
+    """Evaluate the exact gates registered before execution."""
 
     def mean(scenario: str, metric: str) -> float:
         values = [

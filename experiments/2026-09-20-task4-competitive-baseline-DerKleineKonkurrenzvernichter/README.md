@@ -65,6 +65,24 @@ danger may also help.
 Repeats differed across several evaluation suites. This should be investigated,
 but it does not change the result because the first-place and peaceful-hunting
 criteria already failed.
+Training the unchanged Task 3 state and reward design directly against three
+rule-based opponents produces occasional strict wins but not a viable Task 4
+policy. The confidence interval remains entirely below the registered 0.10
+target, so the failure is not explained merely by one weak replica. Positive
+mean score also does not imply competitive success because the agent survives
+only 26% of competitive episodes and frequently kills itself.
+
+Earlier coin-collection capability is retained at the registered thresholds,
+but peaceful hunting regresses below its gate. A next Task 4 experiment should
+therefore not simply extend the same strong-opponent training. The evidence
+supports investigating a curriculum or rehearsal mixture that preserves
+peaceful hunting while gradually introducing active opponents, together with
+state information that distinguishes opponent bombs and immediate competitive
+danger. Any such change requires a new controlled experiment.
+
+Repeat failures occur across the evaluation matrix and remain a shared
+reproducibility limitation. They do not rescue this baseline because the
+primary first-place and peaceful-retention gates independently fail.
 
 ## Decision
 
