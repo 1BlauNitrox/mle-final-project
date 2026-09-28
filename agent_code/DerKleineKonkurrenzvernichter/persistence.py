@@ -393,10 +393,8 @@ def _serialize_q_table(
     q_table: QTable,
     *,
     representation: str,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Serialize materialized states and their visit counts."""
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Serialize materialized Task 2 states and their visit counts."""
+    """Serialize materialized states and their visit counts."""
 
     representation_contract = get_state_representation(representation)
     ordered_states = sorted(set(q_table.values) | set(q_table.secondary_values))
