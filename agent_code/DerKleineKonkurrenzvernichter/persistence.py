@@ -17,6 +17,7 @@ from .features import (
     StateFeatures,
     get_state_representation,
 )
+from .kill_reward import NATIVE_KILL_REWARD, VALID_KILL_REWARD_MODES
 from .migration import (
     EXPECTED_PARENT_SHA256,
     PARENT_MODEL_PATH,
@@ -57,6 +58,7 @@ class LoadedModel:
     initialization: str
     potential_shaping: str
     exploration_mode: str
+    kill_reward_mode: str
     learning_algorithm: str
     update_horizon: int
 
@@ -72,6 +74,7 @@ def save_model(
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
+    kill_reward_mode: str = NATIVE_KILL_REWARD,
     update_horizon: int = 1,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
@@ -101,6 +104,8 @@ def save_model(
     if exploration_mode not in {"standard", "safe_bomb"}:
         raise ValueError("Invalid exploration mode.")
 
+    if kill_reward_mode not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Invalid kill-reward mode.")
     if type(update_horizon) is not int or update_horizon not in (1, 5):
         raise ValueError("Update horizon must be either 1 or 5.")
 
@@ -140,6 +145,7 @@ def save_model(
         "useful_bomb_reward": useful_bomb_reward,
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
+        "kill_reward_mode": kill_reward_mode,
         "learning_algorithm": q_table.learning_algorithm,
         "update_horizon": update_horizon,
     }
@@ -278,6 +284,11 @@ def load_model(
         if "exploration_mode" not in metadata:
             metadata = {**metadata, "exploration_mode": "standard"}
 
+        if "kill_reward_mode" not in metadata:
+            metadata = {
+                **metadata,
+                "kill_reward_mode": NATIVE_KILL_REWARD,
+            }
         if "learning_algorithm" not in metadata:
             metadata = {**metadata, "learning_algorithm": Q_LEARNING}
 
@@ -372,6 +383,7 @@ def load_model(
         initialization=initialization,
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
+        kill_reward_mode=str(metadata["kill_reward_mode"]),
         learning_algorithm=str(metadata["learning_algorithm"]),
         update_horizon=int(metadata["update_horizon"]),
     )
@@ -565,6 +577,7 @@ def _validate_metadata(metadata: Any) -> None:
         "action_masking",
         "potential_shaping",
         "exploration_mode",
+        "kill_reward_mode",
         "learning_algorithm",
         "update_horizon",
     }
@@ -581,6 +594,8 @@ def _validate_metadata(metadata: Any) -> None:
     if metadata["exploration_mode"] not in {"standard", "safe_bomb"}:
         raise ValueError("Stored exploration mode is invalid")
 
+    if metadata["kill_reward_mode"] not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Stored kill-reward mode is invalid")
     if metadata["learning_algorithm"] not in VALID_LEARNING_ALGORITHMS:
         raise ValueError("Stored learning algorithm is invalid")
 

@@ -41,6 +41,13 @@ decision-time observation exceeded the registered limit; both remain explicit
 limitations. The Task 2 parent itself failed its full Issue #183 confirmation,
 and that limitation also remains part of this successor's provenance.
 
+Issue #224 tested a RUDDER-inspired deterministic redistribution of the native
+opponent-kill reward to its causal bomb-placement transition. The candidate
+reduced mean peaceful-opponent eliminations from 0.15 to 0.13 and failed the
+registered primary, replica-consistency, confidence-bound, and repeatability
+gates. The current configuration therefore retains the native delayed
+`KILLED_OPPONENT: +5.0` reward; `causal_bomb` remains an experimental,
+checkpoint-protected training mode rather than the promoted policy.
 Issue #228 established the unchanged agent's first Task 4 competitive baseline.
 After 10,000 Classic training episodes against three rule-based opponents, five
 replicas achieved a mean strict first-place rate of 0.04 (95% cluster-bootstrap

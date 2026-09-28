@@ -46,6 +46,7 @@ VALID_POTENTIAL_SHAPING_MODES = (
     "escape_distance_half_full_no_route",
 )
 VALID_TABULAR_INITIALIZATIONS = ("parent_prior", "zeros", "task2_prior")
+VALID_TABULAR_KILL_REWARD_MODES = ("native", "causal_bomb")
 VALID_TABULAR_EXPLORATION_MODES = ("standard", "safe_bomb")
 VALID_TABULAR_LEARNING_ALGORITHMS = ("q_learning", "double_q_learning")
 VALID_TABULAR_UPDATE_HORIZONS = (1, 5)
@@ -126,6 +127,7 @@ class ResolvedPlan:
     tabular_update_horizon: int
     useful_bomb_reward: float
     reward_variant: str
+    tabular_kill_reward_mode: str
     escape_continuations: str
     replay_treatment: str
     max_parallel_training: int
@@ -260,6 +262,13 @@ def load_plan(path: Path) -> ResolvedPlan:
     reward_variant = raw.get("reward_variant", "control")
     if reward_variant not in VALID_REWARD_VARIANTS:
         raise ValueError(f"reward_variant must be one of {list(VALID_REWARD_VARIANTS)}")
+
+    tabular_kill_reward_mode = raw.get("tabular_kill_reward_mode", "native")
+    if tabular_kill_reward_mode not in VALID_TABULAR_KILL_REWARD_MODES:
+        raise ValueError(
+            "tabular_kill_reward_mode must be one of "
+            f"{list(VALID_TABULAR_KILL_REWARD_MODES)}"
+        )
     escape_continuations = raw.get("escape_continuations", "off")
     # PyYAML uses YAML 1.1 resolution, where bare ``off`` and ``on`` load as
     # booleans. Accept the documented unquoted plan syntax and normalize it
@@ -336,6 +345,7 @@ def load_plan(path: Path) -> ResolvedPlan:
         tabular_update_horizon=tabular_update_horizon,
         useful_bomb_reward=float(useful_bomb_reward),
         reward_variant=reward_variant,
+        tabular_kill_reward_mode=tabular_kill_reward_mode,
         escape_continuations=escape_continuations,
         replay_treatment=replay_treatment,
         max_parallel_training=max_parallel,
@@ -549,6 +559,7 @@ def _run_job(
             "BOMBERMAN_DQN_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_USEFUL_BOMB_REWARD": str(plan.useful_bomb_reward),
             "BOMBERMAN_DQN_REWARD_VARIANT": plan.reward_variant,
+            "BOMBERMAN_TABULAR_KILL_REWARD_MODE": plan.tabular_kill_reward_mode,
             "BOMBERMAN_TABULAR_ACTION_MASKING": plan.action_masking,
             "BOMBERMAN_TABULAR_STATE_REPRESENTATION": plan.state_representation,
             "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": plan.potential_shaping,
@@ -600,6 +611,7 @@ def _run_job(
                     "tabular_update_horizon": plan.tabular_update_horizon,
                     "useful_bomb_reward": plan.useful_bomb_reward,
                     "reward_variant": plan.reward_variant,
+                    "tabular_kill_reward_mode": plan.tabular_kill_reward_mode,
                     "escape_continuations": plan.escape_continuations,
                     "replay_treatment": plan.replay_treatment,
                     "fingerprints": plan.fingerprints,

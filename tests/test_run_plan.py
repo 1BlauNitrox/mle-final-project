@@ -170,6 +170,21 @@ def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path
     assert overridden_plan.reward_variant == "safety_bomb"
 
 
+def test_kill_reward_mode_defaults_validates_and_can_be_overridden(tmp_path: Path) -> None:
+    default_plan = run_plan.load_plan(_write_plan(tmp_path / "default", _plan_data()))
+    assert default_plan.tabular_kill_reward_mode == "native"
+
+    overridden = _plan_data()
+    overridden["tabular_kill_reward_mode"] = "causal_bomb"
+    overridden_plan = run_plan.load_plan(_write_plan(tmp_path / "candidate", overridden))
+    assert overridden_plan.tabular_kill_reward_mode == "causal_bomb"
+
+    invalid = _plan_data()
+    invalid["tabular_kill_reward_mode"] = "unknown"
+    with pytest.raises(ValueError, match="tabular_kill_reward_mode"):
+        run_plan.load_plan(_write_plan(tmp_path / "invalid", invalid))
+
+
 @pytest.mark.parametrize("literal", ["off", "on"])
 def test_unquoted_escape_treatment_literals_are_accepted(
     tmp_path: Path,
@@ -367,6 +382,7 @@ def test_execution_preserves_failures_and_resumes_exactly(
         "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
         "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
         "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
+        "BOMBERMAN_TABULAR_KILL_REWARD_MODE": "native",
         "BOMBERMAN_TABULAR_LEARNING_ALGORITHM": "q_learning",
         "BOMBERMAN_TABULAR_UPDATE_HORIZON": "1",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
