@@ -1,0 +1,71 @@
+schema_version: 1
+issue: 228
+status: completed_failed
+agent: DerKleineKonkurrenzvernichter
+experiment_commit: 7e914884ba124dac13035f1976e4f4f31818f8bc
+hypothesis: Training the current tabular Task 3 agent against three rule-based opponents produces measurable competitive behavior while retaining Task 2 and Task 3 capabilities.
+experiment_type: single_arm_baseline
+state_representation: compact_opponent
+initialization: task2_prior
+kill_reward_mode: native
+action_masking: none
+exploration_mode: standard
+potential_shaping: none
+parent_sha256: 93470f92082597b1848f2fa65265c7288dbb1b50ac90370e5747e085e775ea3e
+replicas: 5
+training:
+  scenario: classic
+  episodes_per_replica: 10000
+  opponents: [rule_based_agent, rule_based_agent, rule_based_agent]
+  checkpoint: exact_final_episode
+evaluation:
+  seed_pairs_per_suite: 20
+  suites:
+    competitive: [rule_based_agent, rule_based_agent, rule_based_agent]
+    mixed: [rule_based_agent, coin_collector_agent, peaceful_agent]
+    peaceful: [peaceful_agent]
+    classic: []
+    coin-heaven: []
+    loot-crate: []
+  exact_repeats: true
+uncertainty:
+  metric: competitive_first_place_rate
+  method: cluster_bootstrap_over_replica_means
+  resamples: 10000
+  confidence_level: 0.95
+  seed: 228
+success_gates:
+  competitive_first_place_rate_min: 0.10
+  positive_first_place_replicas_min: 4
+  competitive_mean_score_min_exclusive: 0.0
+  peaceful_eliminations_min: 0.10
+  classic_collection_min: 0.15
+  coin_heaven_collection_min: 0.90
+  loot_crate_collection_min: 0.20
+  equal_suite_aggregate_self_kill_max: 0.20
+  repeat_action_sequences_must_match: true
+  decision_time_p95_ms_max: 50
+  decision_time_max_ms_max: 100
+selection_rule:
+  eligible_only_if_all_gates_pass: true
+  ranking:
+    - competitive_first_place_rate_desc
+    - competitive_mean_score_desc
+    - competitive_survival_rate_desc
+    - competitive_mean_opponents_eliminated_desc
+    - competitive_self_kill_rate_asc
+    - replica_id_asc
+compute:
+  planned_jobs: 1205
+  planned_training_episodes: 50000
+  planned_evaluation_episodes: 1200
+  planned_total_episodes: 51200
+  max_parallel_training: 2
+authorization:
+  owner_requested_direct_execution: true
+  intermediate_review_waived_by_owner: true
+execution:
+  completed_at: 2026-09-21
+  completed_jobs: 1205
+  failed_jobs: 0
+decision: reject_as_viable_task4_baseline_no_checkpoint_selected
