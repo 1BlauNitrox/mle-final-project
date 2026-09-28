@@ -111,7 +111,22 @@ def test_schema_expands_deterministic_ordered_isolated_matrix(tmp_path: Path) ->
     assert first.tabular_initialization == "parent_prior"
     assert first.potential_shaping == "none"
     assert first.tabular_exploration_mode == "standard"
+    assert first.tabular_learning_algorithm == "q_learning"
     assert first.tabular_update_horizon == 1
+
+
+def test_double_q_learning_can_be_selected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["tabular_learning_algorithm"] = "double_q_learning"
+    plan = run_plan.load_plan(_write_plan(tmp_path, data))
+    assert plan.tabular_learning_algorithm == "double_q_learning"
+
+
+def test_invalid_tabular_learning_algorithm_is_rejected(tmp_path: Path) -> None:
+    data = _plan_data()
+    data["tabular_learning_algorithm"] = "unknown"
+    with pytest.raises(ValueError, match="tabular_learning_algorithm"):
+        run_plan.load_plan(_write_plan(tmp_path, data))
 
 
 @pytest.mark.parametrize("horizon", [0, 2, 6, True, "5"])
@@ -153,6 +168,21 @@ def test_reward_variant_defaults_to_control_and_can_be_overridden(tmp_path: Path
     overridden["reward_variant"] = "safety_bomb"
     overridden_plan = run_plan.load_plan(_write_plan(tmp_path / "overridden", overridden))
     assert overridden_plan.reward_variant == "safety_bomb"
+
+
+def test_kill_reward_mode_defaults_validates_and_can_be_overridden(tmp_path: Path) -> None:
+    default_plan = run_plan.load_plan(_write_plan(tmp_path / "default", _plan_data()))
+    assert default_plan.tabular_kill_reward_mode == "native"
+
+    overridden = _plan_data()
+    overridden["tabular_kill_reward_mode"] = "causal_bomb"
+    overridden_plan = run_plan.load_plan(_write_plan(tmp_path / "candidate", overridden))
+    assert overridden_plan.tabular_kill_reward_mode == "causal_bomb"
+
+    invalid = _plan_data()
+    invalid["tabular_kill_reward_mode"] = "unknown"
+    with pytest.raises(ValueError, match="tabular_kill_reward_mode"):
+        run_plan.load_plan(_write_plan(tmp_path / "invalid", invalid))
 
 
 @pytest.mark.parametrize("literal", ["off", "on"])
@@ -349,10 +379,12 @@ def test_execution_preserves_failures_and_resumes_exactly(
         "BOMBERMAN_DQN_REWARD_VARIANT": "control",
         "BOMBERMAN_TABULAR_ACTION_MASKING": "none",
         "BOMBERMAN_TABULAR_STATE_REPRESENTATION": "baseline",
-            "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
-                "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
-                "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
-            "BOMBERMAN_TABULAR_UPDATE_HORIZON": "1",
+        "BOMBERMAN_TABULAR_POTENTIAL_SHAPING": "none",
+        "BOMBERMAN_TABULAR_EXPLORATION_MODE": "standard",
+        "BOMBERMAN_TABULAR_INITIALIZATION": "parent_prior",
+        "BOMBERMAN_TABULAR_KILL_REWARD_MODE": "native",
+        "BOMBERMAN_TABULAR_LEARNING_ALGORITHM": "q_learning",
+        "BOMBERMAN_TABULAR_UPDATE_HORIZON": "1",
         "BOMBERMAN_DQN_ESCAPE_CONTINUATIONS": "off",
         "BOMBERMAN_DQN_REPLAY_TREATMENT": "uniform",
         "BOMBERMAN_EVALUATION_CHECKPOINT": "model.npz",

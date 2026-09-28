@@ -17,6 +17,7 @@ from .features import (
     StateFeatures,
     get_state_representation,
 )
+from .kill_reward import NATIVE_KILL_REWARD, VALID_KILL_REWARD_MODES
 from .migration import (
     EXPECTED_PARENT_SHA256,
     PARENT_MODEL_PATH,
@@ -24,9 +25,12 @@ from .migration import (
 )
 from .model import (
     BOMB_PRIOR_MARGIN,
+    DOUBLE_Q_LEARNING,
     PARENT_PRIOR_INITIALIZATION,
+    Q_LEARNING,
     TASK2_PRIOR_INITIALIZATION,
     VALID_INITIALIZATIONS,
+    VALID_LEARNING_ALGORITHMS,
     QTable,
 )
 from .potential_shaping import (
@@ -54,6 +58,8 @@ class LoadedModel:
     initialization: str
     potential_shaping: str
     exploration_mode: str
+    kill_reward_mode: str
+    learning_algorithm: str
     update_horizon: int
 
 
@@ -68,6 +74,7 @@ def save_model(
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
+    kill_reward_mode: str = NATIVE_KILL_REWARD,
     update_horizon: int = 1,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
@@ -97,6 +104,8 @@ def save_model(
     if exploration_mode not in {"standard", "safe_bomb"}:
         raise ValueError("Invalid exploration mode.")
 
+    if kill_reward_mode not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Invalid kill-reward mode.")
     if type(update_horizon) is not int or update_horizon not in (1, 5):
         raise ValueError("Update horizon must be either 1 or 5.")
 
@@ -111,7 +120,7 @@ def save_model(
         )
 
     parent_prior = load_parent_prior(parent_path)
-    states, q_values, visit_counts = _serialize_q_table(
+    states, q_values, secondary_q_values, visit_counts = _serialize_q_table(
         q_table,
         representation=state_representation,
     )
@@ -136,6 +145,8 @@ def save_model(
         "useful_bomb_reward": useful_bomb_reward,
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
+        "kill_reward_mode": kill_reward_mode,
+        "learning_algorithm": q_table.learning_algorithm,
         "update_horizon": update_horizon,
     }
 
@@ -158,6 +169,7 @@ def save_model(
                 temporary_file,
                 states=states,
                 q_values=q_values,
+                secondary_q_values=secondary_q_values,
                 metadata=np.array(json.dumps(metadata, sort_keys=True)),
                 visit_counts=visit_counts,
             )
@@ -199,16 +211,27 @@ def load_model(
                 *legacy_entries,
                 "visit_counts",
             }
+            double_entries = {
+                *current_entries,
+                "secondary_q_values",
+            }
 
             if set(archive.files) not in (
                 legacy_entries,
                 current_entries,
+                double_entries,
             ):
                 raise ValueError("Model archive has unexpected entries")
 
             raw_states = np.asarray(archive["states"]).copy()
 
             raw_q_values = np.asarray(archive["q_values"]).copy()
+
+            raw_secondary_q_values = (
+                np.asarray(archive["secondary_q_values"]).copy()
+                if "secondary_q_values" in archive.files
+                else None
+            )
 
             raw_visit_counts = (
                 np.asarray(archive["visit_counts"]).copy()
@@ -231,11 +254,21 @@ def load_model(
                 "Current model archive is missing visit counts"
             )
 
+        if (
+            stored_model_schema_version == MODEL_SCHEMA_VERSION
+            and raw_secondary_q_values is None
+        ):
+            raise ValueError(
+                "Current model archive is missing secondary Q-values"
+            )
+
         if raw_visit_counts is None:
             raw_visit_counts = np.zeros(
                 raw_states.shape[0],
                 dtype=np.int64,
             )
+        if raw_secondary_q_values is None:
+            raw_secondary_q_values = np.zeros_like(raw_q_values)
         if "useful_bomb_reward" not in metadata:
             metadata = {**metadata, "useful_bomb_reward": 0.0}
 
@@ -250,6 +283,14 @@ def load_model(
 
         if "exploration_mode" not in metadata:
             metadata = {**metadata, "exploration_mode": "standard"}
+
+        if "kill_reward_mode" not in metadata:
+            metadata = {
+                **metadata,
+                "kill_reward_mode": NATIVE_KILL_REWARD,
+            }
+        if "learning_algorithm" not in metadata:
+            metadata = {**metadata, "learning_algorithm": Q_LEARNING}
 
         if "update_horizon" not in metadata:
             metadata = {**metadata, "update_horizon": 1}
@@ -287,6 +328,7 @@ def load_model(
     _validate_raw_arrays(
         raw_states,
         raw_q_values,
+        secondary_q_values=raw_secondary_q_values,
         representation=state_representation,
         visit_counts=raw_visit_counts,
     )
@@ -298,6 +340,7 @@ def load_model(
 
     states = raw_states.astype(np.int64, copy=True)
     q_values = raw_q_values.astype(np.float64, copy=True)
+    secondary_q_values = raw_secondary_q_values.astype(np.float64, copy=True)
 
     q_table = QTable(
         learning_rate=float(metadata["learning_rate"]),
@@ -309,11 +352,13 @@ def load_model(
         ),
         feature_count=representation.feature_count,
         initialization=initialization,
+        learning_algorithm=str(metadata["learning_algorithm"]),
     )
 
-    for state_row, value_row, visit_count in zip(
+    for state_row, value_row, secondary_value_row, visit_count in zip(
         states,
         q_values,
+        secondary_q_values,
         raw_visit_counts,
         strict=True,
     ):
@@ -323,6 +368,8 @@ def load_model(
             raise ValueError("Model contains a duplicate Task 2 state")
 
         q_table.values[state] = value_row.copy()
+        if q_table.learning_algorithm == DOUBLE_Q_LEARNING:
+            q_table.secondary_values[state] = secondary_value_row.copy()
         q_table.visit_counts[state] = int(visit_count)
 
     return LoadedModel(
@@ -336,6 +383,8 @@ def load_model(
         initialization=initialization,
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
+        kill_reward_mode=str(metadata["kill_reward_mode"]),
+        learning_algorithm=str(metadata["learning_algorithm"]),
         update_horizon=int(metadata["update_horizon"]),
     )
 
@@ -346,24 +395,30 @@ def _serialize_q_table(
     representation: str,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Serialize materialized states and their visit counts."""
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Serialize materialized Task 2 states and their visit counts."""
 
     representation_contract = get_state_representation(representation)
-    ordered_entries = sorted(q_table.values.items())
+    ordered_states = sorted(set(q_table.values) | set(q_table.secondary_values))
 
     unknown_visit_states = (
         set(q_table.visit_counts)
-        - set(q_table.values)
+        - set(ordered_states)
     )
     if unknown_visit_states:
         raise ValueError(
             "Visit counts contain states missing from the Q-table"
         )
 
-    if not ordered_entries:
+    if not ordered_states:
         return (
             np.empty(
                 (0, representation_contract.feature_count),
                 dtype=np.int64,
+            ),
+            np.empty(
+                (0, len(ACTIONS)),
+                dtype=np.float64,
             ),
             np.empty(
                 (0, len(ACTIONS)),
@@ -374,10 +429,17 @@ def _serialize_q_table(
 
     states: list[StateFeatures] = []
     q_values: list[np.ndarray] = []
+    secondary_q_values: list[np.ndarray] = []
     visit_counts: list[int] = []
 
-    for state, values in ordered_entries:
+    for state in ordered_states:
         representation_contract.validate(state)
+
+        values = q_table.values.get(state, q_table._initial_values(state))
+        secondary_values = q_table.secondary_values.get(
+            state,
+            q_table._initial_values(state),
+        )
 
         value_array = np.asarray(values, dtype=np.float64)
 
@@ -386,6 +448,15 @@ def _serialize_q_table(
 
         if not np.all(np.isfinite(value_array)):
             raise ValueError("Q-values must be finite")
+
+        secondary_value_array = np.asarray(
+            secondary_values,
+            dtype=np.float64,
+        )
+        if secondary_value_array.shape != (len(ACTIONS),):
+            raise ValueError("Secondary Q-values have an incompatible action count")
+        if not np.all(np.isfinite(secondary_value_array)):
+            raise ValueError("Secondary Q-values must be finite")
 
         visit_count = q_table.visit_counts.get(state, 0)
 
@@ -396,11 +467,13 @@ def _serialize_q_table(
 
         states.append(state)
         q_values.append(value_array)
+        secondary_q_values.append(secondary_value_array)
         visit_counts.append(visit_count)
 
     return (
         np.asarray(states, dtype=np.int64),
         np.asarray(q_values, dtype=np.float64),
+        np.asarray(secondary_q_values, dtype=np.float64),
         np.asarray(visit_counts, dtype=np.int64),
     )
 
@@ -409,6 +482,7 @@ def _validate_raw_arrays(
     states: np.ndarray,
     q_values: np.ndarray,
     *,
+    secondary_q_values: np.ndarray,
     representation: str,
     visit_counts: np.ndarray,
 ) -> None:
@@ -432,6 +506,12 @@ def _validate_raw_arrays(
 
     if q_values.shape != expected_q_shape:
         raise ValueError("Model Q-values have an incompatible shape")
+
+    if secondary_q_values.shape != expected_q_shape:
+        raise ValueError("Model secondary Q-values have an incompatible shape")
+
+    if not np.all(np.isfinite(secondary_q_values)):
+        raise ValueError("Model secondary Q-values must be finite")
 
     if visit_counts.ndim != 1:
         raise ValueError("Model visit counts must be one-dimensional")
@@ -499,6 +579,8 @@ def _validate_metadata(metadata: Any) -> None:
         "action_masking",
         "potential_shaping",
         "exploration_mode",
+        "kill_reward_mode",
+        "learning_algorithm",
         "update_horizon",
     }
 
@@ -513,6 +595,11 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["exploration_mode"] not in {"standard", "safe_bomb"}:
         raise ValueError("Stored exploration mode is invalid")
+
+    if metadata["kill_reward_mode"] not in VALID_KILL_REWARD_MODES:
+        raise ValueError("Stored kill-reward mode is invalid")
+    if metadata["learning_algorithm"] not in VALID_LEARNING_ALGORITHMS:
+        raise ValueError("Stored learning algorithm is invalid")
 
     if type(metadata["update_horizon"]) is not int or metadata["update_horizon"] not in (1, 5):
         raise ValueError("Stored update horizon is invalid")
