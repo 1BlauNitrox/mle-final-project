@@ -1,0 +1,23 @@
+{
+  "scientific": false,
+  "passed": true,
+  "tested_commit": "9912ec3256f539965d29ae80d3d65ed1c8a65b41",
+  "config_sha256": "37a7a9d7db4a4b0acdfcf3ef743ff2ee598ac7c22fd151583e4c373b2e65bd50",
+  "focused_tests": 5,
+  "regression_tests": 1308,
+  "regression_subtests": 11,
+  "arms": {
+    "reset": {
+      "training_episodes": 4,
+      "gradient_updates": 283,
+      "evaluation_episodes": 1,
+      "checkpoint_immutable_in_evaluation": true
+    },
+    "preserve": {
+      "training_episodes": 1,
+      "gradient_updates": 116,
+      "evaluation_episodes": 1,
+      "checkpoint_immutable_in_evaluation": true
+    }
+  }
+}

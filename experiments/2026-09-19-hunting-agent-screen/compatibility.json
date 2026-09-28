@@ -1,0 +1,36 @@
+{
+  "verified_at": "2026-09-19T12:55:00+02:00",
+  "tools_commit": "09aac0043d887dd88a1e01f06566fd3b612dd653",
+  "trained_runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+  "runtime_source_comparison": {
+    "callbacks.py": "identical git blob 066ac4f7739847ac610ec26cddf18da0e0804ea3",
+    "config.py": "identical git blob ffc29dbee39d9e4374d8ac224b76eee9b696ae3e",
+    "features": "identical git tree a72aa4b3a6157f3c8d1b4065e1598221bd44ad36",
+    "legality.py": "identical git blob 64b787d7ca728052a271e96c9b9b2876a92c6ecc",
+    "model.py": "identical git blob 162adb484a0aad56aeb2f202cfae5fc14367c7b5",
+    "persistence.py": "identical git blob 51f2d4a985fe6b7730734425ecda84ca3353aa07",
+    "replay.py": "identical git blob 0bb8d02bced8eb24d2b6d3eea5ab77955ba03681"
+  },
+  "fallback_checkpoint": {
+    "sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "restricted_load": "passed with torch.load(weights_only=True) through load_evaluation_checkpoint",
+    "completed_episodes": 8000,
+    "parameter_count": 7110,
+    "input_features": 39,
+    "hidden_sizes": [64, 64],
+    "outputs": 6,
+    "action_masking": true,
+    "escape_continuation_features": true
+  },
+  "external_checkpoint": {
+    "restricted_load": "passed with torch.load(weights_only=True)",
+    "strict_architecture_match": true,
+    "architecture": "seven-channel 17x17 convolutional dueling DQN plus ten scalar inputs and six actions"
+  },
+  "runtime": {
+    "python": "3.13.15",
+    "torch": "2.13.0+cpu",
+    "cuda_available_with_cuda_visible_devices_empty": false,
+    "torch_threads_with_omp_and_mkl_threads_one": 1
+  }
+}

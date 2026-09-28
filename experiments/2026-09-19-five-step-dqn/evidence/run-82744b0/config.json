@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "status": "prospective",
+  "issue": 207,
+  "question": "Does a fixed five-step DQN target improve bomb-to-outcome credit assignment relative to one-step DQN?",
+  "papers": [
+    "https://arxiv.org/abs/1710.02298",
+    "https://arxiv.org/abs/1606.02647"
+  ],
+  "source": {
+    "base_tools_commit": "159c8d9",
+    "trained_runtime_commit": "c4ddfa4efadf0b3ec6d4380a4239b9cb3a097113",
+    "reference_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+    "reference_provenance": "control-r1 milestone-008000",
+    "external_archive_sha256": "301bce97a9a79cf7ac64c9532dbc0eb7396ffade8290c7f171edeb99687116de",
+    "external_checkpoint_sha256": "075d1a8948339ef1c5fb932cda2e97b89dc0fa4a8cc9f6201c79d56a85581468"
+  },
+  "arms": {
+    "one-step": {"n_step": 1},
+    "five-step": {"n_step": 5}
+  },
+  "shared_training": {
+    "replicas": 3,
+    "episodes_per_arm_replica": 1000,
+    "total_episodes": 6000,
+    "replica_world_seed_ranges_inclusive": [
+      [958000001, 958001000],
+      [958010001, 958011000],
+      [958020001, 958021000]
+    ],
+    "checkpoint_internal_agent_seed": 9281501,
+    "checkpoint_internal_rng_policy": "copied byte-identically from reference.pt for every arm and replica",
+    "opponents": ["RUEHL_BASED_AGENT", "rule_based_agent", "peaceful_agent"],
+    "external_admission_evidence": "Issue #205 appears-stronger rule and timing gates passed",
+    "prospective_amendment": "Before scientific training, owner steering replaced coin_collector_agent with rule_based_agent in both arms; no seeds, budgets, metrics, thresholds, or other controls changed.",
+    "discount_factor": 0.9,
+    "learning_rate": 0.0002,
+    "batch_size": 64,
+    "replay_capacity": 10000,
+    "target_update_interval": 500,
+    "random_episode_period": 5,
+    "trainable_scope": "all_weights",
+    "rewards": "unchanged inherited reward mapping",
+    "durable_checkpoint_every": 25,
+    "milestones": [250, 500, 750, 1000],
+    "decision_checkpoint": 1000
+  },
+  "smoke": {
+    "world_seeds": [958099991, 958099992],
+    "episodes_per_arm": 1,
+    "scientific": false
+  },
+  "evaluation_suites": {
+    "primary-classic-rule-based": {
+      "scenario": "classic",
+      "opponents": ["rule_based_agent", "rule_based_agent", "rule_based_agent"],
+      "world_seed_range_inclusive": [958100001, 958100060],
+      "worlds": 60,
+      "role": "primary efficacy and native-score non-regression"
+    },
+    "classic-peaceful": {
+      "scenario": "classic",
+      "opponents": ["peaceful_agent"],
+      "world_seed_range_inclusive": [958101001, 958101040],
+      "worlds": 40,
+      "role": "escape and survival retention"
+    },
+    "coin-heaven": {
+      "scenario": "coin-heaven",
+      "opponents": [],
+      "world_seed_range_inclusive": [958102001, 958102040],
+      "worlds": 40,
+      "role": "collection retention"
+    },
+    "loot-crate": {
+      "scenario": "loot-crate",
+      "opponents": [],
+      "world_seed_range_inclusive": [958103001, 958103040],
+      "worlds": 40,
+      "role": "bombing and collection retention"
+    }
+  },
+  "latency": {
+    "world_seed_range_inclusive": [958109001, 958109010],
+    "worlds": 10,
+    "p95_limit_ms": 50,
+    "maximum_limit_ms": 100,
+    "serial_idle_only": true
+  },
+  "uncertainty": {
+    "method": "hierarchical paired bootstrap over paired replicas and shared development worlds",
+    "resamples": 10000,
+    "seed": 958190001,
+    "interval_percent": 95,
+    "language": "decision rule, not a significance test"
+  },
+  "late_loop_detector": {
+    "window_steps": 24,
+    "maximum_period": 4,
+    "requires_zero_crates": true,
+    "requires_zero_visible_coins": true,
+    "requires_no_hazards": true,
+    "requires_no_progress_events": true,
+    "requires_constant_board_coin_signature": true
+  },
+  "decision_rule": {
+    "five_step_minus_one_step": {
+      "kills_estimate_minimum": 0.05,
+      "kills_interval_lower_strictly_above": -0.025,
+      "replica_pairs_nonnegative_minimum": 2,
+      "score_estimate_minimum": 0.0,
+      "score_interval_lower_strictly_above": -0.3,
+      "survival_minimum": -0.05,
+      "self_kills_maximum": 0.05,
+      "invalid_actions_maximum": 0.25,
+      "coin_heaven_collection_fraction_minimum": -0.05,
+      "classic_peaceful_survival_minimum": -0.05,
+      "classic_peaceful_self_kills_maximum": 0.05,
+      "loot_crate_coins_minimum": -0.25,
+      "loot_crate_self_kills_maximum": 0.05,
+      "late_loop_rate_maximum": 0.02,
+      "late_state_time_fraction_maximum": 0.02
+    },
+    "promotion_versus_fallback": {
+      "score_estimate_minimum": 0.0,
+      "score_interval_lower_strictly_above": -0.3,
+      "kills_estimate_minimum": 0.0,
+      "kills_interval_lower_strictly_above": -0.025,
+      "survival_minimum": -0.05,
+      "self_kills_maximum": 0.05,
+      "requires_all_retention_and_latency_gates": true
+    },
+    "selected_replica_if_promoted": "median five-step replica by primary native score; ties by kills then lower replica number",
+    "fallback_rule": "If any claim or promotion gate fails, or any final run is incomplete, preserve the supplied fallback; one-step is not a promotion path."
+  },
+  "resources": {
+    "python": "3.13",
+    "device": "cpu",
+    "torch_threads_per_worker": 1,
+    "initial_workers": 1,
+    "maximum_workers": 3,
+    "aggregate_workload_ram_bytes": 8589934592,
+    "minimum_available_ram_bytes": 3221225472,
+    "training_wall_seconds": 72000,
+    "absolute_stop": "2026-09-20T18:00:00+02:00"
+  },
+  "incomplete_run_policy": "Resume only from a matching durable checkpoint/trail inside the limits. Preserve and report every attempt and compute cost. If any of six finals remains incomplete, issue no efficacy verdict and promote nothing.",
+  "exclusions": [
+    "final held-out evaluation suite",
+    "all benchmark worlds",
+    "all training worlds from evaluation",
+    "attack, loop and survival guards",
+    "new reward shaping",
+    "checkpoint cherry-picking"
+  ]
+}

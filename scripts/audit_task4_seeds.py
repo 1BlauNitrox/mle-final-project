@@ -17,11 +17,11 @@ import re
 import subprocess
 from pathlib import Path
 
-from scripts.pilot_task4_competition import PROFILES, ROOT, write
+from scripts.pilot_task4_competition import PROFILES, ROOT, profile_dir, write
 
 
 def profile_config(profile):
-    path = ROOT / f"experiments/2026-09-15-task4-{profile}/config.json"
+    path = ROOT / f"experiments/{profile_dir(profile)}/config.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 
@@ -166,7 +166,7 @@ def main():
     ))
     args = parser.parse_args()
     result = audit(args.profile)
-    write(ROOT / f"experiments/2026-09-15-task4-{args.profile}/seed-audit.json", result)
+    write(ROOT / f"experiments/{profile_dir(args.profile)}/seed-audit.json", result)
     print(json.dumps({k: v for k, v in result.items() if k != "remote_revisions"}, indent=2))
 
 

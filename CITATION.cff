@@ -1,0 +1,19 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: mle-final-project
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Julius
+    family-names: Krueger
+  - given-names: Lili
+    family-names: Westermann
+  - given-names: 'Joachim '
+    family-names: Surm
+repository-code: 'https://github.com/1BlauNitrox/mle-final-project.git'
+keywords:
+  - MachineLearning

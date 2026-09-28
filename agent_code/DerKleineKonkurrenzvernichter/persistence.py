@@ -34,9 +34,9 @@ from .potential_shaping import (
     VALID_POTENTIAL_SHAPING_MODES,
 )
 
-MODEL_SCHEMA_VERSION = 7
+MODEL_SCHEMA_VERSION = 8
 LEGACY_MODEL_SCHEMA_VERSION = 3
-PREVIOUS_MODEL_SCHEMA_VERSIONS = (4, 5)
+PREVIOUS_MODEL_SCHEMA_VERSIONS = (4, 5, 7)
 MODEL_PATH = Path(__file__).resolve().parent / "model.npz"
 
 
@@ -54,6 +54,7 @@ class LoadedModel:
     initialization: str
     potential_shaping: str
     exploration_mode: str
+    update_horizon: int
 
 
 def save_model(
@@ -67,6 +68,7 @@ def save_model(
     initialization: str = PARENT_PRIOR_INITIALIZATION,
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
+    update_horizon: int = 1,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -94,6 +96,9 @@ def save_model(
 
     if exploration_mode not in {"standard", "safe_bomb"}:
         raise ValueError("Invalid exploration mode.")
+
+    if type(update_horizon) is not int or update_horizon not in (1, 5):
+        raise ValueError("Update horizon must be either 1 or 5.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -131,6 +136,7 @@ def save_model(
         "useful_bomb_reward": useful_bomb_reward,
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
+        "update_horizon": update_horizon,
     }
 
     path = Path(path)
@@ -245,6 +251,9 @@ def load_model(
         if "exploration_mode" not in metadata:
             metadata = {**metadata, "exploration_mode": "standard"}
 
+        if "update_horizon" not in metadata:
+            metadata = {**metadata, "update_horizon": 1}
+
         stored_schema_version = metadata.get("model_schema_version")
 
         if stored_schema_version == LEGACY_MODEL_SCHEMA_VERSION:
@@ -327,6 +336,7 @@ def load_model(
         initialization=initialization,
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
+        update_horizon=int(metadata["update_horizon"]),
     )
 
 
@@ -489,6 +499,7 @@ def _validate_metadata(metadata: Any) -> None:
         "action_masking",
         "potential_shaping",
         "exploration_mode",
+        "update_horizon",
     }
 
     if (
@@ -502,6 +513,9 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["exploration_mode"] not in {"standard", "safe_bomb"}:
         raise ValueError("Stored exploration mode is invalid")
+
+    if type(metadata["update_horizon"]) is not int or metadata["update_horizon"] not in (1, 5):
+        raise ValueError("Stored update horizon is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")

@@ -1,0 +1,66 @@
+{
+  "complete": true,
+  "jobs": [
+    {
+      "arm": "one-step",
+      "replica": 1,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "6b2196b72b9647904bcd8c9d08cfda2dd698841fe8d2325bbadcbbf325ad42f1",
+      "wall_seconds": 2908.158290099993,
+      "cpu_seconds": 2730.265625,
+      "ended_at": "2026-09-19T14:55:16.986438+02:00"
+    },
+    {
+      "arm": "five-step",
+      "replica": 1,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "4f2442561f20884552a7f6eee54358318c8cb912dc28ca02a746bc640e6d44b0",
+      "wall_seconds": 2794.4589204000076,
+      "cpu_seconds": 2625.1875,
+      "ended_at": "2026-09-19T14:53:23.302689+02:00"
+    },
+    {
+      "arm": "one-step",
+      "replica": 2,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "8b51ce2861027ae92c4a096d092f08938f17d61dacaaf04de21140322691c383",
+      "wall_seconds": 2440.9382924000092,
+      "cpu_seconds": 2380.1875,
+      "ended_at": "2026-09-19T15:53:47.628141+02:00"
+    },
+    {
+      "arm": "five-step",
+      "replica": 2,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "b6d2c1914d88ba0e13957e56a7fcb840a0f6efb7b0f25f1663faab40405b8d76",
+      "wall_seconds": 2568.2853985999827,
+      "cpu_seconds": 2502.53125,
+      "ended_at": "2026-09-19T15:55:54.978415+02:00"
+    },
+    {
+      "arm": "one-step",
+      "replica": 3,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "878052b88abef2cf13dd71368f7fb01712ff9a8b19a87ab53fc3c917c9504bc5",
+      "wall_seconds": 2861.3182627000206,
+      "cpu_seconds": 2790.5,
+      "ended_at": "2026-09-19T16:00:47.959929+02:00"
+    },
+    {
+      "arm": "five-step",
+      "replica": 3,
+      "episodes": 1000,
+      "complete": true,
+      "checkpoint_sha256": "77cbe50a6ba1ac299e3b91631be0f32c08f07947ef0f7e71fc37349bb1122956",
+      "wall_seconds": 2342.8380763999885,
+      "cpu_seconds": 2293.125,
+      "ended_at": "2026-09-19T16:32:54.387778+02:00"
+    }
+  ],
+  "ended_at": "2026-09-19T16:32:59.318407+02:00"
+}
