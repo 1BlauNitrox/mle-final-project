@@ -204,9 +204,6 @@ def test_final_deadline_freeze_rejects_training() -> None:
     with pytest.raises(RuntimeError, match="frozen final tabular agent"):
         train.setup_training(agent)
     assert agent.completed_episodes == 10000
-    train.setup_training(agent)
-    assert agent.completed_episodes == 0
-    assert agent.pending_transition is None
 
 
 def test_double_q_update_selects_with_one_table_and_evaluates_with_other() -> None:
