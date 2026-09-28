@@ -48,3 +48,11 @@ registered primary, replica-consistency, confidence-bound, and repeatability
 gates. The current configuration therefore retains the native delayed
 `KILLED_OPPONENT: +5.0` reward; `causal_bomb` remains an experimental,
 checkpoint-protected training mode rather than the promoted policy.
+Issue #228 established the unchanged agent's first Task 4 competitive baseline.
+After 10,000 Classic training episodes against three rule-based opponents, five
+replicas achieved a mean strict first-place rate of 0.04 (95% cluster-bootstrap
+interval [0.02, 0.05]) versus the registered 0.10 target. Competitive self-kill
+rate was 0.41 and peaceful-opponent elimination retention was 0.08. Collection
+and latency gates passed, but the primary, peaceful-retention, and repeatability
+gates failed. No Task 4 checkpoint is promoted; the current agent remains a
+Task 3 successor rather than a validated competitive policy.
