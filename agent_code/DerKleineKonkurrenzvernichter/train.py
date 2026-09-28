@@ -346,6 +346,7 @@ def _drain_transition_queue(self, *, force: bool) -> None:
             terminal=successor.terminal,
             bootstrap_steps=steps,
             next_action_mask=successor.next_action_mask,
+            rng=getattr(self, "rng", None),
         )
         self.absolute_td_errors.append(abs(td_error))
         self.transition_queue.pop(0)
@@ -383,6 +384,7 @@ def _apply_update(
         next_state=next_state,
         terminal=terminal,
         next_action_mask=next_action_mask,
+        rng=self.rng,
     )
 
     self.episode_reward += learning_reward

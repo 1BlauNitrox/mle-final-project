@@ -16,8 +16,10 @@ from .legality import framework_legal_action_mask
 from .migration import load_parent_prior
 from .model import (
     PARENT_PRIOR_INITIALIZATION,
+    Q_LEARNING,
     TASK2_PRIOR_INITIALIZATION,
     VALID_INITIALIZATIONS,
+    VALID_LEARNING_ALGORITHMS,
     QTable,
 )
 from .persistence import MODEL_PATH, load_model
@@ -34,6 +36,7 @@ STATE_REPRESENTATION_ENV = "BOMBERMAN_TABULAR_STATE_REPRESENTATION"
 INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
 POTENTIAL_SHAPING_ENV = "BOMBERMAN_TABULAR_POTENTIAL_SHAPING"
 EXPLORATION_MODE_ENV = "BOMBERMAN_TABULAR_EXPLORATION_MODE"
+LEARNING_ALGORITHM_ENV = "BOMBERMAN_TABULAR_LEARNING_ALGORITHM"
 UPDATE_HORIZON_ENV = "BOMBERMAN_TABULAR_UPDATE_HORIZON"
 STANDARD_EXPLORATION = "standard"
 SAFE_BOMB_EXPLORATION = "safe_bomb"
@@ -54,6 +57,7 @@ def setup(self) -> None:
     self.initialization = _read_initialization()
     self.potential_shaping = _read_potential_shaping()
     self.exploration_mode = _read_exploration_mode()
+    self.learning_algorithm = _read_learning_algorithm()
     self.update_horizon = _read_update_horizon()
 
     representation = get_state_representation(
@@ -100,6 +104,9 @@ def setup(self) -> None:
         if loaded.exploration_mode != self.exploration_mode:
             mismatches.append(EXPLORATION_MODE_ENV)
 
+        if loaded.learning_algorithm != self.learning_algorithm:
+            mismatches.append(LEARNING_ALGORITHM_ENV)
+
         if loaded.update_horizon != self.update_horizon:
             mismatches.append(UPDATE_HORIZON_ENV)
 
@@ -137,6 +144,7 @@ def setup(self) -> None:
         ),
         feature_count=representation.feature_count,
         initialization=self.initialization,
+        learning_algorithm=self.learning_algorithm,
     )
     self.completed_episodes = 0
     self.epsilon = INITIAL_EPSILON
@@ -329,6 +337,18 @@ def _read_exploration_mode() -> str:
             f"{list(VALID_EXPLORATION_MODES)}."
         )
     return mode
+
+
+def _read_learning_algorithm() -> str:
+    """Read the registered single- or Double-Q treatment."""
+
+    algorithm = os.environ.get(LEARNING_ALGORITHM_ENV, Q_LEARNING)
+    if algorithm not in VALID_LEARNING_ALGORITHMS:
+        raise ValueError(
+            f"{LEARNING_ALGORITHM_ENV} must be one of "
+            f"{list(VALID_LEARNING_ALGORITHMS)}."
+        )
+    return algorithm
 
 
 def _read_update_horizon() -> int:
