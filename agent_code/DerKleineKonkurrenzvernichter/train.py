@@ -62,6 +62,15 @@ class DeferredBombTransition:
     transition: PendingTransition
     position: tuple[int, int]
     origin_step: int
+class LearningTransition:
+    """One fully observed transition waiting for an n-step update."""
+
+    state: StateFeatures
+    action: str
+    reward: float
+    next_state: StateFeatures | None
+    terminal: bool
+    next_action_mask: np.ndarray | None = None
 
 
 def setup_training(self) -> None:
@@ -77,6 +86,7 @@ def _initialize_training_state(self) -> None:
     self.episode_event_counts: Counter[str] = Counter()
     self.pending_transition: PendingTransition | None = None
     self.deferred_bomb_transition: DeferredBombTransition | None = None
+    self.transition_queue: list[LearningTransition] = []
 
     self.logger.info("Training initialzied with epsilon=%.4f", self.epsilon)
 
@@ -202,7 +212,7 @@ def end_of_round(
         terminal_events = list((Counter(events) - already_counted).elements())
         _count_diagnostic_events(self, terminal_events)
 
-        _apply_update(
+        _record_transition(
             self,
             state=pending.state,
             action=pending.action,
@@ -222,7 +232,7 @@ def end_of_round(
             )
 
             if last_state is not None:
-                _apply_update(
+                _record_transition(
                     self,
                     state=last_state,
                     action=last_action,
@@ -234,6 +244,8 @@ def end_of_round(
                         last_game_state,
                     ),
                 )
+
+    _drain_transition_queue(self, force=True)
 
     completed_episode_epsilon = float(self.epsilon)
 
@@ -267,6 +279,7 @@ def end_of_round(
         potential_shaping=self.potential_shaping,
         exploration_mode=self.exploration_mode,
         kill_reward_mode=self.kill_reward_mode,
+        update_horizon=self.update_horizon,
     )
 
     self.episode_reward = 0.0
@@ -274,6 +287,7 @@ def end_of_round(
     self.episode_event_counts = Counter()
     self.pending_transition = None
     self.deferred_bomb_transition = None
+    self.transition_queue = []
 
     return metrics
 
@@ -303,6 +317,7 @@ def _finalize_pending_transition(self) -> None:
         return
 
     _apply_update(
+    _record_transition(
         self,
         state=pending.state,
         action=pending.action,
@@ -406,6 +421,73 @@ def _bomb_position_from_transition(
     if position is None:
         raise RuntimeError("Bomb transition is missing its placement position")
     return tuple(position)
+def _record_transition(
+    self,
+    *,
+    state: StateFeatures,
+    action: str,
+    reward: float,
+    next_state: StateFeatures | None,
+    terminal: bool,
+    next_action_mask: np.ndarray | None = None,
+    current_external_potential: float | None = None,
+    next_external_potential: float | None = None,
+) -> None:
+    """Shape and enqueue one transition, then apply any complete return."""
+    learning_reward = apply_potential_shaping(
+        reward,
+        state,
+        next_state,
+        terminal=terminal,
+        mode=self.potential_shaping,
+        discount_factor=self.q_table.discount_factor,
+        current_external_potential=current_external_potential,
+        next_external_potential=next_external_potential,
+    )
+    self.transition_queue.append(
+        LearningTransition(
+            state=state,
+            action=action,
+            reward=learning_reward,
+            next_state=next_state,
+            terminal=terminal,
+            next_action_mask=next_action_mask,
+        )
+    )
+    self.episode_reward += learning_reward
+    _drain_transition_queue(self, force=False)
+
+
+def _drain_transition_queue(self, *, force: bool) -> None:
+    """Apply complete n-step returns or flush truncated terminal returns."""
+    while self.transition_queue and (
+        force or len(self.transition_queue) >= self.update_horizon
+    ):
+        steps = min(self.update_horizon, len(self.transition_queue))
+        window = self.transition_queue[:steps]
+        terminal_index = next(
+            (index for index, transition in enumerate(window) if transition.terminal),
+            None,
+        )
+        if terminal_index is not None:
+            window = window[: terminal_index + 1]
+            steps = len(window)
+        successor = window[-1]
+        discounted_return = sum(
+            self.q_table.discount_factor**index * transition.reward
+            for index, transition in enumerate(window)
+        )
+        td_error = self.q_table.update_n_step(
+            state=window[0].state,
+            action=window[0].action,
+            discounted_return=discounted_return,
+            next_state=successor.next_state,
+            terminal=successor.terminal,
+            bootstrap_steps=steps,
+            next_action_mask=successor.next_action_mask,
+        )
+        self.absolute_td_errors.append(abs(td_error))
+        self.transition_queue.pop(0)
 
 
 def _apply_update(

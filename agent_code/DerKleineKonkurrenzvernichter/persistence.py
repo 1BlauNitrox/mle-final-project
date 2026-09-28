@@ -56,6 +56,7 @@ class LoadedModel:
     potential_shaping: str
     exploration_mode: str
     kill_reward_mode: str
+    update_horizon: int
 
 
 def save_model(
@@ -70,6 +71,7 @@ def save_model(
     potential_shaping: str = NO_POTENTIAL_SHAPING,
     exploration_mode: str = "standard",
     kill_reward_mode: str = NATIVE_KILL_REWARD,
+    update_horizon: int = 1,
     path: Path = MODEL_PATH,
     parent_path: Path = PARENT_MODEL_PATH,
 ) -> Path:
@@ -100,6 +102,8 @@ def save_model(
 
     if kill_reward_mode not in VALID_KILL_REWARD_MODES:
         raise ValueError("Invalid kill-reward mode.")
+    if type(update_horizon) is not int or update_horizon not in (1, 5):
+        raise ValueError("Update horizon must be either 1 or 5.")
 
     if q_table.feature_count != representation.feature_count:
         raise ValueError(
@@ -138,6 +142,7 @@ def save_model(
         "action_masking": action_masking,
         "exploration_mode": exploration_mode,
         "kill_reward_mode": kill_reward_mode,
+        "update_horizon": update_horizon,
     }
 
     path = Path(path)
@@ -257,6 +262,8 @@ def load_model(
                 **metadata,
                 "kill_reward_mode": NATIVE_KILL_REWARD,
             }
+        if "update_horizon" not in metadata:
+            metadata = {**metadata, "update_horizon": 1}
 
         stored_schema_version = metadata.get("model_schema_version")
 
@@ -341,6 +348,7 @@ def load_model(
         potential_shaping=str(metadata["potential_shaping"]),
         exploration_mode=str(metadata["exploration_mode"]),
         kill_reward_mode=str(metadata["kill_reward_mode"]),
+        update_horizon=int(metadata["update_horizon"]),
     )
 
 
@@ -504,6 +512,7 @@ def _validate_metadata(metadata: Any) -> None:
         "potential_shaping",
         "exploration_mode",
         "kill_reward_mode",
+        "update_horizon",
     }
 
     if (
@@ -520,6 +529,8 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["kill_reward_mode"] not in VALID_KILL_REWARD_MODES:
         raise ValueError("Stored kill-reward mode is invalid")
+    if type(metadata["update_horizon"]) is not int or metadata["update_horizon"] not in (1, 5):
+        raise ValueError("Stored update horizon is invalid")
 
     if set(metadata) != required_fields:
         raise ValueError("Model metadata has unexpected fields")

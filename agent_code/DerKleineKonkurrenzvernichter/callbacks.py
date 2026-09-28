@@ -39,9 +39,11 @@ INITIALIZATION_ENV = "BOMBERMAN_TABULAR_INITIALIZATION"
 POTENTIAL_SHAPING_ENV = "BOMBERMAN_TABULAR_POTENTIAL_SHAPING"
 EXPLORATION_MODE_ENV = "BOMBERMAN_TABULAR_EXPLORATION_MODE"
 KILL_REWARD_MODE_ENV = "BOMBERMAN_TABULAR_KILL_REWARD_MODE"
+UPDATE_HORIZON_ENV = "BOMBERMAN_TABULAR_UPDATE_HORIZON"
 STANDARD_EXPLORATION = "standard"
 SAFE_BOMB_EXPLORATION = "safe_bomb"
 VALID_EXPLORATION_MODES = (STANDARD_EXPLORATION, SAFE_BOMB_EXPLORATION)
+VALID_UPDATE_HORIZONS = (1, 5)
 COMPACT_BOMB_STATUS_INDEX = 4
 COMPACT_UNSAFE_BOMB_STATUS = 2
 
@@ -58,6 +60,7 @@ def setup(self) -> None:
     self.potential_shaping = _read_potential_shaping()
     self.exploration_mode = _read_exploration_mode()
     self.kill_reward_mode = _read_kill_reward_mode()
+    self.update_horizon = _read_update_horizon()
 
     representation = get_state_representation(
         self.state_representation
@@ -105,6 +108,8 @@ def setup(self) -> None:
 
         if loaded.kill_reward_mode != self.kill_reward_mode:
             mismatches.append(KILL_REWARD_MODE_ENV)
+        if loaded.update_horizon != self.update_horizon:
+            mismatches.append(UPDATE_HORIZON_ENV)
 
         if mismatches and (not is_fresh_model or not self.train):
             raise ValueError(
@@ -344,3 +349,16 @@ def _read_kill_reward_mode() -> str:
             f"{list(VALID_KILL_REWARD_MODES)}."
         )
     return mode
+def _read_update_horizon() -> int:
+    """Read the registered one-step or five-step update horizon."""
+
+    raw_horizon = os.environ.get(UPDATE_HORIZON_ENV, "1")
+    try:
+        horizon = int(raw_horizon)
+    except ValueError as error:
+        raise ValueError(f"{UPDATE_HORIZON_ENV} must be an integer.") from error
+    if horizon not in VALID_UPDATE_HORIZONS:
+        raise ValueError(
+            f"{UPDATE_HORIZON_ENV} must be one of {list(VALID_UPDATE_HORIZONS)}."
+        )
+    return horizon
