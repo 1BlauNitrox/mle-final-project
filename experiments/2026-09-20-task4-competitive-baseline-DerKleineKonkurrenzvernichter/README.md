@@ -52,6 +52,19 @@ Because not every gate passed, the registered rule selects no checkpoint.
 
 ## Interpretation
 
+Training the Task 3 agent directly against three rule-based opponents produced
+some wins, but not a useful Task 4 policy. Every part of the confidence interval
+stayed below the `0.10` target. The positive mean score is also misleading
+because the agent survived only 26% of competitive games and often killed itself.
+
+The earlier coin collection stayed above its limits, but peaceful hunting got
+worse. A follow-up could use a curriculum that slowly adds active opponents
+while still training peaceful hunting. Features for opponent bombs and immediate
+danger may also help.
+
+Repeats differed across several evaluation suites. This should be investigated,
+but it does not change the result because the first-place and peaceful-hunting
+criteria already failed.
 Training the unchanged Task 3 state and reward design directly against three
 rule-based opponents produces occasional strict wins but not a viable Task 4
 policy. The confidence interval remains entirely below the registered 0.10

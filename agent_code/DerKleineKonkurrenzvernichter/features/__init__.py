@@ -1,4 +1,4 @@
-"""Stable public feature API for the tabular successor."""
+"""Public feature API for the opponent-aware tabular agent."""
 
 from .assemble import (
     FEATURE_COUNT,

@@ -91,8 +91,8 @@ after the first scientific training run begins.
 | Between-model SD steps per coin | 2.547 | 7.285 | Worse |
 
 ## Interpretation
-The hypothesis was not supperted. Chenging the epsilon made the variation
-between independently traing model even worse.
+The hypothesis was not supported. Changing epsilon made the differences
+between the trained models even larger.
 
 The between-model standard deviation of the mean collection fraction increased
 from `0.1507` to `0.2362`, while the worst-model collection fraction decreased
@@ -104,11 +104,10 @@ Aggregate performance also decreased. The collection fraction fell from
 Only the first paired run improved slightly; the remaining paired runs
 performed worse.
 
-A likely explanation is that prolonged exploration prevents the tabular agent
-from settling sufficiently early into a reliable policy within the fixed
-10,000-episode training budget.
+The agent probably explores for too long and does not settle on a reliable
+policy within the 10,000 training episodes.
 
 ## Decision and follow-up
 
 The slower epsilon decay is rejected. The previous coin-distance reward agent
-with an epsilon decay of `0.99` remains the best registered version.
+with an epsilon decay of `0.99` remains the better version.

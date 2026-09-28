@@ -1,4 +1,4 @@
-"""anatomical persistence module for DerKleineVermoegensumverteiler"""
+"""Validated persistence for the tabular coin-collection agent."""
 
 from __future__ import annotations
 
@@ -91,7 +91,7 @@ def save_model(
 
 
 def load_model(path: Path = MODEL_PATH) -> LoadedModel:
-    """Load a Q-table model"""
+    """Load and validate a Q-table model."""
 
     path = Path(path)
 

@@ -1,4 +1,4 @@
-"""Minimal training callbacks for the runnable team-agent template."""
+"""Training callbacks retained for model compatibility."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ DIAGNOSTIC_EVENT_METRICS = {
 
 @dataclass(frozen=True)
 class PendingTransition:
-    """A surviving transition whose terminal status is not yet knwown."""
+    """A transition waiting to be classified as terminal or non-terminal."""
 
     identity: tuple[Any, Any] | None
     state: StateFeatures
@@ -77,8 +77,11 @@ class LearningTransition:
 
 
 def setup_training(self) -> None:
-    """Initialize Task 3 training state."""
-    _initialize_training_state(self)
+    """Reject training of the final deadline-frozen submission policy."""
+    raise RuntimeError(
+        "DerKleineKonkurrenzvernichter is the frozen final tabular agent; "
+        "training is disabled"
+    )
 
 
 def _initialize_training_state(self) -> None:
@@ -101,7 +104,7 @@ def game_events_occurred(
     new_game_state: dict,
     events: list[str],
 ) -> None:
-    """store current transition and finalice previous."""
+    """Store the current transition after finalizing the previous one."""
 
     _finalize_pending_transition(self)
 

@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #142 full no-route penalty experiment."""
+"""Analyze the Issue #142 full no-route penalty experiment."""
 
 from __future__ import annotations
 
@@ -41,7 +41,7 @@ SUITES = {
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require completed plans and evaluate all preregistered gates."""
+    """Check completed plans and evaluate the fixed criteria."""
     rows: list[dict[str, Any]] = []
     evidence: list[dict[str, Any]] = []
     diagnostics: list[dict[str, Any]] = []
@@ -147,7 +147,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
 
 
 def verify_from_evidence(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Recompute the registered decision from committed compact evidence."""
+    """Recompute the decision from the committed evidence."""
     output = Path(output).resolve()
     with (output / "evidence.csv").open(encoding="utf-8", newline="") as handle:
         evidence = list(csv.DictReader(handle))

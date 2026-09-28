@@ -1,11 +1,11 @@
 {
   "manifest_schema_version": 1,
-  "status": "task3_baseline_initialization",
+  "status": "final_tabular_deadline_freeze",
   "agent": "DerKleineKonkurrenzvernichter",
   "artifact": {
     "path": "model.npz",
-    "sha256": "9ef02537efd75b70cbfdd5f973d391ed4924bec91735e07a51b866f3beeee031",
-    "size_bytes": 1493
+    "sha256": "945b2cf0176b4ed57922aa6e12347f1ebbc19d675021dadb38eed6449075eb2d",
+    "size_bytes": 197177
   },
   "model_contract": {
     "algorithm": "tabular_q_learning",
@@ -23,9 +23,21 @@
     "freeze_merge_commit": "9f61966d9821fd635df1e41ad53836e343daead2",
     "task2_completion_claimed": false
   },
+  "training": {
+    "source_issue": 228,
+    "source_plan": "issue228-task4-competitive-baseline",
+    "source_replica": "r5",
+    "source_commit": "026c371a80c0a7189990a13f7bfeb7afe2b34f98",
+    "world_seed": 228005,
+    "agent_seed": 328005,
+    "completed_episodes": 10000,
+    "learned_states": 7909
+  },
   "policy": {
-    "training_allowed": true,
+    "training_allowed": false,
     "opponent_features_present": true,
-    "scientific_result_claimed": false
+    "scientific_result_claimed": false,
+    "deadline_override": true,
+    "registered_gates_passed": false
   }
 }

@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #114 tabular Task 2 experiment."""
+"""Analyze the Issue #114 useful-bomb reward experiment."""
 
 from __future__ import annotations
 

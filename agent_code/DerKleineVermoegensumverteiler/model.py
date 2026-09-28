@@ -1,4 +1,4 @@
-"""Q-tabel and policy"""
+"""Tabular Q-learning policy."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ class QTable:
         self.values: dict[StateFeatures, np.ndarray] = {}
 
     def q_values(self, state: StateFeatures) -> np.ndarray:
-        """Get the Q-values for a given state."""
+        """Return the Q-values for a state."""
 
         values = self.values.get(state)
 
@@ -64,7 +64,7 @@ class QTable:
         next_state: StateFeatures | None,
         terminal: bool,
     ) -> float:
-        """Update the Q-value and return the TD error"""
+        """Update one Q-value and return the TD error."""
         if action not in ACTIONS:
             raise ValueError(f"Invalid action: {action}")
 
@@ -91,7 +91,7 @@ class QTable:
         return len(self.values)
 
     def _get_or_create(self, state: StateFeatures) -> np.ndarray:
-        """Get the Q-values for a state, creating them if they don't exist."""
+        """Return Q-values, creating a table entry when needed."""
         if state not in self.values:
             self.values[state] = np.zeros(len(ACTIONS), dtype=float)
 

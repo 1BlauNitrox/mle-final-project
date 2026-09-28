@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #133 compact-state experiment."""
+"""Analyze the Issue #133 potential-safety experiment."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ DETERMINISTIC_COLUMNS = (
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require completed deterministic plans and evaluate registered gates."""
+    """Check completed plans and evaluate the fixed criteria."""
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []
@@ -424,7 +424,7 @@ def _criteria(
     deterministic: bool,
     repeat_latency_ok: bool,
 ) -> dict[str, bool]:
-    """Evaluate every preregistered Issue #133 decision criterion."""
+    """Evaluate the Issue #133 decision criteria."""
 
     self_kill_comparison = comparisons[
         "classic_self_kill_candidate_minus_control"

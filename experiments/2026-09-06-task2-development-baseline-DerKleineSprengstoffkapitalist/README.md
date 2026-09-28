@@ -147,25 +147,21 @@ passed.
 
 ## Interpretation
 
-The experiment establishes a reproducible negative Task 2 development
-baseline. Training preserved Task 1 navigation and reduced invalid actions
-relative to the untrained successor, but it produced almost no meaningful
-hidden-coin collection on `classic`.
+This gives us a reproducible Task 2 baseline. Task 1 navigation still works and
+invalid actions decreased, but the agent collected almost no hidden coins in
+`classic`.
 
-Future experiments should compare exactly one changed factor against this
-baseline while keeping its training budget, seeds, evaluation suites, metrics,
-and checkpoint-selection rule fixed.
+Future experiments should change one factor at a time and keep the budget,
+seeds, evaluation, and selection rule fixed.
 
 ## Decision
 
-The unchanged Task 2 defaults are retained as the measured development
-baseline for subsequent controlled experiments.
+The unchanged Task 2 settings remain the baseline for the next experiments.
 
-The registered Task 2 capability hypothesis is rejected because the agent did
+The Task 2 capability hypothesis is rejected because the agent did
 not reach the required collection-fraction and improvement thresholds. The
 baseline nevertheless provides a reproducible control against which future
 single-factor changes can be evaluated.
 
-The inherited Task 1 capability, deterministic evaluation, and runtime
-requirements were retained successfully. Confirmation seeds remain unused
-because this development baseline did not pass the Task 2 feasibility gate.
+Task 1 retention, deterministic evaluation, and runtime requirements passed.
+Confirmation seeds were not used because the Task 2 criteria failed.

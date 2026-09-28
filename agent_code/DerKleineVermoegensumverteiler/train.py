@@ -1,4 +1,4 @@
-"""Minimal training callbacks for the runnable team-agent template."""
+"""Training callbacks retained for model compatibility."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .rewards import reward_from_events
 
 @dataclass(frozen=True)
 class PendingTransition:
-    """A surviving transition whose terminal status is not yet knwown."""
+    """A transition waiting to be classified as terminal or non-terminal."""
 
     identity: tuple[Any, Any] | None
     state: StateFeatures
@@ -24,7 +24,7 @@ class PendingTransition:
 
 
 def setup_training(self) -> None:
-    """Reject training of thr frozen Task 1 baseline."""
+    """Reject training of the frozen Task 1 agent."""
 
     raise RuntimeError(
         "DerKleineVermoegensumverteiler is a frozen Task 1 baseline. "
@@ -49,7 +49,7 @@ def game_events_occurred(
     new_game_state: dict,
     events: list[str],
 ) -> None:
-    """store current transition and finalice previous."""
+    """Store the current transition after finalizing the previous one."""
 
     _finalize_pennding_transition(self)
 

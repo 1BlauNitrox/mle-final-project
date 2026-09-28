@@ -1,13 +1,11 @@
-"""actions, hyperparameters, rewards and seeds"""
+"""Configuration for the opponent-aware tabular agent."""
 
 from __future__ import annotations
 
-# actions
 ACTIONS: tuple[str, ...] = ("UP", "RIGHT", "DOWN", "LEFT", "WAIT", "BOMB")
 
 ACTION_TO_INDEX: dict[str, int] = {action: index for index, action in enumerate(ACTIONS)}
 
-# hyperparameters
 LEARNING_RATE: float = 0.05
 DISCOUNT_FACTOR: float = 0.9
 
@@ -15,11 +13,7 @@ INITIAL_EPSILON: float = 1.0
 EPSILON_DECAY: float = 0.99
 MINIMUM_EPSILON: float = 0.1
 
-# rewards
-# Task 1 rewards are inherited unchanged from the frozen parent.
-#
-# Task 2 native-event rewards are implementation defaults for issue #45.
-# They have not yet been validated by a prospective experiment.
+# Earlier rewards stay unchanged so the agent keeps its coin and crate behavior.
 REWARDS: dict[str, float] = {
     "COIN_COLLECTED": 10.0,
     "INVALID_ACTION": -0.5,
@@ -34,5 +28,4 @@ REWARDS: dict[str, float] = {
     "KILLED_OPPONENT": 5.0,
 }
 
-# seeds
 DEFAULT_SEED: int = 0

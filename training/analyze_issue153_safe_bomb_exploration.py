@@ -1,4 +1,4 @@
-"""Analyze the preregistered Issue #153 safe-bomb exploration experiment."""
+"""Analyze the Issue #153 safe-bomb exploration experiment."""
 
 from __future__ import annotations
 
@@ -42,7 +42,7 @@ SUITES = {
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require completed plans and evaluate all registered gates."""
+    """Check completed plans and evaluate the fixed criteria."""
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []
@@ -168,7 +168,7 @@ def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[
 
 
 def verify_from_evidence(output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Recompute the registered decision from committed compact evidence."""
+    """Recompute the decision from the committed evidence."""
     output = Path(output).resolve()
     with (output / "evidence.csv").open(encoding="utf-8", newline="") as handle:
         evidence = list(csv.DictReader(handle))
@@ -277,7 +277,7 @@ def _criteria(
     repeat_p95_ok: bool,
     repeat_max_ok: bool,
 ) -> dict[str, bool]:
-    """Evaluate every preregistered Issue #153 criterion."""
+    """Evaluate the Issue #153 criteria."""
     aggregate = _aggregate_metrics(summaries)
     classic_rates = {
         treatment: {

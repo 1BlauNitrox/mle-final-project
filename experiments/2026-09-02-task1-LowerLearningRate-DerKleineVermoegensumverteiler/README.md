@@ -125,13 +125,12 @@ percentage points, while steps per coin decreased by approximately 15.1%.
 
 ## Interpretation
 The hypothesis was supported. Reducing the learning rate from `0.1` to `0.05`
-substantially reduced the variation between the five paired training runs.
+made the five training runs much more consistent.
 
 The between-model standard deviation of the mean collection fraction decreased
 from `0.1507` to `0.0420`, and the collection-fraction range decreased from
 `0.3465` to `0.0940`. The worst-model collection fraction increased from
-`0.6535` to `0.9060`. These results show that the lower learning rate produced
-more consistent policies across the registered training seeds.
+`0.6535` to `0.9060`.
 
 Aggregate performance also improved. The coin collection fraction increased
 from `0.9196` to `0.9812`, while the full-clear rate increased from `87.5%` to
@@ -139,21 +138,16 @@ from `0.9196` to `0.9812`, while the full-clear rate increased from `87.5%` to
 so that the improvement in stability did not come at the cost of
 collection efficiency.
 
-A likely explanation is that the lower learning rate reduces the influence of
-individual random transitions on the Q-values. Updates are less volatile, which
-allows the models to converge to more similar policies across different
-training trajectories.
+The smaller updates probably make single random transitions less influential,
+which helps the runs learn more similar policies.
 
 Run 2 remained weaker than the other four models. Its collection fraction was
 still high at `0.9060`, but it required `4.976` steps per coin. Therefore,
 training stability improved substantially but is not perfect.
 
-All registered aggregate performance and integrity criteria were met. The
-individual steps-per-coin criterion was not met because Run 2 exceeded the
-threshold of `2.7`. Overall, the lower learning rate of `0.05` should be
-preferred over the previous value of `0.1`.
+All aggregate criteria passed. Only the individual steps-per-coin criterion
+failed because Run 2 exceeded `2.7`.
 
 ## Decision and follow-up
-The lower learning rate of 0.05 is accepted and will become the new baseline,
-because it substantially reduced between-model variation while also improving
-aggregate coin collection, full clear rate and steps per coin.
+The learning rate of `0.05` becomes the new baseline because it improved both
+stability and coin collection.

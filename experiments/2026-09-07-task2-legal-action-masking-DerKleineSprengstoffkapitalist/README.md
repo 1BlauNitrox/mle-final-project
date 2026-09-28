@@ -120,8 +120,6 @@ collection performance.
 
 ## Decision
 
-The registered collection-performance hypothesis was rejected. Framework-legal
-masking eliminated invalid actions and reduced aggregate self-kills without a
-statistically demonstrated collection regression. The masking capability is
-therefore retained as an optional configuration, but it does not replace the
-unmasked baseline.
+The collection hypothesis was rejected. Masking removed invalid actions and
+reduced self-kills without a clear loss in collection. It remains available as
+an option, but it does not replace the unmasked baseline.

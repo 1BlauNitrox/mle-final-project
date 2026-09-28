@@ -1,4 +1,4 @@
-"""Validate and summarize the preregistered Issue #102 run-plan outputs."""
+"""Validate and summarize the Issue #102 run-plan outputs."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ DETERMINISTIC_COLUMNS = (
 
 
 def analyze(plan_root: Path = PLAN_ROOT, output: Path = DEFAULT_OUTPUT) -> dict[str, Any]:
-    """Require completed deterministic plans and evaluate registered gates."""
+    """Check completed plans and evaluate the fixed criteria."""
     plan_root = Path(plan_root).resolve()
     output = Path(output).resolve()
     rows: list[dict[str, Any]] = []
