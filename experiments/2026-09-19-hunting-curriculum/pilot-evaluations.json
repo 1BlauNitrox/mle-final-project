@@ -1,0 +1,4265 @@
+{
+  "interpretation": "Descriptive repeated pilot worlds; no new selection or causal claim. Reference worlds repeat across replicas, not independent replication. Final and confirmation suites were not reached.",
+  "gates_recomputed": {
+    "r1/control/e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.35,
+        "classic.survived": 0.0,
+        "classic.self_kills": 0.1,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": 0.008999999999999985,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r1/curriculum/e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.55,
+        "classic.survived": -0.025,
+        "classic.self_kills": 0.1,
+        "coins.collection_fraction": -0.023,
+        "crates.collection_fraction": 0.06600000000000002,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r1/control/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.3,
+        "classic.survived": 0.1,
+        "classic.self_kills": -0.025,
+        "coins.collection_fraction": 0.063,
+        "crates.collection_fraction": 0.005999999999999993,
+        "crates.self_kills": -0.1
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r1/curriculum/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.1,
+        "classic.survived": 0.05,
+        "classic.self_kills": 0.025,
+        "coins.collection_fraction": 0.063,
+        "crates.collection_fraction": -0.015000000000000008,
+        "crates.self_kills": -0.1
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r1/control/u500-or-e25": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.225,
+        "classic.survived": -0.025,
+        "classic.self_kills": 0.125,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": 0.004999999999999988,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r1/curriculum/u500-or-e25": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.675,
+        "classic.survived": 0.0,
+        "classic.self_kills": 0.075,
+        "coins.collection_fraction": 0.063,
+        "crates.collection_fraction": 0.06500000000000002,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r2/control/e10": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.325,
+        "classic.survived": -0.075,
+        "classic.self_kills": 0.15,
+        "coins.collection_fraction": 0.126,
+        "crates.collection_fraction": -0.06000000000000001,
+        "crates.self_kills": 0.0
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r2/curriculum/e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.275,
+        "classic.survived": -0.05,
+        "classic.self_kills": 0.075,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.037000000000000005,
+        "crates.self_kills": 0.0
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r2/control/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.025,
+        "classic.survived": 0.025,
+        "classic.self_kills": 0.025,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.04000000000000001,
+        "crates.self_kills": 0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r2/curriculum/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.575,
+        "classic.survived": 0.025,
+        "classic.self_kills": 0.025,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.04000000000000001,
+        "crates.self_kills": 0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r3/control/e10": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.125,
+        "classic.survived": -0.05,
+        "classic.self_kills": 0.125,
+        "coins.collection_fraction": -0.023,
+        "crates.collection_fraction": 0.008000000000000002,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r3/curriculum/e10": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": -0.225,
+        "classic.survived": -0.075,
+        "classic.self_kills": 0.175,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.02,
+        "crates.self_kills": 0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r3/control/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.05,
+        "classic.survived": 0.0,
+        "classic.self_kills": 0.025,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.0010000000000000078,
+        "crates.self_kills": -0.1
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "r3/curriculum/u100-or-e10": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.05,
+        "classic.survived": 0.0,
+        "classic.self_kills": 0.05,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": -0.0010000000000000078,
+        "crates.self_kills": -0.1
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    }
+  },
+  "evaluations": {
+    "r1/reference/classic": {
+      "games": 40,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 2.85,
+          "std_across_worlds": 1.9421109318972674
+        },
+        "kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22072142786315221
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 228.9,
+          "std_across_worlds": 148.81907790575087
+        },
+        "self_kills": {
+          "mean": 0.4,
+          "std_across_worlds": 0.49613893835683387
+        },
+        "coins": {
+          "mean": 2.6,
+          "std_across_worlds": 1.4464811413591578
+        },
+        "crates_destroyed": {
+          "mean": 31.2,
+          "std_across_worlds": 10.446935509443021
+        },
+        "invalid": {
+          "mean": 1.75,
+          "std_across_worlds": 2.4573281299943517
+        },
+        "collection_fraction": {
+          "mean": 0.28888888888888886,
+          "std_across_worlds": 0.16072012681768422
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9156,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1520,
+          "looping_windows": 1507,
+          "window_rate": 0.9914473684210526,
+          "episodes_with_eligible_windows": 11,
+          "episodes_with_loops": 11,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 1181,
+          "safe_attack_steps_per_decision": 0.12898645696810834,
+          "threatening_steps": 1508,
+          "safe_attack_bombs": 73,
+          "episodes_using_safe_attack": 26,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 2,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 70,
+          "per_game": 1.75,
+          "per_100_decisions": 0.764525993883792
+        }
+      }
+    },
+    "r1/reference/coins": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/reference/crates": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.85,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "survival_steps": {
+          "mean": 373.75,
+          "std_across_worlds": 70.29103034789304
+        },
+        "self_kills": {
+          "mean": 0.15,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "coins": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "crates_destroyed": {
+          "mean": 71.95,
+          "std_across_worlds": 27.263770060186776
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5209999999999999,
+          "std_across_worlds": 0.2120054616972725
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7475,
+        "survival_rate": 0.85,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "2ea923a112a2deb76cac1a481dd21160afce9cca4162cdfef0882c41c3ca202d",
+      "metrics": {
+        "score": {
+          "mean": 3.2,
+          "std_across_worlds": 2.232625222605752
+        },
+        "kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.3038218101251
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 229.425,
+          "std_across_worlds": 154.15923959933818
+        },
+        "self_kills": {
+          "mean": 0.5,
+          "std_across_worlds": 0.5063696835418333
+        },
+        "coins": {
+          "mean": 2.7,
+          "std_across_worlds": 1.6203829873338667
+        },
+        "crates_destroyed": {
+          "mean": 31.325,
+          "std_across_worlds": 9.967607793658674
+        },
+        "invalid": {
+          "mean": 1.425,
+          "std_across_worlds": 2.217500325210279
+        },
+        "collection_fraction": {
+          "mean": 0.3,
+          "std_across_worlds": 0.18004255414820738
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9177,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1353,
+          "looping_windows": 1341,
+          "window_rate": 0.991130820399113,
+          "episodes_with_eligible_windows": 13,
+          "episodes_with_loops": 13,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 33,
+          "reached_safe_attack_fraction": 0.825,
+          "safe_attack_steps": 789,
+          "safe_attack_steps_per_decision": 0.08597580908793724,
+          "threatening_steps": 1094,
+          "safe_attack_bombs": 63,
+          "episodes_using_safe_attack": 30,
+          "episode_kills_when_safe_attack_used": 3,
+          "native_kills": 4,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 3,
+          "safe_bomb_self_kill_credits": 8,
+          "safe_bombs_with_kills": 3,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 57,
+          "per_game": 1.425,
+          "per_100_decisions": 0.6211180124223602
+        }
+      }
+    },
+    "r1/control/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "2ea923a112a2deb76cac1a481dd21160afce9cca4162cdfef0882c41c3ca202d",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "2ea923a112a2deb76cac1a481dd21160afce9cca4162cdfef0882c41c3ca202d",
+      "metrics": {
+        "score": {
+          "mean": 26.5,
+          "std_across_worlds": 12.12435565298214
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.9,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "survival_steps": {
+          "mean": 385.8,
+          "std_across_worlds": 48.95927416042633
+        },
+        "self_kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "coins": {
+          "mean": 26.5,
+          "std_across_worlds": 12.12435565298214
+        },
+        "crates_destroyed": {
+          "mean": 72.4,
+          "std_across_worlds": 28.361204042438715
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.53,
+          "std_across_worlds": 0.2424871130596428
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7716,
+        "survival_rate": 0.9,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "f84da267ebc30e54a8343dfc6fd9fed8db72f483b511b1fe4910465f6582ade7",
+      "metrics": {
+        "score": {
+          "mean": 3.4,
+          "std_across_worlds": 2.780887148615228
+        },
+        "kills": {
+          "mean": 0.125,
+          "std_across_worlds": 0.40430377003131995
+        },
+        "survived": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "survival_steps": {
+          "mean": 204.025,
+          "std_across_worlds": 146.74773182189836
+        },
+        "self_kills": {
+          "mean": 0.5,
+          "std_across_worlds": 0.5063696835418333
+        },
+        "coins": {
+          "mean": 2.775,
+          "std_across_worlds": 1.6090688500193409
+        },
+        "crates_destroyed": {
+          "mean": 31.475,
+          "std_across_worlds": 12.211779727073532
+        },
+        "invalid": {
+          "mean": 0.9,
+          "std_across_worlds": 1.4987174003640067
+        },
+        "collection_fraction": {
+          "mean": 0.3083333333333333,
+          "std_across_worlds": 0.17878542777992676
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8161,
+        "survival_rate": 0.425,
+        "loops": {
+          "eligible_windows": 1621,
+          "looping_windows": 1615,
+          "window_rate": 0.9962985811227637,
+          "episodes_with_eligible_windows": 12,
+          "episodes_with_loops": 12,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 32,
+          "reached_safe_attack_fraction": 0.8,
+          "safe_attack_steps": 736,
+          "safe_attack_steps_per_decision": 0.09018502634481068,
+          "threatening_steps": 1081,
+          "safe_attack_bombs": 71,
+          "episodes_using_safe_attack": 29,
+          "episode_kills_when_safe_attack_used": 5,
+          "native_kills": 5,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 4,
+          "safe_bomb_self_kill_credits": 8,
+          "safe_bombs_with_kills": 4,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 36,
+          "per_game": 0.9,
+          "per_100_decisions": 0.4411224114691827
+        }
+      }
+    },
+    "r1/curriculum/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "f84da267ebc30e54a8343dfc6fd9fed8db72f483b511b1fe4910465f6582ade7",
+      "metrics": {
+        "score": {
+          "mean": 16.1,
+          "std_across_worlds": 11.77374420613846
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 16.1,
+          "std_across_worlds": 11.77374420613846
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.32199999999999995,
+          "std_across_worlds": 0.23547488412276918
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6704,
+          "looping_windows": 6702,
+          "window_rate": 0.9997016706443914,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "f84da267ebc30e54a8343dfc6fd9fed8db72f483b511b1fe4910465f6582ade7",
+      "metrics": {
+        "score": {
+          "mean": 29.35,
+          "std_across_worlds": 11.094213759765422
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.9,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "survival_steps": {
+          "mean": 385.8,
+          "std_across_worlds": 48.95927416042633
+        },
+        "self_kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "coins": {
+          "mean": 29.35,
+          "std_across_worlds": 11.094213759765422
+        },
+        "crates_destroyed": {
+          "mean": 79.3,
+          "std_across_worlds": 24.68346985758944
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.587,
+          "std_across_worlds": 0.22188427519530843
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7716,
+        "survival_rate": 0.9,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "44b71b780d891dd31e067edd764b9cb074a41262386122729fc6d0e7b2d8a2b1",
+      "metrics": {
+        "score": {
+          "mean": 2.55,
+          "std_across_worlds": 1.616422133237637
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.55,
+          "std_across_worlds": 0.5038314736557788
+        },
+        "survival_steps": {
+          "mean": 247.175,
+          "std_across_worlds": 156.05569148914066
+        },
+        "self_kills": {
+          "mean": 0.375,
+          "std_across_worlds": 0.4902903378454601
+        },
+        "coins": {
+          "mean": 2.55,
+          "std_across_worlds": 1.616422133237637
+        },
+        "crates_destroyed": {
+          "mean": 30.35,
+          "std_across_worlds": 10.19942180362226
+        },
+        "invalid": {
+          "mean": 2.2,
+          "std_across_worlds": 2.7099058551155872
+        },
+        "collection_fraction": {
+          "mean": 0.2833333333333333,
+          "std_across_worlds": 0.17960245924862633
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9887,
+        "survival_rate": 0.55,
+        "loops": {
+          "eligible_windows": 1827,
+          "looping_windows": 1809,
+          "window_rate": 0.9901477832512315,
+          "episodes_with_eligible_windows": 16,
+          "episodes_with_loops": 16,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 33,
+          "reached_safe_attack_fraction": 0.825,
+          "safe_attack_steps": 1570,
+          "safe_attack_steps_per_decision": 0.1587943764539294,
+          "threatening_steps": 1867,
+          "safe_attack_bombs": 71,
+          "episodes_using_safe_attack": 29,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 88,
+          "per_game": 2.2,
+          "per_100_decisions": 0.8900576514615152
+        }
+      }
+    },
+    "r1/control/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "44b71b780d891dd31e067edd764b9cb074a41262386122729fc6d0e7b2d8a2b1",
+      "metrics": {
+        "score": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.40800000000000003,
+          "std_across_worlds": 0.26023471187210573
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6504,
+          "looping_windows": 6500,
+          "window_rate": 0.9993849938499385,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "44b71b780d891dd31e067edd764b9cb074a41262386122729fc6d0e7b2d8a2b1",
+      "metrics": {
+        "score": {
+          "mean": 26.35,
+          "std_across_worlds": 11.952867966792695
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.95,
+          "std_across_worlds": 0.223606797749979
+        },
+        "survival_steps": {
+          "mean": 396.3,
+          "std_across_worlds": 16.546903033498445
+        },
+        "self_kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22360679774997894
+        },
+        "coins": {
+          "mean": 26.35,
+          "std_across_worlds": 11.952867966792695
+        },
+        "crates_destroyed": {
+          "mean": 71.95,
+          "std_across_worlds": 30.316705486891994
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5269999999999999,
+          "std_across_worlds": 0.2390573593358539
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7926,
+        "survival_rate": 0.95,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "d0b15f9dd04f150e3d3e1d2312e9b7b441c2043df2ff3aa5b624094e4ac62578",
+      "metrics": {
+        "score": {
+          "mean": 2.75,
+          "std_across_worlds": 1.427747014866968
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.5,
+          "std_across_worlds": 0.5063696835418333
+        },
+        "survival_steps": {
+          "mean": 239.275,
+          "std_across_worlds": 144.1203178793366
+        },
+        "self_kills": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "coins": {
+          "mean": 2.75,
+          "std_across_worlds": 1.427747014866968
+        },
+        "crates_destroyed": {
+          "mean": 31.725,
+          "std_across_worlds": 9.831888203240803
+        },
+        "invalid": {
+          "mean": 2.2,
+          "std_across_worlds": 2.662175705542271
+        },
+        "collection_fraction": {
+          "mean": 0.3055555555555555,
+          "std_across_worlds": 0.1586385572074409
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9571,
+        "survival_rate": 0.5,
+        "loops": {
+          "eligible_windows": 1550,
+          "looping_windows": 1539,
+          "window_rate": 0.9929032258064516,
+          "episodes_with_eligible_windows": 13,
+          "episodes_with_loops": 13,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 36,
+          "reached_safe_attack_fraction": 0.9,
+          "safe_attack_steps": 1395,
+          "safe_attack_steps_per_decision": 0.14575279490126425,
+          "threatening_steps": 1730,
+          "safe_attack_bombs": 81,
+          "episodes_using_safe_attack": 32,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 7,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 88,
+          "per_game": 2.2,
+          "per_100_decisions": 0.9194441542158605
+        }
+      }
+    },
+    "r1/curriculum/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "d0b15f9dd04f150e3d3e1d2312e9b7b441c2043df2ff3aa5b624094e4ac62578",
+      "metrics": {
+        "score": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.40800000000000003,
+          "std_across_worlds": 0.26023471187210573
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6504,
+          "looping_windows": 6500,
+          "window_rate": 0.9993849938499385,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "d0b15f9dd04f150e3d3e1d2312e9b7b441c2043df2ff3aa5b624094e4ac62578",
+      "metrics": {
+        "score": {
+          "mean": 25.3,
+          "std_across_worlds": 12.549271314555112
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.95,
+          "std_across_worlds": 0.223606797749979
+        },
+        "survival_steps": {
+          "mean": 396.3,
+          "std_across_worlds": 16.546903033498445
+        },
+        "self_kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22360679774997894
+        },
+        "coins": {
+          "mean": 25.3,
+          "std_across_worlds": 12.549271314555112
+        },
+        "crates_destroyed": {
+          "mean": 70.0,
+          "std_across_worlds": 30.345380295246883
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.506,
+          "std_across_worlds": 0.2509854262911022
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7926,
+        "survival_rate": 0.95,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/u500-or-e25/classic": {
+      "games": 40,
+      "checkpoint_sha256": "f2d31d7f6130daa4d0e8270046b0f5a2a2a2fbf30e7d651281a9d42266501ea6",
+      "metrics": {
+        "score": {
+          "mean": 3.075,
+          "std_across_worlds": 2.2000874108508994
+        },
+        "kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.3038218101251
+        },
+        "survived": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "survival_steps": {
+          "mean": 222.475,
+          "std_across_worlds": 153.03292548354187
+        },
+        "self_kills": {
+          "mean": 0.525,
+          "std_across_worlds": 0.505736325340815
+        },
+        "coins": {
+          "mean": 2.575,
+          "std_across_worlds": 1.5340160130210925
+        },
+        "crates_destroyed": {
+          "mean": 30.25,
+          "std_across_worlds": 9.736924170788859
+        },
+        "invalid": {
+          "mean": 1.025,
+          "std_across_worlds": 1.404890724831632
+        },
+        "collection_fraction": {
+          "mean": 0.2861111111111111,
+          "std_across_worlds": 0.17044622366901027
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8899,
+        "survival_rate": 0.425,
+        "loops": {
+          "eligible_windows": 1547,
+          "looping_windows": 1530,
+          "window_rate": 0.989010989010989,
+          "episodes_with_eligible_windows": 13,
+          "episodes_with_loops": 13,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 33,
+          "reached_safe_attack_fraction": 0.825,
+          "safe_attack_steps": 761,
+          "safe_attack_steps_per_decision": 0.08551522642993595,
+          "threatening_steps": 1029,
+          "safe_attack_bombs": 62,
+          "episodes_using_safe_attack": 30,
+          "episode_kills_when_safe_attack_used": 3,
+          "native_kills": 4,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 3,
+          "safe_bomb_self_kill_credits": 9,
+          "safe_bombs_with_kills": 3,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 41,
+          "per_game": 1.025,
+          "per_100_decisions": 0.46072592426115294
+        }
+      }
+    },
+    "r1/control/u500-or-e25/coins": {
+      "games": 20,
+      "checkpoint_sha256": "f2d31d7f6130daa4d0e8270046b0f5a2a2a2fbf30e7d651281a9d42266501ea6",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/control/u500-or-e25/crates": {
+      "games": 20,
+      "checkpoint_sha256": "f2d31d7f6130daa4d0e8270046b0f5a2a2a2fbf30e7d651281a9d42266501ea6",
+      "metrics": {
+        "score": {
+          "mean": 26.3,
+          "std_across_worlds": 11.369858583576416
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.9,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "survival_steps": {
+          "mean": 385.8,
+          "std_across_worlds": 48.95927416042633
+        },
+        "self_kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "coins": {
+          "mean": 26.3,
+          "std_across_worlds": 11.369858583576416
+        },
+        "crates_destroyed": {
+          "mean": 71.2,
+          "std_across_worlds": 27.458293733166343
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5259999999999999,
+          "std_across_worlds": 0.22739717167152831
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7716,
+        "survival_rate": 0.9,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/u500-or-e25/classic": {
+      "games": 40,
+      "checkpoint_sha256": "a45a7c5a8b201653713505f63ca1a59a25e438f9f70646530be99a27628b1851",
+      "metrics": {
+        "score": {
+          "mean": 3.525,
+          "std_across_worlds": 2.917563964539507
+        },
+        "kills": {
+          "mean": 0.125,
+          "std_across_worlds": 0.40430377003131995
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 210.625,
+          "std_across_worlds": 147.77836618673422
+        },
+        "self_kills": {
+          "mean": 0.475,
+          "std_across_worlds": 0.505736325340815
+        },
+        "coins": {
+          "mean": 2.9,
+          "std_across_worlds": 1.6610160622264791
+        },
+        "crates_destroyed": {
+          "mean": 31.05,
+          "std_across_worlds": 11.533563062777995
+        },
+        "invalid": {
+          "mean": 1.025,
+          "std_across_worlds": 1.5104337974271684
+        },
+        "collection_fraction": {
+          "mean": 0.32222222222222224,
+          "std_across_worlds": 0.1845573402473866
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8425,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1657,
+          "looping_windows": 1647,
+          "window_rate": 0.9939649969824985,
+          "episodes_with_eligible_windows": 13,
+          "episodes_with_loops": 13,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 587,
+          "safe_attack_steps_per_decision": 0.06967359050445104,
+          "threatening_steps": 897,
+          "safe_attack_bombs": 67,
+          "episodes_using_safe_attack": 26,
+          "episode_kills_when_safe_attack_used": 5,
+          "native_kills": 5,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 3,
+          "safe_bomb_self_kill_credits": 7,
+          "safe_bombs_with_kills": 3,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 41,
+          "per_game": 1.025,
+          "per_100_decisions": 0.486646884272997
+        }
+      }
+    },
+    "r1/curriculum/u500-or-e25/coins": {
+      "games": 20,
+      "checkpoint_sha256": "a45a7c5a8b201653713505f63ca1a59a25e438f9f70646530be99a27628b1851",
+      "metrics": {
+        "score": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 20.4,
+          "std_across_worlds": 13.011735593605287
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.40800000000000003,
+          "std_across_worlds": 0.26023471187210573
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6506,
+          "looping_windows": 6502,
+          "window_rate": 0.9993851829080849,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r1/curriculum/u500-or-e25/crates": {
+      "games": 20,
+      "checkpoint_sha256": "a45a7c5a8b201653713505f63ca1a59a25e438f9f70646530be99a27628b1851",
+      "metrics": {
+        "score": {
+          "mean": 29.3,
+          "std_across_worlds": 10.863264993352113
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.9,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "survival_steps": {
+          "mean": 385.8,
+          "std_across_worlds": 48.95927416042633
+        },
+        "self_kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "coins": {
+          "mean": 29.3,
+          "std_across_worlds": 10.863264993352113
+        },
+        "crates_destroyed": {
+          "mean": 79.0,
+          "std_across_worlds": 24.410955262793493
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.586,
+          "std_across_worlds": 0.21726529986704227
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7716,
+        "survival_rate": 0.9,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/reference/classic": {
+      "games": 40,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 2.85,
+          "std_across_worlds": 1.9421109318972674
+        },
+        "kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22072142786315221
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 228.9,
+          "std_across_worlds": 148.81907790575087
+        },
+        "self_kills": {
+          "mean": 0.4,
+          "std_across_worlds": 0.49613893835683387
+        },
+        "coins": {
+          "mean": 2.6,
+          "std_across_worlds": 1.4464811413591578
+        },
+        "crates_destroyed": {
+          "mean": 31.2,
+          "std_across_worlds": 10.446935509443021
+        },
+        "invalid": {
+          "mean": 1.75,
+          "std_across_worlds": 2.4573281299943517
+        },
+        "collection_fraction": {
+          "mean": 0.28888888888888886,
+          "std_across_worlds": 0.16072012681768422
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9156,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1520,
+          "looping_windows": 1507,
+          "window_rate": 0.9914473684210526,
+          "episodes_with_eligible_windows": 11,
+          "episodes_with_loops": 11,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 1181,
+          "safe_attack_steps_per_decision": 0.12898645696810834,
+          "threatening_steps": 1508,
+          "safe_attack_bombs": 73,
+          "episodes_using_safe_attack": 26,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 2,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 70,
+          "per_game": 1.75,
+          "per_100_decisions": 0.764525993883792
+        }
+      }
+    },
+    "r2/reference/coins": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/reference/crates": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.85,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "survival_steps": {
+          "mean": 373.75,
+          "std_across_worlds": 70.29103034789304
+        },
+        "self_kills": {
+          "mean": 0.15,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "coins": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "crates_destroyed": {
+          "mean": 71.95,
+          "std_across_worlds": 27.263770060186776
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5209999999999999,
+          "std_across_worlds": 0.2120054616972725
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7475,
+        "survival_rate": 0.85,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/control/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "64db6fb391c2e68d1d83fd03a4d635fed5324ffbab6988ae30e947780b8a52e5",
+      "metrics": {
+        "score": {
+          "mean": 2.525,
+          "std_across_worlds": 1.6327968768421994
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.375,
+          "std_across_worlds": 0.4902903378454601
+        },
+        "survival_steps": {
+          "mean": 211.325,
+          "std_across_worlds": 145.95931774264167
+        },
+        "self_kills": {
+          "mean": 0.55,
+          "std_across_worlds": 0.5038314736557788
+        },
+        "coins": {
+          "mean": 2.525,
+          "std_across_worlds": 1.6327968768421994
+        },
+        "crates_destroyed": {
+          "mean": 30.675,
+          "std_across_worlds": 10.057240025130001
+        },
+        "invalid": {
+          "mean": 1.4,
+          "std_across_worlds": 2.085357990542139
+        },
+        "collection_fraction": {
+          "mean": 0.28055555555555556,
+          "std_across_worlds": 0.18142187520468883
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8453,
+        "survival_rate": 0.375,
+        "loops": {
+          "eligible_windows": 1429,
+          "looping_windows": 1415,
+          "window_rate": 0.9902029391182645,
+          "episodes_with_eligible_windows": 10,
+          "episodes_with_loops": 10,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 34,
+          "reached_safe_attack_fraction": 0.85,
+          "safe_attack_steps": 728,
+          "safe_attack_steps_per_decision": 0.08612326984502544,
+          "threatening_steps": 1123,
+          "safe_attack_bombs": 86,
+          "episodes_using_safe_attack": 31,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 10,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 56,
+          "per_game": 1.4,
+          "per_100_decisions": 0.6624866911155802
+        }
+      }
+    },
+    "r2/control/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "64db6fb391c2e68d1d83fd03a4d635fed5324ffbab6988ae30e947780b8a52e5",
+      "metrics": {
+        "score": {
+          "mean": 23.55,
+          "std_across_worlds": 13.66314674397404
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 23.55,
+          "std_across_worlds": 13.66314674397404
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.471,
+          "std_across_worlds": 0.2732629348794808
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6259,
+          "looping_windows": 6259,
+          "window_rate": 1.0,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/control/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "64db6fb391c2e68d1d83fd03a4d635fed5324ffbab6988ae30e947780b8a52e5",
+      "metrics": {
+        "score": {
+          "mean": 23.05,
+          "std_across_worlds": 11.686587003461435
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.85,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "survival_steps": {
+          "mean": 369.0,
+          "std_across_worlds": 78.42797567463445
+        },
+        "self_kills": {
+          "mean": 0.15,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "coins": {
+          "mean": 23.05,
+          "std_across_worlds": 11.686587003461435
+        },
+        "crates_destroyed": {
+          "mean": 62.8,
+          "std_across_worlds": 27.126603760495847
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.46099999999999997,
+          "std_across_worlds": 0.23373174006922867
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7380,
+        "survival_rate": 0.85,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/curriculum/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "4f98a300366f349dde85d48aa458f726d3bbac01710a411523de306d75265086",
+      "metrics": {
+        "score": {
+          "mean": 2.575,
+          "std_across_worlds": 1.5172089760224454
+        },
+        "kills": {
+          "mean": 0.025,
+          "std_across_worlds": 0.15811388300841897
+        },
+        "survived": {
+          "mean": 0.4,
+          "std_across_worlds": 0.49613893835683387
+        },
+        "survival_steps": {
+          "mean": 221.0,
+          "std_across_worlds": 139.99432222918992
+        },
+        "self_kills": {
+          "mean": 0.475,
+          "std_across_worlds": 0.5057363253408151
+        },
+        "coins": {
+          "mean": 2.45,
+          "std_across_worlds": 1.5182648665921916
+        },
+        "crates_destroyed": {
+          "mean": 31.475,
+          "std_across_worlds": 9.03834424364699
+        },
+        "invalid": {
+          "mean": 1.325,
+          "std_across_worlds": 1.7886752009123887
+        },
+        "collection_fraction": {
+          "mean": 0.27222222222222225,
+          "std_across_worlds": 0.1686960962880213
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8840,
+        "survival_rate": 0.4,
+        "loops": {
+          "eligible_windows": 1208,
+          "looping_windows": 1204,
+          "window_rate": 0.9966887417218543,
+          "episodes_with_eligible_windows": 9,
+          "episodes_with_loops": 9,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 31,
+          "reached_safe_attack_fraction": 0.775,
+          "safe_attack_steps": 667,
+          "safe_attack_steps_per_decision": 0.0754524886877828,
+          "threatening_steps": 997,
+          "safe_attack_bombs": 74,
+          "episodes_using_safe_attack": 27,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 1,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 7,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 53,
+          "per_game": 1.325,
+          "per_100_decisions": 0.5995475113122172
+        }
+      }
+    },
+    "r2/curriculum/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "4f98a300366f349dde85d48aa458f726d3bbac01710a411523de306d75265086",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6659,
+          "looping_windows": 6657,
+          "window_rate": 0.9996996546027932,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/curriculum/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "4f98a300366f349dde85d48aa458f726d3bbac01710a411523de306d75265086",
+      "metrics": {
+        "score": {
+          "mean": 24.2,
+          "std_across_worlds": 11.718631139748094
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.85,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "survival_steps": {
+          "mean": 369.0,
+          "std_across_worlds": 78.42797567463445
+        },
+        "self_kills": {
+          "mean": 0.15,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "coins": {
+          "mean": 24.2,
+          "std_across_worlds": 11.718631139748094
+        },
+        "crates_destroyed": {
+          "mean": 65.1,
+          "std_across_worlds": 27.621311375553173
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.4840000000000001,
+          "std_across_worlds": 0.23437262279496188
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7380,
+        "survival_rate": 0.85,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/control/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "6a5772e798f72e09fbe45c009881a9d34c02a721535779ab09a7cc66b828f191",
+      "metrics": {
+        "score": {
+          "mean": 2.825,
+          "std_across_worlds": 1.8931387585104158
+        },
+        "kills": {
+          "mean": 0.025,
+          "std_across_worlds": 0.15811388300841897
+        },
+        "survived": {
+          "mean": 0.475,
+          "std_across_worlds": 0.505736325340815
+        },
+        "survival_steps": {
+          "mean": 243.975,
+          "std_across_worlds": 144.02732780221314
+        },
+        "self_kills": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "coins": {
+          "mean": 2.7,
+          "std_across_worlds": 1.6203829873338667
+        },
+        "crates_destroyed": {
+          "mean": 31.975,
+          "std_across_worlds": 9.414902262657039
+        },
+        "invalid": {
+          "mean": 1.8,
+          "std_across_worlds": 2.278100873478519
+        },
+        "collection_fraction": {
+          "mean": 0.3,
+          "std_across_worlds": 0.1800425541482074
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9759,
+        "survival_rate": 0.475,
+        "loops": {
+          "eligible_windows": 2179,
+          "looping_windows": 2166,
+          "window_rate": 0.9940339605323543,
+          "episodes_with_eligible_windows": 15,
+          "episodes_with_loops": 15,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 35,
+          "reached_safe_attack_fraction": 0.875,
+          "safe_attack_steps": 1250,
+          "safe_attack_steps_per_decision": 0.1280868941489907,
+          "threatening_steps": 1601,
+          "safe_attack_bombs": 69,
+          "episodes_using_safe_attack": 30,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 1,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 72,
+          "per_game": 1.8,
+          "per_100_decisions": 0.7377805102981863
+        }
+      }
+    },
+    "r2/control/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "6a5772e798f72e09fbe45c009881a9d34c02a721535779ab09a7cc66b828f191",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6667,
+          "looping_windows": 6665,
+          "window_rate": 0.99970001499925,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/control/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "6a5772e798f72e09fbe45c009881a9d34c02a721535779ab09a7cc66b828f191",
+      "metrics": {
+        "score": {
+          "mean": 24.05,
+          "std_across_worlds": 11.587084461407429
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.8,
+          "std_across_worlds": 0.41039134083406165
+        },
+        "survival_steps": {
+          "mean": 361.5,
+          "std_across_worlds": 85.24855300516064
+        },
+        "self_kills": {
+          "mean": 0.2,
+          "std_across_worlds": 0.4103913408340617
+        },
+        "coins": {
+          "mean": 24.05,
+          "std_across_worlds": 11.587084461407429
+        },
+        "crates_destroyed": {
+          "mean": 66.7,
+          "std_across_worlds": 28.853714528726854
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.481,
+          "std_across_worlds": 0.23174168922814858
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7230,
+        "survival_rate": 0.8,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/curriculum/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "f5ab9597402b3194c61253be88259f9a32f4004697df85af85e2459fda352ea9",
+      "metrics": {
+        "score": {
+          "mean": 3.425,
+          "std_across_worlds": 2.6879360111431225
+        },
+        "kills": {
+          "mean": 0.125,
+          "std_across_worlds": 0.40430377003131995
+        },
+        "survived": {
+          "mean": 0.475,
+          "std_across_worlds": 0.505736325340815
+        },
+        "survival_steps": {
+          "mean": 238.8,
+          "std_across_worlds": 147.8714271736057
+        },
+        "self_kills": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "coins": {
+          "mean": 2.8,
+          "std_across_worlds": 1.5392305770191708
+        },
+        "crates_destroyed": {
+          "mean": 31.525,
+          "std_across_worlds": 9.12305476280441
+        },
+        "invalid": {
+          "mean": 1.8,
+          "std_across_worlds": 2.300501617540769
+        },
+        "collection_fraction": {
+          "mean": 0.3111111111111111,
+          "std_across_worlds": 0.17102561966879676
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9552,
+        "survival_rate": 0.475,
+        "loops": {
+          "eligible_windows": 1965,
+          "looping_windows": 1957,
+          "window_rate": 0.9959287531806615,
+          "episodes_with_eligible_windows": 14,
+          "episodes_with_loops": 14,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 34,
+          "reached_safe_attack_fraction": 0.85,
+          "safe_attack_steps": 1275,
+          "safe_attack_steps_per_decision": 0.13347989949748743,
+          "threatening_steps": 1639,
+          "safe_attack_bombs": 75,
+          "episodes_using_safe_attack": 31,
+          "episode_kills_when_safe_attack_used": 5,
+          "native_kills": 5,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 2,
+          "safe_bomb_self_kill_credits": 5,
+          "safe_bombs_with_kills": 2,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 72,
+          "per_game": 1.8,
+          "per_100_decisions": 0.7537688442211056
+        }
+      }
+    },
+    "r2/curriculum/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "f5ab9597402b3194c61253be88259f9a32f4004697df85af85e2459fda352ea9",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6667,
+          "looping_windows": 6665,
+          "window_rate": 0.99970001499925,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r2/curriculum/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "f5ab9597402b3194c61253be88259f9a32f4004697df85af85e2459fda352ea9",
+      "metrics": {
+        "score": {
+          "mean": 24.05,
+          "std_across_worlds": 11.587084461407429
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.8,
+          "std_across_worlds": 0.41039134083406165
+        },
+        "survival_steps": {
+          "mean": 361.5,
+          "std_across_worlds": 85.24855300516064
+        },
+        "self_kills": {
+          "mean": 0.2,
+          "std_across_worlds": 0.4103913408340617
+        },
+        "coins": {
+          "mean": 24.05,
+          "std_across_worlds": 11.587084461407429
+        },
+        "crates_destroyed": {
+          "mean": 66.7,
+          "std_across_worlds": 28.853714528726854
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.481,
+          "std_across_worlds": 0.23174168922814858
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7230,
+        "survival_rate": 0.8,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/reference/classic": {
+      "games": 40,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 2.85,
+          "std_across_worlds": 1.9421109318972674
+        },
+        "kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22072142786315221
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 228.9,
+          "std_across_worlds": 148.81907790575087
+        },
+        "self_kills": {
+          "mean": 0.4,
+          "std_across_worlds": 0.49613893835683387
+        },
+        "coins": {
+          "mean": 2.6,
+          "std_across_worlds": 1.4464811413591578
+        },
+        "crates_destroyed": {
+          "mean": 31.2,
+          "std_across_worlds": 10.446935509443021
+        },
+        "invalid": {
+          "mean": 1.75,
+          "std_across_worlds": 2.4573281299943517
+        },
+        "collection_fraction": {
+          "mean": 0.28888888888888886,
+          "std_across_worlds": 0.16072012681768422
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9156,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1520,
+          "looping_windows": 1507,
+          "window_rate": 0.9914473684210526,
+          "episodes_with_eligible_windows": 11,
+          "episodes_with_loops": 11,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 1181,
+          "safe_attack_steps_per_decision": 0.12898645696810834,
+          "threatening_steps": 1508,
+          "safe_attack_bombs": 73,
+          "episodes_using_safe_attack": 26,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 2,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 70,
+          "per_game": 1.75,
+          "per_100_decisions": 0.764525993883792
+        }
+      }
+    },
+    "r3/reference/coins": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/reference/crates": {
+      "games": 20,
+      "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+      "metrics": {
+        "score": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.85,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "survival_steps": {
+          "mean": 373.75,
+          "std_across_worlds": 70.29103034789304
+        },
+        "self_kills": {
+          "mean": 0.15,
+          "std_across_worlds": 0.36634754853252327
+        },
+        "coins": {
+          "mean": 26.05,
+          "std_across_worlds": 10.600273084863625
+        },
+        "crates_destroyed": {
+          "mean": 71.95,
+          "std_across_worlds": 27.263770060186776
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5209999999999999,
+          "std_across_worlds": 0.2120054616972725
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7475,
+        "survival_rate": 0.85,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/control/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "335568e157e70ea7409bf289d4dbad033e34e0e2b59fb6d1bdad754264abea13",
+      "metrics": {
+        "score": {
+          "mean": 2.725,
+          "std_across_worlds": 1.617016879857347
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.4,
+          "std_across_worlds": 0.4961389383568338
+        },
+        "survival_steps": {
+          "mean": 212.525,
+          "std_across_worlds": 149.4015390543045
+        },
+        "self_kills": {
+          "mean": 0.525,
+          "std_across_worlds": 0.505736325340815
+        },
+        "coins": {
+          "mean": 2.725,
+          "std_across_worlds": 1.617016879857347
+        },
+        "crates_destroyed": {
+          "mean": 30.6,
+          "std_across_worlds": 9.663040876161032
+        },
+        "invalid": {
+          "mean": 1.675,
+          "std_across_worlds": 2.4007210455322667
+        },
+        "collection_fraction": {
+          "mean": 0.30277777777777776,
+          "std_across_worlds": 0.17966854220637188
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8501,
+        "survival_rate": 0.4,
+        "loops": {
+          "eligible_windows": 1501,
+          "looping_windows": 1499,
+          "window_rate": 0.9986675549633578,
+          "episodes_with_eligible_windows": 12,
+          "episodes_with_loops": 12,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 33,
+          "reached_safe_attack_fraction": 0.825,
+          "safe_attack_steps": 1241,
+          "safe_attack_steps_per_decision": 0.1459828255499353,
+          "threatening_steps": 1569,
+          "safe_attack_bombs": 73,
+          "episodes_using_safe_attack": 28,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 8,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 67,
+          "per_game": 1.675,
+          "per_100_decisions": 0.7881425714621809
+        }
+      }
+    },
+    "r3/control/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "335568e157e70ea7409bf289d4dbad033e34e0e2b59fb6d1bdad754264abea13",
+      "metrics": {
+        "score": {
+          "mean": 16.1,
+          "std_across_worlds": 11.77374420613846
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 16.1,
+          "std_across_worlds": 11.77374420613846
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.32199999999999995,
+          "std_across_worlds": 0.23547488412276918
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6731,
+          "looping_windows": 6729,
+          "window_rate": 0.9997028673302629,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/control/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "335568e157e70ea7409bf289d4dbad033e34e0e2b59fb6d1bdad754264abea13",
+      "metrics": {
+        "score": {
+          "mean": 26.45,
+          "std_across_worlds": 12.555036733057417
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.9,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "survival_steps": {
+          "mean": 377.55,
+          "std_across_worlds": 69.25959937267295
+        },
+        "self_kills": {
+          "mean": 0.1,
+          "std_across_worlds": 0.30779350562554625
+        },
+        "coins": {
+          "mean": 26.45,
+          "std_across_worlds": 12.555036733057417
+        },
+        "crates_destroyed": {
+          "mean": 71.3,
+          "std_across_worlds": 29.145912415402535
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.529,
+          "std_across_worlds": 0.25110073466114835
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7551,
+        "survival_rate": 0.9,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/curriculum/e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "105deace68b9c239ccebb688846fcafdd6712b2fc7ccf0bf5cd14b68940b00d1",
+      "metrics": {
+        "score": {
+          "mean": 2.625,
+          "std_across_worlds": 1.5138251770487459
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.375,
+          "std_across_worlds": 0.4902903378454601
+        },
+        "survival_steps": {
+          "mean": 208.375,
+          "std_across_worlds": 145.49608991133465
+        },
+        "self_kills": {
+          "mean": 0.575,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "coins": {
+          "mean": 2.625,
+          "std_across_worlds": 1.5138251770487459
+        },
+        "crates_destroyed": {
+          "mean": 30.325,
+          "std_across_worlds": 9.884947116053757
+        },
+        "invalid": {
+          "mean": 1.075,
+          "std_across_worlds": 1.6074745282505594
+        },
+        "collection_fraction": {
+          "mean": 0.2916666666666667,
+          "std_across_worlds": 0.16820279744986066
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8335,
+        "survival_rate": 0.375,
+        "loops": {
+          "eligible_windows": 1403,
+          "looping_windows": 1399,
+          "window_rate": 0.9971489665003563,
+          "episodes_with_eligible_windows": 11,
+          "episodes_with_loops": 11,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 32,
+          "reached_safe_attack_fraction": 0.8,
+          "safe_attack_steps": 739,
+          "safe_attack_steps_per_decision": 0.0886622675464907,
+          "threatening_steps": 1038,
+          "safe_attack_bombs": 68,
+          "episodes_using_safe_attack": 28,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 6,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 43,
+          "per_game": 1.075,
+          "per_100_decisions": 0.5158968206358728
+        }
+      }
+    },
+    "r3/curriculum/e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "105deace68b9c239ccebb688846fcafdd6712b2fc7ccf0bf5cd14b68940b00d1",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6686,
+          "looping_windows": 6684,
+          "window_rate": 0.9997008674842955,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/curriculum/e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "105deace68b9c239ccebb688846fcafdd6712b2fc7ccf0bf5cd14b68940b00d1",
+      "metrics": {
+        "score": {
+          "mean": 25.05,
+          "std_across_worlds": 13.34353776177817
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.8,
+          "std_across_worlds": 0.41039134083406165
+        },
+        "survival_steps": {
+          "mean": 346.55,
+          "std_across_worlds": 111.63638107242356
+        },
+        "self_kills": {
+          "mean": 0.2,
+          "std_across_worlds": 0.4103913408340617
+        },
+        "coins": {
+          "mean": 25.05,
+          "std_across_worlds": 13.34353776177817
+        },
+        "crates_destroyed": {
+          "mean": 67.0,
+          "std_across_worlds": 30.60443724278178
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.501,
+          "std_across_worlds": 0.2668707552355634
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 6931,
+        "survival_rate": 0.8,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/control/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "6ae20c73e34af00c63f28e4cc01ee3da35c5f8c07baf00433e466c6e2c7c7d79",
+      "metrics": {
+        "score": {
+          "mean": 2.9,
+          "std_across_worlds": 1.9715931342900053
+        },
+        "kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22072142786315221
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 226.975,
+          "std_across_worlds": 149.38497633244836
+        },
+        "self_kills": {
+          "mean": 0.425,
+          "std_across_worlds": 0.5006406152531231
+        },
+        "coins": {
+          "mean": 2.65,
+          "std_across_worlds": 1.577892135015442
+        },
+        "crates_destroyed": {
+          "mean": 30.575,
+          "std_across_worlds": 10.240411399989048
+        },
+        "invalid": {
+          "mean": 1.575,
+          "std_across_worlds": 2.3192339584108703
+        },
+        "collection_fraction": {
+          "mean": 0.29444444444444445,
+          "std_across_worlds": 0.17532134833504912
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 9079,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1626,
+          "looping_windows": 1621,
+          "window_rate": 0.9969249692496925,
+          "episodes_with_eligible_windows": 12,
+          "episodes_with_loops": 12,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 969,
+          "safe_attack_steps_per_decision": 0.10672981605903734,
+          "threatening_steps": 1272,
+          "safe_attack_bombs": 60,
+          "episodes_using_safe_attack": 25,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 2,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 2,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 63,
+          "per_game": 1.575,
+          "per_100_decisions": 0.6939090208172706
+        }
+      }
+    },
+    "r3/control/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "6ae20c73e34af00c63f28e4cc01ee3da35c5f8c07baf00433e466c6e2c7c7d79",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/control/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "6ae20c73e34af00c63f28e4cc01ee3da35c5f8c07baf00433e466c6e2c7c7d79",
+      "metrics": {
+        "score": {
+          "mean": 26.0,
+          "std_across_worlds": 11.832159566199232
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.95,
+          "std_across_worlds": 0.223606797749979
+        },
+        "survival_steps": {
+          "mean": 396.3,
+          "std_across_worlds": 16.546903033498445
+        },
+        "self_kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22360679774997894
+        },
+        "coins": {
+          "mean": 26.0,
+          "std_across_worlds": 11.832159566199232
+        },
+        "crates_destroyed": {
+          "mean": 71.1,
+          "std_across_worlds": 30.21136070734772
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5199999999999999,
+          "std_across_worlds": 0.23664319132398465
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7926,
+        "survival_rate": 0.95,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/curriculum/u100-or-e10/classic": {
+      "games": 40,
+      "checkpoint_sha256": "4ff3445af68718ef94e8fb62eb268d7fb24102bf5373686ffcc0aa72dcf6740a",
+      "metrics": {
+        "score": {
+          "mean": 2.9,
+          "std_across_worlds": 1.9454087962727487
+        },
+        "kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22072142786315221
+        },
+        "survived": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "survival_steps": {
+          "mean": 219.325,
+          "std_across_worlds": 148.02518626649578
+        },
+        "self_kills": {
+          "mean": 0.45,
+          "std_across_worlds": 0.503831473655779
+        },
+        "coins": {
+          "mean": 2.65,
+          "std_across_worlds": 1.5450499950420657
+        },
+        "crates_destroyed": {
+          "mean": 30.25,
+          "std_across_worlds": 10.23756281092782
+        },
+        "invalid": {
+          "mean": 1.625,
+          "std_across_worlds": 2.339049774193325
+        },
+        "collection_fraction": {
+          "mean": 0.2944444444444444,
+          "std_across_worlds": 0.17167222167134064
+        }
+      },
+      "diagnostics": {
+        "episodes": 40,
+        "decisions": 8773,
+        "survival_rate": 0.45,
+        "loops": {
+          "eligible_windows": 1452,
+          "looping_windows": 1447,
+          "window_rate": 0.9965564738292011,
+          "episodes_with_eligible_windows": 11,
+          "episodes_with_loops": 11,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 30,
+          "reached_safe_attack_fraction": 0.75,
+          "safe_attack_steps": 982,
+          "safe_attack_steps_per_decision": 0.11193434401003077,
+          "threatening_steps": 1285,
+          "safe_attack_bombs": 58,
+          "episodes_using_safe_attack": 25,
+          "episode_kills_when_safe_attack_used": 1,
+          "native_kills": 2,
+          "attribution_coverage_episodes": 40,
+          "safe_bomb_kill_credits": 1,
+          "safe_bomb_self_kill_credits": 3,
+          "safe_bombs_with_kills": 1,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 65,
+          "per_game": 1.625,
+          "per_100_decisions": 0.7409096090276986
+        }
+      }
+    },
+    "r3/curriculum/u100-or-e10/coins": {
+      "games": 20,
+      "checkpoint_sha256": "4ff3445af68718ef94e8fb62eb268d7fb24102bf5373686ffcc0aa72dcf6740a",
+      "metrics": {
+        "score": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 1.0,
+          "std_across_worlds": 0.0
+        },
+        "survival_steps": {
+          "mean": 400.0,
+          "std_across_worlds": 0.0
+        },
+        "self_kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "coins": {
+          "mean": 17.25,
+          "std_across_worlds": 11.959911106869086
+        },
+        "crates_destroyed": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.34500000000000003,
+          "std_across_worlds": 0.2391982221373817
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 8000,
+        "survival_rate": 1.0,
+        "loops": {
+          "eligible_windows": 6661,
+          "looping_windows": 6659,
+          "window_rate": 0.9996997447830656,
+          "episodes_with_eligible_windows": 20,
+          "episodes_with_loops": 20,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    },
+    "r3/curriculum/u100-or-e10/crates": {
+      "games": 20,
+      "checkpoint_sha256": "4ff3445af68718ef94e8fb62eb268d7fb24102bf5373686ffcc0aa72dcf6740a",
+      "metrics": {
+        "score": {
+          "mean": 26.0,
+          "std_across_worlds": 11.832159566199232
+        },
+        "kills": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "survived": {
+          "mean": 0.95,
+          "std_across_worlds": 0.223606797749979
+        },
+        "survival_steps": {
+          "mean": 396.3,
+          "std_across_worlds": 16.546903033498445
+        },
+        "self_kills": {
+          "mean": 0.05,
+          "std_across_worlds": 0.22360679774997894
+        },
+        "coins": {
+          "mean": 26.0,
+          "std_across_worlds": 11.832159566199232
+        },
+        "crates_destroyed": {
+          "mean": 71.0,
+          "std_across_worlds": 30.409486054605775
+        },
+        "invalid": {
+          "mean": 0.0,
+          "std_across_worlds": 0.0
+        },
+        "collection_fraction": {
+          "mean": 0.5199999999999999,
+          "std_across_worlds": 0.23664319132398465
+        }
+      },
+      "diagnostics": {
+        "episodes": 20,
+        "decisions": 7926,
+        "survival_rate": 0.95,
+        "loops": {
+          "eligible_windows": 0,
+          "looping_windows": 0,
+          "window_rate": null,
+          "episodes_with_eligible_windows": 0,
+          "episodes_with_loops": 0,
+          "note": "Overlapping windows are descriptive, not independent samples"
+        },
+        "attack": {
+          "reachable_at_start_episodes": 0,
+          "reachable_at_start_fraction": 0.0,
+          "reached_safe_attack_episodes": 0,
+          "reached_safe_attack_fraction": 0.0,
+          "safe_attack_steps": 0,
+          "safe_attack_steps_per_decision": 0.0,
+          "threatening_steps": 0,
+          "safe_attack_bombs": 0,
+          "episodes_using_safe_attack": 0,
+          "episode_kills_when_safe_attack_used": 0,
+          "native_kills": 0,
+          "attribution_coverage_episodes": 20,
+          "safe_bomb_kill_credits": 0,
+          "safe_bomb_self_kill_credits": 0,
+          "safe_bombs_with_kills": 0,
+          "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+        },
+        "invalid": {
+          "count": 0,
+          "per_game": 0.0,
+          "per_100_decisions": 0.0
+        }
+      }
+    }
+  }
+}

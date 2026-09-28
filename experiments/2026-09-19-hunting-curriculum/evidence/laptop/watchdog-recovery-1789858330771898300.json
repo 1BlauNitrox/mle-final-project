@@ -1,0 +1,13 @@
+{
+  "reason": "Unexpected process exit; recover last verified generation",
+  "orphan_cpu_debit": 0.0,
+  "state": {
+    "restarts": 0,
+    "cpu_seconds": 0.15625,
+    "pid": 27556,
+    "created": 1789858330.472044,
+    "runner_sha256": "a49010f8d4c5adbb4e7274128f2f5a464992695b13a9bc15f508fc484a96cedb",
+    "time": 1789858330.7047179
+  },
+  "recovering": false
+}

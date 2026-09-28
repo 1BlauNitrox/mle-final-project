@@ -1,0 +1,50 @@
+{
+  "passed": false,
+  "arms": {
+    "control": {
+      "passed": false,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": false,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.225,
+        "classic.survived": -0.025,
+        "classic.self_kills": 0.125,
+        "coins.collection_fraction": 0.0,
+        "crates.collection_fraction": 0.004999999999999988,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    },
+    "curriculum": {
+      "passed": true,
+      "gates": {
+        "score": true,
+        "survival": true,
+        "self_kills": true,
+        "coin_retention": true,
+        "crate_retention": true,
+        "crate_self_kills": true
+      },
+      "effects": {
+        "classic.score": 0.675,
+        "classic.survived": 0.0,
+        "classic.self_kills": 0.075,
+        "coins.collection_fraction": 0.063,
+        "crates.collection_fraction": 0.06500000000000002,
+        "crates.self_kills": -0.05
+      },
+      "interpretation": "Exploratory point estimates; no significance claim"
+    }
+  },
+  "checkpoint": {
+    "name": "u500-or-e25",
+    "updates": 500,
+    "episode_stop": 25
+  }
+}

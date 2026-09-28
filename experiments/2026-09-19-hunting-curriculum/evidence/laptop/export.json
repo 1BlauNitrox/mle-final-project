@@ -1,0 +1,13 @@
+{
+  "path": "C:\\bomberman217-v2-run\\issue217-results-1789859140926788500.zip",
+  "sha256": "3174aa99d93fa53df2a1b6bbf7470c2c5e0a977b07619b8d777a73baa83386ad",
+  "bytes": 2461296,
+  "final_pipeline_resources": {
+    "cpu_seconds": 803.4375,
+    "wall_seconds": 810.7061116695404,
+    "first_start": 1789858331.0595007,
+    "peak_rss_bytes": 361975808,
+    "stage": "export"
+  },
+  "resource_note": "Archive ledger is the pre-export snapshot; this ledger includes export CPU and supervisor overhead"
+}

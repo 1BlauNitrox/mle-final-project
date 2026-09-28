@@ -1,0 +1,5 @@
+{
+  "status": "stopped_safety",
+  "check": "e10",
+  "submission_promotion": false
+}

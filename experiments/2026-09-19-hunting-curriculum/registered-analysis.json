@@ -1,0 +1,2178 @@
+{
+  "complete": false,
+  "eligible": false,
+  "submission_promotion": false,
+  "decisions": {
+    "r1": {
+      "status": "stopped_safety",
+      "check": "u500-or-e25",
+      "submission_promotion": false
+    },
+    "r2": {
+      "status": "stopped_safety",
+      "check": "e10",
+      "submission_promotion": false
+    },
+    "r3": {
+      "status": "stopped_safety",
+      "check": "e10",
+      "submission_promotion": false
+    }
+  },
+  "training_diagnostics": {
+    "r1": {
+      "control": {
+        "e10": {
+          "episodes": 10,
+          "updates": 492,
+          "all": {
+            "episodes": 10,
+            "decisions": 1977,
+            "survival_rate": 0.4,
+            "loops": {
+              "eligible_windows": 524,
+              "looping_windows": 524,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 3,
+              "episodes_with_loops": 3,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 7,
+              "reached_safe_attack_fraction": 0.7,
+              "safe_attack_steps": 252,
+              "safe_attack_steps_per_decision": 0.1274658573596358,
+              "threatening_steps": 311,
+              "safe_attack_bombs": 23,
+              "episodes_using_safe_attack": 7,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 3,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 13,
+              "per_game": 1.3,
+              "per_100_decisions": 0.6575619625695498
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 10,
+              "decisions": 1977,
+              "survival_rate": 0.4,
+              "loops": {
+                "eligible_windows": 524,
+                "looping_windows": 524,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 3,
+                "episodes_with_loops": 3,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 7,
+                "reached_safe_attack_fraction": 0.7,
+                "safe_attack_steps": 252,
+                "safe_attack_steps_per_decision": 0.1274658573596358,
+                "threatening_steps": 311,
+                "safe_attack_bombs": 23,
+                "episodes_using_safe_attack": 7,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 10,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 3,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 13,
+                "per_game": 1.3,
+                "per_100_decisions": 0.6575619625695498
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 1977,
+              "counts": {
+                "classic": 1977
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 31488,
+              "counts": {
+                "parent": 28484,
+                "classic": 3004
+              },
+              "fractions": {
+                "parent": 0.9045985772357723,
+                "classic": 0.09540142276422764,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 8023,
+                "classic": 1977
+              },
+              "fractions": {
+                "parent": 0.8023,
+                "classic": 0.1977,
+                "hunting": 0.0
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 408,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 213,
+              "looping_windows": 213,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 1,
+              "reached_safe_attack_fraction": 0.5,
+              "safe_attack_steps": 1,
+              "safe_attack_steps_per_decision": 0.0024509803921568627,
+              "threatening_steps": 2,
+              "safe_attack_bombs": 1,
+              "episodes_using_safe_attack": 1,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 0,
+              "per_game": 0.0,
+              "per_100_decisions": 0.0
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 2,
+              "decisions": 408,
+              "survival_rate": 0.5,
+              "loops": {
+                "eligible_windows": 213,
+                "looping_windows": 213,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 0.5,
+                "safe_attack_steps": 1,
+                "safe_attack_steps_per_decision": 0.0024509803921568627,
+                "threatening_steps": 2,
+                "safe_attack_bombs": 1,
+                "episodes_using_safe_attack": 1,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 2,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": 0.0,
+                "per_100_decisions": 0.0
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 408,
+              "counts": {
+                "classic": 408
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6264,
+                "classic": 136
+              },
+              "fractions": {
+                "parent": 0.97875,
+                "classic": 0.02125,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9592,
+                "classic": 408
+              },
+              "fractions": {
+                "parent": 0.9592,
+                "classic": 0.0408,
+                "hunting": 0.0
+              }
+            }
+          }
+        },
+        "u500-or-e25": {
+          "episodes": 11,
+          "updates": 500,
+          "all": {
+            "episodes": 11,
+            "decisions": 2093,
+            "survival_rate": 0.36363636363636365,
+            "loops": {
+              "eligible_windows": 524,
+              "looping_windows": 524,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 3,
+              "episodes_with_loops": 3,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 8,
+              "reached_safe_attack_fraction": 0.7272727272727273,
+              "safe_attack_steps": 256,
+              "safe_attack_steps_per_decision": 0.12231247013855709,
+              "threatening_steps": 324,
+              "safe_attack_bombs": 25,
+              "episodes_using_safe_attack": 8,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 11,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 3,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 13,
+              "per_game": 1.1818181818181819,
+              "per_100_decisions": 0.6211180124223602
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 11,
+              "decisions": 2093,
+              "survival_rate": 0.36363636363636365,
+              "loops": {
+                "eligible_windows": 524,
+                "looping_windows": 524,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 3,
+                "episodes_with_loops": 3,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 8,
+                "reached_safe_attack_fraction": 0.7272727272727273,
+                "safe_attack_steps": 256,
+                "safe_attack_steps_per_decision": 0.12231247013855709,
+                "threatening_steps": 324,
+                "safe_attack_bombs": 25,
+                "episodes_using_safe_attack": 8,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 11,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 3,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 13,
+                "per_game": 1.1818181818181819,
+                "per_100_decisions": 0.6211180124223602
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2093,
+              "counts": {
+                "classic": 2093
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 32000,
+              "counts": {
+                "parent": 28895,
+                "classic": 3105
+              },
+              "fractions": {
+                "parent": 0.90296875,
+                "classic": 0.09703125,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7907,
+                "classic": 2093
+              },
+              "fractions": {
+                "parent": 0.7907,
+                "classic": 0.2093,
+                "hunting": 0.0
+              }
+            }
+          }
+        }
+      },
+      "curriculum": {
+        "e10": {
+          "episodes": 10,
+          "updates": 470,
+          "all": {
+            "episodes": 10,
+            "decisions": 1891,
+            "survival_rate": 0.4,
+            "loops": {
+              "eligible_windows": 754,
+              "looping_windows": 561,
+              "window_rate": 0.7440318302387268,
+              "episodes_with_eligible_windows": 2,
+              "episodes_with_loops": 2,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 5,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 8,
+              "reached_safe_attack_fraction": 0.8,
+              "safe_attack_steps": 131,
+              "safe_attack_steps_per_decision": 0.06927551560021153,
+              "threatening_steps": 165,
+              "safe_attack_bombs": 11,
+              "episodes_using_safe_attack": 6,
+              "episode_kills_when_safe_attack_used": 5,
+              "native_kills": 5,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 1,
+              "safe_bomb_self_kill_credits": 3,
+              "safe_bombs_with_kills": 1,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 5,
+              "per_game": 0.5,
+              "per_100_decisions": 0.26441036488630354
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 5,
+              "decisions": 483,
+              "survival_rate": 0.0,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 4,
+                "reached_safe_attack_fraction": 0.8,
+                "safe_attack_steps": 22,
+                "safe_attack_steps_per_decision": 0.045548654244306416,
+                "threatening_steps": 44,
+                "safe_attack_bombs": 9,
+                "episodes_using_safe_attack": 4,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 3,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 3,
+                "per_game": 0.6,
+                "per_100_decisions": 0.6211180124223602
+              }
+            },
+            "hunting": {
+              "episodes": 5,
+              "decisions": 1408,
+              "survival_rate": 0.8,
+              "loops": {
+                "eligible_windows": 754,
+                "looping_windows": 561,
+                "window_rate": 0.7440318302387268,
+                "episodes_with_eligible_windows": 2,
+                "episodes_with_loops": 2,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 5,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 4,
+                "reached_safe_attack_fraction": 0.8,
+                "safe_attack_steps": 109,
+                "safe_attack_steps_per_decision": 0.07741477272727272,
+                "threatening_steps": 121,
+                "safe_attack_bombs": 2,
+                "episodes_using_safe_attack": 2,
+                "episode_kills_when_safe_attack_used": 5,
+                "native_kills": 5,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 1,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 1,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 2,
+                "per_game": 0.4,
+                "per_100_decisions": 0.14204545454545456
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 1891,
+              "counts": {
+                "classic": 483,
+                "hunting": 1408
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.2554204124801692,
+                "hunting": 0.7445795875198308
+              }
+            },
+            "sampled": {
+              "count": 30080,
+              "counts": {
+                "parent": 27343,
+                "hunting": 2093,
+                "classic": 644
+              },
+              "fractions": {
+                "parent": 0.9090093085106383,
+                "classic": 0.021409574468085106,
+                "hunting": 0.06958111702127659
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 8109,
+                "classic": 483,
+                "hunting": 1408
+              },
+              "fractions": {
+                "parent": 0.8109,
+                "classic": 0.0483,
+                "hunting": 0.1408
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 408,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 377,
+              "looping_windows": 338,
+              "window_rate": 0.896551724137931,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 1,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 1,
+              "reached_safe_attack_fraction": 0.5,
+              "safe_attack_steps": 21,
+              "safe_attack_steps_per_decision": 0.051470588235294115,
+              "threatening_steps": 21,
+              "safe_attack_bombs": 0,
+              "episodes_using_safe_attack": 0,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 0,
+              "per_game": 0.0,
+              "per_100_decisions": 0.0
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 1,
+              "decisions": 8,
+              "survival_rate": 0.0,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": 0.0,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": 0.0,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": 0.0,
+                "per_100_decisions": 0.0
+              }
+            },
+            "hunting": {
+              "episodes": 1,
+              "decisions": 400,
+              "survival_rate": 1.0,
+              "loops": {
+                "eligible_windows": 377,
+                "looping_windows": 338,
+                "window_rate": 0.896551724137931,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 1,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 21,
+                "safe_attack_steps_per_decision": 0.0525,
+                "threatening_steps": 21,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": 0.0,
+                "per_100_decisions": 0.0
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 408,
+              "counts": {
+                "classic": 8,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.0196078431372549,
+                "hunting": 0.9803921568627451
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6264,
+                "hunting": 129,
+                "classic": 7
+              },
+              "fractions": {
+                "parent": 0.97875,
+                "classic": 0.00109375,
+                "hunting": 0.02015625
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9592,
+                "classic": 8,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.9592,
+                "classic": 0.0008,
+                "hunting": 0.04
+              }
+            }
+          }
+        },
+        "u500-or-e25": {
+          "episodes": 12,
+          "updates": 500,
+          "all": {
+            "episodes": 12,
+            "decisions": 2195,
+            "survival_rate": 0.4166666666666667,
+            "loops": {
+              "eligible_windows": 754,
+              "looping_windows": 561,
+              "window_rate": 0.7440318302387268,
+              "episodes_with_eligible_windows": 2,
+              "episodes_with_loops": 2,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 6,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 9,
+              "reached_safe_attack_fraction": 0.75,
+              "safe_attack_steps": 132,
+              "safe_attack_steps_per_decision": 0.06013667425968109,
+              "threatening_steps": 177,
+              "safe_attack_bombs": 12,
+              "episodes_using_safe_attack": 7,
+              "episode_kills_when_safe_attack_used": 5,
+              "native_kills": 8,
+              "attribution_coverage_episodes": 12,
+              "safe_bomb_kill_credits": 1,
+              "safe_bomb_self_kill_credits": 4,
+              "safe_bombs_with_kills": 1,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 5,
+              "per_game": 0.4166666666666667,
+              "per_100_decisions": 0.22779043280182232
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 6,
+              "decisions": 564,
+              "survival_rate": 0.0,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 5,
+                "reached_safe_attack_fraction": 0.8333333333333334,
+                "safe_attack_steps": 23,
+                "safe_attack_steps_per_decision": 0.040780141843971635,
+                "threatening_steps": 51,
+                "safe_attack_bombs": 10,
+                "episodes_using_safe_attack": 5,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 6,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 4,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 3,
+                "per_game": 0.5,
+                "per_100_decisions": 0.5319148936170213
+              }
+            },
+            "hunting": {
+              "episodes": 6,
+              "decisions": 1631,
+              "survival_rate": 0.8333333333333334,
+              "loops": {
+                "eligible_windows": 754,
+                "looping_windows": 561,
+                "window_rate": 0.7440318302387268,
+                "episodes_with_eligible_windows": 2,
+                "episodes_with_loops": 2,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 6,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 4,
+                "reached_safe_attack_fraction": 0.6666666666666666,
+                "safe_attack_steps": 109,
+                "safe_attack_steps_per_decision": 0.0668301655426119,
+                "threatening_steps": 126,
+                "safe_attack_bombs": 2,
+                "episodes_using_safe_attack": 2,
+                "episode_kills_when_safe_attack_used": 5,
+                "native_kills": 8,
+                "attribution_coverage_episodes": 6,
+                "safe_bomb_kill_credits": 1,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 1,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 2,
+                "per_game": 0.3333333333333333,
+                "per_100_decisions": 0.12262415695892091
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2195,
+              "counts": {
+                "classic": 564,
+                "hunting": 1631
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.2569476082004556,
+                "hunting": 0.7430523917995444
+              }
+            },
+            "sampled": {
+              "count": 32000,
+              "counts": {
+                "parent": 28895,
+                "hunting": 2352,
+                "classic": 753
+              },
+              "fractions": {
+                "parent": 0.90296875,
+                "classic": 0.02353125,
+                "hunting": 0.0735
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7805,
+                "classic": 564,
+                "hunting": 1631
+              },
+              "fractions": {
+                "parent": 0.7805,
+                "classic": 0.0564,
+                "hunting": 0.1631
+              }
+            }
+          }
+        }
+      }
+    },
+    "r2": {
+      "control": {
+        "e10": {
+          "episodes": 10,
+          "updates": 671,
+          "all": {
+            "episodes": 10,
+            "decisions": 2690,
+            "survival_rate": 0.6,
+            "loops": {
+              "eligible_windows": 731,
+              "looping_windows": 724,
+              "window_rate": 0.9904240766073872,
+              "episodes_with_eligible_windows": 5,
+              "episodes_with_loops": 5,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 5,
+              "reached_safe_attack_fraction": 0.5,
+              "safe_attack_steps": 224,
+              "safe_attack_steps_per_decision": 0.08327137546468401,
+              "threatening_steps": 285,
+              "safe_attack_bombs": 13,
+              "episodes_using_safe_attack": 5,
+              "episode_kills_when_safe_attack_used": 2,
+              "native_kills": 2,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 2,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 2,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 11,
+              "per_game": 1.1,
+              "per_100_decisions": 0.40892193308550184
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 10,
+              "decisions": 2690,
+              "survival_rate": 0.6,
+              "loops": {
+                "eligible_windows": 731,
+                "looping_windows": 724,
+                "window_rate": 0.9904240766073872,
+                "episodes_with_eligible_windows": 5,
+                "episodes_with_loops": 5,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 5,
+                "reached_safe_attack_fraction": 0.5,
+                "safe_attack_steps": 224,
+                "safe_attack_steps_per_decision": 0.08327137546468401,
+                "threatening_steps": 285,
+                "safe_attack_bombs": 13,
+                "episodes_using_safe_attack": 5,
+                "episode_kills_when_safe_attack_used": 2,
+                "native_kills": 2,
+                "attribution_coverage_episodes": 10,
+                "safe_bomb_kill_credits": 2,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 2,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 11,
+                "per_game": 1.1,
+                "per_100_decisions": 0.40892193308550184
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2690,
+              "counts": {
+                "classic": 2690
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 42944,
+              "counts": {
+                "parent": 37170,
+                "classic": 5774
+              },
+              "fractions": {
+                "parent": 0.865545827123696,
+                "classic": 0.134454172876304,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7310,
+                "classic": 2690
+              },
+              "fractions": {
+                "parent": 0.731,
+                "classic": 0.269,
+                "hunting": 0.0
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 407,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 129,
+              "looping_windows": 129,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 1,
+              "reached_safe_attack_fraction": 0.5,
+              "safe_attack_steps": 96,
+              "safe_attack_steps_per_decision": 0.23587223587223588,
+              "threatening_steps": 105,
+              "safe_attack_bombs": 1,
+              "episodes_using_safe_attack": 1,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 0,
+              "per_game": 0.0,
+              "per_100_decisions": 0.0
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 2,
+              "decisions": 407,
+              "survival_rate": 0.5,
+              "loops": {
+                "eligible_windows": 129,
+                "looping_windows": 129,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 0.5,
+                "safe_attack_steps": 96,
+                "safe_attack_steps_per_decision": 0.23587223587223588,
+                "threatening_steps": 105,
+                "safe_attack_bombs": 1,
+                "episodes_using_safe_attack": 1,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 2,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": 0.0,
+                "per_100_decisions": 0.0
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 407,
+              "counts": {
+                "classic": 407
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6256,
+                "classic": 144
+              },
+              "fractions": {
+                "parent": 0.9775,
+                "classic": 0.0225,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9593,
+                "classic": 407
+              },
+              "fractions": {
+                "parent": 0.9593,
+                "classic": 0.0407,
+                "hunting": 0.0
+              }
+            }
+          }
+        }
+      },
+      "curriculum": {
+        "e10": {
+          "episodes": 10,
+          "updates": 681,
+          "all": {
+            "episodes": 10,
+            "decisions": 2729,
+            "survival_rate": 0.6,
+            "loops": {
+              "eligible_windows": 1535,
+              "looping_windows": 1116,
+              "window_rate": 0.7270358306188925,
+              "episodes_with_eligible_windows": 6,
+              "episodes_with_loops": 6,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 5,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 8,
+              "reached_safe_attack_fraction": 0.8,
+              "safe_attack_steps": 269,
+              "safe_attack_steps_per_decision": 0.09857090509344082,
+              "threatening_steps": 328,
+              "safe_attack_bombs": 18,
+              "episodes_using_safe_attack": 4,
+              "episode_kills_when_safe_attack_used": 3,
+              "native_kills": 3,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 3,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 3,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 13,
+              "per_game": 1.3,
+              "per_100_decisions": 0.47636496885305973
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 5,
+              "decisions": 1122,
+              "survival_rate": 0.4,
+              "loops": {
+                "eligible_windows": 274,
+                "looping_windows": 274,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 2,
+                "episodes_with_loops": 2,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 3,
+                "reached_safe_attack_fraction": 0.6,
+                "safe_attack_steps": 134,
+                "safe_attack_steps_per_decision": 0.11942959001782531,
+                "threatening_steps": 175,
+                "safe_attack_bombs": 13,
+                "episodes_using_safe_attack": 3,
+                "episode_kills_when_safe_attack_used": 1,
+                "native_kills": 1,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 1,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 1,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 9,
+                "per_game": 1.8,
+                "per_100_decisions": 0.8021390374331551
+              }
+            },
+            "hunting": {
+              "episodes": 5,
+              "decisions": 1607,
+              "survival_rate": 0.8,
+              "loops": {
+                "eligible_windows": 1261,
+                "looping_windows": 842,
+                "window_rate": 0.6677240285487708,
+                "episodes_with_eligible_windows": 4,
+                "episodes_with_loops": 4,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 5,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 5,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 135,
+                "safe_attack_steps_per_decision": 0.08400746733042937,
+                "threatening_steps": 153,
+                "safe_attack_bombs": 5,
+                "episodes_using_safe_attack": 1,
+                "episode_kills_when_safe_attack_used": 2,
+                "native_kills": 2,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 2,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 2,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 4,
+                "per_game": 0.8,
+                "per_100_decisions": 0.24891101431238333
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2729,
+              "counts": {
+                "classic": 1122,
+                "hunting": 1607
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.4111396115793331,
+                "hunting": 0.5888603884206669
+              }
+            },
+            "sampled": {
+              "count": 43584,
+              "counts": {
+                "parent": 37644,
+                "hunting": 3673,
+                "classic": 2267
+              },
+              "fractions": {
+                "parent": 0.8637114537444934,
+                "classic": 0.05201450073421439,
+                "hunting": 0.08427404552129222
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7271,
+                "classic": 1122,
+                "hunting": 1607
+              },
+              "fractions": {
+                "parent": 0.7271,
+                "classic": 0.1122,
+                "hunting": 0.1607
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 407,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 377,
+              "looping_windows": 342,
+              "window_rate": 0.9071618037135278,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 1,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 1,
+              "reached_safe_attack_fraction": 0.5,
+              "safe_attack_steps": 22,
+              "safe_attack_steps_per_decision": 0.05405405405405406,
+              "threatening_steps": 22,
+              "safe_attack_bombs": 0,
+              "episodes_using_safe_attack": 0,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 1,
+              "per_game": 0.5,
+              "per_100_decisions": 0.2457002457002457
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 1,
+              "decisions": 7,
+              "survival_rate": 0.0,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": 0.0,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": 0.0,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": 0.0,
+                "per_100_decisions": 0.0
+              }
+            },
+            "hunting": {
+              "episodes": 1,
+              "decisions": 400,
+              "survival_rate": 1.0,
+              "loops": {
+                "eligible_windows": 377,
+                "looping_windows": 342,
+                "window_rate": 0.9071618037135278,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 1,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 22,
+                "safe_attack_steps_per_decision": 0.055,
+                "threatening_steps": 22,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 1,
+                "per_game": 1.0,
+                "per_100_decisions": 0.25
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 407,
+              "counts": {
+                "classic": 7,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.0171990171990172,
+                "hunting": 0.9828009828009828
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6256,
+                "hunting": 141,
+                "classic": 3
+              },
+              "fractions": {
+                "parent": 0.9775,
+                "classic": 0.00046875,
+                "hunting": 0.02203125
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9593,
+                "classic": 7,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.9593,
+                "classic": 0.0007,
+                "hunting": 0.04
+              }
+            }
+          }
+        }
+      }
+    },
+    "r3": {
+      "control": {
+        "e10": {
+          "episodes": 10,
+          "updates": 530,
+          "all": {
+            "episodes": 10,
+            "decisions": 2358,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 316,
+              "looping_windows": 316,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 4,
+              "episodes_with_loops": 4,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 8,
+              "reached_safe_attack_fraction": 0.8,
+              "safe_attack_steps": 411,
+              "safe_attack_steps_per_decision": 0.1743002544529262,
+              "threatening_steps": 503,
+              "safe_attack_bombs": 20,
+              "episodes_using_safe_attack": 8,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 1,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 22,
+              "per_game": 2.2,
+              "per_100_decisions": 0.9329940627650551
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 10,
+              "decisions": 2358,
+              "survival_rate": 0.5,
+              "loops": {
+                "eligible_windows": 316,
+                "looping_windows": 316,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 4,
+                "episodes_with_loops": 4,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 8,
+                "reached_safe_attack_fraction": 0.8,
+                "safe_attack_steps": 411,
+                "safe_attack_steps_per_decision": 0.1743002544529262,
+                "threatening_steps": 503,
+                "safe_attack_bombs": 20,
+                "episodes_using_safe_attack": 8,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 10,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 1,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 22,
+                "per_game": 2.2,
+                "per_100_decisions": 0.9329940627650551
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2358,
+              "counts": {
+                "classic": 2358
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 33920,
+              "counts": {
+                "parent": 29692,
+                "classic": 4228
+              },
+              "fractions": {
+                "parent": 0.8753537735849056,
+                "classic": 0.12464622641509433,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7642,
+                "classic": 2358
+              },
+              "fractions": {
+                "parent": 0.7642,
+                "classic": 0.2358,
+                "hunting": 0.0
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 636,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 55,
+              "looping_windows": 55,
+              "window_rate": 1.0,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 0,
+              "reachable_at_start_fraction": 0.0,
+              "reached_safe_attack_episodes": 2,
+              "reached_safe_attack_fraction": 1.0,
+              "safe_attack_steps": 52,
+              "safe_attack_steps_per_decision": 0.08176100628930817,
+              "threatening_steps": 74,
+              "safe_attack_bombs": 6,
+              "episodes_using_safe_attack": 2,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 5,
+              "per_game": 2.5,
+              "per_100_decisions": 0.7861635220125787
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 2,
+              "decisions": 636,
+              "survival_rate": 0.5,
+              "loops": {
+                "eligible_windows": 55,
+                "looping_windows": 55,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 2,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 52,
+                "safe_attack_steps_per_decision": 0.08176100628930817,
+                "threatening_steps": 74,
+                "safe_attack_bombs": 6,
+                "episodes_using_safe_attack": 2,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 2,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 5,
+                "per_game": 2.5,
+                "per_100_decisions": 0.7861635220125787
+              }
+            },
+            "hunting": {
+              "episodes": 0,
+              "decisions": 0,
+              "survival_rate": null,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": null,
+                "reached_safe_attack_episodes": 0,
+                "reached_safe_attack_fraction": null,
+                "safe_attack_steps": 0,
+                "safe_attack_steps_per_decision": null,
+                "threatening_steps": 0,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 0,
+                "safe_bomb_kill_credits": null,
+                "safe_bomb_self_kill_credits": null,
+                "safe_bombs_with_kills": null,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 0,
+                "per_game": null,
+                "per_100_decisions": null
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 636,
+              "counts": {
+                "classic": 636
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 1.0,
+                "hunting": 0.0
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6273,
+                "classic": 127
+              },
+              "fractions": {
+                "parent": 0.98015625,
+                "classic": 0.01984375,
+                "hunting": 0.0
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9364,
+                "classic": 636
+              },
+              "fractions": {
+                "parent": 0.9364,
+                "classic": 0.0636,
+                "hunting": 0.0
+              }
+            }
+          }
+        }
+      },
+      "curriculum": {
+        "e10": {
+          "episodes": 10,
+          "updates": 573,
+          "all": {
+            "episodes": 10,
+            "decisions": 2528,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 1036,
+              "looping_windows": 647,
+              "window_rate": 0.6245173745173745,
+              "episodes_with_eligible_windows": 4,
+              "episodes_with_loops": 4,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 5,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 8,
+              "reached_safe_attack_fraction": 0.8,
+              "safe_attack_steps": 156,
+              "safe_attack_steps_per_decision": 0.061708860759493674,
+              "threatening_steps": 219,
+              "safe_attack_bombs": 18,
+              "episodes_using_safe_attack": 6,
+              "episode_kills_when_safe_attack_used": 4,
+              "native_kills": 4,
+              "attribution_coverage_episodes": 10,
+              "safe_bomb_kill_credits": 2,
+              "safe_bomb_self_kill_credits": 1,
+              "safe_bombs_with_kills": 2,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 8,
+              "per_game": 0.8,
+              "per_100_decisions": 0.31645569620253167
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 5,
+              "decisions": 899,
+              "survival_rate": 0.2,
+              "loops": {
+                "eligible_windows": 164,
+                "looping_windows": 164,
+                "window_rate": 1.0,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 4,
+                "reached_safe_attack_fraction": 0.8,
+                "safe_attack_steps": 69,
+                "safe_attack_steps_per_decision": 0.07675194660734148,
+                "threatening_steps": 114,
+                "safe_attack_bombs": 13,
+                "episodes_using_safe_attack": 4,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 1,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 6,
+                "per_game": 1.2,
+                "per_100_decisions": 0.6674082313681868
+              }
+            },
+            "hunting": {
+              "episodes": 5,
+              "decisions": 1629,
+              "survival_rate": 0.8,
+              "loops": {
+                "eligible_windows": 872,
+                "looping_windows": 483,
+                "window_rate": 0.5538990825688074,
+                "episodes_with_eligible_windows": 3,
+                "episodes_with_loops": 3,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 5,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 4,
+                "reached_safe_attack_fraction": 0.8,
+                "safe_attack_steps": 87,
+                "safe_attack_steps_per_decision": 0.053406998158379376,
+                "threatening_steps": 105,
+                "safe_attack_bombs": 5,
+                "episodes_using_safe_attack": 2,
+                "episode_kills_when_safe_attack_used": 4,
+                "native_kills": 4,
+                "attribution_coverage_episodes": 5,
+                "safe_bomb_kill_credits": 2,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 2,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 2,
+                "per_game": 0.4,
+                "per_100_decisions": 0.12277470841006753
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 2528,
+              "counts": {
+                "classic": 899,
+                "hunting": 1629
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.35561708860759494,
+                "hunting": 0.6443829113924051
+              }
+            },
+            "sampled": {
+              "count": 36672,
+              "counts": {
+                "parent": 31744,
+                "classic": 1690,
+                "hunting": 3238
+              },
+              "fractions": {
+                "parent": 0.8656195462478184,
+                "classic": 0.04608420593368237,
+                "hunting": 0.08829624781849912
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 7472,
+                "classic": 899,
+                "hunting": 1629
+              },
+              "fractions": {
+                "parent": 0.7472,
+                "classic": 0.0899,
+                "hunting": 0.1629
+              }
+            }
+          }
+        },
+        "u100-or-e10": {
+          "episodes": 2,
+          "updates": 100,
+          "all": {
+            "episodes": 2,
+            "decisions": 636,
+            "survival_rate": 0.5,
+            "loops": {
+              "eligible_windows": 377,
+              "looping_windows": 226,
+              "window_rate": 0.5994694960212201,
+              "episodes_with_eligible_windows": 1,
+              "episodes_with_loops": 1,
+              "note": "Overlapping windows are descriptive, not independent samples"
+            },
+            "attack": {
+              "reachable_at_start_episodes": 1,
+              "reachable_at_start_fraction": 0.5,
+              "reached_safe_attack_episodes": 2,
+              "reached_safe_attack_fraction": 1.0,
+              "safe_attack_steps": 73,
+              "safe_attack_steps_per_decision": 0.11477987421383648,
+              "threatening_steps": 88,
+              "safe_attack_bombs": 4,
+              "episodes_using_safe_attack": 1,
+              "episode_kills_when_safe_attack_used": 0,
+              "native_kills": 0,
+              "attribution_coverage_episodes": 2,
+              "safe_bomb_kill_credits": 0,
+              "safe_bomb_self_kill_credits": 0,
+              "safe_bombs_with_kills": 0,
+              "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+            },
+            "invalid": {
+              "count": 5,
+              "per_game": 2.5,
+              "per_100_decisions": 0.7861635220125787
+            }
+          },
+          "by_kind": {
+            "classic": {
+              "episodes": 1,
+              "decisions": 236,
+              "survival_rate": 0.0,
+              "loops": {
+                "eligible_windows": 0,
+                "looping_windows": 0,
+                "window_rate": null,
+                "episodes_with_eligible_windows": 0,
+                "episodes_with_loops": 0,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 0,
+                "reachable_at_start_fraction": 0.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 40,
+                "safe_attack_steps_per_decision": 0.1694915254237288,
+                "threatening_steps": 55,
+                "safe_attack_bombs": 4,
+                "episodes_using_safe_attack": 1,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 4,
+                "per_game": 4.0,
+                "per_100_decisions": 1.694915254237288
+              }
+            },
+            "hunting": {
+              "episodes": 1,
+              "decisions": 400,
+              "survival_rate": 1.0,
+              "loops": {
+                "eligible_windows": 377,
+                "looping_windows": 226,
+                "window_rate": 0.5994694960212201,
+                "episodes_with_eligible_windows": 1,
+                "episodes_with_loops": 1,
+                "note": "Overlapping windows are descriptive, not independent samples"
+              },
+              "attack": {
+                "reachable_at_start_episodes": 1,
+                "reachable_at_start_fraction": 1.0,
+                "reached_safe_attack_episodes": 1,
+                "reached_safe_attack_fraction": 1.0,
+                "safe_attack_steps": 33,
+                "safe_attack_steps_per_decision": 0.0825,
+                "threatening_steps": 33,
+                "safe_attack_bombs": 0,
+                "episodes_using_safe_attack": 0,
+                "episode_kills_when_safe_attack_used": 0,
+                "native_kills": 0,
+                "attribution_coverage_episodes": 1,
+                "safe_bomb_kill_credits": 0,
+                "safe_bomb_self_kill_credits": 0,
+                "safe_bombs_with_kills": 0,
+                "note": "Reachability is initial-state geometry; episode-kill association is separate from native credits attributable to a tagged bomb"
+              },
+              "invalid": {
+                "count": 1,
+                "per_game": 1.0,
+                "per_100_decisions": 0.25
+              }
+            }
+          },
+          "replay": {
+            "generated": {
+              "count": 636,
+              "counts": {
+                "classic": 236,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.0,
+                "classic": 0.3710691823899371,
+                "hunting": 0.6289308176100629
+              }
+            },
+            "sampled": {
+              "count": 6400,
+              "counts": {
+                "parent": 6273,
+                "classic": 105,
+                "hunting": 22
+              },
+              "fractions": {
+                "parent": 0.98015625,
+                "classic": 0.01640625,
+                "hunting": 0.0034375
+              }
+            },
+            "resident": {
+              "count": 10000,
+              "counts": {
+                "parent": 9364,
+                "classic": 236,
+                "hunting": 400
+              },
+              "fractions": {
+                "parent": 0.9364,
+                "classic": 0.0236,
+                "hunting": 0.04
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "reason": "All three complete pairs required; missing/stopped evidence retained"
+}
