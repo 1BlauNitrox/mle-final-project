@@ -1,0 +1,110 @@
+{
+  "scientific": false,
+  "scope": "mechanics only: migration, real learning, reload and evaluation; no efficacy claim",
+  "tool_commit": "ba88b78ffe4dae76bea8d23a37d77ac76ef29351",
+  "executed_config_sha256": "039ed7a393a119cf737e6e9459d57d8309b8177d2a40f3e5a17aa8b04a15a38f",
+  "runtime_hashes": {
+    "agent_code/DagobertDuckDQNObservation/callbacks.py": "af652c666177c77375886fa2e1c343ce40afd9d7b8aa6bc1c0bb50637478f93b",
+    "agent_code/DagobertDuckDQNObservation/config.py": "5aadf05e16200e7335ff2ac398f17686f6ee5a2b8bd5348ef8d9bc89f415eeb1",
+    "agent_code/DagobertDuckDQNObservation/legality.py": "0cf87d35523fe75767d09e7ae32ac520495f2939b4eb26537b1740f6e443a9c3",
+    "agent_code/DagobertDuckDQNObservation/model.py": "1d6d46dd862012322777a23ffae0796f5c3bbdba0067321d2334f13d00afe28d",
+    "agent_code/DagobertDuckDQNObservation/observations.py": "864a230a198a2d38b3da205af99c60e823184e4a4fbe9921c577a9b3132f1872",
+    "agent_code/DagobertDuckDQNObservation/persistence.py": "8e64d63af71b5a99e1bcc4dd9fabc562bcca23a6e5c8f9fec89c8a64d1747ee3",
+    "agent_code/DagobertDuckDQNObservation/replay.py": "dd36296e61173eb9af043178f7cc46e70f40d34d6ebda0f5b8f6bd4f85ee4b77",
+    "agent_code/DagobertDuckDQNObservation/requirements.txt": "625df9b61ea4d0e2843033e2ead3c6ed7713397237946c23a12b3ceed065146f",
+    "agent_code/DagobertDuckDQNObservation/rewards.py": "cebb3d64c89109d00cf900cdbb42aa3437a487f8d61fa350d0388bd3e86dbbf6",
+    "agent_code/DagobertDuckDQNObservation/train.py": "5dd0362b75cac2483ff33632e5b412fc079db53ed63f865da755e0514cf8c5e2",
+    "agent_code/DagobertDuckDQNObservation/features/assemble.py": "4cde8817c7d81c6052e89ad2dd2ad87ab9503d373feacdd609757d38d8aba7ec",
+    "agent_code/DagobertDuckDQNObservation/features/bombs_and_crates.py": "06a5e26f7ebd234f5b83dd371166550d18a0ae5b21592ac29f15d097d5579185",
+    "agent_code/DagobertDuckDQNObservation/features/navigation.py": "5fc27caff8c465f27431056e95877dd8121815437d5238bfb8ae3365a8850858",
+    "agent_code/DagobertDuckDQNObservation/features/opponents.py": "e8b8076792887b0c4be9a3229795dafc5d795710bfeef80431b7f63f0c09d941",
+    "agent_code/DagobertDuckDQNObservation/features/__init__.py": "60977afbf0252061b265afac1c2938083918c6e0819a924bb358c8bc0e533945"
+  },
+  "smoke": {
+    "passed": true,
+    "runs": [
+      {
+        "arm": "control",
+        "wall_seconds": 26.061132200004067,
+        "cpu_seconds": 25.421875,
+        "rss_bytes": 301187072,
+        "training": [
+          {
+            "completed_episodes": 1,
+            "updates_total": 0,
+            "updates_this_episode": 0,
+            "actions": 400,
+            "actions_sha256": "b55114562489d69e78a662e4efea7c6a5506c172ec2ae3e2f329abdb73548988"
+          },
+          {
+            "completed_episodes": 2,
+            "updates_total": 301,
+            "updates_this_episode": 301,
+            "actions": 400,
+            "actions_sha256": "1bc69fceef73c059abcd809288fb5c1629dfd31910d0d820b1a5bbac997d672e"
+          }
+        ],
+        "evaluation": {
+          "actions": 400,
+          "actions_sha256": "251a219e508afb69711d8890699c1f396f17d4daf2ac336c56e8b42ac9153d39",
+          "checkpoint_unchanged": true
+        }
+      },
+      {
+        "arm": "geometry",
+        "wall_seconds": 25.682492899999488,
+        "cpu_seconds": 25.453125,
+        "rss_bytes": 302063616,
+        "training": [
+          {
+            "completed_episodes": 1,
+            "updates_total": 0,
+            "updates_this_episode": 0,
+            "actions": 400,
+            "actions_sha256": "89d9f9323266f3fbf7d5fc7bcaaf37fafac7e3c80afac95b26e16679523ade8f"
+          },
+          {
+            "completed_episodes": 2,
+            "updates_total": 301,
+            "updates_this_episode": 301,
+            "actions": 400,
+            "actions_sha256": "22a4f67d65345fb65298d3fc2faf32f6e72a26d76ba626ffc9b6961bd21d3219"
+          }
+        ],
+        "evaluation": {
+          "actions": 215,
+          "actions_sha256": "6958bd1128fec68651055b1c4f15095abf3bd2ec8e2250abaf2b28cca6a9f0a5",
+          "checkpoint_unchanged": true
+        }
+      },
+      {
+        "arm": "memory",
+        "wall_seconds": 16.13400780002121,
+        "cpu_seconds": 16.0625,
+        "rss_bytes": 302116864,
+        "training": [
+          {
+            "completed_episodes": 1,
+            "updates_total": 0,
+            "updates_this_episode": 0,
+            "actions": 400,
+            "actions_sha256": "c68572cf351973442de2a0f7e91d70cdc9bff6efc7e2146ac00d7bae743cf508"
+          },
+          {
+            "completed_episodes": 2,
+            "updates_total": 52,
+            "updates_this_episode": 52,
+            "actions": 151,
+            "actions_sha256": "a5f750fa28122939c1dd65d8518b5bc5f3bbaa006ddbcc29d9a055fe09b8af69"
+          }
+        ],
+        "evaluation": {
+          "actions": 400,
+          "actions_sha256": "5008a2ecca65f52c67b856d28cc781f88ec29af7c3151e38be8a0c56192b1ae7",
+          "checkpoint_unchanged": true
+        }
+      }
+    ]
+  },
+  "note": "Mechanics at the recorded producing commit. Subsequent changes add exploratory classification, shared evaluation accounting and correct departing an own-bomb tile; focused tests cover these changes and each device must run fresh smoke checks before launch."
+}

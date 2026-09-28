@@ -1,0 +1,10 @@
+{
+  "artifact": "reference",
+  "suite": "classic-peaceful",
+  "stage": "evaluation",
+  "episodes": 40,
+  "checkpoint_sha256": "a5dadff5cc9f04a614caa828d3a0f014cad56f00c3644bb791275da85b35a8a6",
+  "rows_sha256": "e9d637f820a4d48265a101069e5c05583139826fe12ae3ccec4a2a49c523e383",
+  "wall_seconds": 57.9233813000028,
+  "cpu_seconds": 56.671875
+}

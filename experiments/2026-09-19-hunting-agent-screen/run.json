@@ -1,0 +1,40 @@
+{
+  "hostname": "Lenovo",
+  "python": "3.13.15",
+  "torch": "2.13.0+cpu",
+  "device": "cpu",
+  "torch_threads_per_agent": 1,
+  "commits": {
+    "smoke": "2f03ed5",
+    "timing_and_scientific_collection": "2097839",
+    "final_analyzer": "51f6770"
+  },
+  "times": {
+    "scientific_start": "2026-09-19T12:58:27.175912+02:00",
+    "scientific_end": "2026-09-19T13:05:48.984250+02:00"
+  },
+  "games": {
+    "smoke_excluded": 1,
+    "serial_timing_excluded": 3,
+    "scientific": 240,
+    "scientific_resumed": 0,
+    "cut_short": false
+  },
+  "commands": {
+    "smoke": "C:\\task3-cadence\\.venv\\Scripts\\python.exe scripts/run_hunting_benchmark.py smoke --handoff C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-handoff-20260919 --runtime C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-eval-runtime --output C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue205 --python C:\\task3-cadence\\.venv\\Scripts\\python.exe",
+    "timing": "C:\\task3-cadence\\.venv\\Scripts\\python.exe scripts/run_hunting_benchmark.py timing --handoff C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-handoff-20260919 --runtime C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-eval-runtime --output C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue205 --python C:\\task3-cadence\\.venv\\Scripts\\python.exe",
+    "scientific": "C:\\task3-cadence\\.venv\\Scripts\\python.exe scripts/run_hunting_benchmark.py scientific --handoff C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-handoff-20260919 --runtime C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-eval-runtime --output C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue205 --python C:\\task3-cadence\\.venv\\Scripts\\python.exe",
+    "analysis": "C:\\task3-cadence\\.venv\\Scripts\\python.exe scripts/analyze_hunting_benchmark.py --config experiments/2026-09-19-hunting-agent-screen/config.json --input C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue205 --output experiments/2026-09-19-hunting-agent-screen/analysis.json"
+  },
+  "output": {
+    "raw_root": "C:\\Users\\Julius\\Downloads\\issue124-laptop-transfer\\hunting-output\\issue205",
+    "scientific_game_file_count": 240,
+    "scientific_game_manifest_sha256": "3e9c65676dedd6c301beecae6da114b8ed7d96717fb2dc5f90e77da699052dc2",
+    "manifest_definition": "SHA-256 of UTF-8 lines '<filename> <lowercase-file-sha256>\\n' sorted by filename",
+    "run_scientific_sha256": "7674aad427587820522ebb93849f49e96ba7d7c7ad9094340dcff3d01ae784ae",
+    "run_timing_sha256": "51317960c91eee3ce4f251da67020287b96588482770f5e87cf456028ffffbfa",
+    "smoke_verification_sha256": "682a2bb231db9d6973b83bd0ecaa3cc61bc2833b3c656c483d47b753e41a266c",
+    "analysis_sha256_before_adding_this_record": "33dbbf64ef544771002b0d65b02ff53aa0f4e606fc686e395c812cc44ac4f494"
+  },
+  "randomness_note": "World RNG was fixed per registered seed. rule_based_agent still uses OS-entropy NumPy seeding and Python random.shuffle; world-cluster intervals retain this residual opponent randomness."
+}
