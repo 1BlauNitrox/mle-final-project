@@ -280,7 +280,7 @@ def load_model(
 
         if "learning_algorithm" not in metadata:
             metadata = {**metadata, "learning_algorithm": Q_LEARNING}
- 
+
         if "update_horizon" not in metadata:
             metadata = {**metadata, "update_horizon": 1}
 
@@ -583,7 +583,7 @@ def _validate_metadata(metadata: Any) -> None:
 
     if metadata["learning_algorithm"] not in VALID_LEARNING_ALGORITHMS:
         raise ValueError("Stored learning algorithm is invalid")
-  
+
     if type(metadata["update_horizon"]) is not int or metadata["update_horizon"] not in (1, 5):
         raise ValueError("Stored update horizon is invalid")
 

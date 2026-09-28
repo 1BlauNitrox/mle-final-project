@@ -106,7 +106,7 @@ def setup(self) -> None:
 
         if loaded.learning_algorithm != self.learning_algorithm:
             mismatches.append(LEARNING_ALGORITHM_ENV)
- 
+
         if loaded.update_horizon != self.update_horizon:
             mismatches.append(UPDATE_HORIZON_ENV)
 
@@ -349,7 +349,7 @@ def _read_learning_algorithm() -> str:
             f"{list(VALID_LEARNING_ALGORITHMS)}."
         )
     return algorithm
-  
+
 
 def _read_update_horizon() -> int:
     """Read the registered one-step or five-step update horizon."""
